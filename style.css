@@ -3,12 +3,16 @@ body {
 }
 
 #content {
-    position:relative;
-    top: 100px;
-    left: 100px;
+    position:absolute;
+    top: 10px;
+    left: 10px;
     width:800px;
     height:800px;
     border:1px solid black;
+}
+
+.menu {
+    position:absolute;
 }
 
 .a {
@@ -22,6 +26,7 @@ body {
 
 .widget {
     position:absolute;
+    overflow: hidden;
     top: 10px;
     left: 300px;
     width: 200px;
@@ -30,22 +35,27 @@ body {
 }
 
 .widget .title {
-    position:absolute;
-    top: 0px;
-    left: 0px;
-    width: 200px;
     height: 20px;
     text-align: center;
     background-color: #f80;
 }
 
 .widget .close {
-    position:absolute;
-    top: 0px;
-    left: 0px;
+    float: left;
     width: 20px;
     height: 20px;
     background-color: #ff0;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.widget .shade {
+    float: right;
+    width: 20px;
+    height: 20px;
+    background-color: #fa0;
+    cursor: pointer;
+    cursor: hand;
 }
 
 * {
@@ -58,7 +68,7 @@ body {
     background-color: #444;
     color: white;
     text-align: center;
-    cursor: pointer; 
+    cursor: pointer;
     cursor: hand;
     user-select: none;
     -moz-user-select: -moz-none;
