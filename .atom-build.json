@@ -1,0 +1,6 @@
+{
+  "cmd": "open",
+  "args": [ "index.html" ],
+  "sh": false,
+  "cwd": "/Users/kodi/Desktop/js"
+}

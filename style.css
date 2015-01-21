@@ -1,0 +1,65 @@
+body {
+    background-color:#333;
+}
+
+#content {
+    position:relative;
+    top: 100px;
+    left: 100px;
+    width:800px;
+    height:800px;
+    border:1px solid black;
+}
+
+.a {
+    position:absolute;
+    top: 300px;
+    left: 200px;
+    width: 100px;
+    height: 100px;
+    background-color: #888;
+}
+
+.widget {
+    position:absolute;
+    top: 10px;
+    left: 300px;
+    width: 200px;
+    height: 200px;
+    background-color: #f00;
+}
+
+.widget .title {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    width: 200px;
+    height: 20px;
+    text-align: center;
+    background-color: #f80;
+}
+
+.widget .close {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    width: 20px;
+    height: 20px;
+    background-color: #ff0;
+}
+
+* {
+    font-family: "Verdana";
+}
+
+.button {
+    width: 50px;
+    height: 25px;
+    background-color: #444;
+    color: white;
+    text-align: center;
+    cursor: pointer; 
+    cursor: hand;
+    user-select: none;
+    -moz-user-select: -moz-none;
+}
