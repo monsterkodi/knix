@@ -1,6 +1,6 @@
 {
-  "cmd": "open",
-  "args": [ "index.html" ],
+  "cmd": "grunt",
+  "args": [],
   "sh": false,
   "cwd": "/Users/kodi/Desktop/js"
 }
