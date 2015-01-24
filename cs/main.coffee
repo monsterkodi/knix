@@ -11,42 +11,37 @@ document.observe "dom:loaded", ->
         $(menu.id).raise()
 
     $('del').observe 'click', (e) ->
-        log 'del'
         Widget.closeAll()
 
     $('add_a').observe 'click', (e) ->
         size = window.getComputedStyle $('content')
-        cfg =
+        Widget.widget
             width:    300
             height:   200
             x:        Math.random() * parseInt size.width
             y:        Math.random() * parseInt size.height
-        log cfg
-        Widget.create cfg
 
     $('add_b').observe 'click', (e) ->
-        log 'hello'
-        w = Widget.create
-            y:      30
-            width:  100
-            height: 100
+        w = Widget.widget
+            y:        30
+            width:    100
+            height:   100
             hasTitle: true
-            hasSize: false
-
-        b = Widget.create
-            y:      30
-            width:  30
-            height: 30
-            hasTitle: false
-            hasClose: false
-            hasShade: false
             hasSize:  false
-            parentID: w.id
-            style:    'flat'
 
-        $(b.id).insert("ok")
+        b1 = Widget.button
+            y:        30
+            width:    30
+            height:   30
+            text:     'ok'
+            parent:   w.id
 
-    Widget.create
+        b2 = Widget.button
+            x:        30
+            text:     'no'
+            parent:   w.id
+
+    Widget.widget
         y:      30
         width:  100
         height: 100

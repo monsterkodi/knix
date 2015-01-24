@@ -71,7 +71,7 @@ html
     color:          textColors.menu
     border-right:   1px solid black
 
-.button
+.menu .button
     float:          left
     padding-left:   8px
     padding-right:  8px
@@ -82,18 +82,18 @@ html
     noSelection()
     border:         1px solid black
     margin-right:   -1px
-    &:hover
-        color:      lighten(textColors.menu,30)
 
 .widget
     position:       absolute
     overflow:       hidden
     border:         widgetBorders.bg
+    background-color: widgetColors.bg
+
+.frame
     border-top-left-radius:     widgetTopRadius
     border-top-right-radius:    widgetTopRadius
     border-bottom-left-radius:  widgetBotRadius
     border-bottom-right-radius: widgetBotRadius
-    background-color: widgetColors.bg
     shadow()
 
 .widget .title
@@ -141,3 +141,7 @@ html
     border-top:     widgetBorders.size
     bgColorHover(widgetColors.size)
     noSelection()
+
+.button
+    &:hover
+        color:      lighten(textColors.menu,30)

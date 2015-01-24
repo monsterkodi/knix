@@ -1,10 +1,10 @@
-elem = require('./tools.coffee').newElement
 drag = require('./drag.coffee')
 pos  = require('./pos.coffee')
 log  = require('./log.coffee')
-# str  = require('./str.coffee')
 
 class Widget
+
+    @nextWidgetID  = 0
     @defaultConfig =
         hasTitle:  true
         hasClose:  true
@@ -12,15 +12,11 @@ class Widget
         hasSize:   true
         isMovable: true
         isShaded:  false
-        parentID:  "content"
+        parent:    "content"
         title:     "widget"
 
-    constructor: (@name) ->
-        @config = Widget::defaultConfig
-        @sizeDrag = null
-
     addTitleBar: ->
-        title = elem("div").addClassName("title")
+        title = Widget.elem "div", "title"
         title.insert @config.title
         @insert title
         if @config.isMovable
@@ -30,7 +26,7 @@ class Widget
         return
 
     addCloseButton: ->
-        button = elem("div").addClassName("close")
+        button = Widget.elem "div", "close"
         @insert button
         widget = this
         button.on "click", ->
@@ -39,11 +35,12 @@ class Widget
         return
 
     close: ->
+        log @id
         @remove()
         return
 
     addShadeButton: ->
-        button = elem("div").addClassName("shade")
+        button = Widget.elem "div", "shade"
         @insert button
         widget = this
         button.on "click", ->
@@ -65,14 +62,13 @@ class Widget
         return
 
     addSizeButton: ->
-        button = elem("div").addClassName("size")
+        button = Widget.elem "div", "size"
         @insert button
         @sizeDrag = null
         button.on "mousedown", (event, sender) ->
             element = $(sender.id)
             widget  = $(element.parentElement.id)
             sender.parentElement.sizeDrag.minPos = new pos(0, widget.headerSize())
-            log "@sizeDrag.minPos", sender.parentElement.sizeDrag.minPos
             return
 
         moveCallback = (newPos, element) ->
@@ -120,30 +116,56 @@ class Widget
             i++
         0
 
-    # static functions
+    # ______________________________________________________ static functions
 
-    @closeAll = ->
+    @closeAll = ->                                          # close all widgets
         $$(".widget").each (widget) ->
             widget.close()
             return
         return
 
-    @create = (cfg) ->
-        widget = elem("div").addClassName("widget") # create widget div
-        Object.extend widget, Widget.prototype # merge in widget functions
-        widget.config = Object.clone(@defaultConfig) # copy default config to widget
-        widget.config = Object.extend(widget.config, cfg) # merge in argument config
+    @elem = (type, style) ->                                # create element of <type>, add class <style> and assign 'unique' id
+        e = new Element type
+        e.id = "widget_%d".fmt(@nextWidgetID)
+        @nextWidgetID += 1
+        e.addClassName style
+        e
 
-        widget.addCloseButton()  if widget.config.hasClose
-        widget.addShadeButton()  if widget.config.hasShade
-        widget.addTitleBar()     if widget.config.hasTitle
-        if widget.config.hasSize
-            widget.addSizeButton()
-        else if widget.config.isMovable
-            drag.create(widget)
-        $(widget.config.parentID).insert widget if widget.config.parentID
-        widget.moveTo widget.config.x, widget.config.y  if widget.config.x? or widget.config.y?
-        widget.resize widget.config.width, widget.config.height  if widget.config.width? or widget.config.height?
-        widget # return the widget
+    @create = (cfg) ->
+        w = @elem("div", "widget")                          # create widget div
+        Object.extend w, Widget.prototype                   # merge in widget functions
+        w.config = @def cfg, Object.clone(@defaultConfig)   # copy default and merge in cfg
+        w.addCloseButton()  if w.config.hasClose
+        w.addShadeButton()  if w.config.hasShade
+        w.addTitleBar()     if w.config.hasTitle
+        if w.config.hasSize
+            w.addSizeButton()
+        else if w.config.isMovable
+            drag.create(w)
+        if w.config.style
+            for style in w.config.style.split(' ')
+                w.addClassName style
+        w.insert(w.config.text) if w.config.text
+        $(w.config.parent).insert w if w.config.parent
+        w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
+        w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+        w # return the widget
+
+    @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
+
+    @widget = (cfg) ->
+        @create @def cfg,
+            style:    'frame'
+
+    @button = (cfg) ->
+        @create @def cfg,
+            text:     null
+            width:    20
+            height:   20
+            hasTitle: false
+            hasClose: false
+            hasShade: false
+            hasSize:  false
+            style:    'button'
 
 module.exports = Widget
