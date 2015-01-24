@@ -33,26 +33,9 @@ class Drag
         @handle = document.getElementById(@handle)  if typeof (@handle) is "string"
         @handle = @target unless @handle?
         log "Drag handle:", @handle
-        #@handle.style.cursor = "move"
+        @handle.style.cursor = "move"
         @startListening() if @active
         log "Drag constructed!"
-        return
-
-    hookEvent: (element, eventName, callback) ->
-        element = document.getElementById(element)  if typeof (element) is "string"
-        return  unless element?
-        log "Drag hookeEvent element:", element, "eventName:", eventName, "cb:", callback
-        if element.addEventListener
-              element.addEventListener eventName, callback, false
-        else element.attachEvent "on" + eventName, callback  if element.attachEvent
-        return
-
-    unhookEvent: (element, eventName, callback) ->
-        element = document.getElementById(element)  if typeof (element) is "string"
-        return  unless element?
-        if element.removeEventListener
-            element.removeEventListener eventName, callback, false
-        else element.detachEvent "on" + eventName, callback  if element.detachEvent
         return
 
     cancelEvent: (e) ->
@@ -72,7 +55,7 @@ class Drag
             new pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
 
     dragStart: (eventObj) ->
-        log "dragStart", eventObj
+        log "dragStart", this
         return  if @dragging or not @listening or @disposed
         @dragging = true
         @startCallback eventObj, @element if @startCallback?
@@ -81,17 +64,19 @@ class Drag
         @elementStartPos = new pos(parseInt(style.left), parseInt(style.top))
         @elementStartPos = @elementStartPos.check()
         dragObject = this
-        $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
-        $(document).on 'mouseup', (e) -> dragObject.dragUp(e)
+        @eventMove = $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
+        @eventUp   = $(document).on 'mouseup', (e) -> dragObject.dragUp(e)
         @target.raise()
         @cancelEvent eventObj
 
     dragMove: (eventObj) ->
+        log "move"
         return  if not @dragging or @disposed
         newPos = @absoluteCursorPostion(eventObj)
         newPos = newPos.add(@elementStartPos).sub(@cursorStartPos)
         newPos = newPos.bound(@minPos, @maxPos)
         newPos.apply @target
+        #log newPos, this
         @onMove newPos, @target  if @onMove?
         @cancelEvent eventObj
 
@@ -102,10 +87,8 @@ class Drag
     dragStop: ->
         return  if not @dragging or @disposed
         dragObject = this
-        $(document).on 'mousemove', null
-        $(document).on 'mouseup', null
-        @unhookEvent document, "mousemove", @dragGo
-        @unhookEvent document, "mouseup", @dragStopHook
+        @eventMove.stop()
+        @eventUp.stop()
         @cursorStartPos = null
         @elementStartPos = null
         @endCallback @element  if @endCallback?
@@ -130,13 +113,13 @@ class Drag
         return if @listening or @disposed
         @listening = true
         dragObject = this
-        @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
+        @eventDown = @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
         log "Drag startListening done"
         return
 
     stopListening: (stopCurrentDragging) ->
         return  if not @listening or @disposed
-        @unhookEvent @attachElement, "mousedown", @dragStart
+        @eventDown.stop()
         @listening = false
         @dragStop()  if stopCurrentDragging and @dragging
         return

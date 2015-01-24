@@ -7,6 +7,7 @@ class Widget
     hasTitle: true
     hasClose: true
     hasShade: true
+    hasSize:  true
     isMovable: true
     isShaded: false
     parentID: "content"
@@ -79,12 +80,16 @@ class Widget
       widget.setHeight newPos.y + layout.get("border-box-height")
       return
 
-    @sizeDrag = drag.create(button, null, new pos(0, @headerSize()), new pos(99999, 99999), null, moveCallback)
+    @sizeDrag = drag.create
+      target: button
+      minPos: new pos(0, @headerSize())
+      maxPos: new pos(99999, 99999)
+      onMove: moveCallback
     return
 
   moveTo: (x, y) ->
     @style.left = "%dpx".fmt(x)
-    @style.top = "%dpx".fmt(y)
+    @style.top  = "%dpx".fmt(y)
     return
 
   setWidth: (w) ->
@@ -137,7 +142,7 @@ class Widget
       widget.addSizeButton()
     else drag.create(widget)  if widget.config.isMovable
     $(widget.config.parentID).insert widget if widget.config.parentID
-    widget.moveTo widget.config.x, widget.config.y  if widget.config.x? and widget.config.y?
+    widget.moveTo widget.config.x, widget.config.y  if widget.config.x? or widget.config.y?
     widget.resize widget.config.width, widget.config.height  if widget.config.width? or widget.config.height?
     widget # return the widget
 

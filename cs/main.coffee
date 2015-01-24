@@ -22,7 +22,6 @@ document.observe "dom:loaded", ->
             height:   200
             x:        Math.random() * parseInt size.width
             y:        Math.random() * parseInt size.height
-            hasSize:  true
         log cfg
         Widget.create cfg
 
@@ -30,7 +29,8 @@ document.observe "dom:loaded", ->
         log 'hello'
 
     Widget.create
-        width:  400
+        y:      30
+        width:  100
         height: 100
 
     return
