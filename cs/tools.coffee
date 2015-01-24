@@ -8,7 +8,7 @@ strFunctn = (o,indent="") ->
     else if t == 'object'
         if o.constructor.name == 'Object'
             if o.id
-                return ["<", t, String(o), "id:", o.id, "class:", o.className, ">", JSON.stringify($H(o), null, strIndent)].join("=")
+                return ["<", t, String(o), "id:", o.id, "class:", o.className, ">", JSON.stringify($H(o), null, strIndent)].join(" ")
             else
                 return $H(o).inspect().slice "#<Hash:".length
         else

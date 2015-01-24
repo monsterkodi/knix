@@ -23,7 +23,7 @@ class Drag
             @minPos = @minPos.min(@maxPos)
             @maxPos = tempPos.max(@maxPos)
         @cursorStartPos  = null
-        @elementStartPos = null
+        @targetStartPos = null
         @dragging  = false
         @listening = false
         @handle = document.getElementById(@handle) if typeof (@handle) is "string"
@@ -54,8 +54,8 @@ class Drag
         @onStart eventObj, @target if @onStart?
         @cursorStartPos = @absoluteCursorPostion(eventObj)
         style = window.getComputedStyle(@target)
-        @elementStartPos = new pos(parseInt(style.left), parseInt(style.top))
-        @elementStartPos = @elementStartPos.check()
+        @targetStartPos = new pos(parseInt(style.left), parseInt(style.top))
+        @targetStartPos = @targetStartPos.check()
         dragObject = this
         @eventMove = $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
         @eventUp   = $(document).on 'mouseup', (e) -> dragObject.dragUp(e)
@@ -65,10 +65,10 @@ class Drag
     dragMove: (eventObj) ->
         return if not @dragging
         newPos = @absoluteCursorPostion(eventObj)
-        newPos = newPos.add(@elementStartPos).sub(@cursorStartPos)
+        newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
         newPos = newPos.bound(@minPos, @maxPos)
         newPos.apply @target
-        @onMove newPos, @target  if @onMove?
+        @onMove newPos, @target if @onMove?
         @cancelEvent eventObj
 
     dragUp: (eventObj) ->
@@ -81,32 +81,24 @@ class Drag
         @eventMove.stop()
         @eventUp.stop()
         @cursorStartPos = null
-        @elementStartPos = null
-        @endCallback @element  if @endCallback?
+        @targetStartPos = null
+        @onStop @target if @onStop?
         @dragging = false
         return
 
     startListening: ->
-        # log "Drag startListening target.id:", @target.id, "handle.id:", @handle.id
         return if @listening
         @listening = true
         dragObject = this
         @eventDown = @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
-        # log "Drag started listening:", this
         return
 
     stopListening: (stopCurrentDragging) ->
         return if not @listening
         @eventDown.stop()
         @listening = false
-        @dragStop()  if stopCurrentDragging and @dragging
+        @dragStop() if stopCurrentDragging and @dragging
         return
-
-    isDragging: ->
-        @dragging
-
-    isListening: ->
-        @listening
 
     @create = (cfg) ->
         new Drag(cfg)
