@@ -25,9 +25,12 @@ widgetBorders.size  = widgetBorderWidth solid black
 
 shadowDef = 2px 2px 10px 2px rgba(0,0,0,0.4)
 shadow()
-  -moz-box-shadow:    shadowDef
   -webkit-box-shadow: shadowDef
   box-shadow:         shadowDef
+
+handCursor()
+    //cursor:         hand
+    cursor:         pointer
 
 bgColorHover(c)
     background-color:   c
@@ -37,7 +40,7 @@ bgColorHover(c)
         background-color: lighten(c, 20)
 
 noSelection()
-    user-select:        none
+    // user-select:        none
     -moz-user-select:   -moz-none
 
 body
@@ -74,8 +77,7 @@ html
     padding-right:  8px
     height:         25px
     text-align:     center
-    cursor:         pointer
-    cursor:         hand
+    handCursor()
     background-color: #444
     noSelection()
     border:         1px solid black
@@ -108,11 +110,10 @@ html
     float:          left
     width:          widgetHeaderSize
     height:         widgetHeaderSize
-    cursor:         pointer
-    cursor:         hand
+    handCursor()
     border-right:   widgetBorders.close
     border-bottom:  widgetBorders.close
-    margin-bottom:  -widgetBorderWidth
+    margin-bottom:  - widgetBorderWidth
     border-top-left-radius: widgetTopRadius
     bgColorHover(widgetColors.close)
     noSelection()
@@ -121,11 +122,10 @@ html
     float:          right
     width:          widgetHeaderSize
     height:         widgetHeaderSize
-    cursor:         pointer
-    cursor:         hand
+    handCursor()
     border-left:    widgetBorders.shade
     border-bottom:  widgetBorders.close
-    margin-bottom:  -widgetBorderWidth
+    margin-bottom:  - widgetBorderWidth
     border-top-right-radius: widgetTopRadius
     bgColorHover(widgetColors.shade)
     noSelection()

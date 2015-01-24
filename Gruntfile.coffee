@@ -7,7 +7,16 @@ module.exports = (grunt) ->
         coffee:
             compile:
                 files:
-                    'js/knarz.js': ['cs/*.coffee']
+                    'js/knarz.js': [
+                      'cs/tools.coffee'
+                      'cs/widget.coffee'
+                      'cs/main.coffee'
+                      ]
+        browserify:
+            compile:
+                files: 'js/knarz.js': ['cs/**/*.coffee']
+                options:
+                  transform: ['coffeeify']
 
         stylus:
             compile:
@@ -16,7 +25,7 @@ module.exports = (grunt) ->
 
         clean:
             generated:    ["js/*js", "st/*.css"]
-            ds_store:     ["cs/**/.DS_STORE", "js/**/.DS_STORE", "st/**/.DS_STORE"]
+            tempfiles:    ["cs/**/.DS_STORE", "js/**/.DS_STORE", "st/**/.DS_STORE", "preview~*"]
             node_modules: ["node_modules"]
 
         shell:
@@ -28,17 +37,17 @@ module.exports = (grunt) ->
             path: 'index.html'
             app: 'Firefox'
 
-    # npm install --save-dev grunt-shell
+    # npm install --save-dev <nodepackage>          to add <nodepackage> to package.json devDependencies
 
-    grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-stylus'
     grunt.loadNpmTasks 'grunt-contrib-clean'
+    grunt.loadNpmTasks 'grunt-browserify'
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'default',   [ 'coffee', 'stylus' ]
-    grunt.registerTask 'build',     [ 'coffee', 'stylus' ]
-    grunt.registerTask 'test',      [ 'coffee', 'stylus', 'open' ]
-    grunt.registerTask 'c',         [ 'clean:ds_store' ]
+    grunt.registerTask 'default',   [ 'browserify', 'stylus', 'clean:tempfiles' ]
+    grunt.registerTask 'build',     [ 'browserify', 'stylus', 'clean:tempfiles' ]
+    grunt.registerTask 'test',      [ 'browserify', 'stylus', 'open', 'clean:tempfiles' ]
+    grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'del',       [ 'clean' ]
-    grunt.registerTask 'bs',        [ 'clean', 'shell' ]
+    grunt.registerTask 'bs',        [ 'clean', 'shell:install' ]

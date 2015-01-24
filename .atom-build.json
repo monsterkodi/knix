@@ -1,6 +1,6 @@
 {
   "cmd": "grunt",
-  "args": [],
+  "args": ["test"],
   "sh": false,
   "cwd": "/Users/kodi/Desktop/js"
 }

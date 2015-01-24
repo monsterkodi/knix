@@ -1,3 +1,7 @@
+newElement = require('./tools.coffee').newElement
+drag = require('./drag.coffee')
+pos = require('./pos.coffee')
+
 class Widget
   @defaultConfig =
     hasTitle: true
@@ -10,15 +14,16 @@ class Widget
 
   constructor: (@name) ->
     @config = Widget::defaultConfig
+    @sizeDrag = null
 
-  addTitleBar = ->
+  addTitleBar: ->
     title = newElement("div").addClassName("title")
     title.insert @config.title
     @insert title
-    new dragObject(this, title)  if @config.isMovable
+    drag.create(this, title) if @config.isMovable
     return
 
-  addCloseButton = ->
+  addCloseButton: ->
     button = newElement("div").addClassName("close")
     @insert button
     widget = this
@@ -27,11 +32,11 @@ class Widget
       return
     return
 
-  close = ->
+  close: ->
     @remove()
     return
 
-  addShadeButton = ->
+  addShadeButton: ->
     button = newElement("div").addClassName("shade")
     @insert button
     widget = this
@@ -40,7 +45,7 @@ class Widget
       return
     return
 
-  shade = ->
+  shade: ->
     if @config.isShaded
       @setHeight @config.height
       # adjust height for border size
@@ -53,14 +58,14 @@ class Widget
       @config.isShaded = true
     return
 
-  addSizeButton = ->
+  addSizeButton: ->
     button = newElement("div").addClassName("size")
     @insert button
-    drag = null
+    @sizeDrag = null
     button.on "mousedown", (event, sender) ->
       element = $(sender.id)
       widget = $(element.parentElement.id)
-      drag.lowerBound = new Position(0, widget.headerSize())
+      @sizeDrag.lowerBound = new pos(0, widget.headerSize())
       return
 
     moveCallback = (newPos, element) ->
@@ -71,28 +76,28 @@ class Widget
       widget.setHeight newPos.y + layout.get("border-box-height")
       return
 
-    drag = new dragObject(button, null, new Position(0, @headerSize()), new Position(99999, 99999), null, moveCallback)
+    @sizeDrag = drag.create(button, null, new pos(0, @headerSize()), new pos(99999, 99999), null, moveCallback)
     return
 
-  moveTo = (x, y) ->
+  moveTo: (x, y) ->
     @style.left = "%dpx".fmt(x)
     @style.top = "%dpx".fmt(y)
     return
 
-  setWidth = (w) ->
+  setWidth: (w) ->
     @style.width = "%dpx".fmt(w)  if w?
     return
 
-  setHeight = (h) ->
+  setHeight: (h) ->
     @style.height = "%dpx".fmt(h)  if h?
     return
 
-  resize = (w, h) ->
+  resize: (w, h) ->
     @setWidth w
     @setHeight h
     return
 
-  headerSize = ->
+  headerSize: ->
     children = Selector.findChildElements(this, [
       "*.title"
       "*.close"
@@ -107,7 +112,7 @@ class Widget
 
   # static functions
 
-  @protoWidget = new Widget
+  # @protoWidget = new Widget('protoWidget')
 
   @closeAll = ->
     $$(".widget").each (widget) ->
@@ -117,8 +122,8 @@ class Widget
 
   @create = (cfg) ->
     widget = newElement("div").addClassName("widget") # create widget div
-    Object.extend widget, Widget::protoWidget # merge in widget functions
-    widget.config = Object.clone(defaultConfig) # copy default config to widget
+    Object.extend widget, Widget.prototype # merge in widget functions
+    widget.config = Object.clone(@defaultConfig) # copy default config to widget
     widget.config = Object.extend(widget.config, cfg) # merge in argument config
 
     # log("Widget.new config", widget.config);
@@ -127,12 +132,10 @@ class Widget
     widget.addTitleBar()  if widget.config.hasTitle
     if widget.config.hasSize
       widget.addSizeButton()
-    else new dragObject(widget)  if widget.config.isMovable
+    else drag.create(widget)  if widget.config.isMovable
     $(widget.config.parentID).insert widget  if widget.config.parentID
     widget.moveTo widget.config.x, widget.config.y  if widget.config.x? and widget.config.y?
     widget.resize widget.config.width, widget.config.height  if widget.config.width? or widget.config.height?
     widget # return the widget
 
-# console.log(String(window))
-# window.Widget = Widget
-# console.log(String(window.Widget))
+module.exports = Widget
