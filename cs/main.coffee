@@ -13,7 +13,7 @@ document.observe "dom:loaded", ->
 
     $('del').observe 'click', (e) ->
         log 'del'
-        Widget.closeAll
+        Widget.closeAll()
 
     $('add_a').observe 'click', (e) ->
         size = window.getComputedStyle $('content')
@@ -27,6 +27,25 @@ document.observe "dom:loaded", ->
 
     $('add_b').observe 'click', (e) ->
         log 'hello'
+        w = Widget.create
+            y:      30
+            width:  100
+            height: 100
+            hasTitle: true
+            hasSize: false
+
+        b = Widget.create
+            y:      30
+            width:  30
+            height: 30
+            hasTitle: false
+            hasClose: false
+            hasShade: false
+            hasSize:  false
+            parentID: w.id
+            style:    'flat'
+
+        $(b.id).insert("ok")
 
     Widget.create
         y:      30

@@ -1,7 +1,8 @@
-elem = require('./tools.coffee').elem
+elem = require('./tools.coffee').newElement
 drag = require('./drag.coffee')
 pos  = require('./pos.coffee')
 log  = require('./log.coffee')
+# str  = require('./str.coffee')
 
 class Widget
     @defaultConfig =

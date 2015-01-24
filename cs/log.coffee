@@ -1,4 +1,4 @@
-str = require('./tools.coffee').str
+str = require('./str.coffee')
 
 log = ->
 

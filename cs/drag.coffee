@@ -67,6 +67,7 @@ class Drag
         newPos = @absoluteCursorPostion(eventObj)
         newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
         newPos = newPos.bound(@minPos, @maxPos)
+        log { minPos:@minPos, maxPos:@maxPos, newPos:newPos }
         newPos.apply @target
         @onMove newPos, @target if @onMove?
         @cancelEvent eventObj
