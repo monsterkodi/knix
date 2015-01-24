@@ -32,7 +32,7 @@ module.exports = (grunt) ->
             install:
                 command: 'npm install'
             touch:
-                command: 'touch index.html'
+                command: 'touch index.html && open ./index.html'
 
         open:
           browser:

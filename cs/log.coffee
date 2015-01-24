@@ -8,7 +8,7 @@ log = ->
     #     if i < arguments.length-1
     #       s += " "
 
-    s = [str(arg) for arg in arguments].join " "
+    s = (str(arg) for arg in arguments).join(" ")
     console.log s
     return
 

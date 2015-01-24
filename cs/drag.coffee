@@ -15,16 +15,15 @@ class Drag
 
     constructor: (cfg) ->
         Object.extend(this, Drag.config)
+        log "Drag this:", this
         Object.extend(this, cfg)
         log "Drag this:", this
         @target = document.getElementById(@target) if typeof (@target) is "string"
-        log "Drag target:", @target
         return unless @target?
         if @minPos? and @maxPos?
             tempPos = @minPos
             @minPos = @minPos.min(@maxPos)
             @maxPos = tempPos.max(@maxPos)
-            log "Drag bounds:", @minPos, @maxPos
         @cursorStartPos  = null
         @elementStartPos = null
         @dragging  = false
@@ -32,10 +31,8 @@ class Drag
         @disposed  = false
         @handle = document.getElementById(@handle)  if typeof (@handle) is "string"
         @handle = @target unless @handle?
-        log "Drag handle:", @handle
         @handle.style.cursor = "move"
         @startListening() if @active
-        log "Drag constructed!"
         return
 
     cancelEvent: (e) ->
@@ -55,7 +52,7 @@ class Drag
             new pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
 
     dragStart: (eventObj) ->
-        log "dragStart", this
+        # log "dragStart", this
         return  if @dragging or not @listening or @disposed
         @dragging = true
         @startCallback eventObj, @element if @startCallback?
@@ -70,7 +67,7 @@ class Drag
         @cancelEvent eventObj
 
     dragMove: (eventObj) ->
-        log "move"
+        log "move", @onMove
         return  if not @dragging or @disposed
         newPos = @absoluteCursorPostion(eventObj)
         newPos = newPos.add(@elementStartPos).sub(@cursorStartPos)
@@ -109,12 +106,11 @@ class Drag
         return
 
     startListening: ->
-        log "Drag startListening target.id:", @target.id, "handle.id:", @handle.id
+        # log "Drag startListening target.id:", @target.id, "handle.id:", @handle.id
         return if @listening or @disposed
         @listening = true
         dragObject = this
         @eventDown = @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
-        log "Drag startListening done"
         return
 
     stopListening: (stopCurrentDragging) ->
@@ -134,7 +130,6 @@ class Drag
         @disposed
 
     @create = (cfg) ->
-        log "create cfg:", cfg
         new Drag(cfg)
 
 module.exports = Drag
