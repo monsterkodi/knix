@@ -30,8 +30,8 @@ class Pos
     newPos
 
   bound: (lower, upper) ->
-    newPos = @Max(lower)
-    newPos.Min upper
+    newPos = @max(lower)
+    newPos.min upper
 
   check: ->
     newPos = new Pos(@x, @y)

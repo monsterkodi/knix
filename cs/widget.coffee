@@ -20,7 +20,10 @@ class Widget
     title = newElement("div").addClassName("title")
     title.insert @config.title
     @insert title
-    drag.create(this, title) if @config.isMovable
+    if @config.isMovable
+      drag.create
+        target: this
+        handle: title
     return
 
   addCloseButton: ->
@@ -129,11 +132,11 @@ class Widget
     # log("Widget.new config", widget.config);
     widget.addCloseButton()  if widget.config.hasClose
     widget.addShadeButton()  if widget.config.hasShade
-    widget.addTitleBar()  if widget.config.hasTitle
+    widget.addTitleBar()     if widget.config.hasTitle
     if widget.config.hasSize
       widget.addSizeButton()
     else drag.create(widget)  if widget.config.isMovable
-    $(widget.config.parentID).insert widget  if widget.config.parentID
+    $(widget.config.parentID).insert widget if widget.config.parentID
     widget.moveTo widget.config.x, widget.config.y  if widget.config.x? and widget.config.y?
     widget.resize widget.config.width, widget.config.height  if widget.config.width? or widget.config.height?
     widget # return the widget

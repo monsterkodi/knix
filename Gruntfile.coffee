@@ -30,7 +30,9 @@ module.exports = (grunt) ->
 
         shell:
             install:
-              command: 'npm install'
+                command: 'npm install'
+            touch:
+                command: 'touch index.html'
 
         open:
           browser:
@@ -47,7 +49,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'default',   [ 'browserify', 'stylus', 'clean:tempfiles' ]
     grunt.registerTask 'build',     [ 'browserify', 'stylus', 'clean:tempfiles' ]
-    grunt.registerTask 'test',      [ 'browserify', 'stylus', 'open', 'clean:tempfiles' ]
+    grunt.registerTask 'test',      [ 'browserify', 'stylus', 'shell:touch', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'del',       [ 'clean' ]
     grunt.registerTask 'bs',        [ 'clean', 'shell:install' ]

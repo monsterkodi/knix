@@ -1,16 +1,19 @@
 log    = require './log.coffee'
 Widget = require './widget.coffee'
+Window = require './window.coffee'
 
 document.observe "dom:loaded", ->
 
-    log (x + y for x in [1, 2] for y in [7, 8])
+    log "window size:", Window.size()
+
+    #log (x + y for x in [1, 2] for y in [7, 8])
 
     $$(".menu").each (menu) ->
         $(menu.id).raise()
 
     $('del').observe 'click', (e) ->
         log 'del'
-        Widget::closeAll
+        Widget.closeAll
 
     $('add_a').observe 'click', (e) ->
         size = window.getComputedStyle $('content')
@@ -25,5 +28,9 @@ document.observe "dom:loaded", ->
 
     $('add_b').observe 'click', (e) ->
         log 'hello'
+
+    Widget.create
+        width:  400
+        height: 100
 
     return
