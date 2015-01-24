@@ -71,7 +71,8 @@ class Widget
         button.on "mousedown", (event, sender) ->
             element = $(sender.id)
             widget  = $(element.parentElement.id)
-            @sizeDrag.lowerBound = new pos(0, widget.headerSize())
+            sender.parentElement.sizeDrag.minPos = new pos(0, widget.headerSize())
+            log "@sizeDrag.minPos", sender.parentElement.sizeDrag.minPos
             return
 
         moveCallback = (newPos, element) ->

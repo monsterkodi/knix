@@ -4,9 +4,8 @@ Window = require './window.coffee'
 
 document.observe "dom:loaded", ->
 
-    log "window size:", Window.size()
-
-    #log (x + y for x in [1, 2] for y in [7, 8])
+    # log "window size:", Window.size()
+    # log (x + y for x in [1, 2] for y in [7, 8])
 
     $$(".menu").each (menu) ->
         $(menu.id).raise()
