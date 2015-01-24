@@ -15,9 +15,7 @@ class Drag
 
     constructor: (cfg) ->
         Object.extend(this, Drag.config)
-        log "Drag this:", this
         Object.extend(this, cfg)
-        log "Drag this:", this
         @target = document.getElementById(@target) if typeof (@target) is "string"
         return unless @target?
         if @minPos? and @maxPos?
@@ -28,8 +26,7 @@ class Drag
         @elementStartPos = null
         @dragging  = false
         @listening = false
-        @disposed  = false
-        @handle = document.getElementById(@handle)  if typeof (@handle) is "string"
+        @handle = document.getElementById(@handle) if typeof (@handle) is "string"
         @handle = @target unless @handle?
         @handle.style.cursor = "move"
         @startListening() if @active
@@ -52,10 +49,9 @@ class Drag
             new pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
 
     dragStart: (eventObj) ->
-        # log "dragStart", this
-        return  if @dragging or not @listening or @disposed
+        return if @dragging or not @listening
         @dragging = true
-        @startCallback eventObj, @element if @startCallback?
+        @onStart eventObj, @target if @onStart?
         @cursorStartPos = @absoluteCursorPostion(eventObj)
         style = window.getComputedStyle(@target)
         @elementStartPos = new pos(parseInt(style.left), parseInt(style.top))
@@ -67,13 +63,11 @@ class Drag
         @cancelEvent eventObj
 
     dragMove: (eventObj) ->
-        log "move", @onMove
-        return  if not @dragging or @disposed
+        return if not @dragging
         newPos = @absoluteCursorPostion(eventObj)
         newPos = newPos.add(@elementStartPos).sub(@cursorStartPos)
         newPos = newPos.bound(@minPos, @maxPos)
         newPos.apply @target
-        #log newPos, this
         @onMove newPos, @target  if @onMove?
         @cancelEvent eventObj
 
@@ -82,7 +76,7 @@ class Drag
         @cancelEvent eventObj
 
     dragStop: ->
-        return  if not @dragging or @disposed
+        return if not @dragging
         dragObject = this
         @eventMove.stop()
         @eventUp.stop()
@@ -92,29 +86,17 @@ class Drag
         @dragging = false
         return
 
-    dispose: ->
-        return if @disposed
-        @StopListening true
-        @element = null
-        @attachElement = null
-        @lowerBound = null
-        @upperBound = null
-        @startCallback = null
-        @moveCallback = null
-        @endCallback = null
-        @disposed = true
-        return
-
     startListening: ->
         # log "Drag startListening target.id:", @target.id, "handle.id:", @handle.id
-        return if @listening or @disposed
+        return if @listening
         @listening = true
         dragObject = this
         @eventDown = @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
+        # log "Drag started listening:", this
         return
 
     stopListening: (stopCurrentDragging) ->
-        return  if not @listening or @disposed
+        return if not @listening
         @eventDown.stop()
         @listening = false
         @dragStop()  if stopCurrentDragging and @dragging
@@ -125,9 +107,6 @@ class Drag
 
     isListening: ->
         @listening
-
-    isDisposed: ->
-        @disposed
 
     @create = (cfg) ->
         new Drag(cfg)

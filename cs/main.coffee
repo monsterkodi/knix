@@ -32,6 +32,7 @@ document.observe "dom:loaded", ->
         y:      30
         width:  100
         height: 100
-        hasTitle: false
+        hasTitle: true
+        hasSize: false
 
     return

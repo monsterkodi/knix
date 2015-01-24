@@ -1,6 +1,7 @@
 newElement = require('./tools.coffee').newElement
 drag = require('./drag.coffee')
 pos = require('./pos.coffee')
+log = require('./log.coffee')
 
 class Widget
     @defaultConfig =
@@ -73,7 +74,7 @@ class Widget
             return
 
         moveCallback = (newPos, element) ->
-            log "move"
+            log "move(*)*"
             widget = $(element.parentElement.id)
             layout = $(element.id).getLayout()
             widget.setWidth newPos.x + layout.get("border-box-width")
