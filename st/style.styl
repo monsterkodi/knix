@@ -18,24 +18,42 @@ widgetColors        = {}
 // widgetColors.shade  = lighten(widgetColors.bg,15)
 // widgetColors.size   = darken(widgetColors.bg,3)
 
-// gray  191A1E 24252A 2E3138 454954 515862
-// red   D0461F EC4F23 EFAF31
-// blue  2E92B9 33A2D1
-// green 72A01C 8BB62D
-widgetColors.stage  = #191A1E
-widgetColors.bg     = #2E3138
-widgetColors.button = #33A2D1
-widgetColors.menu   = #2E3138
-widgetColors.title  = #454954
-widgetColors.close  = #515862
-widgetColors.shade  = #515862
-widgetColors.size   = #24252A
+colors = {}
+colors.grayDark         = #191A1E
+colors.grayDarkMedium   = #24252A
+colors.grayMediumDark   = #2E3138
+colors.grayMedium       = #454954
+colors.grayMediumBright = #515862
+colors.redDark          = #D0461F
+colors.red              = #EC4F23
+colors.redBright        = #EFAF31
+colors.blueDark         = #2E92B9
+colors.blue             = #33A2D1
+colors.greenDark        = #72A01C
+colors.green            = #8BB62D
+
+widgetColors.stage  = colors.grayDark
+widgetColors.bg     = colors.grayMediumDark
+widgetColors.button = colors.blue
+widgetColors.menu   = colors.grayMediumDark
+widgetColors.title  = colors.grayMedium
+widgetColors.close  = colors.grayMediumBright
+widgetColors.shade  = colors.grayMediumBright
+widgetColors.size   = colors.grayDarkMedium
+widgetColors.slider        = colors.grayDark
+widgetColors.slider-handle = colors.red
+widgetColors.scroll        = colors.grayDark
+widgetColors.scroll-handle = colors.redBright
+widgetColors.value         = colors.grayDark
+widgetColors.value-border  = colors.grayMedium
+widgetColors.value-active  = colors.green
+
 textColors.button   = #ddd
 
 borderColors        = {}
 borderColors.widget = #191A1E
 borderColors.menu   = #24252A
-borderColors.button = #2E3138
+borderColors.button = colors.grayMedium
 
 widgetTopRadius      = widgetHeaderSize * 0.5
 widgetBotRadius      = widgetTopRadius
@@ -48,11 +66,22 @@ widgetBorders.shade  = widgetBorderWidth solid borderColors.widget
 widgetBorders.size   = widgetBorderWidth solid borderColors.widget
 widgetBorders.menu   = widgetBorderWidth solid borderColors.menu
 widgetBorders.button = 0px solid borderColors.button
+widgetBorders.slider = 1px solid widgetColors.slider
+widgetBorders.scroll = 1px solid widgetColors.scroll
+widgetBorders.value  = 1px solid widgetColors.value-border
 
 buttonRadius        = 6px
 buttonHeight        = 26px
 
 shadowDef = 2px 2px 10px 2px rgba(0,0,0,0.4)
+
+::selection
+  background: colors.blue
+  color: black
+
+::-moz-selection
+  background: colors.blue
+  color: black
 
 // ____________________________________ functions
 
@@ -61,8 +90,11 @@ shadow()
   box-shadow:         shadowDef
 
 handCursor()
-    //cursor:         hand
     cursor:           pointer
+
+textCursor()
+    cursor:           text
+    -moz-user-select: text
 
 bgColorHover(c)
     background-color: c
@@ -72,7 +104,24 @@ bgColorHover(c)
         background-color: lighten(c, 20)
 
 noSelection()
-    -moz-user-select: -moz-none
+    user-select: none
+
+icon(x,y)
+  top:              1px
+  width:            20px
+  height:           20px
+  border:           0
+  filter:           brightness(20%)
+  background-color:  transparent
+  background-image:  url('../img/arrows.png')
+  background-repeat: no-repeat
+  background-position: (- x ) ( - y )
+  background-size:   auto 200px
+  &:hover
+      background-position: ( - x + 40px) ( - y )
+    &:active
+      background-position: (- x ) ( - y )
+      filter:           brightness(40%)
 
 // ____________________________________ toplevel
 
@@ -105,6 +154,15 @@ html
     overflow:         hidden
     border:           widgetBorders.bg
     background-color: widgetColors.bg
+
+.widget .static-left
+    position:         static
+    float:            left
+.widget .static-right
+    position:         static
+    float:            right
+.widget .static-center
+    position:         static
 
 .frame
     border-top-left-radius:     widgetTopRadius
@@ -159,13 +217,7 @@ html
     bgColorHover(widgetColors.size)
     noSelection()
 
-// ____________________________________ menus
-
-.menu
-    position:         absolute
-    overflow:         hidden
-    border-right:     widgetBorders.menu
-    border-radius:    buttonRadius
+// ____________________________________ button
 
 .button
     handCursor()
@@ -178,6 +230,76 @@ html
     bgColorHover(     widgetColors.button )
     &:hover
         color:        lighten(textColors.button,30)
+
+// ____________________________________ scroll
+
+.scroll
+    handCursor()
+    noSelection()
+    border-radius:    widgetTopRadius
+    border:           widgetBorders.scroll
+    background-color: widgetColors.scroll
+
+.scroll-handle
+    handCursor()
+    noSelection()
+    border-radius:    widgetTopRadius
+    border:           widgetBorders.scroll
+    background-color: widgetColors.scroll-handle
+    &:hover
+        background-color: widgetColors.scroll-handle-hover
+    &:active
+        background-color: widgetColors.scroll-handle
+
+.slider
+    handCursor()
+    noSelection()
+    border-radius:    widgetTopRadius
+    border:           widgetBorders.slider
+    background-color: widgetColors.slider
+
+.slider-handle
+    handCursor()
+    noSelection()
+    border-radius:    0
+    border:           0
+    background-color: widgetColors.slider-handle
+
+.value
+    handCursor()
+    noSelection()
+    border-radius:    widgetTopRadius
+    border:           widgetBorders.value
+    background-color: widgetColors.value
+
+.value-input
+    textCursor()
+    vertical-align:   top
+    color:            widgetColors.value-active
+    border:           0
+    background-color: transparent
+    font-size:        18px
+    height:           18px
+
+.arrow-left
+    icon(60px, 20px)
+
+.arrow-right
+    icon(40px, 20px)
+
+.arrow-up
+    icon(60px, 0px)
+
+.arrow-down
+    icon(40px, 0px)
+
+// ____________________________________ menus
+
+.menu
+    position:         absolute
+    overflow:         hidden
+    border-right:     widgetBorders.menu
+    border-radius:    buttonRadius
 
 .menu .button
     float:            left

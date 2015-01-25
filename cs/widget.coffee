@@ -4,17 +4,6 @@ log  = require('./log.coffee')
 
 class Widget
 
-    @nextWidgetID  = 0
-    @defaultConfig =
-        hasTitle:  true
-        hasClose:  true
-        hasShade:  true
-        hasSize:   true
-        isMovable: true
-        isShaded:  false
-        parent:    "content"
-        title:     "widget"
-
     addTitleBar: ->
         title = Widget.elem "div", "title"
         title.insert @config.title
@@ -119,6 +108,8 @@ class Widget
 
     # ______________________________________________________ static functions
 
+    @nextWidgetID  = 0
+
     @closeAll = ->                                          # close all widgets
         $$(".widget").each (widget) ->
             widget.close()
@@ -132,13 +123,27 @@ class Widget
         e.addClassName style
         e
 
+    @input = (cfg) ->
+        w = @elem("input", "input")
+        Object.extend w, Widget.prototype                   # merge in widget functions
+        w.config = Object.clone(cfg)
+        if w.config.style
+            for style in w.config.style.split(' ')
+                w.addClassName style
+        w.insert(w.config.text) if w.config.text
+        $(w.config.parent).insert w if w.config.parent
+        w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
+        w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+        w.on "click", w.config.onClick if w.config.onClick
+        return w
+
     @create = (cfg) ->
         w = @elem("div", "widget")                          # create widget div
         Object.extend w, Widget.prototype                   # merge in widget functions
-        w.config = @def cfg, Object.clone(@defaultConfig)   # copy default and merge in cfg
+        w.config = Object.clone(cfg)
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
-        w.addTitleBar()     if w.config.hasTitle
+        w.addTitleBar()     if w.config.hasTitle or w.config.title
         if w.config.hasSize
             w.addSizeButton()
         else if w.config.isMovable
@@ -162,17 +167,81 @@ class Widget
 
     @widget = (cfg) ->
         @create @def cfg,
-            style:    'frame'
+            hasClose:  true
+            hasShade:  true
+            hasSize:   true
+            isMovable: true
+            parent:    'content'
+            style:     'frame'
 
     @button = (cfg) ->
         @create @def cfg,
             width:    20
             height:   20
-            text:     null
-            hasTitle: false
-            hasClose: false
-            hasShade: false
-            hasSize:  false
             style:    'button'
+
+    @scroll = (cfg) ->
+        s = @create @def cfg,
+            width:      20
+            height:     20
+            horizontal: true
+            style:      'scroll'
+
+        h = Widget.create
+            width:      18
+            height:     18
+            parent:     s.id
+            style:      'scroll-handle'
+
+        drag.create
+            target: h
+            minPos: new pos 0, 0
+            maxPos: new pos(s.config.width-20, 0)
+
+        return s
+
+    @slider = (cfg) ->
+        s = @create @def cfg,
+            width:      20
+            height:     20
+            horizontal: true
+            style:     'slider'
+
+        l = Widget.create
+            parent: s.id
+            width:     "%dpx".fmt s.config.value
+            style:     'slider-handle'
+
+        return s
+
+    @value = (cfg) ->
+
+        v = @create @def cfg,
+            width:      20
+            height:     20
+            horizontal: true
+            style:     'value'
+
+        l = Widget.icon
+            parent: v.id
+            style: 'arrow-left static-left'
+
+        r = Widget.icon
+            x:      v.config.width-20
+            parent: v.id
+            style: 'arrow-right static-right'
+
+        t = Widget.input
+            parent: v.id
+            width:  v.config.width-42
+            text:   String(v.config.value)
+            style:  'value-input static-center'
+        t.setAttribute("type", "text")
+        t.setAttribute("value", 66)
+
+        return v
+
+    @icon = (cfg) ->
+        @create cfg
 
 module.exports = Widget

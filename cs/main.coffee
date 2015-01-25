@@ -18,6 +18,7 @@ document.observe "dom:loaded", ->
         Widget.widget
             width:    300
             height:   200
+            title:    'widget'
             x:        Math.random() * parseInt size.width
             y:        Math.random() * parseInt size.height
 
@@ -25,13 +26,13 @@ document.observe "dom:loaded", ->
         w = Widget.widget
             y:        30
             width:    120
-            height:   100
-            hasTitle: true
-            hasSize:  false
+            height:   150
+            title:    'hello'
+            hasSize:  true
 
         a = Widget.button
             x:        10
-            y:        30
+            y:        120
             width:    40
             text:     'ok'
             parent:   w.id
@@ -39,12 +40,41 @@ document.observe "dom:loaded", ->
 
         b = Widget.button
             x:        70
-            y:        30
+            y:        120
             width:    40
             text:     'no'
             parent:   w.id
             style:    'button b'
             onClick:  (event, element) -> @getParent().close()
+
+        c = Widget.scroll
+            x:        10
+            y:        30
+            parent:   w.id
+            width:    100
+            valueMin: 20.0
+            valueMax: 60.0
+            rangeMin: 0.0
+            rangeMax: 100.0
+
+        s = Widget.slider
+            x:        10
+            y:        60
+            parent:   w.id
+            width:    100
+            value:    7.0
+            rangeMin: 0.0
+            rangeMax: 20.0
+
+        v = Widget.value
+            x:        10
+            y:        90
+            parent:   w.id
+            width:    100
+            value:    600.0
+            rangeMin: 4
+            rangeMax: 10
+            step:     1
 
     Widget.widget
         y:      30
