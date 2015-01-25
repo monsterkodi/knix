@@ -195,9 +195,9 @@ class Widget
             style:      'scroll-handle'
 
         drag.create
-            cursor: ew-resize
+            cursor: 'ew-resize'
             target: h
-            minPos: new pos 0, 0
+            minPos: new pos(0, 0)
             maxPos: new pos(s.config.width-20, 0)
 
         return s
@@ -216,9 +216,9 @@ class Widget
             style:     'slider-handle'
 
         drag.create
-            cursor: ew-resize
+            cursor: 'ew-resize'
             target: l
-            mode:   "width"
+            mode:   'width'
             minPos: new pos 0, 0
             maxPos: new pos(s.config.width, 0)
 
