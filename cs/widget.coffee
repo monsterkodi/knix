@@ -59,7 +59,7 @@ class Widget
         button.on "mousedown", (event, sender) ->
             element = $(sender.id)
             widget  = $(element.parentElement.id)
-            sender.parentElement.sizeDrag.minPos = new pos(widget.headerSize()*2-element.getWidth()+2, widget.headerSize())
+            sender.parentElement.sizeDrag.minPos = pos(widget.headerSize()*2-element.getWidth()+2, widget.headerSize())
             return
 
         moveCallback = (newPos, element) ->
@@ -73,8 +73,8 @@ class Widget
             target: button
             onMove: moveCallback
             cursor: "nwse-resize"
-            minPos: new pos(@headerSize()*2, @headerSize())
-            maxPos: new pos(99999, 99999)
+            minPos: pos(@headerSize()*2, @headerSize())
+            maxPos: pos(99999, 99999)
         return
 
     moveTo: (x, y) ->
@@ -94,6 +94,11 @@ class Widget
         @setWidth w
         @setHeight h
         return
+
+    absPos: ->
+        o = @cumulativeOffset()
+        s = @cumulativeScrollOffset()
+        pos o.left - s.left, o.top - s.top
 
     getParent: -> $(@config.parent)
     getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
@@ -197,8 +202,8 @@ class Widget
         drag.create
             cursor: 'ew-resize'
             target: h
-            minPos: new pos(0, 0)
-            maxPos: new pos(s.config.width-20, 0)
+            minPos: pos(0, 0)
+            maxPos: pos(s.config.width-20, 0)
 
         return s
 
@@ -219,16 +224,16 @@ class Widget
             cursor: 'ew-resize'
             target: l
             mode:   'width'
-            minPos: new pos 0, 0
-            maxPos: new pos(s.config.width, 0)
+            minPos: pos 4, 0
+            maxPos: pos s.config.width, 0
 
-        # drag.create
-        #     cursor: ew-resize
-        #     target: l
-        #     handle: s
-        #     mode:   "width"
-        #     minPos: new pos 0, 0
-        #     maxPos: new pos(s.config.width, 0)
+        drag.create
+            cursor: 'ew-resize'
+            target: l
+            handle: s
+            mode:   "width"
+            minPos: pos 4, 0
+            maxPos: pos s.config.width, 0
 
         return s
 

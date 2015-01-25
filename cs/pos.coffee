@@ -46,4 +46,4 @@ class Pos
         element.style.top = @y + "px"  unless isNaN(@y)
         return
 
-module.exports = Pos
+module.exports = (x,y) -> new Pos(x,y)

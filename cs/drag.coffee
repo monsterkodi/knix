@@ -42,20 +42,21 @@ class Drag
         e.returnValue = false
         false
 
-    absoluteCursorPostion: (eventObj) ->
+    absPos: (eventObj) ->
         eventObj = (if eventObj then eventObj else window.event)
         if isNaN(window.scrollX)
-            new pos(eventObj.clientX + document.documentElement.scrollLeft + document.body.scrollLeft, eventObj.clientY + document.documentElement.scrollTop + document.body.scrollTop)
+            return pos(eventObj.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
+                       eventObj.clientY + document.documentElement.scrollTop + document.body.scrollTop)
         else
-            new pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
+            return pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
 
     dragStart: (eventObj) ->
         return if @dragging or not @listening
         @dragging = true
         @onStart eventObj, @target if @onStart?
-        @cursorStartPos = @absoluteCursorPostion(eventObj)
+        @cursorStartPos = @absPos(eventObj)
         style = window.getComputedStyle(@target)
-        @targetStartPos = new pos(parseInt(style.left), parseInt(style.top))
+        @targetStartPos = pos(parseInt(style.left), parseInt(style.top))
         @targetStartPos = @targetStartPos.check()
         dragObject = this
         @eventMove = $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
@@ -65,10 +66,17 @@ class Drag
 
     dragMove: (eventObj) ->
         return if not @dragging
-        newPos = @absoluteCursorPostion(eventObj)
-        newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
-        newPos = newPos.bound(@minPos, @maxPos)
-        newPos.apply @target
+        if @mode == 'width'
+            newPos = @absPos(eventObj)
+            tgtPos = @target.absPos()
+            newPos = newPos.sub(tgtPos)
+            newPos = newPos.bound(@minPos, @maxPos)
+            @target.setWidth(newPos.x)
+        else
+            newPos = @absPos(eventObj)
+            newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
+            newPos = newPos.bound(@minPos, @maxPos)
+            newPos.apply @target
         @onMove newPos, @target if @onMove?
         @cancelEvent eventObj
 
