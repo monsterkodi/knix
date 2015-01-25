@@ -35,7 +35,6 @@ class Widget
         return
 
     close: ->
-        log @id
         @remove()
         return
 
@@ -49,16 +48,19 @@ class Widget
         return
 
     shade: ->
+        size = @getChild 'size'
         if @config.isShaded
             @setHeight @config.height
             # adjust height for border size
             diff = @getHeight() - @config.height
             @setHeight @config.height - diff  if diff
             @config.isShaded = false
+            size.show() if size
         else
             @config.height = @getHeight()
             @setHeight @headerSize()
             @config.isShaded = true
+            size.hide() if size
         return
 
     addSizeButton: ->
@@ -68,7 +70,7 @@ class Widget
         button.on "mousedown", (event, sender) ->
             element = $(sender.id)
             widget  = $(element.parentElement.id)
-            sender.parentElement.sizeDrag.minPos = new pos(0, widget.headerSize())
+            sender.parentElement.sizeDrag.minPos = new pos(widget.headerSize()*2-element.getWidth()+2, widget.headerSize())
             return
 
         moveCallback = (newPos, element) ->
@@ -81,7 +83,7 @@ class Widget
         @sizeDrag = drag.create
             target: button
             onMove: moveCallback
-            minPos: new pos(0, @headerSize())
+            minPos: new pos(@headerSize()*2, @headerSize())
             maxPos: new pos(99999, 99999)
         return
 
@@ -103,12 +105,11 @@ class Widget
         @setHeight h
         return
 
+    getParent: -> $(@config.parent)
+    getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
+
     headerSize: ->
-        children = Selector.findChildElements(this, [
-          "*.title"
-          "*.close"
-          "*.shade"
-        ])
+        children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
         i = 0
         while i < children.length
             height = children[i].getLayout().get("padding-box-height")
@@ -142,13 +143,19 @@ class Widget
             w.addSizeButton()
         else if w.config.isMovable
             drag.create(w)
+
         if w.config.style
             for style in w.config.style.split(' ')
                 w.addClassName style
+
         w.insert(w.config.text) if w.config.text
         $(w.config.parent).insert w if w.config.parent
+
         w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+
+        w.on "click", w.config.onClick if w.config.onClick
+
         w # return the widget
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
@@ -159,9 +166,9 @@ class Widget
 
     @button = (cfg) ->
         @create @def cfg,
-            text:     null
             width:    20
             height:   20
+            text:     null
             hasTitle: false
             hasClose: false
             hasShade: false

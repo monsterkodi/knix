@@ -29,19 +29,22 @@ document.observe "dom:loaded", ->
             hasTitle: true
             hasSize:  false
 
-        b1 = Widget.button
+        a = Widget.button
             x:        10
             y:        30
             width:    40
             text:     'ok'
             parent:   w.id
+            onClick:  (event, element) -> @getParent().getChild('b').close()
 
-        b2 = Widget.button
+        b = Widget.button
             x:        70
             y:        30
             width:    40
             text:     'no'
             parent:   w.id
+            style:    'button b'
+            onClick:  (event, element) -> @getParent().close()
 
     Widget.widget
         y:      30
