@@ -24,20 +24,22 @@ document.observe "dom:loaded", ->
     $('add_b').observe 'click', (e) ->
         w = Widget.widget
             y:        30
-            width:    100
+            width:    120
             height:   100
             hasTitle: true
             hasSize:  false
 
         b1 = Widget.button
+            x:        10
             y:        30
-            width:    30
-            height:   30
+            width:    40
             text:     'ok'
             parent:   w.id
 
         b2 = Widget.button
-            x:        30
+            x:        70
+            y:        30
+            width:    40
             text:     'no'
             parent:   w.id
 

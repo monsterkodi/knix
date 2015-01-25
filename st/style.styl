@@ -1,92 +1,109 @@
 
-widgetHeaderSize = 20px
-widgetHeaderFontSize = widgetHeaderSize - 6px
+// ____________________________________ constants
 
-textColors = {}
-textColors.global = white
-textColors.menu   = #888
+widgetHeaderSize    = 20px
+widgetTitleFontSize = widgetHeaderSize - 6px
+
+textColors          = {}
+textColors.global   = white
+textColors.button   = #8aa
 
 widgetColors        = {}
-widgetColors.bg     = #444
-widgetColors.title  = lighten(widgetColors.bg,5)
-widgetColors.close  = lighten(widgetColors.bg,10)
-widgetColors.shade  = lighten(widgetColors.bg,15)
-widgetColors.size   = darken(widgetColors.bg,3)
+// widgetColors.stage  = #181D20
+// widgetColors.bg     = #343C45
+// widgetColors.button = #1D4F73
+// widgetColors.menu   = #252C33
+// widgetColors.title  = lighten(widgetColors.bg,5)
+// widgetColors.close  = lighten(widgetColors.bg,10)
+// widgetColors.shade  = lighten(widgetColors.bg,15)
+// widgetColors.size   = darken(widgetColors.bg,3)
 
-widgetTopRadius     = widgetHeaderSize * 0.5
-widgetBotRadius     = widgetTopRadius
-widgetBorderWidth   = 1px
-widgetBorders       = {}
-widgetBorders.bg    = widgetBorderWidth solid black
-widgetBorders.title = widgetBorderWidth solid black
-widgetBorders.close = widgetBorderWidth solid black
-widgetBorders.shade = widgetBorderWidth solid black
-widgetBorders.size  = widgetBorderWidth solid black
+// gray  191A1E 24252A 2E3138 454954 515862
+// red   D0461F EC4F23 EFAF31
+// blue  2E92B9 33A2D1
+// green 72A01C 8BB62D
+widgetColors.stage  = #191A1E
+widgetColors.bg     = #2E3138
+widgetColors.button = #33A2D1
+widgetColors.menu   = #2E3138
+widgetColors.title  = #454954
+widgetColors.close  = #515862
+widgetColors.shade  = #515862
+widgetColors.size   = #24252A
+textColors.button   = #ddd
+
+borderColors        = {}
+borderColors.widget = #191A1E
+borderColors.menu   = #24252A
+borderColors.button = #2E3138
+
+widgetTopRadius      = widgetHeaderSize * 0.5
+widgetBotRadius      = widgetTopRadius
+widgetBorderWidth    = 1px
+widgetBorders        = {}
+widgetBorders.bg     = widgetBorderWidth solid borderColors.widget
+widgetBorders.title  = widgetBorderWidth solid borderColors.widget
+widgetBorders.close  = widgetBorderWidth solid borderColors.widget
+widgetBorders.shade  = widgetBorderWidth solid borderColors.widget
+widgetBorders.size   = widgetBorderWidth solid borderColors.widget
+widgetBorders.menu   = widgetBorderWidth solid borderColors.menu
+widgetBorders.button = 0px solid borderColors.button
+
+buttonRadius        = 6px
+buttonHeight        = 26px
 
 shadowDef = 2px 2px 10px 2px rgba(0,0,0,0.4)
+
+// ____________________________________ functions
+
 shadow()
   -webkit-box-shadow: shadowDef
   box-shadow:         shadowDef
 
 handCursor()
     //cursor:         hand
-    cursor:         pointer
+    cursor:           pointer
 
 bgColorHover(c)
-    background-color:   c
+    background-color: c
     &:hover
         background-color: lighten(c, 10)
     &:active
         background-color: lighten(c, 20)
 
 noSelection()
-    // user-select:        none
-    -moz-user-select:   -moz-none
+    -moz-user-select: -moz-none
+
+// ____________________________________ toplevel
 
 body
-    font-family:    "Verdana"
-    height:         100%
-    margin:         0px
+    font-family:      "Verdana"
+    height:           100%
+    margin:           0px
 
 html
-    height:         100%
+    height:           100%
 
 #stage
-    position:       relative
-    width:          100%
-    height:         100%
-    overflow:       hidden
-    color:          textColors.global
+    position:         relative
+    width:            100%
+    height:           100%
+    overflow:         hidden
+    color:            textColors.global
 
 #content
-    position:       relative
-    width:          100%
-    height:         100%
-    overflow:       auto
-    background-color: #333
+    position:         relative
+    width:            100%
+    height:           100%
+    overflow:         auto
+    background-color: widgetColors.stage
 
-.menu
-    position:       absolute
-    overflow:       hidden
-    color:          textColors.menu
-    border-right:   1px solid black
-
-.menu .button
-    float:          left
-    padding-left:   8px
-    padding-right:  8px
-    height:         25px
-    text-align:     center
-    handCursor()
-    background-color: #444
-    noSelection()
-    border:         1px solid black
-    margin-right:   -1px
+// ____________________________________ widgets
 
 .widget
-    position:       absolute
-    overflow:       hidden
-    border:         widgetBorders.bg
+    position:         absolute
+    overflow:         hidden
+    border:           widgetBorders.bg
     background-color: widgetColors.bg
 
 .frame
@@ -97,51 +114,75 @@ html
     shadow()
 
 .widget .title
-    height:         widgetHeaderSize
-    text-align:     center
-    vertical-align: top
-    overflow:       hidden
-    font-size:      widgetHeaderFontSize
-    border-bottom:  widgetBorders.title
+    height:           widgetHeaderSize
+    text-align:       center
+    vertical-align:   top
+    overflow:         hidden
+    font-size:        widgetTitleFontSize
+    border-bottom:    widgetBorders.title
     bgColorHover(widgetColors.title)
     noSelection()
 
 .widget .close
-    float:          left
-    width:          widgetHeaderSize
-    height:         widgetHeaderSize
-    handCursor()
-    border-right:   widgetBorders.close
-    border-bottom:  widgetBorders.close
+    float:            left
+    width:            widgetHeaderSize
+    height:           widgetHeaderSize
+    border-right:     widgetBorders.close
+    border-bottom:    widgetBorders.close
     margin-bottom:  - widgetBorderWidth
     border-top-left-radius: widgetTopRadius
     bgColorHover(widgetColors.close)
     noSelection()
+    handCursor()
 
 .widget .shade
-    float:          right
-    width:          widgetHeaderSize
-    height:         widgetHeaderSize
-    handCursor()
-    border-left:    widgetBorders.shade
-    border-bottom:  widgetBorders.close
+    float:            right
+    width:            widgetHeaderSize
+    height:           widgetHeaderSize
+    border-left:      widgetBorders.shade
+    border-bottom:    widgetBorders.close
     margin-bottom:  - widgetBorderWidth
     border-top-right-radius: widgetTopRadius
     bgColorHover(widgetColors.shade)
     noSelection()
+    handCursor()
 
 .widget .size
-    position:       absolute
-    bottom:         0px
-    right:          0px
-    width:          widgetHeaderSize * 0.5
-    height:         widgetHeaderSize * 0.5
-    cursor:         move
-    border-left:    widgetBorders.size
-    border-top:     widgetBorders.size
+    position:         absolute
+    bottom:           0px
+    right:            0px
+    width:            widgetHeaderSize * 0.5
+    height:           widgetHeaderSize * 0.5
+    cursor:           move
+    border-left:      widgetBorders.size
+    border-top:       widgetBorders.size
     bgColorHover(widgetColors.size)
     noSelection()
 
+// ____________________________________ menus
+
+.menu
+    position:         absolute
+    overflow:         hidden
+    border-right:     widgetBorders.menu
+    border-radius:    buttonRadius
+
 .button
+    handCursor()
+    noSelection()
+    text-align:       center
+    border-radius:    buttonRadius
+    border:           widgetBorders.button
+    color:            textColors.button
+    bgColorHover(     widgetColors.button )
     &:hover
-        color:      lighten(textColors.menu,30)
+        color:        lighten(textColors.button,30)
+
+.menu .button
+    float:            left
+    padding-left:     8px
+    padding-right:    8px
+    height:           25px
+    margin-right:     -1px
+    bgColorHover(     widgetColors.menu )
+    border:           widgetBorders.menu
