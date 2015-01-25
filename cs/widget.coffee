@@ -72,6 +72,7 @@ class Widget
         @sizeDrag = drag.create
             target: button
             onMove: moveCallback
+            cursor: "nwse-resize"
             minPos: new pos(@headerSize()*2, @headerSize())
             maxPos: new pos(99999, 99999)
         return
@@ -188,12 +189,13 @@ class Widget
             style:      'scroll'
 
         h = Widget.create
-            width:      18
-            height:     18
+            width:      16
+            height:     16
             parent:     s.id
             style:      'scroll-handle'
 
         drag.create
+            cursor: ew-resize
             target: h
             minPos: new pos 0, 0
             maxPos: new pos(s.config.width-20, 0)
@@ -208,9 +210,25 @@ class Widget
             style:     'slider'
 
         l = Widget.create
-            parent: s.id
-            width:     "%dpx".fmt s.config.value
+            parent:    s.id
+            height:    20
+            width:     s.config.value
             style:     'slider-handle'
+
+        drag.create
+            cursor: ew-resize
+            target: l
+            mode:   "width"
+            minPos: new pos 0, 0
+            maxPos: new pos(s.config.width, 0)
+
+        # drag.create
+        #     cursor: ew-resize
+        #     target: l
+        #     handle: s
+        #     mode:   "width"
+        #     minPos: new pos 0, 0
+        #     maxPos: new pos(s.config.width, 0)
 
         return s
 
@@ -233,7 +251,7 @@ class Widget
 
         t = Widget.input
             parent: v.id
-            width:  v.config.width-42
+            width:  v.config.width-40
             text:   String(v.config.value)
             style:  'value-input static-center'
         t.setAttribute("type", "text")

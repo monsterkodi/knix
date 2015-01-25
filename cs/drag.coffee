@@ -8,6 +8,7 @@ class Drag
         handle:  null
         minPos:  null
         maxPos:  null
+        cursor:  "move"
         onStart: null
         onMove:  null
         onStop:  null
@@ -28,7 +29,7 @@ class Drag
         @listening = false
         @handle = document.getElementById(@handle) if typeof (@handle) is "string"
         @handle = @target unless @handle?
-        @handle.style.cursor = "move"
+        @handle.style.cursor = @cursor
         @startListening() if @active
         return
 

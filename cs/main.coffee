@@ -62,9 +62,9 @@ document.observe "dom:loaded", ->
             y:        60
             parent:   w.id
             width:    100
-            value:    7.0
+            value:    70.0
             rangeMin: 0.0
-            rangeMax: 20.0
+            rangeMax: 100.0
 
         v = Widget.value
             x:        10

@@ -39,7 +39,7 @@ widgetColors.menu   = colors.grayMediumDark
 widgetColors.title  = colors.grayMedium
 widgetColors.close  = colors.grayMediumBright
 widgetColors.shade  = colors.grayMediumBright
-widgetColors.size   = colors.grayDarkMedium
+widgetColors.size   = colors.grayMediumDark
 widgetColors.slider        = colors.grayDark
 widgetColors.slider-handle = colors.red
 widgetColors.scroll        = colors.grayDark
@@ -63,12 +63,12 @@ widgetBorders.bg     = widgetBorderWidth solid borderColors.widget
 widgetBorders.title  = widgetBorderWidth solid borderColors.widget
 widgetBorders.close  = widgetBorderWidth solid borderColors.widget
 widgetBorders.shade  = widgetBorderWidth solid borderColors.widget
-widgetBorders.size   = widgetBorderWidth solid borderColors.widget
+widgetBorders.size   = 0px solid borderColors.widget
 widgetBorders.menu   = widgetBorderWidth solid borderColors.menu
 widgetBorders.button = 0px solid borderColors.button
-widgetBorders.slider = 1px solid widgetColors.slider
-widgetBorders.scroll = 1px solid widgetColors.scroll
-widgetBorders.value  = 1px solid widgetColors.value-border
+widgetBorders.slider = 2px solid widgetColors.slider
+widgetBorders.scroll = 2px solid widgetColors.scroll
+widgetBorders.value  = 0px solid widgetColors.value-border
 
 buttonRadius        = 6px
 buttonHeight        = 26px
@@ -107,21 +107,24 @@ noSelection()
     user-select: none
 
 icon(x,y)
-  top:              1px
-  width:            20px
-  height:           20px
-  border:           0
-  filter:           brightness(20%)
-  background-color:  transparent
-  background-image:  url('../img/arrows.png')
-  background-repeat: no-repeat
-  background-position: (- x ) ( - y )
-  background-size:   auto 200px
+  top:                  1px
+  width:                20px
+  height:               20px
+  border:               0
+  background-color:     transparent
+  background-repeat:    no-repeat
+  background-image:     url('../img/arrows.png')
+  background-size:      auto 200px
+  background-position:  (- x * 20px ) ( - y * 20px )
+  filter:               brightness(20%)
   &:hover
-      background-position: ( - x + 40px) ( - y )
+      background-position: ( - x * 25px ) ( - y * 25px )
+      background-size:  auto 240px
+      filter:           brightness(30%)
     &:active
-      background-position: (- x ) ( - y )
-      filter:           brightness(40%)
+      background-position: (- x * 20px ) ( - y * 20px )
+      background-size:  auto 200px
+      filter:           brightness(100%)
 
 // ____________________________________ toplevel
 
@@ -139,6 +142,7 @@ html
     height:           100%
     overflow:         hidden
     color:            textColors.global
+    user-select:      none
 
 #content
     position:         relative
@@ -150,6 +154,8 @@ html
 // ____________________________________ widgets
 
 .widget
+    padding:          0
+    margin:           0
     position:         absolute
     overflow:         hidden
     border:           widgetBorders.bg
@@ -211,11 +217,14 @@ html
     right:            0px
     width:            widgetHeaderSize * 0.5
     height:           widgetHeaderSize * 0.5
-    cursor:           move
     border-left:      widgetBorders.size
     border-top:       widgetBorders.size
-    bgColorHover(widgetColors.size)
-    noSelection()
+    background-color: widgetColors.size
+        &:hover
+            background-color: darken(widgetColors.size, 2)
+        &:active
+            background-color: lighten(widgetColors.size, 10)
+
 
 // ____________________________________ button
 
@@ -224,6 +233,7 @@ html
     noSelection()
     text-align:       center
     font-size:        14px
+    font-weight:      bold
     border-radius:    buttonRadius
     border:           widgetBorders.button
     color:            textColors.button
@@ -239,12 +249,13 @@ html
     border-radius:    widgetTopRadius
     border:           widgetBorders.scroll
     background-color: widgetColors.scroll
+    box-sizing:       border-box
 
 .scroll-handle
     handCursor()
     noSelection()
-    border-radius:    widgetTopRadius
-    border:           widgetBorders.scroll
+    border-radius:    widgetTopRadius - 2px
+    border:           0
     background-color: widgetColors.scroll-handle
     &:hover
         background-color: widgetColors.scroll-handle-hover
@@ -257,6 +268,7 @@ html
     border-radius:    widgetTopRadius
     border:           widgetBorders.slider
     background-color: widgetColors.slider
+    box-sizing:       border-box
 
 .slider-handle
     handCursor()
@@ -274,24 +286,31 @@ html
 
 .value-input
     textCursor()
+    padding:          0
+    margin:           0
     vertical-align:   top
-    color:            widgetColors.value-active
+    text-align:       right
     border:           0
-    background-color: transparent
-    font-size:        18px
-    height:           18px
+    background-color: colors.grayMediumDark
+    color:            widgetColors.value-active
+    padding-right:    4px
+    padding-left:     4px
+    box-sizing:       border-box
+    font-weight:      bold
+    font-size:        16px
+    height:           20px
 
 .arrow-left
-    icon(60px, 20px)
+    icon(3, 1)
 
 .arrow-right
-    icon(40px, 20px)
+    icon(2, 1)
 
 .arrow-up
-    icon(60px, 0px)
+    icon(3, 0)
 
 .arrow-down
-    icon(40px, 0px)
+    icon(2, 0)
 
 // ____________________________________ menus
 
@@ -303,6 +322,7 @@ html
 
 .menu .button
     float:            left
+    font-weight:      normal
     padding-left:     8px
     padding-right:    8px
     height:           widgetHeaderSize
