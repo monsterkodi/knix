@@ -7,7 +7,7 @@ class Window
         @size().height
 
     @size: ->
-        s = window.getComputedStyle $('content')
+        s = window.getComputedStyle $('stage_content')
         width:  parseInt s.width
         height: parseInt s.height
 

@@ -14,7 +14,7 @@ document.observe "dom:loaded", ->
         Widget.closeAll()
 
     $('add_a').observe 'click', (e) ->
-        size = window.getComputedStyle $('content')
+        size = window.getComputedStyle $('stage_content')
         Widget.widget
             width:    300
             height:   200
@@ -25,8 +25,8 @@ document.observe "dom:loaded", ->
     $('add_b').observe 'click', (e) ->
         w = Widget.widget
             y:        30
-            width:    120
-            height:   150
+            # width:    120
+            # height:   150
             title:    'hello'
             hasSize:  true
 
@@ -34,20 +34,20 @@ document.observe "dom:loaded", ->
             x:        10
             width:    40
             text:     'ok'
-            parent:   w.id
+            parent:   w
             onClick:  (event, element) -> @getParent().getChild('b').close()
 
         b = Widget.button
             x:        70
             width:    40
             text:     'no'
-            parent:   w.id
+            parent:   w
             style:    'button b'
             onClick:  (event, element) -> @getParent().close()
 
         c = Widget.scroll
             x:        10
-            parent:   w.id
+            parent:   w
             width:    100
             valueMin: 20.0
             valueMax: 60.0
@@ -56,7 +56,7 @@ document.observe "dom:loaded", ->
 
         s = Widget.slider
             x:        10
-            parent:   w.id
+            parent:   w
             width:    100
             value:    70.0
             rangeMin: 0.0
@@ -64,7 +64,7 @@ document.observe "dom:loaded", ->
 
         v = Widget.value
             x:        10
-            parent:   w.id
+            parent:   w
             width:    100
             value:    600.0
             rangeMin: 4

@@ -144,7 +144,7 @@ html
     color:            textColors.global
     user-select:      none
 
-#content
+#stage_content
     position:         relative
     width:            100%
     height:           100%
@@ -154,8 +154,6 @@ html
 // ____________________________________ widgets
 
 .widget
-    padding:          0
-    margin:           0
     position:         absolute
     overflow:         hidden
     border:           widgetBorders.bg
@@ -169,6 +167,9 @@ html
     float:            right
 .widget .static
     position:         static
+
+.widget_content
+    padding: 10px
 
 .frame
     border-top-left-radius:     widgetTopRadius
@@ -224,7 +225,6 @@ html
             background-color: darken(widgetColors.size, 2)
         &:active
             background-color: lighten(widgetColors.size, 10)
-
 
 // ____________________________________ button
 

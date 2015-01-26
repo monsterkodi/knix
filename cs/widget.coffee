@@ -139,6 +139,12 @@ class Widget
         e.addClassName style
         e
 
+    @insertWidget = (w, p) ->
+        p = $(p)
+        p = $(p.content) if $(p.content)
+        p.insert w
+        w
+
     @input = (cfg) ->
         w = @elem("input", "input")
         Object.extend w, Widget.prototype                   # merge in widget functions
@@ -147,7 +153,8 @@ class Widget
             for style in w.config.style.split(' ')
                 w.addClassName style
         w.insert(w.config.text) if w.config.text
-        $(w.config.parent).insert w if w.config.parent
+        # $(w.config.parent).insert w if w.config.parent
+        @insertWidget(w, w.config.parent)
         w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
         w.on "click", w.config.onClick if w.config.onClick
@@ -157,38 +164,41 @@ class Widget
         w = @elem("div", "widget")                          # create widget div
         Object.extend w, Widget.prototype                   # merge in widget functions
         w.config = Object.clone(cfg)
-        w.addCloseButton()  if w.config.hasClose
-        w.addShadeButton()  if w.config.hasShade
-        w.addTitleBar()     if w.config.hasTitle or w.config.title
-        if w.config.hasSize
-            w.addSizeButton()
-        else if w.config.isMovable
-            drag.create(w)
+        drag.create(w) if w.config.isMovable
 
         if w.config.style
             for style in w.config.style.split(' ')
                 w.addClassName style
 
         w.insert(w.config.text) if w.config.text
-        $(w.config.parent).insert w if w.config.parent
+        # $(w.config.parent).insert w if w.config.parent
+        @insertWidget(w, w.config.parent)
 
         w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
 
         w.on "click", w.config.onClick if w.config.onClick
-
         w # return the widget
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
 
     @widget = (cfg) ->
-        @create @def cfg,
+        w = @create @def cfg,
             hasClose:  true
             hasShade:  true
             hasSize:   true
             isMovable: true
-            parent:    'content'
+            parent:    'stage_content'
             style:     'frame'
+
+        w.addCloseButton()  if w.config.hasClose
+        w.addShadeButton()  if w.config.hasShade
+        w.addTitleBar()     if w.config.hasTitle or w.config.title
+        w.addSizeButton()   if w.config.hasSize
+        c = @elem("div", "widget_content")
+        w.insert c
+        w.content = c.id
+        w
 
     @button = (cfg) ->
         @create @def cfg,
@@ -206,7 +216,7 @@ class Widget
         h = Widget.create
             width:      16
             height:     16
-            parent:     s.id
+            parent:     s
             style:      'scroll-handle'
 
         drag.create
@@ -222,28 +232,28 @@ class Widget
             width:      20
             height:     20
             horizontal: true
-            style:     'slider static'
+            style:      'slider static'
 
         l = Widget.create
-            parent:    s.id
-            height:    20
-            width:     s.config.value
-            style:     'slider-handle'
+            parent:     s
+            height:     20
+            width:      s.config.value
+            style:      'slider-handle'
 
         drag.create
-            cursor: 'ew-resize'
-            target: l
-            mode:   'width'
-            minPos: pos 4, 0
-            maxPos: pos s.config.width, 0
+            cursor:     'ew-resize'
+            target:     l
+            mode:       'width'
+            minPos:     pos 4, 0
+            maxPos:     pos s.config.width, 0
 
         drag.create
-            cursor: 'ew-resize'
-            target: l
-            handle: s
-            mode:   "width"
-            minPos: pos 4, 0
-            maxPos: pos s.config.width, 0
+            cursor:     'ew-resize'
+            target:     l
+            handle:     s
+            mode:       "width"
+            minPos:     pos 4, 0
+            maxPos:     pos s.config.width, 0
 
         return s
 
@@ -253,22 +263,22 @@ class Widget
             width:      20
             height:     20
             horizontal: true
-            style:     'value'
+            style:      'value static'
 
         l = Widget.icon
-            parent: v.id
-            style: 'arrow-left static-left'
+            parent:     v
+            style:      'arrow-left static-left'
 
         r = Widget.icon
-            x:      v.config.width-20
-            parent: v.id
-            style: 'arrow-right static-right'
+            x:          v.config.width-20
+            parent:     v
+            style:      'arrow-right static-right'
 
         t = Widget.input
-            parent: v.id
-            width:  v.config.width-40
-            text:   String(v.config.value)
-            style:  'value-input static'
+            parent:     v
+            width:      v.config.width-40
+            text:       String(v.config.value)
+            style:      'value-input static'
         t.setAttribute("type", "text")
         t.setAttribute("value", 66)
 
