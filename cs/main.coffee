@@ -32,7 +32,6 @@ document.observe "dom:loaded", ->
 
         a = Widget.button
             x:        10
-            y:        120
             width:    40
             text:     'ok'
             parent:   w.id
@@ -40,7 +39,6 @@ document.observe "dom:loaded", ->
 
         b = Widget.button
             x:        70
-            y:        120
             width:    40
             text:     'no'
             parent:   w.id
@@ -49,7 +47,6 @@ document.observe "dom:loaded", ->
 
         c = Widget.scroll
             x:        10
-            y:        30
             parent:   w.id
             width:    100
             valueMin: 20.0
@@ -59,7 +56,6 @@ document.observe "dom:loaded", ->
 
         s = Widget.slider
             x:        10
-            y:        60
             parent:   w.id
             width:    100
             value:    70.0
@@ -68,7 +64,6 @@ document.observe "dom:loaded", ->
 
         v = Widget.value
             x:        10
-            y:        90
             parent:   w.id
             width:    100
             value:    600.0

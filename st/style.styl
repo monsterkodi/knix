@@ -167,7 +167,7 @@ html
 .widget .static-right
     position:         static
     float:            right
-.widget .static-center
+.widget .static
     position:         static
 
 .frame
@@ -253,7 +253,7 @@ html
 
 .scroll-handle
     handCursor()
-    noSelection()
+    position:         relative
     border-radius:    widgetTopRadius - 2px
     border:           0
     background-color: widgetColors.scroll-handle
@@ -264,22 +264,20 @@ html
 
 .slider
     handCursor()
-    noSelection()
     border-radius:    widgetTopRadius
     border:           widgetBorders.slider
     background-color: widgetColors.slider
     box-sizing:       border-box
 
 .slider-handle
+    position:         relative
     handCursor()
-    noSelection()
     border-radius:    0
     border:           0
     background-color: widgetColors.slider-handle
 
 .value
     handCursor()
-    noSelection()
     border-radius:    widgetTopRadius
     border:           widgetBorders.value
     background-color: widgetColors.value

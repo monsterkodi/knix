@@ -82,6 +82,12 @@ class Widget
         @style.top  = "%dpx".fmt(y)
         return
 
+    moveBy: (dx, dy) ->
+        p = @relPos()
+        @style.left = "%dpx".fmt(p.x+dx)
+        @style.top  = "%dpx".fmt(p.y+dy)
+        return
+
     setWidth: (w) ->
         @style.width = "%dpx".fmt(w)  if w?
         return
@@ -94,6 +100,10 @@ class Widget
         @setWidth w
         @setHeight h
         return
+
+    relPos: ->
+        o = @positionedOffset()
+        pos o.left, o.top
 
     absPos: ->
         o = @cumulativeOffset()
@@ -184,14 +194,14 @@ class Widget
         @create @def cfg,
             width:    20
             height:   20
-            style:    'button'
+            style:    'button static'
 
     @scroll = (cfg) ->
         s = @create @def cfg,
             width:      20
             height:     20
             horizontal: true
-            style:      'scroll'
+            style:      'scroll static'
 
         h = Widget.create
             width:      16
@@ -212,7 +222,7 @@ class Widget
             width:      20
             height:     20
             horizontal: true
-            style:     'slider'
+            style:     'slider static'
 
         l = Widget.create
             parent:    s.id
@@ -258,7 +268,7 @@ class Widget
             parent: v.id
             width:  v.config.width-40
             text:   String(v.config.value)
-            style:  'value-input static-center'
+            style:  'value-input static'
         t.setAttribute("type", "text")
         t.setAttribute("value", 66)
 
