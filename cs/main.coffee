@@ -25,28 +25,10 @@ document.observe "dom:loaded", ->
     $('add_b').observe 'click', (e) ->
         w = Widget.widget
             y:        30
-            # width:    120
-            # height:   150
             title:    'hello'
             hasSize:  true
 
-        a = Widget.button
-            x:        10
-            width:    40
-            text:     'ok'
-            parent:   w
-            onClick:  (event, element) -> @getParent().getChild('b').close()
-
-        b = Widget.button
-            x:        70
-            width:    40
-            text:     'no'
-            parent:   w
-            style:    'button b'
-            onClick:  (event, element) -> @getParent().close()
-
         c = Widget.scroll
-            x:        10
             parent:   w
             width:    100
             valueMin: 20.0
@@ -55,7 +37,6 @@ document.observe "dom:loaded", ->
             rangeMax: 100.0
 
         s = Widget.slider
-            x:        10
             parent:   w
             width:    100
             value:    70.0
@@ -63,13 +44,26 @@ document.observe "dom:loaded", ->
             rangeMax: 100.0
 
         v = Widget.value
-            x:        10
             parent:   w
             width:    100
             value:    600.0
             rangeMin: 4
             rangeMax: 10
             step:     1
+
+        a = Widget.button
+            width:    40
+            text:     'ok'
+            parent:   w
+            style:    'button a static-left'
+            onClick:  (event, element) -> @getParent().getChild('b').close()
+
+        b = Widget.button
+            width:    40
+            text:     'no'
+            parent:   w
+            style:    'button b static-right'
+            onClick:  (event, element) -> @getParent().close()
 
     Widget.widget
         y:      30
