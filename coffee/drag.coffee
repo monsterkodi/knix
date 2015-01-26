@@ -12,6 +12,7 @@ class Drag
         onStart: null
         onMove:  null
         onStop:  null
+        doMove:  true
         active:  true
 
     constructor: (cfg) ->
@@ -53,7 +54,7 @@ class Drag
     dragStart: (eventObj) ->
         return if @dragging or not @listening
         @dragging = true
-        @onStart eventObj, @target if @onStart?
+        @onStart this, eventObj if @onStart?
         @cursorStartPos = @absPos(eventObj)
         style = window.getComputedStyle(@target)
         @targetStartPos = pos(parseInt(style.left), parseInt(style.top))
@@ -66,18 +67,12 @@ class Drag
 
     dragMove: (eventObj) ->
         return if not @dragging
-        if @mode == 'width'
-            newPos = @absPos(eventObj)
-            tgtPos = @target.absPos()
-            newPos = newPos.sub(tgtPos)
-            newPos = newPos.bound(@minPos, @maxPos)
-            @target.setWidth(newPos.x)
-        else
+        if @doMove
             newPos = @absPos(eventObj)
             newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
             newPos = newPos.bound(@minPos, @maxPos)
             newPos.apply @target
-        @onMove newPos, @target if @onMove?
+        @onMove this, eventObj if @onMove?
         @cancelEvent eventObj
 
     dragUp: (eventObj) ->
@@ -91,7 +86,7 @@ class Drag
         @eventUp.stop()
         @cursorStartPos = null
         @targetStartPos = null
-        @onStop @target if @onStop?
+        @onStop this, eventObj if @onStop?
         @dragging = false
         return
 

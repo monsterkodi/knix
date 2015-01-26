@@ -88,6 +88,9 @@ class wid
         @style.top  = "%dpx".fmt(p.y+dy)
         return
 
+    innerWidth:  -> @getLayout().get("padding-box-width")
+    innerHeight: -> @getLayout().get("padding-box-height")
+
     setWidth: (w) ->
         @style.width = "%dpx".fmt(w)  if w?
         return
@@ -159,6 +162,15 @@ class wid
                 wid.insertWidget(cw,pw)
         pw
 
+    @installEvents = (w) ->
+        w.on "click",      w.config.onClick  if w.config.onClick
+        w.on "mousedown",  w.config.onDown   if w.config.onDown
+        w.on "mouseup",    w.config.onUp     if w.config.onUp
+        w.on "mouseover",  w.config.onOver   if w.config.onOver
+        w.on "mousemove",  w.config.onMove   if w.config.onMove
+        w.on "mouseout",   w.config.onOut    if w.config.onOut
+        w.on "ondblclick", w.config.onDouble if w.config.onDouble
+
     @input = (cfg) ->
         # d = @elem("div", "value-input-div")
 
@@ -180,18 +192,12 @@ class wid
         w.setAttribute("size", 5)
         # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
         #w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
-        w.on "click",      w.config.onClick  if w.config.onClick
-        w.on "mousedown",  w.config.onDown   if w.config.onDown
-        w.on "mouseup",    w.config.onUp     if w.config.onUp
-        w.on "mouseover",  w.config.onOver   if w.config.onOver
-        w.on "mousemove",  w.config.onMove   if w.config.onMove
-        w.on "mouseout",   w.config.onOut    if w.config.onOut
-        w.on "ondblclick", w.config.onDouble if w.config.onDouble
+        @installEvents(w)
         return w
         # return d
 
     @create = (cfg) ->
-        w = @elem("div", "widget")                          # create widget div
+        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create widget div
         Object.extend w, wid.prototype                      # merge in widget functions
         w.config = Object.clone(cfg)
         drag.create(w) if w.config.isMovable
@@ -205,10 +211,14 @@ class wid
         @insertWidget(w, w.config.parent)
         @insertChildren(w)
 
-        w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
+        if w.config.x? or w.config.y?
+            w.style.position = 'absolute'
+            w.moveTo w.config.x, w.config.y
+
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
 
-        w.on "click", w.config.onClick if w.config.onClick
+        # w.on "click", w.config.onClick if w.config.onClick
+        @installEvents(w)
         w # return the widget
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
@@ -245,14 +255,19 @@ class wid
 
     @scroll = (cfg) ->
 
-        scrollFunc = (event, element) -> log event, element
+        scrollFunc = (drag, event) ->
+            tgt = drag.target
+            tgw = tgt.getWidth()
+            prt = tgt.getParent()
+            tps = prt.absPos()
+            wdt = event.clientX-tps.x-tgw/2 # distance form left side of scroll minus half of handle width
+            wdt = Math.min(Math.max(0,wdt),prt.innerWidth()-tgw)
+            drag.target.moveTo(wdt,0)
 
         s = @create @def cfg,
-            # width:      80
             height:     20
             horizontal: true
             style:      'scroll static'
-            click:      scrollFunc
 
         h = wid.create
             width:      16
@@ -261,52 +276,55 @@ class wid
             style:      'scroll-handle'
 
         drag.create
-            cursor: 'ew-resize'
-            target: h
-            minPos: pos(0, 0)
-            maxPos: pos(s.config.width-20, 0)
-            onMove: scrollFunc
+            cursor:  'ew-resize'
+            handle:  s
+            target:  h
+            doMove:  false
+            minPos:  pos(0, 0)
+            maxPos:  pos(s.config.width-20, 0)
+            onMove:  scrollFunc
+            onStart: scrollFunc
 
         return s
 
     @slider = (cfg) ->
 
-        sliderFunc = (event, element) ->
-            if event.type == 'click'
-                tgt = element.sliderDrag.target
-                tps = tgt.absPos()
-                wdt = event.clientX-tps.x
-                tgt.setWidth(event.clientX-tps.x)
+        sliderFunc = (drag, event) ->
+            tgt = drag.target
+            tps = drag.target.absPos()
+            wdt = event.clientX-tps.x
+            wdt = Math.min(Math.max(0,wdt),drag.target.getParent().innerWidth())
+            drag.target.setWidth(wdt)
 
         s = @create @def cfg,
             height:     20
             horizontal: true
             style:      'slider static'
-            onDown:    sliderFunc
 
         l = wid.create
             parent:     s
             height:     20
             width:      s.config.value
             style:      'slider-handle'
-            onDown:     sliderFunc
 
         s.sliderDrag = drag.create
             cursor:     'ew-resize'
             target:     l
-            mode:       'width'
+            doMove:     false
             minPos:     pos 4, 0
             maxPos:     pos s.config.width, 0
             onMove:     sliderFunc
+            onStart:    sliderFunc
 
         l.sliderDrag = drag.create
             cursor:     'ew-resize'
             target:     l
             handle:     s
-            mode:       "width"
+            doMove:     false
             minPos:     pos 4, 0
             maxPos:     pos s.config.width, 0
             onMove:     sliderFunc
+            onStart:    sliderFunc
 
         return s
 

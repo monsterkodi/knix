@@ -60,6 +60,8 @@ borderColors.button = colors.grayMedium
 widgetTopRadius      = widgetHeaderSize * 0.5
 widgetBotRadius      = widgetTopRadius
 widgetBorderWidth    = 1px
+sliderBorderWidth    = 2px
+scrollBorderWidth    = 2px
 widgetBorders        = {}
 widgetBorders.bg     = widgetBorderWidth solid borderColors.widget
 widgetBorders.title  = widgetBorderWidth solid borderColors.widget
@@ -68,8 +70,8 @@ widgetBorders.shade  = widgetBorderWidth solid borderColors.widget
 widgetBorders.size   = 0px solid borderColors.widget
 widgetBorders.menu   = widgetBorderWidth solid borderColors.menu
 widgetBorders.button = 0px solid borderColors.button
-widgetBorders.slider = 2px solid widgetColors.slider
-widgetBorders.scroll = 2px solid widgetColors.scroll
+widgetBorders.slider = sliderBorderWidth solid widgetColors.slider
+widgetBorders.scroll = scrollBorderWidth solid widgetColors.scroll
 widgetBorders.value  = 0px solid widgetColors.value-border
 
 buttonRadius        = 6px
@@ -235,6 +237,7 @@ html
 // ____________________________________ button
 
 .button
+    overflow:         hidden
     handCursor()
     noSelection()
     padding-left:     6px
@@ -252,7 +255,7 @@ html
 // ____________________________________ scroll
 
 .scroll
-    handCursor()
+    overflow:         hidden
     noSelection()
     border-radius:    widgetTopRadius
     border:           widgetBorders.scroll
@@ -260,9 +263,8 @@ html
     box-sizing:       border-box
 
 .scroll-handle
-    handCursor()
     position:         relative
-    border-radius:    widgetTopRadius - 2px
+    border-radius:    widgetTopRadius - scrollBorderWidth
     border:           0
     background-color: widgetColors.scroll-handle
     &:hover
@@ -271,7 +273,7 @@ html
         background-color: widgetColors.scroll-handle
 
 .slider
-    handCursor()
+    overflow:         hidden
     border-radius:    widgetTopRadius
     border:           widgetBorders.slider
     background-color: widgetColors.slider
@@ -279,12 +281,12 @@ html
 
 .slider-handle
     position:         relative
-    handCursor()
     border-radius:    0
     border:           0
     background-color: widgetColors.slider-handle
 
 .value
+    overflow:         hidden
     handCursor()
     border-radius:    widgetTopRadius
     border:           widgetBorders.value
