@@ -1,4 +1,4 @@
-class Window
+class Stage
 
     @width: ->
         @size().width
@@ -11,4 +11,4 @@ class Window
         width:  parseInt s.width
         height: parseInt s.height
 
-module.exports = Window
+module.exports = Stage

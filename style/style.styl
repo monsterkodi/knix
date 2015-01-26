@@ -19,7 +19,9 @@ widgetColors        = {}
 // widgetColors.size   = darken(widgetColors.bg,3)
 
 colors = {}
+colors.grayVeryDark     = #090A0E
 colors.grayDark         = #191A1E
+colors.grayStage        = #1d2025
 colors.grayDarkMedium   = #24252A
 colors.grayMediumDark   = #2E3138
 colors.grayMedium       = #454954
@@ -32,7 +34,7 @@ colors.blue             = #33A2D1
 colors.greenDark        = #72A01C
 colors.green            = #8BB62D
 
-widgetColors.stage  = colors.grayDark
+widgetColors.stage  = colors.grayStage
 widgetColors.bg     = colors.grayMediumDark
 widgetColors.button = colors.blue
 widgetColors.menu   = colors.grayMediumDark
@@ -235,6 +237,8 @@ html
 .button
     handCursor()
     noSelection()
+    padding-left:     6px
+    padding-right:    6px
     text-align:       center
     font-size:        14px
     font-weight:      bold
@@ -286,14 +290,19 @@ html
     border:           widgetBorders.value
     background-color: widgetColors.value
 
+.value-input-div
+    position: static
+    height: 20px
+    width: fit-content
+    background-color: colors.blue
+
 .value-input
     textCursor()
     padding:          0
     margin:           0
-    vertical-align:   top
-    text-align:       right
     border:           0
-    background-color: colors.grayMediumDark
+    text-align:       right
+    background-color: colors.blue // colors.grayMediumDark
     color:            widgetColors.value-active
     padding-right:    4px
     padding-left:     4px

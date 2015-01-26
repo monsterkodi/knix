@@ -1,6 +1,6 @@
 {
-  "cmd": "grunt",
-  "args": ["test"],
-  "sh": false,
-  "cwd": "/Users/kodi/Desktop/js"
+    "cmd": "grunt",
+    "args": ["test"],
+    "sh": false,
+    "cwd": "/Users/kodi/Desktop/knix"
 }

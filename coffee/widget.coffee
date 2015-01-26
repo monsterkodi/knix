@@ -2,10 +2,10 @@ drag = require('./drag.coffee')
 pos  = require('./pos.coffee')
 log  = require('./log.coffee')
 
-class Widget
+class wid
 
     addTitleBar: ->
-        title = Widget.elem "div", "title"
+        title = wid.elem "div", "title"
         title.insert @config.title
         @insert title
         if @config.isMovable
@@ -15,7 +15,7 @@ class Widget
         return
 
     addCloseButton: ->
-        button = Widget.elem "div", "close"
+        button = wid.elem "div", "close"
         @insert button
         widget = this
         button.on "click", ->
@@ -28,7 +28,7 @@ class Widget
         return
 
     addShadeButton: ->
-        button = Widget.elem "div", "shade"
+        button = wid.elem "div", "shade"
         @insert button
         widget = this
         button.on "click", ->
@@ -53,7 +53,7 @@ class Widget
         return
 
     addSizeButton: ->
-        button = Widget.elem "div", "size"
+        button = wid.elem "div", "size"
         @insert button
         @sizeDrag = null
         button.on "mousedown", (event, sender) ->
@@ -97,8 +97,8 @@ class Widget
         return
 
     resize: (w, h) ->
-        @setWidth w
-        @setHeight h
+        @setWidth w if w
+        @setHeight h if h
         return
 
     relPos: ->
@@ -110,7 +110,10 @@ class Widget
         s = @cumulativeScrollOffset()
         pos o.left - s.left, o.top - s.top
 
-    getParent: -> $(@config.parent)
+    getParent: ->
+        return $(@config.parent) if @config.parent
+        return $(@parentElement.id)
+
     getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
 
     headerSize: ->
@@ -141,28 +144,55 @@ class Widget
 
     @insertWidget = (w, p) ->
         p = $(p)
-        p = $(p.content) if $(p.content)
-        p.insert w
+        if p
+            parentid = p.id
+            p = $(p.content) if p.hasOwnProperty('content')
+            if p
+                p.insert w
+                w.config.parent = parentid if w.config
         w
 
+    @insertChildren = (pw) ->
+        if pw.config.children
+            for cd in pw.config.children
+                cw = wid[cd.type](cd)
+                wid.insertWidget(cw,pw)
+        pw
+
     @input = (cfg) ->
+        # d = @elem("div", "value-input-div")
+
         w = @elem("input", "input")
-        Object.extend w, Widget.prototype                   # merge in widget functions
+        Object.extend w, wid.prototype                      # merge in widget functions
         w.config = Object.clone(cfg)
         if w.config.style
             for style in w.config.style.split(' ')
                 w.addClassName style
         w.insert(w.config.text) if w.config.text
-        # $(w.config.parent).insert w if w.config.parent
+
         @insertWidget(w, w.config.parent)
-        w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
-        w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
-        w.on "click", w.config.onClick if w.config.onClick
+
+        # @insertWidget(d, w.config.parent)
+        # d.insert(w)
+
+        w.setAttribute("type", "text")
+        w.setAttribute("inputmode", "numeric")
+        w.setAttribute("size", 5)
+        # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
+        #w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+        w.on "click",      w.config.onClick  if w.config.onClick
+        w.on "mousedown",  w.config.onDown   if w.config.onDown
+        w.on "mouseup",    w.config.onUp     if w.config.onUp
+        w.on "mouseover",  w.config.onOver   if w.config.onOver
+        w.on "mousemove",  w.config.onMove   if w.config.onMove
+        w.on "mouseout",   w.config.onOut    if w.config.onOut
+        w.on "ondblclick", w.config.onDouble if w.config.onDouble
         return w
+        # return d
 
     @create = (cfg) ->
         w = @elem("div", "widget")                          # create widget div
-        Object.extend w, Widget.prototype                   # merge in widget functions
+        Object.extend w, wid.prototype                      # merge in widget functions
         w.config = Object.clone(cfg)
         drag.create(w) if w.config.isMovable
 
@@ -171,8 +201,9 @@ class Widget
                 w.addClassName style
 
         w.insert(w.config.text) if w.config.text
-        # $(w.config.parent).insert w if w.config.parent
+
         @insertWidget(w, w.config.parent)
+        @insertChildren(w)
 
         w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
@@ -182,7 +213,11 @@ class Widget
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
 
+    @get = (cfg) -> @[cfg.type or 'widget'](cfg)
+
     @widget = (cfg) ->
+        chd = cfg.children
+        cfg.children = null
         w = @create @def cfg,
             hasClose:  true
             hasShade:  true
@@ -198,6 +233,8 @@ class Widget
         c = @elem("div", "widget_content")
         w.insert c
         w.content = c.id
+        w.config.children = chd
+        @insertChildren(w)
         w
 
     @button = (cfg) ->
@@ -207,13 +244,17 @@ class Widget
             style:    'button static'
 
     @scroll = (cfg) ->
+
+        scrollFunc = (event, element) -> log event, element
+
         s = @create @def cfg,
-            width:      20
+            # width:      80
             height:     20
             horizontal: true
             style:      'scroll static'
+            click:      scrollFunc
 
-        h = Widget.create
+        h = wid.create
             width:      16
             height:     16
             parent:     s
@@ -224,67 +265,76 @@ class Widget
             target: h
             minPos: pos(0, 0)
             maxPos: pos(s.config.width-20, 0)
+            onMove: scrollFunc
 
         return s
 
     @slider = (cfg) ->
+
+        sliderFunc = (event, element) ->
+            if event.type == 'click'
+                tgt = element.sliderDrag.target
+                tps = tgt.absPos()
+                wdt = event.clientX-tps.x
+                tgt.setWidth(event.clientX-tps.x)
+
         s = @create @def cfg,
-            width:      20
             height:     20
             horizontal: true
             style:      'slider static'
+            onDown:    sliderFunc
 
-        l = Widget.create
+        l = wid.create
             parent:     s
             height:     20
             width:      s.config.value
             style:      'slider-handle'
+            onDown:     sliderFunc
 
-        drag.create
+        s.sliderDrag = drag.create
             cursor:     'ew-resize'
             target:     l
             mode:       'width'
             minPos:     pos 4, 0
             maxPos:     pos s.config.width, 0
+            onMove:     sliderFunc
 
-        drag.create
+        l.sliderDrag = drag.create
             cursor:     'ew-resize'
             target:     l
             handle:     s
             mode:       "width"
             minPos:     pos 4, 0
             maxPos:     pos s.config.width, 0
+            onMove:     sliderFunc
 
         return s
 
     @value = (cfg) ->
-
         v = @create @def cfg,
-            width:      20
+            width:      80
             height:     20
+            value:      0
             horizontal: true
             style:      'value static'
+            children: \
+            [
+                type:       'icon'
+                style:      'arrow-left static-left'
+            ,
+                type:       'icon'
+                style:      'arrow-right static-right'
+            ,
+                type:       'input'
+                style:      'value-input static'
+            ]
 
-        l = Widget.icon
-            parent:     v
-            style:      'arrow-left static-left'
-
-        r = Widget.icon
-            x:          v.config.width-20
-            parent:     v
-            style:      'arrow-right static-right'
-
-        t = Widget.input
-            parent:     v
-            width:      v.config.width-40
-            text:       String(v.config.value)
-            style:      'value-input static'
-        t.setAttribute("type", "text")
-        t.setAttribute("value", 66)
+        log v.getChild('input')
+        v.getChild('input').setAttribute("value", v.config.value)
 
         return v
 
     @icon = (cfg) ->
         @create cfg
 
-module.exports = Widget
+module.exports = wid

@@ -1,3 +1,4 @@
 */.atom-build.json
 node_modules
 js/lib
+img/*.pxm
