@@ -218,7 +218,7 @@ class wid
     @get = (cfg) -> # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
         @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'} ) # also sets the stage as default parent
 
-    @percentage = (w, v) ->
+    @percentage = (w, v) -> # returns the percentage of value v in the [valueMin,valueMax] range of w
         cfg = w.config
         if cfg.hasKnob
             knv = @size2value w, w.getChild('slider-knob').getWidth()
@@ -229,8 +229,11 @@ class wid
             pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
             Math.max(0,Math.min(pct,100))
 
-    @size2value = (w, s) ->
+    @size2value = (w, s) -> # returns the value in the [valueMin,valueMax] range of w that lies at point s
         w.config.valueMin + (w.config.valueMax - w.config.valueMin) * s / w.innerWidth()
+
+    @clampValue = (w, v) -> # clamps v to the [valueMin,valueMax] range of w
+        Math.max(w.config.valueMin,Math.min(v, w.config.valueMax))
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -340,15 +343,16 @@ class wid
             ]
 
         slider.setValue = (v) ->
-
+            v = wid.clampValue(this, v)
+            log v
+            @config.value = v
+            pct = wid.percentage this, v
             slb = @getChild('slider-bar')
             if slb
-                pct = wid.percentage this, v
                 slb.style.width = "%d%".fmt(pct)
 
             knb = @getChild('slider-knob')
             if knb
-                pct = wid.percentage this, v
                 knb.style.left = "%d%".fmt(pct)
                 knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
             return
