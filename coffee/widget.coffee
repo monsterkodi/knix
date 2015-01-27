@@ -159,13 +159,17 @@ class wid
                 w.config.parent = parentid if w.config
         this
 
+    @insertChild = (w, cfg) ->
+        if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
+        else child = wid.create(cfg)
+        wid.insertWidget(child,w)
+
     @insertChildren = (w) ->
         if w.config.children
             for cfg in w.config.children
-                if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
-                else child = wid.create(cfg)
-                wid.insertWidget(child,w)
-        this
+                @insertChild(w, cfg)
+        else if w.config.child
+            @insertChild(w, w.config.child)
 
     @installEvents = (w) ->
         w.on "click",      w.config.onClick  if w.config.onClick
@@ -209,9 +213,9 @@ class wid
 
         return w
 
-    @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
+    @def = (cfg,defs) -> Object.extend(defs,cfg) # takes values from config and overwrites those in defs
 
-    @get = (cfg) -> @[cfg.type or 'widget'](cfg)            # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
+    @get = (cfg) -> @[cfg.type or 'widget'](cfg) # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -241,12 +245,9 @@ class wid
         inp = @create @def cfg,
             elem: 'input'
             type: 'input'
-
+        inp.setAttribute "size", 6
         inp.setAttribute "type", "text"
         inp.setAttribute "inputmode", "numeric"
-        # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
-        # w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
-
         inp
 
     @button = (cfg) ->
@@ -343,42 +344,32 @@ class wid
             height:     20
             value:      0
             horizontal: true
-            children: \
-            [
+            child:
                 elem:       'table'
                 type:       'value-table'
-                children: \
-                [
+                child:
                     elem: 'tr'
                     type: 'value-row'
                     children: \
                     [
                         elem: 'td'
                         type: 'value-td'
-                        children: \
-                        [
+                        child:
                             type:       'icon'
                             style:      'arrow-left'
-                        ]
                     ,
                         elem: 'td'
                         type: 'value-content'
-                        children: \
-                        [
+                        child:
                             type:       'input'
                             style:      'value-input'
-                        ]
                     ,
                         elem: 'td'
                         type: 'value-td'
-                        children: \
-                        [
+                        child:
                             type:       'icon'
                             style:      'arrow-right'
-                        ]
                     ]
-                ]
-            ]
 
         v.getChild('input').setAttribute("value", v.config.value)
 
