@@ -239,6 +239,7 @@ class wid
             hasShade:  true
             hasSize:   true
             isMovable: true
+            onDown:    (event,e) -> e.raise() 
             parent:    'stage_content'
             style:     'frame'
 
@@ -251,6 +252,7 @@ class wid
         w.content = c.id
         w.config.children = chd
         @insertChildren(w)
+
         w
 
     @button = (cfg) ->
@@ -300,8 +302,8 @@ class wid
             tgt = drag.target
             tps = tgt.absPos()
             wdt = event.clientX-tps.x
-            wdt = Math.min(Math.max(0,wdt),tgt.getParent().innerWidth())
-            tgt.setWidth(wdt)
+            wdt = Math.min(Math.max(0,wdt),tgt.innerWidth())
+            tgt.getChild('slider-bar').setWidth(wdt)
             return
 
         children = []
@@ -318,18 +320,25 @@ class wid
                 height:     16
 
         slider = @create @def cfg,
+            elem:       'div'
             type:       'slider'
             height:     20
             horizontal: true
             style:      'static'
-            children:   children
+            children: \
+            [
+                elem:       'div'
+                type:       'slider-content'
+                children:   children
+            ]
 
         sliderBar = slider.getChild('slider-bar')
-        sliderBar.setWidth(slider.config.value)
+        if sliderBar
+            sliderBar.setWidth(slider.config.value)
+
         drag.create
             cursor:     'ew-resize'
-            target:     sliderBar
-            handle:     slider
+            target:     slider
             doMove:     false
             onMove:     sliderFunc
             onStart:    sliderFunc

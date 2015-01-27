@@ -62,7 +62,6 @@ class Drag
         dragObject = this
         @eventMove = $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
         @eventUp   = $(document).on 'mouseup', (e) -> dragObject.dragUp(e)
-        @target.raise()
         @cancelEvent eventObj
 
     dragMove: (eventObj) ->
