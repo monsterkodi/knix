@@ -177,7 +177,7 @@ html
     padding-left:  10px
     padding-right: 10px
     padding-top:   10px
-    *
+    > *
       margin-bottom: 10px
 
 .frame
@@ -306,11 +306,15 @@ html
     border:           widgetBorders.value
     background-color: widgetColors.value
 
-.value-input-div
-    position: static
-    height: 20px
-    width: fit-content
-    background-color: colors.blue
+.value-table
+    border-collapse: collapse
+
+.value-td
+    padding: 0
+
+.value-content
+    width: 100%
+    padding: 0
 
 .value-input
     textCursor()
@@ -326,6 +330,7 @@ html
     font-weight:      bold
     font-size:        16px
     height:           20px
+    width: 100%
 
 .arrow-left
     icon(3, 1)

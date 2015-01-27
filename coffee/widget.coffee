@@ -337,30 +337,46 @@ class wid
         slider
 
     @value = (cfg) ->
+
         v = @create @def cfg,
             type:       'value'
             height:     20
             value:      0
             horizontal: true
-            style:      'static'
             children: \
             [
-                type:       'relative'
-                noDown:     true
+                elem:       'table'
+                type:       'value-table'
                 children: \
                 [
-                    type:       'icon'
-                    style:      'arrow-left static-left'
-                ,
-                    elem:       'span'
+                    elem: 'tr'
+                    type: 'value-row'
                     children: \
                     [
-                        type:       'input'
-                        style:      'value-input'
+                        elem: 'td'
+                        type: 'value-td'
+                        children: \
+                        [
+                            type:       'icon'
+                            style:      'arrow-left'
+                        ]
+                    ,
+                        elem: 'td'
+                        type: 'value-content'
+                        children: \
+                        [
+                            type:       'input'
+                            style:      'value-input'
+                        ]
+                    ,
+                        elem: 'td'
+                        type: 'value-td'
+                        children: \
+                        [
+                            type:       'icon'
+                            style:      'arrow-right'
+                        ]
                     ]
-                ,
-                    type:       'icon'
-                    style:      'arrow-right static-right'
                 ]
             ]
 
