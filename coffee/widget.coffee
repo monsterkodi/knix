@@ -27,6 +27,37 @@ class wid
             parent:  this
             onClick: (event,e) -> e.getWidget().shade()
 
+    addSizeButton: ->
+        btn = wid.create
+            elem:   "div"
+            type:   "size"
+            parent: this
+
+        moveCallback = (drag, event) ->
+            widget = drag.target.getWidget()
+            sizer = drag.target
+
+            wpos = widget.absPos()
+            spos = sizer.absPos()
+
+            wdt = spos.x-wpos.x+sizer.getWidth()
+            wdt = Math.max(widget.headerSize()*2+2, wdt)
+            widget.setWidth(wdt)
+
+            hgt = spos.y-wpos.y+sizer.getHeight()
+            hgt = Math.max(widget.headerSize()+sizer.getHeight()+1, hgt)
+            widget.setHeight(hgt)
+
+            sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
+            return
+
+        drag.create
+            target: btn
+            onMove: moveCallback
+            cursor: "nwse-resize"
+
+        btn
+
     close: ->
         @remove()
         return
@@ -45,36 +76,6 @@ class wid
             @setHeight @headerSize()
             @config.isShaded = true
             size.hide() if size
-        return
-
-    addSizeButton: ->
-        button = wid.create
-            elem: "div"
-            type: "size"
-            parent: this
-
-        moveCallback = (drag, event) ->
-            widget = drag.target.getParent()
-            sizer = drag.target
-
-            wpos = widget.absPos()
-            spos = sizer.absPos()
-
-            wdt = spos.x-wpos.x+sizer.getWidth()
-            wdt = Math.max(widget.headerSize()*2+2, wdt)
-            widget.setWidth(wdt)
-
-            hgt = spos.y-wpos.y+sizer.getHeight()
-            hgt = Math.max(widget.headerSize()+sizer.getHeight()+1, hgt)
-            widget.setHeight(hgt)
-
-            sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
-            return
-
-        drag.create
-            target: button
-            onMove: moveCallback
-            cursor: "nwse-resize"
         return
 
     moveTo: (x, y) ->
@@ -180,31 +181,6 @@ class wid
         w.on "ondblclick", w.config.onDouble if w.config.onDouble
         this
 
-    @input = (cfg) ->
-        # d = @elem("div", "value-input-div")
-
-        w = @elem("input", "input")
-        Object.extend w, wid.prototype                      # merge in widget functions
-        w.config = Object.clone(cfg)
-        if w.config.style
-            for style in w.config.style.split(' ')
-                w.addClassName style
-        w.insert(w.config.text) if w.config.text
-
-        @insertWidget(w, w.config.parent)
-
-        # @insertWidget(d, w.config.parent)
-        # d.insert(w)
-
-        w.setAttribute("type", "text")
-        w.setAttribute("inputmode", "numeric")
-        w.setAttribute("size", 5)
-        # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
-        #w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
-        @installEvents(w)
-        return w
-        # return d
-
     @create = (cfg) ->
         w = @elem(cfg.elem or "div", cfg.type or "widget")  # create widget div
         Object.extend w, wid.prototype                      # merge in widget functions
@@ -239,7 +215,7 @@ class wid
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
 
-    @get = (cfg) -> @[cfg.type or 'widget'](cfg)
+    @get = (cfg) -> @[cfg.type or 'widget'](cfg)            # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -264,6 +240,31 @@ class wid
         @insertChildren(w)
 
         w
+        
+    @input = (cfg) ->
+        # d = @elem("div", "value-input-div")
+
+        w = @elem("input", "input")
+        Object.extend w, wid.prototype                      # merge in widget functions
+        w.config = Object.clone(cfg)
+        if w.config.style
+            for style in w.config.style.split(' ')
+                w.addClassName style
+        w.insert(w.config.text) if w.config.text
+
+        @insertWidget(w, w.config.parent)
+
+        # @insertWidget(d, w.config.parent)
+        # d.insert(w)
+
+        w.setAttribute("type", "text")
+        w.setAttribute("inputmode", "numeric")
+        w.setAttribute("size", 5)
+        # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
+        #w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+        @installEvents(w)
+        return w
+        # return d
 
     @button = (cfg) ->
         @create @def cfg,
