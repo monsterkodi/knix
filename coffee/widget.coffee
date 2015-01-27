@@ -5,33 +5,34 @@ log  = require('./log.coffee')
 class wid
 
     addTitleBar: ->
-        title = wid.elem "div", "title"
-        title.insert @config.title
-        @insert title
-        if @config.isMovable
-            drag.create
-                target: this
-                handle: title
-        return
+        wid.create
+            elem:   "div"
+            type:   "title"
+            text:   @config.title
+            parent: this
+
+        # if @config.isMovable
+        #     drag.create
+        #         target: this
+        #         handle: title
+        # return
 
     addCloseButton: ->
         wid.create
-            elem: "div"
-            type: "close"
-            parent: this
+            elem:    "div"
+            type:    "close"
+            parent:  this
             onClick: (event,e) -> e.getWidget().close()
+
+    addShadeButton: ->
+        wid.create
+            elem:    "div"
+            type:    "shade"
+            parent:  this
+            onClick: (event,e) -> e.getWidget().shade()
 
     close: ->
         @remove()
-        return
-
-    addShadeButton: ->
-        button = wid.elem "div", "shade"
-        @insert button
-        widget = this
-        button.on "click", ->
-            widget.shade()
-            return
         return
 
     shade: ->
@@ -212,7 +213,11 @@ class wid
         w = @elem(cfg.elem or "div", cfg.type or "widget")  # create widget div
         Object.extend w, wid.prototype                      # merge in widget functions
         w.config = Object.clone(cfg)
-        drag.create(w) if w.config.isMovable
+
+        if w.config.isMovable
+            drag.create
+                target: w
+                cursor: null
 
         if w.config.style
             for style in w.config.style.split(' ')
