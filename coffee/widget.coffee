@@ -11,16 +11,11 @@ class wid
             text:   @config.title
             parent: this
 
-        # if @config.isMovable
-        #     drag.create
-        #         target: this
-        #         handle: title
-        # return
-
     addCloseButton: ->
         wid.create
             elem:    "div"
             type:    "close"
+            noDown:  true
             parent:  this
             onClick: (event,e) -> e.getWidget().close()
 
@@ -28,6 +23,7 @@ class wid
         wid.create
             elem:    "div"
             type:    "shade"
+            noDown:  true
             parent:  this
             onClick: (event,e) -> e.getWidget().shade()
 
@@ -235,6 +231,10 @@ class wid
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
 
         @installEvents(w)
+
+        if w.config.noDown
+            w.on 'mousedown', (event,e) -> event.stop()
+
         return w
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
@@ -269,6 +269,7 @@ class wid
         @create @def cfg,
             width:    20
             height:   20
+            noDown:   true
             style:    'button static'
 
     @scroll = (cfg) ->
