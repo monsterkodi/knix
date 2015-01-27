@@ -53,28 +53,33 @@ class wid
         return
 
     addSizeButton: ->
-        button = wid.elem "div", "size"
-        @insert button
-        @sizeDrag = null
-        button.on "mousedown", (event, sender) ->
-            element = $(sender.id)
-            widget  = $(element.parentElement.id)
-            sender.parentElement.sizeDrag.minPos = pos(widget.headerSize()*2-element.getWidth()+2, widget.headerSize())
+        button = wid.create
+            elem: "div"
+            type: "size"
+            parent: this
+
+        moveCallback = (drag, event) ->
+            widget = drag.target.getParent()
+            sizer = drag.target
+
+            wpos = widget.absPos()
+            spos = sizer.absPos()
+
+            wdt = spos.x-wpos.x+sizer.getWidth()
+            wdt = Math.max(widget.headerSize()*2+2, wdt)
+            widget.setWidth(wdt)
+
+            hgt = spos.y-wpos.y+sizer.getHeight()
+            hgt = Math.max(widget.headerSize()+sizer.getHeight()+1, hgt)
+            widget.setHeight(hgt)
+
+            sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
             return
 
-        moveCallback = (newPos, element) ->
-            widget = $(element.parentElement.id)
-            layout = $(element.id).getLayout()
-            widget.setWidth  newPos.x + layout.get("border-box-width")
-            widget.setHeight newPos.y + layout.get("border-box-height")
-            return
-
-        @sizeDrag = drag.create
+        drag.create
             target: button
             onMove: moveCallback
             cursor: "nwse-resize"
-            minPos: pos(@headerSize()*2, @headerSize())
-            maxPos: pos(99999, 99999)
         return
 
     moveTo: (x, y) ->
@@ -153,14 +158,15 @@ class wid
             if p
                 p.insert w
                 w.config.parent = parentid if w.config
-        w
+        this
 
-    @insertChildren = (pw) ->
-        if pw.config.children
-            for cd in pw.config.children
-                cw = wid[cd.type](cd)
-                wid.insertWidget(cw,pw)
-        pw
+    @insertChildren = (w) ->
+        if w.config.children
+            for cfg in w.config.children
+                if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
+                else child = wid.create(cfg)
+                wid.insertWidget(child,w)
+        this
 
     @installEvents = (w) ->
         w.on "click",      w.config.onClick  if w.config.onClick
@@ -170,6 +176,7 @@ class wid
         w.on "mousemove",  w.config.onMove   if w.config.onMove
         w.on "mouseout",   w.config.onOut    if w.config.onOut
         w.on "ondblclick", w.config.onDouble if w.config.onDouble
+        this
 
     @input = (cfg) ->
         # d = @elem("div", "value-input-div")
@@ -217,7 +224,6 @@ class wid
 
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
 
-        # w.on "click", w.config.onClick if w.config.onClick
         @installEvents(w)
         w # return the widget
 
@@ -262,9 +268,10 @@ class wid
             tps = prt.absPos()
             wdt = event.clientX-tps.x-tgw/2 # distance form left side of scroll minus half of handle width
             wdt = Math.min(Math.max(0,wdt),prt.innerWidth()-tgw)
-            drag.target.moveTo(wdt,0)
+            tgt.moveTo(wdt,0)
+            return
 
-        s = @create @def cfg,
+        scroll = @create @def cfg,
             height:     20
             horizontal: true
             style:      'scroll static'
@@ -272,61 +279,62 @@ class wid
         h = wid.create
             width:      16
             height:     16
-            parent:     s
+            parent:     scroll
             style:      'scroll-handle'
 
         drag.create
             cursor:  'ew-resize'
-            handle:  s
+            handle:  scroll
             target:  h
             doMove:  false
             minPos:  pos(0, 0)
-            maxPos:  pos(s.config.width-20, 0)
+            maxPos:  pos(scroll.config.width-20, 0)
             onMove:  scrollFunc
             onStart: scrollFunc
 
-        return s
+        scroll
 
     @slider = (cfg) ->
 
         sliderFunc = (drag, event) ->
             tgt = drag.target
-            tps = drag.target.absPos()
+            tps = tgt.absPos()
             wdt = event.clientX-tps.x
-            wdt = Math.min(Math.max(0,wdt),drag.target.getParent().innerWidth())
-            drag.target.setWidth(wdt)
+            wdt = Math.min(Math.max(0,wdt),tgt.getParent().innerWidth())
+            tgt.setWidth(wdt)
+            return
 
-        s = @create @def cfg,
+        children = []
+        if cfg.hasBar or !cfg.hasKnob
+            children.push
+                elem:    'div'
+                type:    'slider-bar'
+                height:  20
+        if cfg.hasKnob
+            children.push
+                elem:      'div'
+                type:      'slider-knob'
+                width:      16
+                height:     16
+
+        slider = @create @def cfg,
+            type:       'slider'
             height:     20
             horizontal: true
-            style:      'slider static'
+            style:      'static'
+            children:   children
 
-        l = wid.create
-            parent:     s
-            height:     20
-            width:      s.config.value
-            style:      'slider-handle'
-
-        s.sliderDrag = drag.create
+        sliderBar = slider.getChild('slider-bar')
+        sliderBar.setWidth(slider.config.value)
+        drag.create
             cursor:     'ew-resize'
-            target:     l
+            target:     sliderBar
+            handle:     slider
             doMove:     false
-            minPos:     pos 4, 0
-            maxPos:     pos s.config.width, 0
             onMove:     sliderFunc
             onStart:    sliderFunc
 
-        l.sliderDrag = drag.create
-            cursor:     'ew-resize'
-            target:     l
-            handle:     s
-            doMove:     false
-            minPos:     pos 4, 0
-            maxPos:     pos s.config.width, 0
-            onMove:     sliderFunc
-            onStart:    sliderFunc
-
-        return s
+        return slider
 
     @value = (cfg) ->
         v = @create @def cfg,

@@ -28,12 +28,16 @@ document.observe "dom:loaded", ->
             children: \
             [
                 type:       'scroll'
+                width: 100
                 valueMin:   20.0
                 valueMax:   60.0
                 rangeMin:   0.0
                 rangeMax:   100.0
             ,
                 type:       'slider'
+                width: 100
+                hasKnob: true
+                hasBar: true
                 value:      70.0
                 rangeMin:   0.0
                 rangeMax:   100.0
@@ -69,6 +73,8 @@ document.observe "dom:loaded", ->
         wid.get
             type:       'slider'
             parent:     'stage_content'
+            hasKnob:    true
+            hasBar:     true
             width:      200
             x:          150
             y:          60

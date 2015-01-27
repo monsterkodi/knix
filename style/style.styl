@@ -43,7 +43,7 @@ widgetColors.close  = colors.grayMediumBright
 widgetColors.shade  = colors.grayMediumBright
 widgetColors.size   = colors.grayMediumDark
 widgetColors.slider        = colors.grayDark
-widgetColors.slider-handle = colors.red
+widgetColors.slider-bar    = colors.red
 widgetColors.scroll        = colors.grayDark
 widgetColors.scroll-handle = colors.redBright
 widgetColors.value         = colors.grayDark
@@ -279,11 +279,23 @@ html
     background-color: widgetColors.slider
     box-sizing:       border-box
 
-.slider-handle
+.slider-bar
+    z-index: 0
     position:         relative
     border-radius:    0
     border:           0
-    background-color: widgetColors.slider-handle
+    background-color: widgetColors.slider-bar
+
+.slider-knob
+    z-index: 1
+    position:         absolute
+    border-radius:    widgetTopRadius - scrollBorderWidth
+    border:           0
+    background-color: widgetColors.scroll-handle
+    &:hover
+      background-color: widgetColors.scroll-handle-hover
+    &:active
+      background-color: widgetColors.scroll-handle
 
 .value
     overflow:         hidden
