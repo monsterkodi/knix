@@ -6,14 +6,12 @@ class wid
 
     addTitleBar: ->
         wid.create
-            elem:   "div"
-            type:   "title"
-            text:   @config.title
-            parent: this
+            type:    "title"
+            text:    @config.title
+            parent:  this
 
     addCloseButton: ->
         wid.create
-            elem:    "div"
             type:    "close"
             noDown:  true
             parent:  this
@@ -21,7 +19,6 @@ class wid
 
     addShadeButton: ->
         wid.create
-            elem:    "div"
             type:    "shade"
             noDown:  true
             parent:  this
@@ -29,9 +26,8 @@ class wid
 
     addSizeButton: ->
         btn = wid.create
-            elem:   "div"
-            type:   "size"
-            parent: this
+            type:    "size"
+            parent:  this
 
         moveCallback = (drag, event) ->
             widget = drag.target.getWidget()
@@ -240,7 +236,7 @@ class wid
         @insertChildren(w)
 
         w
-        
+
     @input = (cfg) ->
         # d = @elem("div", "value-input-div")
 
@@ -321,25 +317,21 @@ class wid
         children = []
         if cfg.hasBar or !cfg.hasKnob
             children.push
-                elem:    'div'
                 type:    'slider-bar'
                 height:  20
         if cfg.hasKnob
             children.push
-                elem:      'div'
                 type:      'slider-knob'
                 width:      16
                 height:     16
 
         slider = @create @def cfg,
-            elem:       'div'
             type:       'slider'
             height:     20
             horizontal: true
             style:      'static'
             children: \
             [
-                elem:       'div'
                 type:       'slider-content'
                 children:   children
             ]
@@ -355,15 +347,16 @@ class wid
             onMove:     sliderFunc
             onStart:    sliderFunc
 
-        return slider
+        slider
 
     @value = (cfg) ->
         v = @create @def cfg,
+            type:       'value'
             width:      80
             height:     20
             value:      0
             horizontal: true
-            style:      'value static'
+            style:      'static'
             children: \
             [
                 type:       'icon'
@@ -376,10 +369,9 @@ class wid
                 style:      'value-input static'
             ]
 
-        log v.getChild('input')
         v.getChild('input').setAttribute("value", v.config.value)
 
-        return v
+        v
 
     @icon = (cfg) ->
         @create cfg
