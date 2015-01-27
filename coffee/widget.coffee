@@ -233,18 +233,20 @@ class wid
         w.addShadeButton()  if w.config.hasShade
         w.addTitleBar()     if w.config.hasTitle or w.config.title
         w.addSizeButton()   if w.config.hasSize
-        c = @elem("div", "widget_content")
-        w.insert c
+        c = @create
+            elem: 'div',
+            type: 'widget_content'
+            parent: w
         w.content = c.id
         w.config.children = chd
         @insertChildren(w)
-
         w
 
     @input = (cfg) ->
         inp = @create @def cfg,
             elem: 'input'
             type: 'input'
+
         inp.setAttribute "size", 6
         inp.setAttribute "type", "text"
         inp.setAttribute "inputmode", "numeric"
@@ -345,34 +347,34 @@ class wid
             value:      0
             horizontal: true
             child:
-                elem:       'table'
-                type:       'value-table'
+                elem:   'table'
+                type:   'value-table'
+                onDown: (event,e) -> event.stopPropagation()
                 child:
-                    elem: 'tr'
-                    type: 'value-row'
+                    elem:   'tr'
+                    type:   'value-row'
                     children: \
                     [
                         elem: 'td'
                         type: 'value-td'
                         child:
-                            type:       'icon'
-                            style:      'arrow-left'
+                            type:   'icon'
+                            style:  'arrow-left'
                     ,
                         elem: 'td'
                         type: 'value-content'
                         child:
-                            type:       'input'
-                            style:      'value-input'
+                            type:   'input'
+                            style:  'value-input'
                     ,
                         elem: 'td'
                         type: 'value-td'
                         child:
-                            type:       'icon'
-                            style:      'arrow-right'
+                            type:   'icon'
+                            style:  'arrow-right'
                     ]
 
         v.getChild('input').setAttribute("value", v.config.value)
-
         v
 
     @icon = (cfg) ->
