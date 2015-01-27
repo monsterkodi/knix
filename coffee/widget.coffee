@@ -88,12 +88,23 @@ class wid
     innerWidth:  -> @getLayout().get("padding-box-width")
     innerHeight: -> @getLayout().get("padding-box-height")
 
+    emitSize: ->
+        event = new CustomEvent "size",
+            bubbles:    true,
+            cancelable: true,
+            detail:
+                width:  @getWidth()
+                height: @getHeight()
+        @dispatchEvent event
+
     setWidth: (w) ->
         @style.width = "%dpx".fmt(w)  if w?
+        @emitSize()
         return
 
     setHeight: (h) ->
         @style.height = "%dpx".fmt(h)  if h?
+        @emitSize()
         return
 
     resize: (w, h) ->
@@ -160,6 +171,7 @@ class wid
         this
 
     @insertChild = (w, cfg) ->
+        cfg.parent = w
         if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
         else child = wid.create(cfg)
         wid.insertWidget(child,w)
@@ -358,6 +370,10 @@ class wid
             return
 
         slider.setValue(slider.config.value)
+
+        # this is only to fix a minor glitch in the knob display, might cost too much performance:
+        sizeCB = (event,e) -> slider.setValue(slider.config.value)
+        slider.getWidget().on "size", sizeCB
 
         drag.create
             cursor:     'ew-resize'
