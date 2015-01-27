@@ -319,7 +319,7 @@ class wid
             style:      'static'
             children: \
             [
-                type:       'slider-content'
+                type:       'relative'
                 children:   children
             ]
 
@@ -345,7 +345,7 @@ class wid
             style:      'static'
             children: \
             [
-                type:       'slider-content'
+                type:       'relative'
                 noDown:     true
                 children: \
                 [
