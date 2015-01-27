@@ -27,26 +27,25 @@ document.observe "dom:loaded", ->
             hasSize:  true
             children: \
             [
-                type:       'scroll'
-                # width: 100
+                type:       'slider'
+                value:      40.0
                 valueMin:   20.0
                 valueMax:   60.0
-                rangeMin:   0.0
-                rangeMax:   100.0
+                valueStep:  10
             ,
                 type:       'slider'
-                # width: 100
-                hasKnob: true
-                hasBar: true
+                hasKnob:    true
+                hasBar:     true
                 value:      70.0
-                rangeMin:   0.0
-                rangeMax:   100.0
+                valueMin:   0.0
+                valueMax:   100.0
+                valueStep:  1
             ,
                 type:       'value'
-                value:      600.0
-                rangeMin:   4
-                rangeMax:   10
-                step:       1
+                value:      666.0
+                valueMin:   4
+                valueMax:   10
+                valueStep:  0.1
             ,
                 type:       'button'
                 text:       'ok'
@@ -59,20 +58,20 @@ document.observe "dom:loaded", ->
                 onClick:    (event, element) -> @getParent().close()
             ]
 
-            document.stageButtons()
+            # document.stageButtons()
 
     @stageButtons = () ->
 
         wid.get
-            type:       'scroll'
-            parent:     'stage_content'
+            type:       'slider'
+            hasKnob:    false
+            hasBar:     false
             width:      200
             x:          150
             y:          30
 
         wid.get
             type:       'slider'
-            parent:     'stage_content'
             hasKnob:    true
             hasBar:     true
             width:      200
@@ -80,11 +79,18 @@ document.observe "dom:loaded", ->
             y:          60
 
         wid.get
-            type:       'value'
-            parent:     'stage_content'
+            type:       'slider'
+            hasKnob:    true
+            hasBar:     false
             width:      200
             x:          150
             y:          90
+
+        wid.get
+            type:       'value'
+            width:      200
+            x:          150
+            y:          120
 
     $('add_b').click()
 

@@ -215,7 +215,22 @@ class wid
 
     @def = (cfg,defs) -> Object.extend(defs,cfg) # takes values from config and overwrites those in defs
 
-    @get = (cfg) -> @[cfg.type or 'widget'](cfg) # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
+    @get = (cfg) -> # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
+        @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'} ) # also sets the stage as default parent
+
+    @percentage = (w, v) ->
+        cfg = w.config
+        if cfg.hasKnob
+            knv = @size2value w, w.getChild('slider-knob').getWidth()
+            knp = 100 * (knv - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            Math.max(knp/2,Math.min(pct,100-knp/2))
+        else
+            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            Math.max(0,Math.min(pct,100))
+
+    @size2value = (w, s) ->
+        w.config.valueMin + (w.config.valueMax - w.config.valueMin) * s / w.innerWidth()
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -226,7 +241,6 @@ class wid
             hasSize:   true
             isMovable: true
             onDown:    (event,e) -> e.getWidget().raise()
-            parent:    'stage_content'
             style:     'frame'
 
         w.addCloseButton()  if w.config.hasClose
@@ -297,12 +311,11 @@ class wid
     @slider = (cfg) ->
 
         sliderFunc = (drag, event) ->
-            tgt = drag.target
-            tps = tgt.absPos()
-            wdt = event.clientX-tps.x
-            wdt = Math.min(Math.max(0,wdt),tgt.innerWidth())
-            tgt.getChild('slider-bar').setWidth(wdt)
-            return
+            sld = drag.target
+            sps = sld.absPos()
+            wdt = event.clientX-sps.x
+            v   = wid.size2value(sld,wdt)
+            sld.setValue(v)
 
         children = []
         if cfg.hasBar or !cfg.hasKnob
@@ -326,9 +339,21 @@ class wid
                 children:   children
             ]
 
-        sliderBar = slider.getChild('slider-bar')
-        if sliderBar
-            sliderBar.setWidth(slider.config.value)
+        slider.setValue = (v) ->
+
+            slb = @getChild('slider-bar')
+            if slb
+                pct = wid.percentage this, v
+                slb.style.width = "%d%".fmt(pct)
+
+            knb = @getChild('slider-knob')
+            if knb
+                pct = wid.percentage this, v
+                knb.style.left = "%d%".fmt(pct)
+                knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
+            return
+
+        slider.setValue(slider.config.value)
 
         drag.create
             cursor:     'ew-resize'
