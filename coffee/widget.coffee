@@ -238,29 +238,16 @@ class wid
         w
 
     @input = (cfg) ->
-        # d = @elem("div", "value-input-div")
+        inp = @create @def cfg,
+            elem: 'input'
+            type: 'input'
 
-        w = @elem("input", "input")
-        Object.extend w, wid.prototype                      # merge in widget functions
-        w.config = Object.clone(cfg)
-        if w.config.style
-            for style in w.config.style.split(' ')
-                w.addClassName style
-        w.insert(w.config.text) if w.config.text
-
-        @insertWidget(w, w.config.parent)
-
-        # @insertWidget(d, w.config.parent)
-        # d.insert(w)
-
-        w.setAttribute("type", "text")
-        w.setAttribute("inputmode", "numeric")
-        w.setAttribute("size", 5)
+        inp.setAttribute "type", "text"
+        inp.setAttribute "inputmode", "numeric"
         # w.moveTo w.config.x, w.config.y  if w.config.x? or w.config.y?
-        #w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
-        @installEvents(w)
-        return w
-        # return d
+        # w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+
+        inp
 
     @button = (cfg) ->
         @create @def cfg,
@@ -352,21 +339,29 @@ class wid
     @value = (cfg) ->
         v = @create @def cfg,
             type:       'value'
-            width:      80
             height:     20
             value:      0
             horizontal: true
             style:      'static'
             children: \
             [
-                type:       'icon'
-                style:      'arrow-left static-left'
-            ,
-                type:       'icon'
-                style:      'arrow-right static-right'
-            ,
-                type:       'input'
-                style:      'value-input static'
+                type:       'slider-content'
+                noDown:     true
+                children: \
+                [
+                    type:       'icon'
+                    style:      'arrow-left static-left'
+                ,
+                    elem:       'span'
+                    children: \
+                    [
+                        type:       'input'
+                        style:      'value-input'
+                    ]
+                ,
+                    type:       'icon'
+                    style:      'arrow-right static-right'
+                ]
             ]
 
         v.getChild('input').setAttribute("value", v.config.value)
