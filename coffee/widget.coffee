@@ -15,13 +15,11 @@ class wid
         return
 
     addCloseButton: ->
-        button = wid.elem "div", "close"
-        @insert button
-        widget = this
-        button.on "click", ->
-            widget.close()
-            return
-        return
+        wid.create
+            elem: "div"
+            type: "close"
+            parent: this
+            onClick: (event,e) -> e.getWidget().close()
 
     close: ->
         @remove()
@@ -121,6 +119,13 @@ class wid
     getParent: ->
         return $(@config.parent) if @config.parent
         return $(@parentElement.id)
+
+    getWidget: ->
+        if @hasClassName('widget')
+            return this
+        p = @getParent()
+        w = p.getWidget()
+        return w
 
     getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
 
@@ -225,7 +230,7 @@ class wid
         w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
 
         @installEvents(w)
-        w # return the widget
+        return w
 
     @def = (cfg,defs) -> Object.extend(defs,cfg)            # takes values from config and overwrites those in defs
 
@@ -239,7 +244,7 @@ class wid
             hasShade:  true
             hasSize:   true
             isMovable: true
-            onDown:    (event,e) -> e.raise() 
+            onDown:    (event,e) -> e.getWidget().raise()
             parent:    'stage_content'
             style:     'frame'
 
