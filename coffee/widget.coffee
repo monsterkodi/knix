@@ -37,11 +37,11 @@ class wid
             spos = sizer.absPos()
 
             wdt = spos.x-wpos.x+sizer.getWidth()
-            wdt = Math.max(widget.headerSize()*2+2, wdt)
+            wdt = Math.max(widget.headerSize()*2, wdt)
             widget.setWidth(wdt)
 
             hgt = spos.y-wpos.y+sizer.getHeight()
-            hgt = Math.max(widget.headerSize()+sizer.getHeight()+1, hgt)
+            hgt = Math.max(widget.headerSize()+sizer.getHeight(), hgt)
             widget.setHeight(hgt)
 
             sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
@@ -138,7 +138,7 @@ class wid
         children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
         i = 0
         while i < children.length
-            height = children[i].getLayout().get("padding-box-height")
+            height = children[i].getLayout().get("border-box-height")
             return height  if height
             i++
         0
@@ -336,16 +336,15 @@ class wid
         if cfg.hasBar or !cfg.hasKnob
             children.push
                 type:    'slider-bar'
-                height:  20
+                # height:  20
         if cfg.hasKnob
             children.push
                 type:      'slider-knob'
-                width:      16
-                height:     16
+                # width:      16
+                # height:     16
 
         slider = @create @def cfg,
             type:       'slider'
-            height:     20
             value:      0
             valueMin:   0
             valueMax:   100
@@ -393,7 +392,6 @@ class wid
 
         v = @create @def cfg,
             type:       'value'
-            height:     20
             value:      0
             horizontal: true
             child:

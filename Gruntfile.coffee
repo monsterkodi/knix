@@ -13,7 +13,7 @@ module.exports = (grunt) ->
         stylus:
             compile:
                 files:
-                    'style/style.css': ['style/*.styl']
+                    'style/style.css': ['style/style.styl']
 
         watch:
           scripts:
