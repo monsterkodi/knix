@@ -20,9 +20,9 @@ textCursor()
 bgColorHover(c)
     background-color: c
     &:hover
-        background-color: lighten(c, 10)
+        background-color: lighten(c, 5)
     &:active
-        background-color: lighten(c, 20)
+        background-color: lighten(c, 10)
 
 noSelection()
     user-select:        none
@@ -156,25 +156,10 @@ html
 .relative
     position:         relative
 
-// ____________________________________ button
-
-.button
-    overflow:         hidden
-    handCursor()
-    noSelection()
-    padding-left:     6px
-    padding-right:    6px
-    text-align:       center
-    font-size:        14px
-    font-weight:      bold
-    border-radius:    buttonRadius
-    border:           widgetBorders.button
-    color:            textColors.button
-    bgColorHover(     widgetColors.button )
-    &:hover
-        color:        textColors.button-hover
-    &:active
-        color:        textColors.button-active
+.top-right
+    position:         absolute
+    top:              0px
+    right:            0px
 
 // ____________________________________ scroll
 
@@ -279,6 +264,26 @@ html
 .arrow-down
     icon(2, 0)
 
+// ____________________________________ button
+
+.button
+    overflow:         hidden
+    padding-left:     6px
+    padding-right:    6px
+    text-align:       center
+    font-size:        14px
+    font-weight:      bold
+    border-radius:    buttonRadius
+    border:           widgetBorders.button
+    color:            textColors.button
+    &:active
+      color:          yellow // textColors.button-active
+    &:hover
+        color:        textColors.button-hover
+    handCursor()
+    noSelection()
+    bgColorHover(     widgetColors.button )
+
 // ____________________________________ menus
 
 .menu
@@ -299,3 +304,7 @@ html
     margin-right:     -1px
     bgColorHover(     widgetColors.menu )
     border:           widgetBorders.menu
+    &:hover
+      color: textColors.menu-hover
+    &:active
+      color: textColors.menu-active

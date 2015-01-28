@@ -69,7 +69,7 @@ class wid
             size.show() if size
         else
             @config.height = @getHeight()
-            @setHeight @headerSize()
+            @setHeight @headerSize("padding-box-height")
             @config.isShaded = true
             size.hide() if size
         return
@@ -134,11 +134,11 @@ class wid
 
     getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
 
-    headerSize: ->
+    headerSize: (box="border-box-height") ->
         children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
         i = 0
         while i < children.length
-            height = children[i].getLayout().get("border-box-height")
+            height = children[i].getLayout().get(box)
             return height  if height
             i++
         0
@@ -207,6 +207,8 @@ class wid
             for style in w.config.style.split(' ')
                 w.addClassName style
 
+        w.style.minwidth = w.config.minwWidth if w.config.minwWidth
+
         w.insert(w.config.text) if w.config.text
 
         @insertWidget(w, w.config.parent)
@@ -271,6 +273,9 @@ class wid
         @insertChildren(w)
         w
 
+    @icon = (cfg) ->
+        @create cfg
+
     @input = (cfg) ->
         inp = @create @def cfg,
             elem: 'input'
@@ -285,7 +290,7 @@ class wid
         @create @def cfg,
             width:    20
             height:   20
-            noDown:   true
+            # noDown:   true
             style:    'button static'
 
     @scroll = (cfg) ->
@@ -424,8 +429,5 @@ class wid
 
         v.getChild('input').setAttribute("value", v.config.value)
         v
-
-    @icon = (cfg) ->
-        @create cfg
 
 module.exports = wid

@@ -52,11 +52,11 @@ borderColors.button  = borderColors.menu
 widgetHeaderSize    = 20px
 widgetTitleFontSize = widgetHeaderSize - 6px
 
-widgetTopRadius      = widgetHeaderSize * 0.5
-widgetBotRadius      = widgetTopRadius
 widgetBorderWidth    = 0px
 sliderBorderWidth    = 0px
 scrollBorderWidth    = sliderBorderWidth
+widgetTopRadius      = (widgetHeaderSize) * 0.5 + widgetBorderWidth
+widgetBotRadius      = widgetTopRadius
 widgetBorders        = {}
 widgetBorders.bg     = widgetBorderWidth solid borderColors.widget
 widgetBorders.title  = widgetBorderWidth solid borderColors.widget

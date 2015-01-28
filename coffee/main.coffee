@@ -47,15 +47,20 @@ document.observe "dom:loaded", ->
                 valueMax:   10
                 valueStep:  0.1
             ,
-                type:       'button'
-                text:       'ok'
-                style:      'button a static-left'
-                onClick:    (event, element) -> @getParent().getChild('b').close()
-            ,
-                type:       'button'
-                text:       'no'
-                style:      'button b static-right'
-                onClick:    (event, element) -> @getParent().close()
+                type:       'relative'
+                minWidth:   '60px'
+                children:   \
+                [
+                    type:       'button'
+                    text:       'ok'
+                    style:      'button a'
+                    onClick:    (event, element) -> @getParent().getChild('b').close()
+                ,
+                    type:       'button'
+                    text:       'no'
+                    style:      'button top-right'
+                    onClick:    (event, element) -> @getParent().close()
+                ]
             ]
 
             document.stageButtons()

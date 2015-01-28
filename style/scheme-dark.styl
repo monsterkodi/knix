@@ -1,10 +1,12 @@
 textColors = {}
 textColors.global        = white
 textColors.menu          = #888
+textColors.menu-hover    = yellow
+textColors.menu-active   = white
 textColors.title         = #999
 textColors.button        = #eee
-textColors.button-hover  = yellow
-textColors.button-active = #fff
+textColors.button-hover  = #00f
+textColors.button-active = #ff0
 
 colors = {}
 colors.grayVeryDark     = #090A0E
@@ -30,7 +32,7 @@ widgetColors.menu          = widgetColors.bg
 widgetColors.title         = lighten(widgetColors.bg, 4) // colors.grayMedium
 widgetColors.close         = widgetColors.title // colors.grayMediumBright
 widgetColors.shade         = widgetColors.close
-widgetColors.size          = widgetColors.bg
+widgetColors.size          = darken(widgetColors.bg,0)
 widgetColors.slider        = colors.grayDark
 widgetColors.slider-bar    = colors.red
 widgetColors.scroll        = widgetColors.slider
@@ -50,11 +52,11 @@ borderColors.button  = colors.grayMedium
 widgetHeaderSize    = 20px
 widgetTitleFontSize = widgetHeaderSize - 6px
 
-widgetTopRadius      = widgetHeaderSize * 0.5
-widgetBotRadius      = widgetTopRadius
 widgetBorderWidth    = 2px
 sliderBorderWidth    = 2px
 scrollBorderWidth    = 2px
+widgetTopRadius      = (widgetHeaderSize) * 0.5 + widgetBorderWidth
+widgetBotRadius      = widgetTopRadius
 widgetBorders        = {}
 widgetBorders.bg     = widgetBorderWidth solid borderColors.widget
 widgetBorders.title  = widgetBorderWidth solid borderColors.widget
