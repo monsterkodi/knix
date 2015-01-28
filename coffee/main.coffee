@@ -25,6 +25,9 @@ document.observe "dom:loaded", ->
             y:        30
             title:    'hello'
             hasSize:  true
+            minWidth: '90px'
+            minHeight: '120px'
+            maxHeight: '210px'
             children: \
             [
                 type:       'slider'
@@ -48,17 +51,16 @@ document.observe "dom:loaded", ->
                 valueStep:  0.1
             ,
                 type:       'relative'
-                minWidth:   '60px'
                 children:   \
                 [
                     type:       'button'
                     text:       'ok'
-                    style:      'button a'
+                    class:      'button a'
                     onClick:    (event, element) -> @getParent().getChild('b').close()
                 ,
                     type:       'button'
                     text:       'no'
-                    style:      'button top-right'
+                    class:      'button top-right'
                     onClick:    (event, element) -> @getParent().close()
                 ]
             ]

@@ -38,13 +38,18 @@ class wid
 
             wdt = spos.x-wpos.x+sizer.getWidth()
             wdt = Math.max(widget.headerSize()*2, wdt)
+            wdt = Math.max(widget.minWidth(), wdt)
+            wdt = Math.min(widget.maxWidth(), wdt)
             widget.setWidth(wdt)
 
             hgt = spos.y-wpos.y+sizer.getHeight()
             hgt = Math.max(widget.headerSize()+sizer.getHeight(), hgt)
+            hgt = Math.max(widget.minHeight(), hgt)
+            hgt = Math.min(widget.maxHeight(), hgt)
             widget.setHeight(hgt)
 
             sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
+
             return
 
         drag.create
@@ -54,9 +59,7 @@ class wid
 
         btn
 
-    close: ->
-        @remove()
-        return
+    close: -> @remove(); return
 
     shade: ->
         size = @getChild 'size'
@@ -85,9 +88,6 @@ class wid
         @style.top  = "%dpx".fmt(p.y+dy)
         return
 
-    innerWidth:  -> @getLayout().get("padding-box-width")
-    innerHeight: -> @getLayout().get("padding-box-height")
-
     emitSize: ->
         event = new CustomEvent "size",
             bubbles:    true,
@@ -112,15 +112,6 @@ class wid
         @setHeight h if h
         return
 
-    relPos: ->
-        o = @positionedOffset()
-        pos o.left, o.top
-
-    absPos: ->
-        o = @cumulativeOffset()
-        s = @cumulativeScrollOffset()
-        pos o.left - s.left, o.top - s.top
-
     getParent: ->
         return $(@config.parent) if @config.parent
         return $(@parentElement.id)
@@ -143,6 +134,15 @@ class wid
             i++
         0
 
+    innerWidth:  -> @getLayout().get("padding-box-width")
+    innerHeight: -> @getLayout().get("padding-box-height")
+    minWidth:    -> w = parseInt @getStyle('min-width' ); if w then w else 0
+    minHeight:   -> h = parseInt @getStyle('min-height'); if h then h else 0
+    maxWidth:    -> w = parseInt @getStyle('max-width' ); if w then w else Number.MAX_VALUE
+    maxHeight:   -> h = parseInt @getStyle('max-height'); if h then h else Number.MAX_VALUE
+    relPos:      -> o = @positionedOffset(); pos o.left, o.top
+    absPos:      -> o = @cumulativeOffset(); s = @cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
+
     # ______________________________________________________ static functions
 
     @nextWidgetID  = 0
@@ -153,11 +153,11 @@ class wid
             return
         return
 
-    @elem = (type, style) ->                                # create element of <type>, add class <style> and assign 'unique' id
+    @elem = (type, clss) ->                                # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
         e.id = "widget_%d".fmt(@nextWidgetID)
         @nextWidgetID += 1
-        e.addClassName style
+        e.addClassName clss
         e
 
     @insertWidget = (w, p) ->
@@ -203,11 +203,19 @@ class wid
                 target: w
                 cursor: null
 
-        if w.config.style
-            for style in w.config.style.split(' ')
-                w.addClassName style
+        if w.config.class
+            for clss in w.config.class.split(' ')
+                w.addClassName clss
 
-        w.style.minwidth = w.config.minwWidth if w.config.minwWidth
+        if w.config.style
+            w.setStyle w.config.style
+
+        style = {}
+        for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
+            if s in $H(w.config).keys()
+                log s
+                style[s] = w.config[s]
+        w.setStyle style
 
         w.insert(w.config.text) if w.config.text
 
@@ -258,7 +266,7 @@ class wid
             hasSize:   true
             isMovable: true
             onDown:    (event,e) -> e.getWidget().raise()
-            style:     'frame'
+            class:     'frame'
 
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
@@ -291,7 +299,7 @@ class wid
             width:    20
             height:   20
             # noDown:   true
-            style:    'button static'
+            class:    'button static'
 
     @scroll = (cfg) ->
 
@@ -308,13 +316,13 @@ class wid
         scroll = @create @def cfg,
             height:     20
             horizontal: true
-            style:      'scroll static'
+            class:      'scroll static'
 
         h = wid.create
             width:      16
             height:     16
             parent:     scroll
-            style:      'scroll-handle'
+            class:      'scroll-handle'
 
         drag.create
             cursor:  'ew-resize'
@@ -341,12 +349,9 @@ class wid
         if cfg.hasBar or !cfg.hasKnob
             children.push
                 type:    'slider-bar'
-                # height:  20
         if cfg.hasKnob
             children.push
                 type:      'slider-knob'
-                # width:      16
-                # height:     16
 
         slider = @create @def cfg,
             type:       'slider'
@@ -354,7 +359,7 @@ class wid
             valueMin:   0
             valueMax:   100
             horizontal: true
-            style:      'static'
+            class:      'static'
             children: \
             [
                 type:       'relative'
@@ -412,19 +417,19 @@ class wid
                         type: 'value-td'
                         child:
                             type:   'icon'
-                            style:  'arrow-left'
+                            class:  'arrow-left'
                     ,
                         elem: 'td'
                         type: 'value-content'
                         child:
                             type:   'input'
-                            style:  'value-input'
+                            class:  'value-input'
                     ,
                         elem: 'td'
                         type: 'value-td'
                         child:
                             type:   'icon'
-                            style:  'arrow-right'
+                            class:  'arrow-right'
                     ]
 
         v.getChild('input').setAttribute("value", v.config.value)
