@@ -58,7 +58,7 @@ document.observe "dom:loaded", ->
                 onClick:    (event, element) -> @getParent().close()
             ]
 
-            # document.stageButtons()
+            document.stageButtons()
 
     @stageButtons = () ->
 

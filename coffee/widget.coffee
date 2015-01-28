@@ -129,7 +129,7 @@ class wid
         if @hasClassName('widget')
             return this
         p = @getParent()
-        w = p.getWidget()
+        w = p.getWidget() if p['getWidget']
         return w
 
     getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
@@ -346,6 +346,9 @@ class wid
         slider = @create @def cfg,
             type:       'slider'
             height:     20
+            value:      0
+            valueMin:   0
+            valueMax:   100
             horizontal: true
             style:      'static'
             children: \
@@ -355,8 +358,9 @@ class wid
             ]
 
         slider.setValue = (v) ->
+            if isNaN v
+                log 'farz'
             v = wid.clampValue(this, v)
-            log v
             @config.value = v
             pct = wid.percentage this, v
             slb = @getChild('slider-bar')
@@ -373,7 +377,8 @@ class wid
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
         sizeCB = (event,e) -> slider.setValue(slider.config.value)
-        slider.getWidget().on "size", sizeCB
+        widget = slider.getWidget()
+        widget.on "size", sizeCB if widget
 
         drag.create
             cursor:     'ew-resize'
