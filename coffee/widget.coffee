@@ -13,62 +13,6 @@ class wid
         c = Math.min(c, @config.valueMax) if @config.valueMax
         c = Math.max(c, @config.valueMin) if @config.valueMin
         c
-    # __________________________________________________ widget elements
-
-    addTitleBar: ->
-        wid.create
-            type:    "title"
-            text:    @config.title
-            parent:  this
-
-    addCloseButton: ->
-        wid.create
-            type:    "close"
-            noDown:  true
-            parent:  this
-            onClick: (event,e) -> e.getWidget().close()
-
-    addShadeButton: ->
-        wid.create
-            type:    "shade"
-            noDown:  true
-            parent:  this
-            onClick: (event,e) -> e.getWidget().shade()
-
-    addSizeButton: ->
-        btn = wid.create
-            type:    "size"
-            parent:  this
-
-        moveCallback = (drag, event) ->
-            widget = drag.target.getWidget()
-            sizer = drag.target
-
-            wpos = widget.absPos()
-            spos = sizer.absPos()
-
-            wdt = spos.x-wpos.x+sizer.getWidth()
-            wdt = Math.max(widget.headerSize()*2, wdt)
-            wdt = Math.max(widget.minWidth(), wdt)
-            wdt = Math.min(widget.maxWidth(), wdt)
-            widget.setWidth(wdt)
-
-            hgt = spos.y-wpos.y+sizer.getHeight()
-            hgt = Math.max(widget.headerSize()+sizer.getHeight(), hgt)
-            hgt = Math.max(widget.minHeight(), hgt)
-            hgt = Math.min(widget.maxHeight(), hgt)
-            widget.setHeight(hgt)
-
-            sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
-
-            return
-
-        drag.create
-            target: btn
-            onMove: moveCallback
-            cursor: "nwse-resize"
-
-        btn
 
     # __________________________________________________ signals
 
@@ -347,6 +291,8 @@ class wid
     @size2value = (w, s) -> # returns the value in the [valueMin,valueMax] range of w that lies at point s
         w.config.valueMin + (w.config.valueMax - w.config.valueMin) * s / w.innerWidth()
 
+    # ______________________________________________________ widget
+
     @widget = (cfg) ->
         chd = cfg.children
         cfg.children = null
@@ -357,6 +303,63 @@ class wid
             isMovable: true
             onDown:    (event,e) -> e.getWidget().raise()
             class:     'frame'
+
+        # __________________________________________________ header
+
+        w.addTitleBar = ->
+            wid.create
+                type:    "title"
+                text:    @config.title
+                parent:  this
+
+        w.addCloseButton = ->
+            wid.create
+                type:    "close"
+                noDown:  true
+                parent:  this
+                onClick: (event,e) -> e.getWidget().close()
+
+        w.addShadeButton = ->
+            wid.create
+                type:    "shade"
+                noDown:  true
+                parent:  this
+                onClick: (event,e) -> e.getWidget().shade()
+
+        w.addSizeButton = ->
+            btn = wid.create
+                type:    "size"
+                parent:  this
+
+            moveCallback = (drag, event) ->
+                widget = drag.target.getWidget()
+                sizer = drag.target
+
+                wpos = widget.absPos()
+                spos = sizer.absPos()
+
+                wdt = spos.x-wpos.x+sizer.getWidth()
+                wdt = Math.max(widget.headerSize()*2, wdt)
+                wdt = Math.max(widget.minWidth(), wdt)
+                wdt = Math.min(widget.maxWidth(), wdt)
+                widget.setWidth(wdt)
+
+                hgt = spos.y-wpos.y+sizer.getHeight()
+                hgt = Math.max(widget.headerSize()+sizer.getHeight(), hgt)
+                hgt = Math.max(widget.minHeight(), hgt)
+                hgt = Math.min(widget.maxHeight(), hgt)
+                widget.setHeight(hgt)
+
+                sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
+
+                return
+
+            drag.create
+                target: btn
+                onMove: moveCallback
+                cursor: "nwse-resize"
+
+            btn
 
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
@@ -509,15 +512,17 @@ class wid
 
     @value = (cfg) ->
 
-        value = @create @def cfg,
+        value = @create @def cfg,``
             type:       'value'
             value:      0
             horizontal: true
             slots:      \
             {
                 setValue: (arg) ->
-                    v = @slotArg(arg, 'value')
-                    @getChild('input').setAttribute("value", @format(@clamp(v)))
+                    v = @format(@clamp(@slotArg(arg, 'value')))
+                    @getChild('input').setAttribute("value", v)
+                    @emit 'onValue',
+                        value: v
             }
             child:
                 elem:   'table'

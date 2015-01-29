@@ -38,9 +38,7 @@ document.observe "dom:loaded", ->
                 [
                     id:         'slider_1'
                     type:       'slider'
-                    value:      40.0
-                    valueMin:   20.0
-                    valueMax:   60.0
+                    value:      50.0
                     valueStep:  10
                 ,
                     id:         'slider_2'
@@ -53,9 +51,9 @@ document.observe "dom:loaded", ->
                     valueStep:  1
                 ,
                     type:       'value'
-                    value:      666.0
-                    valueMin:   4
-                    valueMax:   10
+                    value:      50
+                    valueMin:   10
+                    valueMax:   90
                     valueStep:  0.1
                     format:     "%3.2f"
                     connect: \
