@@ -8,6 +8,11 @@ class wid
 
     format: (s) -> return @config.format.fmt(s) if @config.format?; s
 
+    clamp: (v) -> # clamps v to the [valueMin,valueMax] range
+        c = v
+        c = Math.min(c, @config.valueMax) if @config.valueMax
+        c = Math.max(c, @config.valueMin) if @config.valueMin
+        c
     # __________________________________________________ widget elements
 
     addTitleBar: ->
@@ -293,7 +298,6 @@ class wid
         style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
         w.setStyle style
 
-
         #__________________________________________________ DOM setup
 
         w.insert(w.config.text) if w.config.text
@@ -342,9 +346,6 @@ class wid
 
     @size2value = (w, s) -> # returns the value in the [valueMin,valueMax] range of w that lies at point s
         w.config.valueMin + (w.config.valueMax - w.config.valueMin) * s / w.innerWidth()
-
-    @clampValue = (w, v) -> # clamps v to the [valueMin,valueMax] range of w
-        Math.max(w.config.valueMin,Math.min(v, w.config.valueMax))
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -454,8 +455,8 @@ class wid
                     v = @slotArg(arg, 'value')
                     if isNaN v
                         log 'farz'
-                    v = wid.clampValue(this, v)
-                    @config.value = v
+                        return
+                    @config.value = @clamp(v)
                     pct = wid.percentage this, v
                     slb = @getChild('slider-bar')
                     if slb
@@ -516,7 +517,7 @@ class wid
             {
                 setValue: (arg) ->
                     v = @slotArg(arg, 'value')
-                    @getChild('input').setAttribute("value", @format(v))
+                    @getChild('input').setAttribute("value", @format(@clamp(v)))
             }
             child:
                 elem:   'table'
