@@ -108,6 +108,20 @@ class wid
             size.hide() if size
         return
 
+    percentage: (v) -> # returns the percentage of value v in the [valueMin,valueMax] range
+        cfg = @config
+        if cfg.hasKnob
+            knv = @size2value @getChild('slider-knob').getWidth()
+            knp = 100 * (knv - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            Math.max(knp/2,Math.min(pct,100-knp/2))
+        else
+            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+            Math.max(0,Math.min(pct,100))
+
+    size2value: (s) -> # returns the value in the [valueMin,valueMax] range that lies at point s
+        @config.valueMin + (@config.valueMax - @config.valueMin) * s / @innerWidth()
+
     innerWidth:  -> @getLayout().get("padding-box-width")
     innerHeight: -> @getLayout().get("padding-box-height")
     minWidth:    -> w = parseInt @getStyle('min-width' ); if w then w else 0
@@ -219,6 +233,10 @@ class wid
         log "@resolveSlot slot not found!", slot
         null
 
+    #______________________________________________________
+    #______________________________________________________ element creation
+    #______________________________________________________
+
     @create = (cfg) ->
 
         #__________________________________________________ initialization
@@ -276,20 +294,6 @@ class wid
 
     @get = (cfg) -> # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
         @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'} ) # also sets the stage as default parent
-
-    @percentage = (w, v) -> # returns the percentage of value v in the [valueMin,valueMax] range of w
-        cfg = w.config
-        if cfg.hasKnob
-            knv = @size2value w, w.getChild('slider-knob').getWidth()
-            knp = 100 * (knv - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            Math.max(knp/2,Math.min(pct,100-knp/2))
-        else
-            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            Math.max(0,Math.min(pct,100))
-
-    @size2value = (w, s) -> # returns the value in the [valueMin,valueMax] range of w that lies at point s
-        w.config.valueMin + (w.config.valueMax - w.config.valueMin) * s / w.innerWidth()
 
     # ______________________________________________________ widget
 
@@ -374,60 +378,7 @@ class wid
         @insertChildren(w)
         w
 
-    @icon = (cfg) ->
-        @create cfg
-
-    @input = (cfg) ->
-        inp = @create @def cfg,
-            elem: 'input'
-            type: 'input'
-
-        inp.setAttribute "size", 6
-        inp.setAttribute "type", "text"
-        inp.setAttribute "inputmode", "numeric"
-        inp
-
-    @button = (cfg) ->
-        @create @def cfg,
-            type:     'button'
-            noDown:   true
-            minWidth: 50
-            height:   20
-
-    @scroll = (cfg) ->
-
-        scrollFunc = (drag, event) ->
-            tgt = drag.target
-            tgw = tgt.getWidth()
-            prt = tgt.getParent()
-            tps = prt.absPos()
-            wdt = event.clientX-tps.x-tgw/2 # distance form left side of scroll minus half of handle width
-            wdt = Math.min(Math.max(0,wdt),prt.innerWidth()-tgw)
-            tgt.moveTo(wdt,0)
-            return
-
-        scroll = @create @def cfg,
-            height:     20
-            horizontal: true
-            class:      'scroll'
-
-        h = wid.create
-            width:      16
-            height:     16
-            parent:     scroll
-            class:      'scroll-handle'
-
-        drag.create
-            cursor:  'ew-resize'
-            handle:  scroll
-            target:  h
-            doMove:  false
-            minPos:  pos(0, 0)
-            maxPos:  pos(scroll.config.width-20, 0)
-            onMove:  scrollFunc
-            onStart: scrollFunc
-
-        scroll
+    # ______________________________________________________ slider
 
     @slider = (cfg) ->
 
@@ -435,7 +386,7 @@ class wid
             sld = drag.target
             sps = sld.absPos()
             wdt = event.clientX-sps.x
-            v   = wid.size2value(sld,wdt)
+            v   = sld.size2value wdt
             sld.setValue(v)
 
         children = []
@@ -452,47 +403,29 @@ class wid
             valueMin:   0
             valueMax:   100
             horizontal: true
-            slots:      \
-            {
-                setValue: (arg) ->
-                    v = @slotArg(arg, 'value')
-                    if isNaN v
-                        log 'farz'
-                        return
-                    @config.value = @clamp(v)
-                    pct = wid.percentage this, v
-                    slb = @getChild('slider-bar')
-                    if slb
-                        slb.style.width = "%d%".fmt(pct)
-
-                    knb = @getChild('slider-knob')
-                    if knb
-                        knb.style.left = "%d%".fmt(pct)
-                        knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
-                    @emit 'onValue', value:v
-                    return
-            }
             children:   \
             [
                 type:       'relative'
                 children:   children
             ]
 
-        # slider.setValue = (v) ->
-        #     if isNaN v
-        #         log 'farz'
-        #     v = wid.clampValue(this, v)
-        #     @config.value = v
-        #     pct = wid.percentage this, v
-        #     slb = @getChild('slider-bar')
-        #     if slb
-        #         slb.style.width = "%d%".fmt(pct)
-        #
-        #     knb = @getChild('slider-knob')
-        #     if knb
-        #         knb.style.left = "%d%".fmt(pct)
-        #         knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
-        #     return
+        slider.setValue = (arg) ->
+            v = @slotArg(arg, 'value')
+            if isNaN v
+                log 'farz'
+                return
+            @config.value = @clamp(v)
+            pct = @percentage v
+            slb = @getChild('slider-bar')
+            if slb
+                slb.style.width = "%d%".fmt(pct)
+
+            knb = @getChild('slider-knob')
+            if knb
+                knb.style.left = "%d%".fmt(pct)
+                knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
+            @emit 'onValue', value:v
+            return
 
         slider.setValue(slider.config.value)
 
@@ -510,9 +443,11 @@ class wid
 
         slider
 
+    # ______________________________________________________ value
+
     @value = (cfg) ->
 
-        value = @create @def cfg,``
+        value = @create @def cfg,
             type:       'value'
             value:      0
             horizontal: true
@@ -554,5 +489,64 @@ class wid
 
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)
+
+    # ______________________________________________________ scroll
+
+    @scroll = (cfg) ->
+
+        scrollFunc = (drag, event) ->
+            tgt = drag.target
+            tgw = tgt.getWidth()
+            prt = tgt.getParent()
+            tps = prt.absPos()
+            wdt = event.clientX-tps.x-tgw/2 # distance form left side of scroll minus half of handle width
+            wdt = Math.min(Math.max(0,wdt),prt.innerWidth()-tgw)
+            tgt.moveTo(wdt,0)
+            return
+
+        scroll = @create @def cfg,
+            height:     20
+            horizontal: true
+            class:      'scroll'
+
+        h = wid.create
+            width:      16
+            height:     16
+            parent:     scroll
+            class:      'scroll-handle'
+
+        drag.create
+            cursor:  'ew-resize'
+            handle:  scroll
+            target:  h
+            doMove:  false
+            minPos:  pos(0, 0)
+            maxPos:  pos(scroll.config.width-20, 0)
+            onMove:  scrollFunc
+            onStart: scrollFunc
+
+        scroll
+
+    # ______________________________________________________ icon & input
+
+    @icon = (cfg) ->
+        @create cfg
+
+    @input = (cfg) ->
+        inp = @create @def cfg,
+            elem: 'input'
+            type: 'input'
+
+        inp.setAttribute "size", 6
+        inp.setAttribute "type", "text"
+        inp.setAttribute "inputmode", "numeric"
+        inp
+
+    @button = (cfg) ->
+        @create @def cfg,
+            type:     'button'
+            noDown:   true
+            minWidth: 50
+            height:   20
 
 module.exports = wid
