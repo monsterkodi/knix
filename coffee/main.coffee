@@ -36,12 +36,14 @@ document.observe "dom:loaded", ->
                 maxHeight: 150
                 children: \
                 [
+                    id:         'slider_1'
                     type:       'slider'
                     value:      40.0
                     valueMin:   20.0
                     valueMax:   60.0
                     valueStep:  10
                 ,
+                    id:         'slider_2'
                     type:       'slider'
                     hasKnob:    true
                     hasBar:     true
@@ -55,6 +57,14 @@ document.observe "dom:loaded", ->
                     valueMin:   4
                     valueMax:   10
                     valueStep:  0.1
+                    connect: \
+                    [
+                        signal: 'slider_2:onValue'
+                        slot:   'setValue'
+                    ,
+                        signal: 'onValue'
+                        slot:   'slider_1:setValue'
+                    ]
                 ,
                     type:       'relative'
                     children:   \

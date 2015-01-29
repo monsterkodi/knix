@@ -88,14 +88,22 @@ class wid
         @style.top  = "%dpx".fmt(p.y+dy)
         return
 
-    emitSize: ->
-        event = new CustomEvent "size",
+    emit: (signal, args) ->
+        event = new CustomEvent signal,
             bubbles:    true,
             cancelable: true,
-            detail:
+            detail:     args
+        @dispatchEvent event
+
+    emitSize: ->
+        @emit "size",
                 width:  @getWidth()
                 height: @getHeight()
-        @dispatchEvent event
+
+    slotArg: (event, argname='value') ->
+        if typeof event == 'object'
+            return event.detail[argname]
+        event
 
     setWidth: (w) ->
         @style.width = "%dpx".fmt(w)  if w?
@@ -186,7 +194,7 @@ class wid
         else if w.config.child
             @insertChild(w, w.config.child)
 
-    @installEvents = (w) ->
+    @initEvents = (w) ->
         w.on "click",      w.config.onClick  if w.config.onClick
         w.on "mousedown",  w.config.onDown   if w.config.onDown
         w.on "mouseup",    w.config.onUp     if w.config.onUp
@@ -196,22 +204,73 @@ class wid
         w.on "ondblclick", w.config.onDouble if w.config.onDouble
         this
 
+    #__________________________________________________ slots
+
+    @initSlots = (w) ->
+        slots = w.config.slots
+        return if not slots?
+        for slot, func of slots
+            log "@initSlots", w.id, slot
+            w[slot] = func
+
+    #__________________________________________________ connections
+
+    @initConnections = (w) ->
+        connections = w.config.connect
+        return if not connections?
+        for connection in connections
+            @connect w, connection.signal, connection.slot
+
+    @connect = (w, signal, slot) ->
+        log "@connect", signal, slot
+        [signalSender, signalEvent] = @resolveSignal(w, signal)
+        slotFunction = @resolveSlot(w, slot)
+        if not signalSender? then log "    sender not found!"; return
+        if not signalEvent?  then log "    event not found!";  return
+        if not slotFunction? then log "    slot not found!";   return
+        handler:  signalSender.on signalEvent, slotFunction
+        sender:   signalSender
+        event:    signalEvent
+        receiver: slotFunction
+
+    @resolveSignal = (w, signal) ->
+        #log "@resolveSignal", signal
+        [event, sender] =  signal.split(':').reverse()
+        #log sender, event
+        sender = w.getWidget().getChild(sender) if sender?
+        sender = w unless sender?
+        [sender, event]
+
+    @resolveSlot = (w, slot) ->
+        #log "@resolveSlot", slot
+        if typeof slot == 'function'
+            log "function slot"
+            return slot
+        if typeof slot == 'string'
+            [func, receiver] = slot.split(':').reverse()
+            #log "rec", receiver, "fnc", func
+            receiver = w.getWidget().getChild(receiver) if receiver?
+            receiver = w unless receiver?
+            return receiver[func].bind(receiver) if receiver[func]?
+            log "@resolveSlot receiver", receiver.id, "has no", func
+        log "@resolveSlot slot not found!", slot
+        null
+
     @create = (cfg) ->
+
+        #__________________________________________________ initialization
+
         w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
         Object.extend w, wid.prototype                      # merge in widget functions
-        w.config = Object.clone(cfg)
+        w.config = Object.clone(cfg)                        # set config
 
-        if w.config.id
-            w.writeAttribute('id', w.config.id)
+        w.writeAttribute('id', w.config.id) if w.config.id  # set element id
 
-        if w.config.isMovable
-            drag.create
-                target: w
-                cursor: null
-
-        if w.config.class
+        if w.config.class                                   # add class names
             for clss in w.config.class.split(' ')
                 w.addClassName clss
+
+        #__________________________________________________ CSS setup
 
         if w.config.style
             w.setStyle w.config.style
@@ -220,18 +279,31 @@ class wid
         style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
         w.setStyle style
 
-        w.insert(w.config.text) if w.config.text
 
+        #__________________________________________________ DOM setup
+
+        w.insert(w.config.text) if w.config.text
         @insertWidget(w, w.config.parent)
         @insertChildren(w)
+
+        #__________________________________________________ position and size
 
         if w.config.x? or w.config.y?
             w.style.position = 'absolute'
             w.moveTo w.config.x, w.config.y
 
-        w.resize w.config.width, w.config.height  if w.config.width? or w.config.height?
+        w.resize w.config.width, w.config.height if w.config.width? or w.config.height?
 
-        @installEvents(w)
+        #__________________________________________________ event setup
+
+        if w.config.isMovable
+            drag.create
+                target: w
+                cursor: null
+
+        @initSlots(w)
+        @initConnections(w)
+        @initEvents(w)
 
         if w.config.noDown
             w.on 'mousedown', (event,e) -> event.stopPropagation()
@@ -362,27 +434,47 @@ class wid
             valueMin:   0
             valueMax:   100
             horizontal: true
-            children: \
+            slots:      \
+            {
+                setValue: (arg) ->
+                    v = @slotArg(arg, 'value')
+                    if isNaN v
+                        log 'farz'
+                    v = wid.clampValue(this, v)
+                    @config.value = v
+                    pct = wid.percentage this, v
+                    slb = @getChild('slider-bar')
+                    if slb
+                        slb.style.width = "%d%".fmt(pct)
+
+                    knb = @getChild('slider-knob')
+                    if knb
+                        knb.style.left = "%d%".fmt(pct)
+                        knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
+                    @emit 'onValue', value:v
+                    return
+            }
+            children:   \
             [
                 type:       'relative'
                 children:   children
             ]
 
-        slider.setValue = (v) ->
-            if isNaN v
-                log 'farz'
-            v = wid.clampValue(this, v)
-            @config.value = v
-            pct = wid.percentage this, v
-            slb = @getChild('slider-bar')
-            if slb
-                slb.style.width = "%d%".fmt(pct)
-
-            knb = @getChild('slider-knob')
-            if knb
-                knb.style.left = "%d%".fmt(pct)
-                knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
-            return
+        # slider.setValue = (v) ->
+        #     if isNaN v
+        #         log 'farz'
+        #     v = wid.clampValue(this, v)
+        #     @config.value = v
+        #     pct = wid.percentage this, v
+        #     slb = @getChild('slider-bar')
+        #     if slb
+        #         slb.style.width = "%d%".fmt(pct)
+        #
+        #     knb = @getChild('slider-knob')
+        #     if knb
+        #         knb.style.left = "%d%".fmt(pct)
+        #         knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
+        #     return
 
         slider.setValue(slider.config.value)
 
@@ -402,10 +494,14 @@ class wid
 
     @value = (cfg) ->
 
-        v = @create @def cfg,
+        value = @create @def cfg,
             type:       'value'
             value:      0
             horizontal: true
+            slots:      \
+            {
+                setValue: (arg) -> @getChild('input').setAttribute("value", @slotArg(arg, 'value'))
+            }
             child:
                 elem:   'table'
                 type:   'value-table'
@@ -434,7 +530,7 @@ class wid
                             class:  'arrow-right'
                     ]
 
-        v.getChild('input').setAttribute("value", v.config.value)
-        v
+        value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
+        value                             # but at least it is not value.value value.value.value                  :)
 
 module.exports = wid
