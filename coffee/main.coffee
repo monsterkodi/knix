@@ -57,6 +57,7 @@ document.observe "dom:loaded", ->
                     valueMin:   4
                     valueMax:   10
                     valueStep:  0.1
+                    format:     "%3.2f"
                     connect: \
                     [
                         signal: 'slider_2:onValue'

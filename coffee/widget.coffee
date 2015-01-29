@@ -4,6 +4,12 @@ log  = require('./log.coffee')
 
 class wid
 
+    # __________________________________________________ tools
+
+    format: (s) -> return @config.format.fmt(s) if @config.format?; s
+
+    # __________________________________________________ widget elements
+
     addTitleBar: ->
         wid.create
             type:    "title"
@@ -59,34 +65,7 @@ class wid
 
         btn
 
-    close: -> @remove(); return
-
-    shade: ->
-        size = @getChild 'size'
-        if @config.isShaded
-            @setHeight @config.height
-            # adjust height for border size
-            diff = @getHeight() - @config.height
-            @setHeight @config.height - diff  if diff
-            @config.isShaded = false
-            size.show() if size
-        else
-            @config.height = @getHeight()
-            @setHeight @headerSize("padding-box-height")
-            @config.isShaded = true
-            size.hide() if size
-        return
-
-    moveTo: (x, y) ->
-        @style.left = "%dpx".fmt(x)
-        @style.top  = "%dpx".fmt(y)
-        return
-
-    moveBy: (dx, dy) ->
-        p = @relPos()
-        @style.left = "%dpx".fmt(p.x+dx)
-        @style.top  = "%dpx".fmt(p.y+dy)
-        return
+    # __________________________________________________ signals
 
     emit: (signal, args) ->
         event = new CustomEvent signal,
@@ -100,25 +79,14 @@ class wid
                 width:  @getWidth()
                 height: @getHeight()
 
+    # __________________________________________________ slots
+
     slotArg: (event, argname='value') ->
         if typeof event == 'object'
             return event.detail[argname]
         event
 
-    setWidth: (w) ->
-        @style.width = "%dpx".fmt(w)  if w?
-        @emitSize()
-        return
-
-    setHeight: (h) ->
-        @style.height = "%dpx".fmt(h)  if h?
-        @emitSize()
-        return
-
-    resize: (w, h) ->
-        @setWidth w if w
-        @setHeight h if h
-        return
+    # __________________________________________________ hierarchy
 
     getParent: ->
         return $(@config.parent) if @config.parent
@@ -136,6 +104,36 @@ class wid
         return c[0] if c.length
         return null
 
+    close: -> @remove(); return
+
+    # __________________________________________________ geometry
+
+    moveTo: (x, y) ->
+        @style.left = "%dpx".fmt(x)
+        @style.top  = "%dpx".fmt(y)
+        return
+
+    moveBy: (dx, dy) ->
+        p = @relPos()
+        @style.left = "%dpx".fmt(p.x+dx)
+        @style.top  = "%dpx".fmt(p.y+dy)
+        return
+
+    setWidth: (w) ->
+        @style.width = "%dpx".fmt(w)  if w?
+        @emitSize()
+        return
+
+    setHeight: (h) ->
+        @style.height = "%dpx".fmt(h)  if h?
+        @emitSize()
+        return
+
+    resize: (w, h) ->
+        @setWidth w if w
+        @setHeight h if h
+        return
+
     headerSize: (box="border-box-height") ->
         children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
         i = 0
@@ -144,6 +142,22 @@ class wid
             return height  if height
             i++
         0
+
+    shade: ->
+        size = @getChild 'size'
+        if @config.isShaded
+            @setHeight @config.height
+            # adjust height for border size
+            diff = @getHeight() - @config.height
+            @setHeight @config.height - diff  if diff
+            @config.isShaded = false
+            size.show() if size
+        else
+            @config.height = @getHeight()
+            @setHeight @headerSize("padding-box-height")
+            @config.isShaded = true
+            size.hide() if size
+        return
 
     innerWidth:  -> @getLayout().get("padding-box-width")
     innerHeight: -> @getLayout().get("padding-box-height")
@@ -500,7 +514,9 @@ class wid
             horizontal: true
             slots:      \
             {
-                setValue: (arg) -> @getChild('input').setAttribute("value", @slotArg(arg, 'value'))
+                setValue: (arg) ->
+                    v = @slotArg(arg, 'value')
+                    @getChild('input').setAttribute("value", @format(v))
             }
             child:
                 elem:   'table'
