@@ -1,5 +1,5 @@
 
-@import 'scheme-dark.styl'
+@import 'scheme-bright.styl'
 
 // ____________________________________ functions
 
@@ -82,15 +82,6 @@ html
     border:           widgetBorders.bg
     background-color: widgetColors.bg
 
-.widget .static-left
-    position:         static
-    float:            left
-.widget .static-right
-    position:         static
-    float:            right
-.widget .static
-    position:         static
-
 .widget_content
     padding-left:  10px
     padding-right: 10px
@@ -160,6 +151,11 @@ html
     position:         absolute
     top:              0px
     right:            0px
+
+.top-left
+    position:         absolute
+    top:              0px
+    left:             0px
 
 // ____________________________________ scroll
 
@@ -267,7 +263,10 @@ html
 // ____________________________________ button
 
 .button
+    handCursor()
+    noSelection()
     overflow:         hidden
+    box-sizing:       border-box
     padding-left:     6px
     padding-right:    6px
     text-align:       center
@@ -275,36 +274,35 @@ html
     font-weight:      bold
     border-radius:    buttonRadius
     border:           widgetBorders.button
+    background-color: widgetColors.button
     color:            textColors.button
-    &:active
-      color:          yellow // textColors.button-active
     &:hover
-        color:        textColors.button-hover
-    handCursor()
-    noSelection()
-    bgColorHover(     widgetColors.button )
+        background-color: widgetColors.button-hover
+        color:            textColors.button-hover
+    &:active
+        background-color: widgetColors.button-active
+        color:            textColors.button-active
 
 // ____________________________________ menus
 
 .menu
     position:         absolute
     overflow:         hidden
-    border-right:     widgetBorders.menu
     border-radius:    buttonRadius
     & > *
-      noSelection()
-      color:          textColors.menu
+        noSelection()
+        color:        textColors.menu
 
 .menu .button
+    overflow:         hidden
     float:            left
     font-weight:      normal
     padding-left:     8px
     padding-right:    8px
     height:           widgetHeaderSize
-    margin-right:     -1px
     bgColorHover(     widgetColors.menu )
     border:           widgetBorders.menu
     &:hover
-      color: textColors.menu-hover
+        color: textColors.menu-hover
     &:active
-      color: textColors.menu-active
+        color: textColors.menu-active

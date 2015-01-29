@@ -4,68 +4,75 @@ stg = require './stage.coffee'
 
 document.observe "dom:loaded", ->
 
-    #log (x + y for x in [1, 2] for y in [7, 8])
-
     $$(".menu").each (menu) -> $(menu.id).raise()
 
-    $('del').observe 'click', (e) -> wid.closeAll()
+    wid.get
+        type:   'button'
+        text:   'add'
+        parent: 'menu'
+        onClick: ->
+            ssz = stg.size()
+            wid.get
+                width:    300
+                height:   200
+                title:    'widget'
+                x:        Math.random() * parseInt ssz.width - 300
+                y:        Math.random() * parseInt ssz.height - 200
 
-    $('add_a').on 'click', () ->
-        ssz = stg.size()
-        wid.get
-            width:    300
-            height:   200
-            title:    'widget'
-            x:        Math.random() * parseInt ssz.width - 300
-            y:        Math.random() * parseInt ssz.height - 200
-
-    $('add_b').on 'click', () ->
-        wid.get
-            type:     'widget'
-            y:        30
-            title:    'hello'
-            hasSize:  true
-            minWidth: '90px'
-            minHeight: '120px'
-            maxHeight: '210px'
-            children: \
-            [
-                type:       'slider'
-                value:      40.0
-                valueMin:   20.0
-                valueMax:   60.0
-                valueStep:  10
-            ,
-                type:       'slider'
-                hasKnob:    true
-                hasBar:     true
-                value:      70.0
-                valueMin:   0.0
-                valueMax:   100.0
-                valueStep:  1
-            ,
-                type:       'value'
-                value:      666.0
-                valueMin:   4
-                valueMax:   10
-                valueStep:  0.1
-            ,
-                type:       'relative'
-                children:   \
+    wid.get
+        type:   'button'
+        id:     'hello'
+        text:   'hello'
+        parent: 'menu'
+        onClick: ->
+            wid.get
+                type:      'widget'
+                y:         30
+                title:     'hello'
+                hasSize:   true
+                width:     130
+                minWidth:  120
+                minHeight: 150
+                maxHeight: 150
+                children: \
                 [
-                    type:       'button'
-                    text:       'ok'
-                    class:      'button a'
-                    onClick:    (event, element) -> @getParent().getChild('b').close()
+                    type:       'slider'
+                    value:      40.0
+                    valueMin:   20.0
+                    valueMax:   60.0
+                    valueStep:  10
                 ,
-                    type:       'button'
-                    text:       'no'
-                    class:      'button top-right'
-                    onClick:    (event, element) -> @getParent().close()
+                    type:       'slider'
+                    hasKnob:    true
+                    hasBar:     true
+                    value:      70.0
+                    valueMin:   0.0
+                    valueMax:   100.0
+                    valueStep:  1
+                ,
+                    type:       'value'
+                    value:      666.0
+                    valueMin:   4
+                    valueMax:   10
+                    valueStep:  0.1
+                ,
+                    type:       'relative'
+                    children:   \
+                    [
+                        type:       'button'
+                        text:       'ok'
+                        class:      'top-left'
+                        onClick:    -> @getWidget().getChild('no').close()
+                    ,
+                        type:       'button'
+                        id:         'no'
+                        text:       'no'
+                        class:      'top-right'
+                        onClick:    -> @getWidget().close()
+                    ]
                 ]
-            ]
 
-            document.stageButtons()
+                document.stageButtons()
 
     @stageButtons = () ->
 
@@ -99,6 +106,20 @@ document.observe "dom:loaded", ->
             x:          150
             y:          120
 
-    $('add_b').click()
+        wid.get
+            type:       'button'
+            text:       'del'
+            width:      200
+            x:          150
+            y:          150
+            onClick:    wid.closeAll
+
+    wid.get
+        type:   'button'
+        text:   'del'
+        parent: 'footer'
+        onClick: -> wid.closeAll()
+
+    $('hello').click()
 
     return

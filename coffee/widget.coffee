@@ -123,7 +123,10 @@ class wid
         w = p.getWidget() if p['getWidget']
         return w
 
-    getChild: (name) -> Selector.findChildElements(this, ['.'+name])[0]
+    getChild: (name) ->
+        c = Selector.findChildElements(this, ['.'+name, '#'+name])
+        return c[0] if c.length
+        return null
 
     headerSize: (box="border-box-height") ->
         children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
@@ -147,13 +150,13 @@ class wid
 
     @nextWidgetID  = 0
 
-    @closeAll = ->                                          # close all widgets
+    @closeAll = -> # close all widgets
         $$(".widget").each (widget) ->
             widget.close()
             return
         return
 
-    @elem = (type, clss) ->                                # create element of <type>, add class <clss> and assign 'unique' id
+    @elem = (type, clss) -> # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
         e.id = "widget_%d".fmt(@nextWidgetID)
         @nextWidgetID += 1
@@ -194,9 +197,12 @@ class wid
         this
 
     @create = (cfg) ->
-        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create widget div
+        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
         Object.extend w, wid.prototype                      # merge in widget functions
         w.config = Object.clone(cfg)
+
+        if w.config.id
+            w.writeAttribute('id', w.config.id)
 
         if w.config.isMovable
             drag.create
@@ -211,10 +217,7 @@ class wid
             w.setStyle w.config.style
 
         style = {}
-        for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
-            if s in $H(w.config).keys()
-                log s
-                style[s] = w.config[s]
+        style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
         w.setStyle style
 
         w.insert(w.config.text) if w.config.text
@@ -231,7 +234,7 @@ class wid
         @installEvents(w)
 
         if w.config.noDown
-            w.on 'mousedown', (event,e) -> event.stop()
+            w.on 'mousedown', (event,e) -> event.stopPropagation()
 
         return w
 
@@ -296,10 +299,10 @@ class wid
 
     @button = (cfg) ->
         @create @def cfg,
-            width:    20
+            type:     'button'
+            noDown:   true
+            minWidth: 50
             height:   20
-            # noDown:   true
-            class:    'button static'
 
     @scroll = (cfg) ->
 
@@ -316,7 +319,7 @@ class wid
         scroll = @create @def cfg,
             height:     20
             horizontal: true
-            class:      'scroll static'
+            class:      'scroll'
 
         h = wid.create
             width:      16
@@ -359,7 +362,6 @@ class wid
             valueMin:   0
             valueMax:   100
             horizontal: true
-            class:      'static'
             children: \
             [
                 type:       'relative'
