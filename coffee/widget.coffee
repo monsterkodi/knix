@@ -4,17 +4,9 @@ log  = require('./log.coffee')
 
 class wid
 
-    # __________________________________________________ tools
+    # _________________________________________________________________________________________________________ instance
 
-    format: (s) -> return @config.format.fmt(s) if @config.format?; s
-
-    clamp: (v) -> # clamps v to the [valueMin,valueMax] range
-        c = v
-        c = Math.min(c, @config.valueMax) if @config.valueMax
-        c = Math.max(c, @config.valueMin) if @config.valueMin
-        c
-
-    # __________________________________________________ signals
+    # ____________________________________________________________________________ signals
 
     emit: (signal, args) ->
         event = new CustomEvent signal,
@@ -28,14 +20,14 @@ class wid
                 width:  @getWidth()
                 height: @getHeight()
 
-    # __________________________________________________ slots
+    # ____________________________________________________________________________ slots
 
     slotArg: (event, argname='value') ->
         if typeof event == 'object'
             return event.detail[argname]
         event
 
-    # __________________________________________________ hierarchy
+    # ____________________________________________________________________________ hierarchy
 
     getParent: ->
         return $(@config.parent) if @config.parent
@@ -55,7 +47,7 @@ class wid
 
     close: -> @remove(); return
 
-    # __________________________________________________ geometry
+    # ____________________________________________________________________________ geometry
 
     moveTo: (x, y) ->
         @style.left = "%dpx".fmt(x)
@@ -131,7 +123,17 @@ class wid
     relPos:      -> o = @positionedOffset(); pos o.left, o.top
     absPos:      -> o = @cumulativeOffset(); s = @cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
 
-    # ______________________________________________________ static functions
+    # ____________________________________________________________________________ tools
+
+    format: (s) -> return @config.format.fmt(s) if @config.format?; s
+
+    clamp: (v) -> # clamps v to the [valueMin,valueMax] range
+        c = v
+        c = Math.min(c, @config.valueMax) if @config.valueMax
+        c = Math.max(c, @config.valueMin) if @config.valueMin
+        c
+
+    # ____________________________________________________________________________________________________________ class
 
     @nextWidgetID  = 0
 
@@ -181,7 +183,7 @@ class wid
         w.on "ondblclick", w.config.onDouble if w.config.onDouble
         this
 
-    #__________________________________________________ slots
+    # ____________________________________________________________________________slots
 
     @initSlots = (w) ->
         slots = w.config.slots
@@ -190,7 +192,7 @@ class wid
             log "@initSlots", w.id, slot
             w[slot] = func
 
-    #__________________________________________________ connections
+    # ____________________________________________________________________________connections
 
     @initConnections = (w) ->
         connections = w.config.connect
@@ -233,9 +235,7 @@ class wid
         log "@resolveSlot slot not found!", slot
         null
 
-    #______________________________________________________
-    #______________________________________________________ element creation
-    #______________________________________________________
+    # ____________________________________________________________________________element creation
 
     @create = (cfg) ->
 
@@ -295,7 +295,7 @@ class wid
     @get = (cfg) -> # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
         @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'} ) # also sets the stage as default parent
 
-    # ______________________________________________________ widget
+    # ________________________________________________________________________________ widget
 
     @widget = (cfg) ->
         chd = cfg.children
@@ -308,7 +308,7 @@ class wid
             onDown:    (event,e) -> e.getWidget().raise()
             class:     'frame'
 
-        # __________________________________________________ header
+        #__________________________________________________ header
 
         w.addTitleBar = ->
             wid.create
@@ -378,7 +378,7 @@ class wid
         @insertChildren(w)
         w
 
-    # ______________________________________________________ slider
+    # ________________________________________________________________________________ slider
 
     @slider = (cfg) ->
 
@@ -443,7 +443,7 @@ class wid
 
         slider
 
-    # ______________________________________________________ value
+    # ________________________________________________________________________________ value
 
     @value = (cfg) ->
 
@@ -490,7 +490,7 @@ class wid
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)
 
-    # ______________________________________________________ scroll
+    # ________________________________________________________________________________ scroll
 
     @scroll = (cfg) ->
 
@@ -527,7 +527,7 @@ class wid
 
         scroll
 
-    # ______________________________________________________ icon & input
+    # ________________________________________________________________________________ icon & input
 
     @icon = (cfg) ->
         @create cfg
