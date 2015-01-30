@@ -290,11 +290,11 @@ class wid
             pct = @percentage v
             slb = @getChild('slider-bar')
             if slb
-                slb.style.width = "%d%".fmt(pct)
+                slb.style.width = "%d%%".fmt(pct)
 
             knb = @getChild('slider-knob')
             if knb
-                knb.style.left = "%d%".fmt(pct)
+                knb.style.left = "%d%%".fmt(pct)
                 knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
             @emit 'onValue', value:v
             return

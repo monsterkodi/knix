@@ -10,6 +10,12 @@ module.exports = (grunt) ->
                 options:
                   transform: ['coffeeify']
 
+        bower_concat:
+            all:
+                dest: 'js/lib/bower.js',
+                bowerOptions:
+                    relative: false
+
         stylus:
             compile:
                 files:
@@ -43,12 +49,13 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-stylus'
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-bower-concat'
     grunt.loadNpmTasks 'grunt-browserify'
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'default',   [ 'browserify', 'stylus', 'clean:tempfiles' ]
-    grunt.registerTask 'build',     [ 'browserify', 'stylus' ]
-    grunt.registerTask 'test',      [ 'browserify', 'stylus', 'shell:touch', 'open', 'clean:tempfiles' ]
+    grunt.registerTask 'default',   [ 'bower_concat', 'browserify', 'stylus', 'clean:tempfiles' ]
+    grunt.registerTask 'build',     [ 'bower_concat', 'browserify', 'stylus' ]
+    grunt.registerTask 'test',      [ 'bower_concat', 'browserify', 'stylus', 'shell:touch', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'install',   [ 'shell:install' ]

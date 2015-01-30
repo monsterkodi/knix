@@ -50,14 +50,14 @@ class wid
     # ____________________________________________________________________________ geometry
 
     moveTo: (x, y) ->
-        @style.left = "%dpx".fmt(x)
-        @style.top  = "%dpx".fmt(y)
+        @style.left = "%dpx".fmt(x) if x?
+        @style.top  = "%dpx".fmt(y) if y?
         return
 
     moveBy: (dx, dy) ->
         p = @relPos()
-        @style.left = "%dpx".fmt(p.x+dx)
-        @style.top  = "%dpx".fmt(p.y+dy)
+        @style.left = "%dpx".fmt(p.x+dx) if dx?
+        @style.top  = "%dpx".fmt(p.y+dy) if dy?
         return
 
     setWidth: (w) ->
@@ -71,8 +71,8 @@ class wid
         return
 
     resize: (w, h) ->
-        @setWidth w if w
-        @setHeight h if h
+        @setWidth w if w?
+        @setHeight h if h?
         return
 
     headerSize: (box="border-box-height") ->

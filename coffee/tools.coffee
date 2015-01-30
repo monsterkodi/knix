@@ -5,8 +5,7 @@
     e
 
 String.prototype.fmt = ->
-    @sprintf.apply this,
-        [].slice.call arguments
+    vsprintf this, [].slice.call arguments
 
 Element.addMethods
     raise: (element) ->

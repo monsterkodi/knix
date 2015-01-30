@@ -36,3 +36,4 @@ npm-debug.log
 cs/*.js
 js/knix*.js
 style/style.css
+bower_components
