@@ -1,5 +1,5 @@
 log = require './log.coffee'
-wid = require './widget.coffee'
+wid = require './wid.coffee'
 stg = require './stage.coffee'
 
 document.observe "dom:loaded", ->
