@@ -38,6 +38,8 @@ module.exports = (grunt) ->
                 command: 'npm install'
             touch:
                 command: 'touch index.html'
+            node:
+                command: 'supervisor -q js/node.js'
 
         open:
           browser:
@@ -59,3 +61,4 @@ module.exports = (grunt) ->
     grunt.registerTask 'test',      [ 'bower_concat', 'browserify', 'stylus', 'shell:touch', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'install',   [ 'shell:install' ]
+    grunt.registerTask 'node',      [ 'shell:node' ]

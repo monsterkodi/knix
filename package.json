@@ -18,6 +18,8 @@
     "grunt-contrib-stylus": "^0.20.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-open": "^0.2.3",
-    "grunt-shell": "^1.1.1"
+    "grunt-shell": "^1.1.1",
+    "process": "^0.10.0",
+    "system": "^0.1.0"
   }
 }
