@@ -13,3 +13,5 @@ Element.addMethods
             return
         element.parentElement.appendChild element
         return
+
+module.exports = this

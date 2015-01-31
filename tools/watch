@@ -1,2 +1,5 @@
+killall supervisor
+killall node
+killall grunt
 grunt watch &
 grunt node &

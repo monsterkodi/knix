@@ -37,3 +37,4 @@ cs/*.js
 js/knix*.js
 style/style.css
 bower_components
+.atom-build.json

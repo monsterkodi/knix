@@ -1,7 +1,8 @@
 drag = require('./drag.coffee')
+wdgt = require('./widget.coffee')
 pos  = require('./pos.coffee')
 log  = require('./log.coffee')
-wdgt = require('./widget.coffee')
+tls  = require('./tools.coffee')
 
 class wid
 
@@ -114,7 +115,7 @@ class wid
         #__________________________________________________ initialization
 
         w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
-        Object.extend w, wdgt.prototype                      # merge in widget functions
+        Object.extend w, wdgt.prototype                     # merge in widget functions
         w.config = Object.clone(cfg)                        # set config
 
         w.writeAttribute('id', w.config.id) if w.config.id  # set element id

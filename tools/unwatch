@@ -1,0 +1,2 @@
+killall node
+exit 0
