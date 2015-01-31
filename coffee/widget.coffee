@@ -147,8 +147,8 @@ class wid
         r
     clamp: (v) -> # clamps v to the [valueMin,valueMax] range
         c = v
-        c = Math.min(c, @config.valueMax) if @config.valueMax
-        c = Math.max(c, @config.valueMin) if @config.valueMin
+        c = Math.min(c, @config.valueMax) if @config.valueMax?
+        c = Math.max(c, @config.valueMin) if @config.valueMin?
         c
 
 module.exports = wid

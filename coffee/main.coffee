@@ -6,18 +6,36 @@ document.observe "dom:loaded", ->
 
     $$(".menu").each (menu) -> $(menu.id).raise()
 
+    sc = wid.get
+        id:     'stage_canvas'
+        type:   'canvas'
+        # width:  '100%'
+        # height: '100%'
+
+    sc.fc.setWidth('100%', {cssOnly: true})
+    sc.fc.setHeight('100%', {cssOnly: true})
+
+    window.onresize = (event) -> log event.target.innerWidth, event.target.innerHeight
+
     wid.get
         type:   'button'
+        id:     'add'
         text:   'add'
         parent: 'menu'
         onClick: ->
             ssz = stg.size()
             wid.get
-                width:    300
-                height:   200
                 title:    'widget'
                 x:        Math.random() * parseInt ssz.width - 300
                 y:        Math.random() * parseInt ssz.height - 200
+                hasSize:  false
+                child:
+                    type: 'canvas'
+                    noDown: true
+                    width:  200
+                    height: 200
+                    onClick: (event) -> log 'click'
+                    onDown: (event) -> log 'down'
 
     wid.get
         type:   'button'
@@ -54,7 +72,7 @@ document.observe "dom:loaded", ->
                     value:      50
                     valueMin:   -20
                     valueMax:   80
-                    # valueStep:  0.2
+                    valueStep:  1
                     format:     "%3.2f"
                     connect: \
                     [
@@ -85,17 +103,27 @@ document.observe "dom:loaded", ->
                     ]
                 ]
 
-                document.stageButtons()
-
     @stageButtons = () ->
 
         wid.get
+            id:         'slider_3'
             type:       'slider'
             hasKnob:    false
             hasBar:     false
             width:      200
             x:          150
             y:          30
+            valueMin:   0
+            valueMax:   255
+            connect: \
+            [
+                signal: 'onValue'
+                slot:   (v) ->
+                    v = @slotArg(v)
+                    c = 'rgba(%d,0,0,0.2)'.fmt(v)
+                    sc = $('stage_canvas').fc
+                    sc.setBackgroundColor(c, sc.renderAll.bind(sc))
+            ]
 
         wid.get
             type:       'slider'
@@ -133,6 +161,8 @@ document.observe "dom:loaded", ->
         parent: 'footer'
         onClick: -> wid.closeAll()
 
-    $('hello').click()
+    # $('hello').click()
+    $('add').click()
+    document.stageButtons()
 
     return

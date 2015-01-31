@@ -86,26 +86,19 @@ class wid
         receiver: slotFunction
 
     @resolveSignal = (w, signal) ->
-        #log "@resolveSignal", signal
         [event, sender] =  signal.split(':').reverse()
-        #log sender, event
         sender = w.getWidget().getChild(sender) if sender?
         sender = w unless sender?
         [sender, event]
 
     @resolveSlot = (w, slot) ->
-        #log "@resolveSlot", slot
         if typeof slot == 'function'
-            log "function slot"
             return slot
         if typeof slot == 'string'
             [func, receiver] = slot.split(':').reverse()
-            #log "rec", receiver, "fnc", func
             receiver = w.getWidget().getChild(receiver) if receiver?
             receiver = w unless receiver?
             return receiver[func].bind(receiver) if receiver[func]?
-            log "@resolveSlot receiver", receiver.id, "has no", func
-        log "@resolveSlot slot not found!", slot
         null
 
     # ____________________________________________________________________________element creation
@@ -171,8 +164,14 @@ class wid
     # ________________________________________________________________________________ widget
 
     @widget = (cfg) ->
+
         chd = cfg.children
+        if cfg.child
+            if not chd? then chd = []
+            chd.push cfg.child
         cfg.children = null
+        cfg.child = null
+
         w = @create @def cfg,
             hasClose:  true
             hasShade:  true
@@ -244,12 +243,23 @@ class wid
         w.addSizeButton()   if w.config.hasSize
         c = @create
             elem: 'div',
-            type: 'widget_content'
+            type: 'content'
             parent: w
         w.content = c.id
         w.config.children = chd
         @insertChildren(w)
         w
+
+    # ________________________________________________________________________________ canvas
+
+    @canvas = (cfg) ->
+        cvs = @create @def cfg,
+            elem: 'canvas'
+        fbc = new fabric.StaticCanvas cvs.id
+        fbc.setWidth(cfg.width) if cfg.width?
+        fbc.setHeight(cfg.height) if cfg.height?
+        cvs.fc = fbc
+        cvs
 
     # ________________________________________________________________________________ slider
 
@@ -366,17 +376,17 @@ class wid
         value.input = value.getChild 'value-input'
 
         value.incr = (d) ->
-            if d in ['Up', '+', '++'] then d = 1
-            else if d in ['Down', '-', '--'] then d = -1
+            if d in ['up', '+', '++'] then d = 1
+            else if d in ['down', '-', '--'] then d = -1
             if @config.valueStep? then step = @config.valueStep else step = 1
             @setValue @input.getValue() + step*d
 
         value.on 'keypress', (event,e) ->
             if event.key in ['Up', 'Down']
-                @incr event.key
+                @incr event.key.toLowerCase()
                 event.stop()
                 return
-            if event.key not in '0123456789abcdef-.'
+            if event.key not in '0123456789-.'
                 if event.key.length == 1
                     event.stop()
                     return
