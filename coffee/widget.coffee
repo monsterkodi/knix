@@ -24,24 +24,36 @@ class wid
 
     slotArg: (event, argname='value') ->
         if typeof event == 'object'
-            return event.detail[argname]
+            if event.detail[argname]?
+                return event.detail[argname]
+            else
+                return event.detail
+        if argname == 'value'
+            return parseFloat event
         event
 
     # ____________________________________________________________________________ hierarchy
 
+    # returns first ancestor element that matches class or id of first argument
+    # with no arument: the element with config.parent id or the parent element
+
     getParent: ->
+        args = $A(arguments)
+        if args.length
+            for a in @ancestors()
+                if a.match("#"+args[0]) or a.match("."+args[0])
+                    return a
+            return
         return $(@config.parent) if @config.parent
         return $(@parentElement.id)
 
-    getWidget: ->
+    getWidget: -> # returns this or first ancestor element with class 'widget'
         if @hasClassName('widget')
             return this
-        p = @getParent()
-        w = p.getWidget() if p['getWidget']
-        return w
+        @getParent('widget')
 
-    getChild: (name) ->
-        c = Selector.findChildElements(this, ['.'+name, '#'+name])
+    getChild: (name) -> # returns first child element that matches class or id <name>
+        c = Selector.findChildElements(this, ['#'+name, '.'+name])
         return c[0] if c.length
         return null
 
@@ -125,8 +137,14 @@ class wid
 
     # ____________________________________________________________________________ tools
 
-    format: (s) -> return @config.format.fmt(s) if @config.format?; s
-
+    format: (s) -> return @config.format.fmt(s) if @config.format?; String(s)
+    strip0: (s) -> return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s)
+    round: (v) -> # rounds v to multiples of valueStep
+        r = v
+        if @config.valueStep?
+            d = v - Math.round(v/@config.valueStep)*@config.valueStep
+            r -= d
+        r
     clamp: (v) -> # clamps v to the [valueMin,valueMax] range
         c = v
         c = Math.min(c, @config.valueMax) if @config.valueMax

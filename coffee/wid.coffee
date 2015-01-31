@@ -285,9 +285,10 @@ class wid
         slider.setValue = (arg) ->
             v = @slotArg(arg, 'value')
             if isNaN v
-                log 'farz'
+                log @id, 'farz', arg.detail
                 return
-            @config.value = @clamp(v)
+            v = @clamp(v)
+            @config.value = v
             pct = @percentage v
             slb = @getChild('slider-bar')
             if slb
@@ -327,8 +328,8 @@ class wid
             slots:      \
             {
                 setValue: (arg) ->
-                    v = @format(@clamp(@slotArg(arg, 'value')))
-                    @getChild('input').setAttribute("value", v)
+                    v = @format(@round(@clamp(@slotArg(arg, 'value'))))
+                    @input.value = @strip0 v
                     @emit 'onValue',
                         value: v
             }
@@ -346,6 +347,7 @@ class wid
                         child:
                             type:   'icon'
                             class:  'arrow-left'
+                        onClick: (event,e) -> @getParent('value').incr '-'
                     ,
                         elem: 'td'
                         type: 'value-content'
@@ -358,7 +360,34 @@ class wid
                         child:
                             type:   'icon'
                             class:  'arrow-right'
+                        onClick: (event,e) -> @getParent('value').incr '+'
                     ]
+
+        value.input = value.getChild 'value-input'
+
+        value.incr = (d) ->
+            if d in ['Up', '+', '++'] then d = 1
+            else if d in ['Down', '-', '--'] then d = -1
+            if @config.valueStep? then step = @config.valueStep else step = 1
+            @setValue @input.getValue() + step*d
+
+        value.on 'keypress', (event,e) ->
+            if event.key in ['Up', 'Down']
+                @incr event.key
+                event.stop()
+                return
+            if event.key not in '0123456789abcdef-.'
+                if event.key.length == 1
+                    event.stop()
+                    return
+            if event.key in '-.'
+                if @input.value.indexOf(event.key) > -1
+                    event.stop()
+                    return
+
+        value.on 'change', (event, e) ->
+            log 'value on change', e.id, e.getValue()
+            @setValue e.getValue()
 
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)
@@ -400,10 +429,12 @@ class wid
 
         scroll
 
-    # ________________________________________________________________________________ icon & input
+    # ________________________________________________________________________________ icon
 
     @icon = (cfg) ->
         @create cfg
+
+    # ________________________________________________________________________________ input
 
     @input = (cfg) ->
         inp = @create @def cfg,
@@ -413,6 +444,7 @@ class wid
         inp.setAttribute "size", 6
         inp.setAttribute "type", "text"
         inp.setAttribute "inputmode", "numeric"
+        inp.getValue = -> parseFloat(@value)
         inp
 
     @button = (cfg) ->

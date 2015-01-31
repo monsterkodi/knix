@@ -52,9 +52,9 @@ document.observe "dom:loaded", ->
                 ,
                     type:       'value'
                     value:      50
-                    valueMin:   10
-                    valueMax:   90
-                    valueStep:  0.1
+                    valueMin:   -20
+                    valueMax:   80
+                    # valueStep:  0.2
                     format:     "%3.2f"
                     connect: \
                     [
@@ -63,6 +63,10 @@ document.observe "dom:loaded", ->
                     ,
                         signal: 'onValue'
                         slot:   'slider_1:setValue'
+                    # ,
+                    #     signal: 'slider_1:onValue'
+                    #     slot:   (event) ->
+                    #         log "---", event.detail.value
                     ]
                 ,
                     type:       'relative'
