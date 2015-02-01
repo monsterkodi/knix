@@ -34,9 +34,8 @@ class wid
             w.setStyle w.config.style
 
         style = $H()
-        style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] if s?
-        if style.keys().length then log style
-        w.setStyle style if style.keys().length
+        style.set(s, w.config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when w.config[s]?
+        w.setStyle style.toObject() if style.keys().length
 
         #__________________________________________________ DOM setup
 
@@ -126,7 +125,7 @@ class wid
         slots = w.config.slots
         return if not slots?
         for slot, func of slots
-            log "@initSlots", w.id, slot
+            # log "@initSlots", w.id, slot
             w[slot] = func
 
     # ____________________________________________________________________________ connections
@@ -138,7 +137,7 @@ class wid
             @connect w, connection.signal, connection.slot
 
     @connect = (w, signal, slot) ->
-        log "@connect", signal, slot
+        # log "@connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(w, signal)
         slotFunction = @resolveSlot(w, slot)
         if not signalSender? then log "    sender not found!"; return
