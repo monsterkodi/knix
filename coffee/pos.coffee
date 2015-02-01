@@ -1,4 +1,5 @@
 class Pos
+    
     constructor: (@x, @y) ->
 
     add: (val) ->

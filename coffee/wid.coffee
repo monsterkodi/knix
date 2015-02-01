@@ -164,7 +164,7 @@ class wid
             return receiver[func].bind(receiver) if receiver[func]?
         null
 
-    # ________________________________________________________________________________ get
+    # ________________________________________________________________________________ wid.get
 
     # shortcut to call any of the type functions below (@widget, @button, @slider, ...)
     # uses @widget if no type is specified and sets the stage_content as default parent

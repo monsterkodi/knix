@@ -8,14 +8,18 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ svg test
 
-    # svg = wid.get
-    #     id:    'stage_svg'
-    #     type:  'svg'
-    #
-    # set = svg.s.set()
-    # set.add svg.s.rect(100, 100)
-    # set.add svg.s.path('M 100 200 C 200 100 300  0 400 100 C 500 200 600 300 700 200 C 800 100 900 100 900 100')
-    # set.stroke({ color: "#ff0", width: 10 }).fill('none')
+    svg = wid.get
+        id:    'stage_svg'
+        type:  'svg'
+
+    set = svg.s.set()
+    p = svg.s.path()
+    p   .M  100, 100
+        .Q  200, 100, 200, 200
+        .Q  200, 300, 300, 300
+    set.add p
+    set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
+    set.stroke(color: "rgba(255,150,0,0.2)", width: 16).fill('none')
 
     # _________________________________________________________________________ canvas test
 
@@ -52,12 +56,12 @@ document.observe "dom:loaded", ->
                 y:        Math.random() * parseInt ssz.height - 200
                 hasSize:  false
                 child:
-                    type: 'canvas'
+                    type:   'canvas'
                     noDown: true
                     width:  200
                     height: 200
                     onClick: (event) -> log 'click'
-                    onDown: (event) -> log 'down'
+                    onDown:  (event) -> log 'down'
 
     wid.get
         type:   'button'
@@ -185,6 +189,6 @@ document.observe "dom:loaded", ->
 
     # $('hello').click()
     # $('add').click()
-    document.stageButtons()
+    # document.stageButtons()
 
     return
