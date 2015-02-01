@@ -43,39 +43,22 @@ document.observe "dom:loaded", ->
 
     wid.get
         type:   'button'
-        id:     'add'
-        text:   'add'
+        id:     'open_console'
+        text:   'console'
         parent: 'menu'
         onClick: ->
-            log \
             wid.get
                 title:    'console'
                 class:    'frame console-widget'
-                x:        10
-                y:        60
-                width:    600
-                height:   300
+                x:        stg.size().width/2
+                y:        0
+                width:    stg.size().width/2-4
+                height:   stg.size().height-4
                 content:  'scroll'
                 child:
-                    # type:   'console-scroll'
-                    # child:
                     type:   'console'
                     text:   'knix 0.1.0'
                     noDown: true
-
-        #     ssz = stg.size()
-        #     wid.get
-        #         title:    'widget'
-        #         x:        Math.random() * parseInt ssz.width - 300
-        #         y:        Math.random() * parseInt ssz.height - 200
-        #         hasSize:  false
-        #         child:
-        #             type:   'canvas'
-        #             noDown: true
-        #             width:  200
-        #             height: 200
-        #             onClick: (event) -> log 'click'
-        #             onDown:  (event) -> log 'down'
 
     wid.get
         type:   'button'
@@ -202,7 +185,8 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     # $('hello').click()
-    $('add').click()
+    $('open_console').click()
+    $$('.console-widget')[0].shade()
     # document.stageButtons()
 
     return

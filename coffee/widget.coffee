@@ -87,33 +87,6 @@ class wid
         @setHeight h if h?
         return
 
-    headerSize: (box="border-box-height") ->
-        children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
-        i = 0
-        while i < children.length
-            height = children[i].getLayout().get(box)
-            return height  if height
-            i++
-        0
-
-    shade: ->
-        size = @getChild 'size'
-        if @config.isShaded
-            @setStyle('min-height': @config.minHeight+'px')
-            @setHeight @config.height
-            # adjust height for border size
-            diff = @getHeight() - @config.height
-            @setHeight @config.height - diff  if diff
-            @config.isShaded = false
-            size.show() if size
-        else
-            @config.height = @getHeight()
-            @setStyle('min-height': '0px')
-            @setHeight @headerSize("padding-box-height")
-            @config.isShaded = true
-            size.hide() if size
-        return
-
     percentage: (v) -> # returns the percentage of value v in the [valueMin,valueMax] range
         cfg = @config
         if cfg.hasKnob
