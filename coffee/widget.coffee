@@ -99,6 +99,7 @@ class wid
     shade: ->
         size = @getChild 'size'
         if @config.isShaded
+            @setStyle('min-height': @config.minHeight+'px')
             @setHeight @config.height
             # adjust height for border size
             diff = @getHeight() - @config.height
@@ -107,6 +108,7 @@ class wid
             size.show() if size
         else
             @config.height = @getHeight()
+            @setStyle('min-height': '0px')
             @setHeight @headerSize("padding-box-height")
             @config.isShaded = true
             size.hide() if size

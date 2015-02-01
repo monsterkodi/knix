@@ -21,7 +21,6 @@ class wid
         w.writeAttribute('id', w.config.id) if w.config.id? # set element id
 
         for a,v of w.config.attr                            # set element attributes
-            log a, v
             w.writeAttribute(a, v)
 
         if w.config.class                                   # add class names
@@ -225,19 +224,26 @@ class wid
                 wpos = widget.absPos()
                 spos = sizer.absPos()
 
+                hdr = widget.headerSize()
+
                 wdt = spos.x-wpos.x+sizer.getWidth()
-                wdt = Math.max(widget.headerSize()*2, wdt)
+                wdt = Math.max(hdr*2, wdt)
                 wdt = Math.max(widget.minWidth(), wdt)
                 wdt = Math.min(widget.maxWidth(), wdt)
                 widget.setWidth(wdt)
 
                 hgt = spos.y-wpos.y+sizer.getHeight()
-                hgt = Math.max(widget.headerSize()+sizer.getHeight(), hgt)
+                hgt = Math.max(hdr+sizer.getHeight(), hgt)
                 hgt = Math.max(widget.minHeight(), hgt)
                 hgt = Math.min(widget.maxHeight(), hgt)
                 widget.setHeight(hgt)
 
                 sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
+
+                if widget.config.content == 'scroll'
+                    content = $(widget.content)
+                    content.setWidth  wdt
+                    content.setHeight hgt-hdr
 
                 return
 
@@ -251,11 +257,17 @@ class wid
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
         w.addTitleBar()     if w.config.hasTitle or w.config.title
-        w.addSizeButton()   if w.config.hasSize
+
         c = @create
             elem: 'div',
             type: 'content'
             parent: w
+
+        w.addSizeButton()   if w.config.hasSize
+
+        if w.config.content == 'scroll'
+            c.setStyle { position: 'relative', overflow:'scroll', width: '100%', height: '100%' }
+
         w.content = c.id
         w.config.children = chd
         @insertChildren(w)

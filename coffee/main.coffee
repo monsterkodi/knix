@@ -49,19 +49,35 @@ document.observe "dom:loaded", ->
         text:   'add'
         parent: 'menu'
         onClick: ->
-            ssz = stg.size()
+            log \
             wid.get
-                title:    'widget'
-                x:        Math.random() * parseInt ssz.width - 300
-                y:        Math.random() * parseInt ssz.height - 200
-                hasSize:  false
+                title:    'console'
+                class:    'frame console-widget'
+                x:        10
+                y:        60
+                width:    600
+                height:   300
+                content:  'scroll'
                 child:
-                    type:   'canvas'
+                    # type:   'console-scroll'
+                    # child:
+                    type:   'console'
+                    text:   'knix 0.1.0'
                     noDown: true
-                    width:  200
-                    height: 200
-                    onClick: (event) -> log 'click'
-                    onDown:  (event) -> log 'down'
+
+        #     ssz = stg.size()
+        #     wid.get
+        #         title:    'widget'
+        #         x:        Math.random() * parseInt ssz.width - 300
+        #         y:        Math.random() * parseInt ssz.height - 200
+        #         hasSize:  false
+        #         child:
+        #             type:   'canvas'
+        #             noDown: true
+        #             width:  200
+        #             height: 200
+        #             onClick: (event) -> log 'click'
+        #             onDown:  (event) -> log 'down'
 
     wid.get
         type:   'button'
@@ -69,8 +85,8 @@ document.observe "dom:loaded", ->
         text:   'hello'
         parent: 'menu'
         onClick: ->
+            log 'hello!'
             wid.get
-                type:      'widget'
                 y:         30
                 title:     'hello'
                 hasSize:   true
@@ -188,7 +204,7 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     # $('hello').click()
-    # $('add').click()
+    $('add').click()
     # document.stageButtons()
 
     return
