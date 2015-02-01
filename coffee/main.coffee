@@ -72,7 +72,7 @@ document.observe "dom:loaded", ->
                 title:     'hello'
                 hasSize:   true
                 width:     130
-                minWidth:  120
+                minWidth:  130
                 minHeight: 150
                 maxHeight: 150
                 children: \

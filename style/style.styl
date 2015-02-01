@@ -105,6 +105,7 @@ canvas
 .console-widget
   .content
     padding: 0px
+    background-color: widgetColors.console
     *
       margin:  0px
 
@@ -286,6 +287,7 @@ canvas
     border:           widgetBorders.button
     background-color: widgetColors.button
     color:            textColors.button
+    height:           buttonHeight
     &:hover
         background-color: widgetColors.button-hover
         color:            textColors.button-hover
@@ -294,14 +296,14 @@ canvas
         color:            textColors.button-active
 
 .console
-    background-color: black
+    background-color: widgetColors.console
     bottom:           0px
 
 // ____________________________________ menus
 
 .menu
     position:         absolute
-    overflow:         hidden
+    height:           menuHeight
     border-radius:    buttonRadius
     & > *
         noSelection()
@@ -313,7 +315,7 @@ canvas
     font-weight:      normal
     padding-left:     8px
     padding-right:    8px
-    height:           widgetHeaderSize
+    height:           menuHeight
     bgColorHover(     widgetColors.menu )
     border:           widgetBorders.menu
     &:hover

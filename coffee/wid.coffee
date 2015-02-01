@@ -545,6 +545,5 @@ class wid
             type:     'button'
             noDown:   true
             minWidth: 50
-            height:   20
 
 module.exports = wid
