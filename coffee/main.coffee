@@ -1,6 +1,7 @@
 log = require './log.coffee'
 wid = require './wid.coffee'
 stg = require './stage.coffee'
+console = require './console.coffee'
 
 document.observe "dom:loaded", ->
 
@@ -40,25 +41,6 @@ document.observe "dom:loaded", ->
     #     resizeStageCanvas parseInt(window.innerWidth), parseInt(window.innerHeight)
 
     # _________________________________________________________________________ widget test
-
-    wid.get
-        type:   'button'
-        id:     'open_console'
-        text:   'console'
-        parent: 'menu'
-        onClick: ->
-            wid.get
-                title:    'console'
-                class:    'frame console-widget'
-                x:        stg.size().width/2
-                y:        0
-                width:    stg.size().width/2-4
-                height:   stg.size().height-4
-                content:  'scroll'
-                child:
-                    type:   'console'
-                    text:   'knix 0.1.0'
-                    noDown: true
 
     wid.get
         type:   'button'
@@ -185,8 +167,8 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     # $('hello').click()
-    $('open_console').click()
-    $$('.console-widget')[0].shade()
+    console.show().shade()
+    console.menu()
     # document.stageButtons()
 
     return

@@ -1,4 +1,5 @@
 str = require('./str.coffee')
+con = require('./console.coffee')
 
 log = ->
 
@@ -17,10 +18,8 @@ log = ->
     # console.trace()
     console.log "%s %c%o", s, 'color:gray', "http:localhost:8888/"+f
 
-    $$(".console").each (e) ->
-        e.insert "<pre>"+s+"</pre>"
-        e.getWidget().scrollToBottom()
+    con.log s
 
-    return
+    return this
 
 module.exports = log

@@ -387,6 +387,7 @@ class wid
                 knb.style.left = "%d%%".fmt(pct)
                 knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
             @emit 'onValue', value:v
+            log @id, v
             return
 
         slider.setValue(slider.config.value)
