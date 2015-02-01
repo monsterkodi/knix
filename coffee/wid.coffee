@@ -203,6 +203,9 @@ class wid
                 type:    "close"
                 noDown:  true
                 parent:  this
+                # child:
+                #     type: 'icon'
+                #     icon: 'octicon-x'
                 onClick: (event,e) -> e.getWidget().close()
 
         w.addShadeButton = ->
@@ -210,6 +213,9 @@ class wid
                 type:    "shade"
                 noDown:  true
                 parent:  this
+                # child:
+                #     type: 'icon'
+                #     icon: 'octicon-dash'
                 onClick: (event,e) -> e.getWidget().shade()
 
         w.scrollToBottom = ->
@@ -293,6 +299,8 @@ class wid
 
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
+        if w.config.buttons?
+            @insertChild(w, b) for b in w.config.buttons
         w.addTitleBar()     if w.config.hasTitle or w.config.title
 
         c = @create

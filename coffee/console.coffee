@@ -20,7 +20,7 @@ class Console
     @show: ->
         wid = require './wid.coffee'
         stg = require './stage.coffee'
-        wid.get
+        con = wid.get
             title:    'console'
             class:    'frame console-widget'
             x:        stg.size().width/2
@@ -28,9 +28,23 @@ class Console
             width:    stg.size().width/2-4
             height:   stg.size().height-4
             content:  'scroll'
+            buttons:  \
+            [
+                type:    "widget-button"
+                noDown:  true
+                child:
+                    type: 'icon'
+                    icon: 'octicon-trashcan'
+                onClick: (event,e) ->
+                    con = e.getWidget().getChild('console')
+                    while con.hasChildNodes()
+                        con.removeChild con.lastChild
+            ]
             child:
                 type:   'console'
                 text:   'knix 0.1.0'
                 noDown: true
+
+
 
 module.exports = Console

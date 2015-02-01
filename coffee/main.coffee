@@ -167,7 +167,7 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     # $('hello').click()
-    console.show().shade()
+    console.show() #.shade()
     console.menu()
     # document.stageButtons()
 
