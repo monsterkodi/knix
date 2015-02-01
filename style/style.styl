@@ -87,13 +87,18 @@ canvas
     height:           100%
     background-color: rgba(255,255,255,0.15)
 
-// ____________________________________ widgets
+// ____________________________________ windows
 
-.widget
+.window
     position:         absolute
     overflow:         hidden
     border:           widgetBorders.bg
     background-color: widgetColors.bg
+    border-top-left-radius:     widgetTopRadius
+    border-top-right-radius:    widgetTopRadius
+    border-bottom-left-radius:  widgetBotRadius
+    border-bottom-right-radius: widgetBotRadius
+    shadow()
 
 .content
     padding-left:  10px
@@ -102,21 +107,14 @@ canvas
     *
       margin-bottom: 10px
 
-.console-widget
+.console-window
   .content
     padding: 0px
     background-color: widgetColors.console
     *
       margin:  0px
 
-.frame
-    border-top-left-radius:     widgetTopRadius
-    border-top-right-radius:    widgetTopRadius
-    border-bottom-left-radius:  widgetBotRadius
-    border-bottom-right-radius: widgetBotRadius
-    shadow()
-
-.widget .title
+.window .title
     color:            textColors.title
     height:           widgetHeaderSize
     text-align:       center
@@ -128,7 +126,7 @@ canvas
     noSelection()
     defaultCursor()
 
-.widget .close
+.window .close
     float:            left
     width:            widgetHeaderSize
     height:           widgetHeaderSize
@@ -139,8 +137,8 @@ canvas
     noSelection()
     handCursor()
 
-.widget .shade
-.widget .widget-button
+.window .shade
+.window .window-button
     float:            right
     height:           widgetHeaderSize
     border-left:      widgetBorders.shade
@@ -150,10 +148,10 @@ canvas
     noSelection()
     handCursor()
 
-.widget .shade
+.window .shade
    width:             widgetHeaderSize
 
-.widget .size
+.window .size
     position:         absolute
     bottom:           0px
     right:            0px

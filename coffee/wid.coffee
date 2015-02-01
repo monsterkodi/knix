@@ -1,8 +1,9 @@
-drag = require('./drag.coffee')
-wdgt = require('./widget.coffee')
-pos  = require('./pos.coffee')
-log  = require('./log.coffee')
-tls  = require('./tools.coffee')
+drag = require './drag.coffee'
+wdgt = require './widget.coffee'
+stg  = require './stage.coffee'
+pos  = require './pos.coffee'
+log  = require './log.coffee'
+tls  = require './tools.coffee'
 
 class wid
 
@@ -14,7 +15,9 @@ class wid
 
         #__________________________________________________ initialization
 
-        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
+        if not cfg.type?
+            log "NO TYPE?"
+        w = @elem(cfg.elem or "div", cfg.type)              # create element
         Object.extend w, wdgt.prototype                     # merge in widget functions
         w.config = Object.clone(cfg)                        # set config
 
@@ -55,6 +58,7 @@ class wid
         if w.config.isMovable
             drag.create
                 target: w
+                minPos: pos(undefined,0)
                 cursor: null
 
         @initSlots(w)
@@ -149,7 +153,7 @@ class wid
 
     @resolveSignal = (w, signal) ->
         [event, sender] =  signal.split(':').reverse()
-        sender = w.getWidget().getChild(sender) if sender?
+        sender = w.getWindow().getChild(sender) if sender?
         sender = w unless sender?
         [sender, event]
 
@@ -158,22 +162,26 @@ class wid
             return slot
         if typeof slot == 'string'
             [func, receiver] = slot.split(':').reverse()
-            receiver = w.getWidget().getChild(receiver) if receiver?
+            receiver = w.getWindow().getChild(receiver) if receiver?
             receiver = w unless receiver?
             return receiver[func].bind(receiver) if receiver[func]?
         null
 
     # ________________________________________________________________________________ wid.get
 
-    # shortcut to call any of the type functions below (@widget, @button, @slider, ...)
-    # uses @widget if no type is specified and sets the stage_content as default parent
+    # shortcut to call any of the type functions below (@window, @button, @slider, ...)
+    # uses @window if no type is specified and sets the stage_content as default parent
 
     @get = (cfg) ->
-        @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'})
+        @[cfg.type or 'window'](@def cfg, {parent: 'stage_content'})
 
-    # ________________________________________________________________________________ widget
+    #   ###   ###  ###  ###   ###  #######     #######   ###   ###
+    #   ### # ###  ###  ####  ###  ###   ###  ###   ###  ### # ###
+    #   #########  ###  ### # ###  ###   ###  ###   ###  #########
+    #   ###   ###  ###  ###  ####  ###   ###  ###   ###  ###   ###
+    #   ##     ##  ###  ###   ###  #######     #######   ##     ##
 
-    @widget = (cfg) ->
+    @window = (cfg) ->
 
         chd = cfg.children
         if cfg.child
@@ -183,12 +191,12 @@ class wid
         cfg.child = null
 
         w = @create @def cfg,
+            type:     'window'
             hasClose:  true
             hasShade:  true
             hasSize:   true
             isMovable: true
-            onDown:    (event,e) -> e.getWidget().raise()
-            class:     'frame'
+            onDown:    (event,e) -> e.getWindow().raise()
 
         #__________________________________________________ header
 
@@ -206,7 +214,7 @@ class wid
                 # child:
                 #     type: 'icon'
                 #     icon: 'octicon-x'
-                onClick: (event,e) -> e.getWidget().close()
+                onClick: (event,e) -> e.getWindow().close()
 
         w.addShadeButton = ->
             wid.create
@@ -216,7 +224,7 @@ class wid
                 # child:
                 #     type: 'icon'
                 #     icon: 'octicon-dash'
-                onClick: (event,e) -> e.getWidget().shade()
+                onClick: (event,e) -> e.getWindow().shade()
 
         w.scrollToBottom = ->
             content = $(@content)
@@ -228,32 +236,27 @@ class wid
                 parent:  this
 
             moveCallback = (drag, event) ->
-                widget = drag.target.getWidget()
                 sizer = drag.target
+                win = sizer.getWindow()
 
-                wpos = widget.absPos()
+                wpos = win.absPos()
                 spos = sizer.absPos()
 
-                hdr = widget.headerSize()
+                hdr = win.headerSize()
 
                 wdt = spos.x-wpos.x+sizer.getWidth()
                 wdt = Math.max(hdr*2, wdt)
-                wdt = Math.max(widget.minWidth(), wdt)
-                wdt = Math.min(widget.maxWidth(), wdt)
-                widget.setWidth(wdt)
+                wdt = Math.max(win.minWidth(), wdt)
+                wdt = Math.min(win.maxWidth(), wdt)
 
                 hgt = spos.y-wpos.y+sizer.getHeight()
                 hgt = Math.max(hdr+sizer.getHeight(), hgt)
-                hgt = Math.max(widget.minHeight(), hgt)
-                hgt = Math.min(widget.maxHeight(), hgt)
-                widget.setHeight(hgt)
+                hgt = Math.max(win.minHeight(), hgt)
+                hgt = Math.min(win.maxHeight(), hgt)
+
+                win.resize(wdt, hgt)
 
                 sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
-
-                if widget.config.content == 'scroll'
-                    content = $(widget.content)
-                    content.setWidth  wdt
-                    content.setHeight hgt-hdr
 
                 return
 
@@ -263,6 +266,18 @@ class wid
                 cursor: "nwse-resize"
 
             btn
+
+        w.maximize = ->
+            if @config.isMaximized
+                @setPos @config.pos
+                @setSize @config.size
+                @config.isMaximized = false
+            else
+                @config.pos = @absPos()
+                @config.size = @getSize()
+                @moveTo 0, 0
+                @setSize stg.size()
+                @config.isMaximized = true
 
         w.raise = ->
             ct = $(@content)
@@ -311,6 +326,12 @@ class wid
         w.addSizeButton()   if w.config.hasSize
 
         if w.config.content == 'scroll'
+
+            w.on "size", (event,e) ->
+                content = $(@content)
+                content.setWidth  @getWidth()
+                content.setHeight @getHeight()-@headerSize()
+
             c.setStyle
                 position:   'relative'
                 overflow:   'scroll'
@@ -322,9 +343,9 @@ class wid
         @insertChildren(w)
         w
 
-    @closeAll = -> # close all widgets
-        $$(".widget").each (widget) ->
-            widget.close()
+    @closeAll = -> # close all windows
+        $$(".window").each (win) ->
+            win.close()
             return
         return
 
@@ -402,8 +423,8 @@ class wid
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
         sizeCB = (event,e) -> slider.setValue(slider.config.value)
-        widget = slider.getWidget()
-        widget.on "size", sizeCB if widget
+        win = slider.getWindow()
+        win.on "size", sizeCB if win
 
         drag.create
             cursor:     'ew-resize'
@@ -414,7 +435,11 @@ class wid
 
         slider
 
-    # ________________________________________________________________________________ value
+    #   ###   ###   #######   ###      ###   ###  ########
+    #   ###   ###  ###   ###  ###      ###   ###  ###
+    #   ###   ###  #########  ###      ###   ###  #######
+    #    ##   ##   ###   ###  ###      ###   ###  ###
+    #      ###     ###   ###  #######   #######   ########
 
     @value = (cfg) ->
 

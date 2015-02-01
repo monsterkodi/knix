@@ -1,7 +1,7 @@
 log = require './log.coffee'
 wid = require './wid.coffee'
 stg = require './stage.coffee'
-console = require './console.coffee'
+con = require './console.coffee'
 
 document.observe "dom:loaded", ->
 
@@ -98,13 +98,13 @@ document.observe "dom:loaded", ->
                         type:       'button'
                         text:       'ok'
                         class:      'top-left'
-                        onClick:    -> @getWidget().getChild('no').close()
+                        onClick:    -> @getWindow().getChild('no').close()
                     ,
                         type:       'button'
                         id:         'no'
                         text:       'no'
                         class:      'top-right'
-                        onClick:    -> @getWidget().close()
+                        onClick:    -> @getWindow().close()
                     ]
                 ]
 
@@ -166,9 +166,9 @@ document.observe "dom:loaded", ->
         parent: 'footer'
         onClick: -> wid.closeAll()
 
-    # $('hello').click()
-    console.show() #.shade()
-    console.menu()
+    $('hello').click()
+    con.show() #.shade()
+    con.menu()
     # document.stageButtons()
 
     return

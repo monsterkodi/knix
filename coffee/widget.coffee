@@ -1,8 +1,7 @@
-drag = require('./drag.coffee')
 pos  = require('./pos.coffee')
 log  = require('./log.coffee')
 
-class wid
+class Widget
 
     # _________________________________________________________________________________________________________ instance
 
@@ -17,8 +16,8 @@ class wid
 
     emitSize: ->
         @emit "size",
-                width:  @getWidth()
-                height: @getHeight()
+            width:  @getWidth()
+            height: @getHeight()
 
     # ____________________________________________________________________________ slots
 
@@ -47,10 +46,10 @@ class wid
         return $(@config.parent) if @config.parent
         return $(@parentElement.id)
 
-    getWidget: -> # returns this or first ancestor element with class 'widget'
-        if @hasClassName('widget')
+    getWindow: -> # returns this or first ancestor element with class 'window'
+        if @hasClassName('window')
             return this
-        @getParent('widget')
+        @getParent('window')
 
     getChild: (name) -> # returns first child element that matches class or id <name>
         c = Selector.findChildElements(this, ['#'+name, '.'+name])
@@ -59,7 +58,15 @@ class wid
 
     close: -> @remove(); return
 
+    clear: ->
+        while @hasChildNodes()
+            @removeChild @lastChild
+
     # ____________________________________________________________________________ geometry
+
+    setPos: (p) -> @moveTo p.x, p.y
+    setSize: (s) -> @resize s.width, s.height
+    getSize: -> return { width: @getWidth(), height: @getHeight() }
 
     moveTo: (x, y) ->
         @style.left = "%dpx".fmt(x) if x?
@@ -73,13 +80,15 @@ class wid
         return
 
     setWidth: (w) ->
-        @style.width = "%dpx".fmt(w)  if w?
-        @emitSize()
+        ow = @style.width
+        @style.width = "%dpx".fmt(w) if w?
+        @emitSize() if ow != @style.width
         return
 
     setHeight: (h) ->
-        @style.height = "%dpx".fmt(h)  if h?
-        @emitSize()
+        oh = @style.height
+        @style.height = "%dpx".fmt(h) if h?
+        @emitSize() if oh != @style.height
         return
 
     resize: (w, h) ->
@@ -126,4 +135,4 @@ class wid
         c = Math.max(c, @config.valueMin) if @config.valueMin?
         c
 
-module.exports = wid
+module.exports = Widget

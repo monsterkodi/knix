@@ -4,7 +4,7 @@ class Console
     @log: (s) ->
         $$(".console").each (e) ->
             e.insert "<pre>"+s+"</pre>"
-            e.getWidget().scrollToBottom()
+            e.getWindow().scrollToBottom()
         this
 
     @menu: ->
@@ -21,30 +21,32 @@ class Console
         wid = require './wid.coffee'
         stg = require './stage.coffee'
         con = wid.get
+            type:     'window'
             title:    'console'
-            class:    'frame console-widget'
+            class:    'console-window'
             x:        stg.size().width/2
             y:        0
             width:    stg.size().width/2-4
-            height:   stg.size().height-4
+            height:   stg.size().height/2-4
             content:  'scroll'
             buttons:  \
             [
-                type:    "widget-button"
-                noDown:  true
+                type:    "window-button"
                 child:
                     type: 'icon'
                     icon: 'octicon-trashcan'
                 onClick: (event,e) ->
-                    con = e.getWidget().getChild('console')
-                    while con.hasChildNodes()
-                        con.removeChild con.lastChild
+                    e.getWindow().getChild('console').clear()
+            ,
+                type:    "window-button"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-diff-added'
+                onClick: (event,e) -> e.getWindow().maximize()
             ]
             child:
                 type:   'console'
                 text:   'knix 0.1.0'
                 noDown: true
-
-
 
 module.exports = Console
