@@ -258,6 +258,12 @@ class wid
 
             btn
 
+        w.raise = ->
+            ct = $(@content)
+            st = ct.scrollTop
+            @parentElement.appendChild this
+            ct.scrollTop = st
+
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade
         w.addTitleBar()     if w.config.hasTitle or w.config.title
@@ -270,7 +276,7 @@ class wid
         w.addSizeButton()   if w.config.hasSize
 
         if w.config.content == 'scroll'
-            c.setStyle 
+            c.setStyle
                 position:   'relative'
                 overflow:   'scroll'
                 width:      '100%'

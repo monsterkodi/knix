@@ -4,8 +4,6 @@ stg = require './stage.coffee'
 
 document.observe "dom:loaded", ->
 
-    $$(".menu").each (menu) -> $(menu.id).raise()
-
     # _________________________________________________________________________ svg test
 
     svg = wid.get
