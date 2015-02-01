@@ -4,12 +4,6 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
-        coffee:
-            maps:
-                options:
-                    sourceMap: true
-                files: 'js/knix.js': ['coffee/*.coffee']
-
         browserify:
             compile:
                 files: 'js/knix.js': ['coffee/**/*.coffee']
@@ -21,6 +15,7 @@ module.exports = (grunt) ->
                 dest: 'js/lib/bower.js'
                 bowerOptions:
                     relative: false
+                exclude: ['octicons']
 
         stylus:
             compile:
@@ -32,7 +27,7 @@ module.exports = (grunt) ->
             files: ['coffee/*.coffee', 'style/*.styl']
             tasks: ['build']
             options:
-                spawn: true
+                spawn:     true
                 interrupt: true
           node:
             files: ['tools/node.js']
@@ -67,7 +62,6 @@ module.exports = (grunt) ->
     # npm install --save-dev <nodepackage>          to add <nodepackage> to package.json devDependencies
 
     grunt.loadNpmTasks 'grunt-contrib-stylus'
-    # grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-bower-concat'

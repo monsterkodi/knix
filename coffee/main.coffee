@@ -6,16 +6,38 @@ document.observe "dom:loaded", ->
 
     $$(".menu").each (menu) -> $(menu.id).raise()
 
-    sc = wid.get
-        id:     'stage_canvas'
-        type:   'canvas'
-        # width:  '100%'
-        # height: '100%'
+    # _________________________________________________________________________ svg test
 
-    sc.fc.setWidth('100%', {cssOnly: true})
-    sc.fc.setHeight('100%', {cssOnly: true})
+    # svg = wid.get
+    #     id:    'stage_svg'
+    #     type:  'svg'
+    #
+    # set = svg.s.set()
+    # set.add svg.s.rect(100, 100)
+    # set.add svg.s.path('M 100 200 C 200 100 300  0 400 100 C 500 200 600 300 700 200 C 800 100 900 100 900 100')
+    # set.stroke({ color: "#ff0", width: 10 }).fill('none')
 
-    window.onresize = (event) -> log event.target.innerWidth, event.target.innerHeight
+    # _________________________________________________________________________ canvas test
+
+    # sc = wid.get
+    #     id:      'stage_canvas'
+    #     type:    'canvas'
+    #     width:   parseInt window.innerWidth
+    #     height:  parseInt window.innerHeight
+    #
+    # p = new fabric.Path('M 0 0 L 200 100 L 170 200')
+    # p.set
+    #     left: 20, top: 120, fill: '',
+    #     stroke: 'black', strokeWidth: 20, strokeLineCap: 'round', strokeLineJoin: 'round'
+    #     opacity: 0.5
+    # sc.fc.add(p)
+    #
+    # resizeStageCanvas = (x,y) -> sc.fc.setWidth x; sc.fc.setHeight y
+    #
+    # window.onresize = (event) ->
+    #     resizeStageCanvas parseInt(window.innerWidth), parseInt(window.innerHeight)
+
+    # _________________________________________________________________________ widget test
 
     wid.get
         type:   'button'
@@ -162,7 +184,7 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     # $('hello').click()
-    $('add').click()
+    # $('add').click()
     document.stageButtons()
 
     return

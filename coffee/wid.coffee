@@ -8,17 +8,79 @@ class wid
 
     # ____________________________________________________________________________________________________________ class
 
-    @nextWidgetID  = 0
+    # ___________________________________________________________________________ element creation
 
-    @closeAll = -> # close all widgets
-        $$(".widget").each (widget) ->
-            widget.close()
-            return
-        return
+    @create = (cfg) ->
+
+        #__________________________________________________ initialization
+
+        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
+        Object.extend w, wdgt.prototype                     # merge in widget functions
+        w.config = Object.clone(cfg)                        # set config
+
+        w.writeAttribute('id', w.config.id) if w.config.id? # set element id
+
+        for a,v of w.config.attr                            # set element attributes
+            log a, v
+            w.writeAttribute(a, v)
+
+        if w.config.class                                   # add class names
+            for clss in w.config.class.split(' ')
+                w.addClassName clss
+
+        #__________________________________________________ CSS setup
+
+        if w.config.style
+            w.setStyle w.config.style
+
+        style = $H()
+        style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] if s?
+        if style.keys().length then log style
+        w.setStyle style if style.keys().length
+
+        #__________________________________________________ DOM setup
+
+        w.insert(w.config.text) if w.config.text
+        @insertWidget(w, w.config.parent)
+        @insertChildren(w)
+
+        #__________________________________________________ position and size
+
+        if w.config.x? or w.config.y?
+            w.style.position = 'absolute'
+            w.moveTo w.config.x, w.config.y
+
+        w.resize w.config.width, w.config.height if w.config.width? or w.config.height?
+
+        #__________________________________________________ event setup
+
+        if w.config.isMovable
+            drag.create
+                target: w
+                cursor: null
+
+        @initSlots(w)
+        @initConnections(w)
+        @initEvents(w)
+
+        if w.config.noDown
+            w.on 'mousedown', (event,e) -> event.stopPropagation()
+
+        return w
+
+    # __________________________________________________________________________ tools
+
+    # takes values from config and overwrites those in defaults
+
+    @def = (config,defaults) -> Object.extend(defaults,config)
+
+    # __________________________________________________________________________ elem and widget hierarchy
+
+    @nextWidgetID  = 0
 
     @elem = (type, clss) -> # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
-        e.id = "widget_%d".fmt(@nextWidgetID)
+        e.id = "knix_%d".fmt(@nextWidgetID)
         @nextWidgetID += 1
         e.addClassName clss
         e
@@ -46,6 +108,8 @@ class wid
         else if w.config.child
             @insertChild(w, w.config.child)
 
+    # ________________________________________________________________________________ event handling
+
     @initEvents = (w) ->
         w.on "click",      w.config.onClick  if w.config.onClick
         w.on "mousedown",  w.config.onDown   if w.config.onDown
@@ -56,7 +120,7 @@ class wid
         w.on "ondblclick", w.config.onDouble if w.config.onDouble
         this
 
-    # ____________________________________________________________________________slots
+    # ____________________________________________________________________________ slots
 
     @initSlots = (w) ->
         slots = w.config.slots
@@ -65,7 +129,7 @@ class wid
             log "@initSlots", w.id, slot
             w[slot] = func
 
-    # ____________________________________________________________________________connections
+    # ____________________________________________________________________________ connections
 
     @initConnections = (w) ->
         connections = w.config.connect
@@ -101,65 +165,13 @@ class wid
             return receiver[func].bind(receiver) if receiver[func]?
         null
 
-    # ____________________________________________________________________________element creation
+    # ________________________________________________________________________________ get
 
-    @create = (cfg) ->
+    # shortcut to call any of the type functions below (@widget, @button, @slider, ...)
+    # uses @widget if no type is specified and sets the stage_content as default parent
 
-        #__________________________________________________ initialization
-
-        w = @elem(cfg.elem or "div", cfg.type or "widget")  # create element
-        Object.extend w, wdgt.prototype                     # merge in widget functions
-        w.config = Object.clone(cfg)                        # set config
-
-        w.writeAttribute('id', w.config.id) if w.config.id  # set element id
-
-        if w.config.class                                   # add class names
-            for clss in w.config.class.split(' ')
-                w.addClassName clss
-
-        #__________________________________________________ CSS setup
-
-        if w.config.style
-            w.setStyle w.config.style
-
-        style = {}
-        style[s] = w.config[s]+'px' for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight']
-        w.setStyle style
-
-        #__________________________________________________ DOM setup
-
-        w.insert(w.config.text) if w.config.text
-        @insertWidget(w, w.config.parent)
-        @insertChildren(w)
-
-        #__________________________________________________ position and size
-
-        if w.config.x? or w.config.y?
-            w.style.position = 'absolute'
-            w.moveTo w.config.x, w.config.y
-
-        w.resize w.config.width, w.config.height if w.config.width? or w.config.height?
-
-        #__________________________________________________ event setup
-
-        if w.config.isMovable
-            drag.create
-                target: w
-                cursor: null
-
-        @initSlots(w)
-        @initConnections(w)
-        @initEvents(w)
-
-        if w.config.noDown
-            w.on 'mousedown', (event,e) -> event.stopPropagation()
-
-        return w
-
-    @def = (cfg,defs) -> Object.extend(defs,cfg) # takes values from config and overwrites those in defs
-
-    @get = (cfg) -> # shortcut to call either @widget or any of the other type functions (@button, @scroll, @slider, @etc)
-        @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'} ) # also sets the stage as default parent
+    @get = (cfg) ->
+        @[cfg.type or 'widget'](@def cfg, {parent: 'stage_content'})
 
     # ________________________________________________________________________________ widget
 
@@ -250,6 +262,12 @@ class wid
         @insertChildren(w)
         w
 
+    @closeAll = -> # close all widgets
+        $$(".widget").each (widget) ->
+            widget.close()
+            return
+        return
+
     # ________________________________________________________________________________ canvas
 
     @canvas = (cfg) ->
@@ -260,6 +278,14 @@ class wid
         fbc.setHeight(cfg.height) if cfg.height?
         cvs.fc = fbc
         cvs
+
+    # ________________________________________________________________________________ svg
+
+    @svg = (cfg) ->
+        svg = @create @def cfg,
+            elem: 'svg'
+        svg.s = SVG('stage_svg')
+        svg
 
     # ________________________________________________________________________________ slider
 
@@ -355,9 +381,9 @@ class wid
                         elem: 'td'
                         type: 'value-td'
                         child:
-                            type:   'icon'
-                            class:  'arrow-left'
-                        onClick: (event,e) -> @getParent('value').incr '-'
+                            type: 'icon'
+                            icon: 'octicon-triangle-left'
+                            onClick: (event,e) -> @getParent('value').incr '-'
                     ,
                         elem: 'td'
                         type: 'value-content'
@@ -368,8 +394,8 @@ class wid
                         elem: 'td'
                         type: 'value-td'
                         child:
-                            type:   'icon'
-                            class:  'arrow-right'
+                            type: 'icon'
+                            icon: 'octicon-triangle-right'
                         onClick: (event,e) -> @getParent('value').incr '+'
                     ]
 
@@ -442,7 +468,12 @@ class wid
     # ________________________________________________________________________________ icon
 
     @icon = (cfg) ->
-        @create cfg
+        @create @def cfg,
+            child:
+                elem:   'span'
+                type:   'octicon'
+                class:   cfg.icon
+
 
     # ________________________________________________________________________________ input
 
