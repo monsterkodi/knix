@@ -212,6 +212,10 @@ class wid
                 parent:  this
                 onClick: (event,e) -> e.getWidget().shade()
 
+        w.scrollToBottom = ->
+            content = $(@content)
+            content.scrollTop = content.scrollHeight
+
         w.addSizeButton = ->
             btn = wid.create
                 type:    "size"
@@ -266,7 +270,11 @@ class wid
         w.addSizeButton()   if w.config.hasSize
 
         if w.config.content == 'scroll'
-            c.setStyle { position: 'relative', overflow:'scroll', width: '100%', height: '100%' }
+            c.setStyle 
+                position:   'relative'
+                overflow:   'scroll'
+                width:      '100%'
+                height:     "%dpx".fmt(w.getHeight()-w.headerSize()-4)
 
         w.content = c.id
         w.config.children = chd

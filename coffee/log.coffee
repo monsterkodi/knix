@@ -19,6 +19,7 @@ log = ->
 
     $$(".console").each (e) ->
         e.insert "<pre>"+s+"</pre>"
+        e.getWidget().scrollToBottom()
 
     return
 
