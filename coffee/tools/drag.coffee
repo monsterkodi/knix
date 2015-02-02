@@ -8,12 +8,14 @@ class Drag
         handle:  null
         minPos:  null
         maxPos:  null
-        cursor:  "move"
+        cursor: "move"
         onStart: null
         onMove:  null
         onStop:  null
         doMove:  true
         active:  true
+
+    @create: (cfg) -> new Drag(cfg)
 
     constructor: (cfg) ->
         Object.extend(this, Drag.config)
@@ -100,8 +102,5 @@ class Drag
         @listening = false
         @dragStop() if stopCurrentDragging and @dragging
         return
-
-    @create = (cfg) ->
-        new Drag(cfg)
 
 module.exports = Drag

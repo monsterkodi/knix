@@ -1,17 +1,15 @@
 
-Widget = require './widget.coffee'
-
 #   ###   ###  ###  ###   ###  #######     #######   ###   ###
 #   ### # ###  ###  ####  ###  ###   ###  ###   ###  ### # ###
 #   #########  ###  ### # ###  ###   ###  ###   ###  #########
 #   ###   ###  ###  ###  ####  ###   ###  ###   ###  ###   ###
 #   ##     ##  ###  ###   ###  #######     #######   ##     ##
 
+Widget = require './widget.coffee'
+
 class Window extends Widget
 
     @create: (cfg) ->
-
-        wid = require './wid.coffee'
 
         children = cfg.children
         if cfg.child
@@ -20,7 +18,7 @@ class Window extends Widget
         cfg.children = null
         cfg.child = null
 
-        w = wid.create wid.def cfg,
+        w = Widget.setup cfg,
             type:     'window'
             hasClose:  true
             hasShade:  true
@@ -33,19 +31,24 @@ class Window extends Widget
         w.insertChildren()
         w
 
+    #__________________________________________________ init
+
     init: ->
+
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
         if @config.buttons?
-            @insertChild(b) for b in @config.buttons
+            @insertChild(b, { noDown:true }) for b in @config.buttons
         @addTitleBar()     if @config.hasTitle or @config.title
 
-        content = @create
-            elem: 'div',
-            type: 'content'
+        content = knix.create
+            elem:  'div',
+            type:  'content'
             parent: @
 
         @addSizeButton() if @config.hasSize
+
+        @content = content.id
 
         if @config.content == 'scroll'
 
@@ -60,19 +63,19 @@ class Window extends Widget
                 width:      '100%'
                 height:     "%dpx".fmt(@contentHeight())
 
-        @content = content.id
         this
 
     #__________________________________________________ header
 
     addTitleBar: ->
-        @create
+        knix.create
             type:    "title"
             text:    @config.title
             parent:  this
+            onDouble: (event,e) -> console.log 'maxi'; e.getWindow().maximize()
 
     addCloseButton: ->
-        @create
+        knix.create
             type:    "close"
             noDown:  true
             parent:  this
@@ -82,7 +85,7 @@ class Window extends Widget
             onClick: (event,e) -> e.getWindow().close()
 
     addShadeButton: ->
-        @create
+        knix.create
             type:    "shade"
             noDown:  true
             parent:  this
@@ -96,7 +99,7 @@ class Window extends Widget
         content.scrollTop = content.scrollHeight
 
     addSizeButton: ->
-        btn = @create
+        btn = knix.create
             type:    "size"
             parent:  this
 
@@ -105,7 +108,7 @@ class Window extends Widget
 
         dragMove = (drag, event) ->
             sizer = drag.target
-            win = sizer.getWindow()
+            win   = sizer.getWindow()
 
             wpos = win.absPos()
             spos = sizer.absPos()
@@ -134,7 +137,7 @@ class Window extends Widget
                 left: ''
                 top: ''
 
-        Drag = require './drag.coffee'
+        Drag = require '../tools/drag.coffee'
 
         Drag.create
             target:  btn
@@ -151,7 +154,7 @@ class Window extends Widget
             @setSize @config.size
             @config.isMaximized = false
         else
-            stg = require('./stage.coffee')
+            stg = require('../tools/stage.coffee')
             @config.pos = @absPos()
             @config.size = @getSize()
             @moveTo 0, 0

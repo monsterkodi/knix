@@ -1,10 +1,11 @@
-log = require './log.coffee'
-wid = require './wid.coffee'
-Console = require './console.coffee'
+log = require './tools/log.coffee'
+wid = require './knix.coffee'
 
 document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ svg test
+
+    wid.init()
 
     svg = wid.get
         id:    'stage_svg'
@@ -125,8 +126,8 @@ document.observe "dom:loaded", ->
                 slot:   (v) ->
                     v = @slotArg(v)
                     c = 'rgba(%d,0,0,0.2)'.fmt(v)
-                    sc = $('stage_canvas').fc
-                    sc.setBackgroundColor(c, sc.renderAll.bind(sc))
+                    # sc = $('stage_canvas').fc
+                    # sc.setBackgroundColor(c, sc.renderAll.bind(sc))
             ]
 
         wid.get
@@ -166,8 +167,11 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     $('hello').click()
+
+    Console = require './widgets/console.coffee'
     Console.menu()
-    Console.show() #.shade()
-    # document.stageButtons()
+    Console.create()
+
+    document.stageButtons()
 
     return

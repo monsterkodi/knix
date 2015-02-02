@@ -24,7 +24,7 @@ module.exports = (grunt) ->
 
         watch:
           scripts:
-            files: ['coffee/*.coffee', 'style/*.styl']
+            files: ['coffee/**/*.coffee', 'style/*.styl']
             tasks: ['build']
             options:
                 spawn:     true

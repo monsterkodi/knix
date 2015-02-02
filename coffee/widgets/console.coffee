@@ -1,7 +1,16 @@
 
-class Console
+#    #######   #######   ###   ###    #######   #######   ###      ########
+#   ###       ###   ###  ####  ###  ###        ###   ###  ###      ###
+#   ###       ###   ###  ### # ###   #######   ###   ###  ###      #######
+#   ###       ###   ###  ###  ####        ###  ###   ###  ###      ###
+#    #######   #######   ###   ###   #######    #######   #######  ########
+
+Widget = require './widget.coffee'
+
+class Console extends Widget
 
     @log: (s) ->
+
         $$(".console").each (e) ->
             e.insert "<pre>"+s+"</pre>"
             e.getWindow().scrollToBottom()
@@ -9,25 +18,27 @@ class Console
 
     @menu: ->
 
-        wid = require './wid.coffee'
-        wid.get
+        Widget.create
             type:   'button'
             id:     'open_console'
             text:   'console'
             parent: 'menu'
-            onClick: -> Console.show()
+            onClick: -> Console.create()
 
-    @show: ->
-        wid = require './wid.coffee'
-        stg = require './stage.coffee'
-        con = wid.get
-            type:     'window'
+    @create: (cfg) ->
+
+        stg = require '../tools/stage.coffee'
+
+        w2 = stg.size().width/2
+        h2 = stg.size().height/2
+
+        con = knix.get
             title:    'console'
             class:    'console-window'
-            x:        stg.size().width/2
+            x:        w2
             y:        0
-            width:    stg.size().width/2-4
-            height:   stg.size().height/2-4
+            width:    w2-4
+            height:   h2-4
             content:  'scroll'
             buttons:  \
             [
@@ -45,7 +56,7 @@ class Console
                 onClick: (event,e) -> e.getWindow().maximize()
             ]
             child:
-                type:   'console'
+                class:  'console'
                 text:   'knix 0.1.0'
                 noDown: true
 

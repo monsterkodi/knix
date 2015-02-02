@@ -1,5 +1,5 @@
 str = require('./str.coffee')
-con = require('./console.coffee')
+con = require('../widgets/console.coffee')
 
 log = ->
 

@@ -1,4 +1,6 @@
+
 strIndent = "    "
+
 str = (o,indent="",visited=[]) ->
     if o == null
         return "<null>"
