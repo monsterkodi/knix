@@ -49,7 +49,7 @@ document.observe "dom:loaded", ->
         parent: 'menu'
         onClick: ->
             log 'hello!'
-            wid.get
+            wid.get                
                 y:         30
                 title:     'hello'
                 hasSize:   true

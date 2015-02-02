@@ -1,3 +1,4 @@
+
 class Stage
 
     @width:  -> @size().width

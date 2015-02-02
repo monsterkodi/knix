@@ -1,5 +1,6 @@
 drag = require './drag.coffee'
 wdgt = require './widget.coffee'
+wndw = require './window.coffee'
 stg  = require './stage.coffee'
 pos  = require './pos.coffee'
 log  = require './log.coffee'
@@ -16,9 +17,15 @@ class wid
         #__________________________________________________ initialization
 
         if not cfg.type?
-            log "NO TYPE?"
+            console.log "NO TYPE?"
         w = @elem(cfg.elem or "div", cfg.type)              # create element
-        Object.extend w, wdgt.prototype                     # merge in widget functions
+        if cfg.type == 'window'
+            Object.extend w, wndw.prototype                 # merge in window functions
+            #console.log "window", w
+        else
+            Object.extend w, wdgt.prototype                 # merge in widget functions
+            #console.log "widget", w
+
         w.config = Object.clone(cfg)                        # set config
 
         w.writeAttribute('id', w.config.id) if w.config.id? # set element id
@@ -197,120 +204,6 @@ class wid
             hasSize:   true
             isMovable: true
             onDown:    (event,e) -> e.getWindow().raise()
-
-        #__________________________________________________ header
-
-        w.addTitleBar = ->
-            wid.create
-                type:    "title"
-                text:    @config.title
-                parent:  this
-
-        w.addCloseButton = ->
-            wid.create
-                type:    "close"
-                noDown:  true
-                parent:  this
-                # child:
-                #     type: 'icon'
-                #     icon: 'octicon-x'
-                onClick: (event,e) -> e.getWindow().close()
-
-        w.addShadeButton = ->
-            wid.create
-                type:    "shade"
-                noDown:  true
-                parent:  this
-                # child:
-                #     type: 'icon'
-                #     icon: 'octicon-dash'
-                onClick: (event,e) -> e.getWindow().shade()
-
-        w.scrollToBottom = ->
-            content = $(@content)
-            content.scrollTop = content.scrollHeight
-
-        w.addSizeButton = ->
-            btn = wid.create
-                type:    "size"
-                parent:  this
-
-            moveCallback = (drag, event) ->
-                sizer = drag.target
-                win = sizer.getWindow()
-
-                wpos = win.absPos()
-                spos = sizer.absPos()
-
-                hdr = win.headerSize()
-
-                wdt = spos.x-wpos.x+sizer.getWidth()
-                wdt = Math.max(hdr*2, wdt)
-                wdt = Math.max(win.minWidth(), wdt)
-                wdt = Math.min(win.maxWidth(), wdt)
-
-                hgt = spos.y-wpos.y+sizer.getHeight()
-                hgt = Math.max(hdr+sizer.getHeight(), hgt)
-                hgt = Math.max(win.minHeight(), hgt)
-                hgt = Math.min(win.maxHeight(), hgt)
-
-                win.resize(wdt, hgt)
-
-                sizer.moveTo(wdt-sizer.getWidth(), hgt-sizer.getHeight())
-
-                return
-
-            drag.create
-                target: btn
-                onMove: moveCallback
-                cursor: "nwse-resize"
-
-            btn
-
-        w.maximize = ->
-            if @config.isMaximized
-                @setPos @config.pos
-                @setSize @config.size
-                @config.isMaximized = false
-            else
-                @config.pos = @absPos()
-                @config.size = @getSize()
-                @moveTo 0, 0
-                @setSize stg.size()
-                @config.isMaximized = true
-
-        w.raise = ->
-            ct = $(@content)
-            st = ct.scrollTop
-            @parentElement.appendChild this
-            ct.scrollTop = st
-
-        w.headerSize = (box="border-box-height") ->
-            children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
-            i = 0
-            while i < children.length
-                height = children[i].getLayout().get(box)
-                return height  if height
-                i++
-            0
-
-        w.shade = ->
-            size = @getChild 'size'
-            if @config.isShaded
-                @setStyle('min-height': @config.minHeight+'px')
-                @setHeight @config.height
-                # adjust height for border size
-                diff = @getHeight() - @config.height
-                @setHeight @config.height - diff  if diff
-                @config.isShaded = false
-                size.show() if size
-            else
-                @config.height = @getHeight()
-                @setStyle('min-height': '0px')
-                @setHeight @headerSize("padding-box-height")
-                @config.isShaded = true
-                size.hide() if size
-            return
 
         w.addCloseButton()  if w.config.hasClose
         w.addShadeButton()  if w.config.hasShade

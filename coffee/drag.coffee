@@ -43,57 +43,55 @@ class Drag
         e.returnValue = false
         false
 
-    absPos: (eventObj) ->
-        eventObj = (if eventObj then eventObj else window.event)
+    absPos: (event) ->
+        event = (if event then event else window.event)
         if isNaN(window.scrollX)
-            return pos(eventObj.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
-                       eventObj.clientY + document.documentElement.scrollTop + document.body.scrollTop)
+            return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
+                       event.clientY + document.documentElement.scrollTop + document.body.scrollTop)
         else
-            return pos(eventObj.clientX + window.scrollX, eventObj.clientY + window.scrollY)
+            return pos(event.clientX + window.scrollX, event.clientY + window.scrollY)
 
-    dragStart: (eventObj) ->
+    dragStart: (event) ->
         return if @dragging or not @listening
         @dragging = true
-        @onStart this, eventObj if @onStart?
-        @cursorStartPos = @absPos(eventObj)
+        @onStart this, event if @onStart?
+        @cursorStartPos = @absPos(event)
         style = window.getComputedStyle(@target)
         @targetStartPos = pos(parseInt(style.left), parseInt(style.top))
         @targetStartPos = @targetStartPos.check()
-        dragObject = this
-        @eventMove = $(document).on 'mousemove', (e) -> dragObject.dragMove(e)
-        @eventUp   = $(document).on 'mouseup', (e) -> dragObject.dragUp(e)
-        @cancelEvent eventObj
+        @eventMove = $(document).on 'mousemove', @dragMove.bind(this)
+        @eventUp   = $(document).on 'mouseup',   @dragUp.bind(this)
+        @cancelEvent event
 
-    dragMove: (eventObj) ->
+    dragMove: (event) ->
         return if not @dragging
         if @doMove
-            newPos = @absPos(eventObj)
+            newPos = @absPos(event)
             newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
             newPos = newPos.bound(@minPos, @maxPos)
             newPos.apply @target
-        @onMove this, eventObj if @onMove?
-        @cancelEvent eventObj
+        if @onMove?
+            @onMove this, event
+        @cancelEvent event
 
-    dragUp: (eventObj) ->
+    dragUp: (event) ->
         @dragStop()
-        @cancelEvent eventObj
+        @cancelEvent event
 
-    dragStop: ->
+    dragStop: (event) ->
         return if not @dragging
-        dragObject = this
         @eventMove.stop()
         @eventUp.stop()
         @cursorStartPos = null
         @targetStartPos = null
-        @onStop this, eventObj if @onStop?
+        @onStop this, event if @onStop?
         @dragging = false
         return
 
     startListening: ->
         return if @listening
         @listening = true
-        dragObject = this
-        @eventDown = @handle.on 'mousedown', (e) -> dragObject.dragStart(e)
+        @eventDown = @handle.on 'mousedown', @dragStart.bind(this)
         return
 
     stopListening: (stopCurrentDragging) ->
