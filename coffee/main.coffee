@@ -1,7 +1,6 @@
 log = require './log.coffee'
 wid = require './wid.coffee'
-stg = require './stage.coffee'
-con = require './console.coffee'
+Console = require './console.coffee'
 
 document.observe "dom:loaded", ->
 
@@ -49,7 +48,7 @@ document.observe "dom:loaded", ->
         parent: 'menu'
         onClick: ->
             log 'hello!'
-            wid.get                
+            wid.get
                 y:         30
                 title:     'hello'
                 hasSize:   true
@@ -167,8 +166,8 @@ document.observe "dom:loaded", ->
         onClick: -> wid.closeAll()
 
     $('hello').click()
-    con.show() #.shade()
-    con.menu()
+    Console.menu()
+    Console.show() #.shade()
     # document.stageButtons()
 
     return

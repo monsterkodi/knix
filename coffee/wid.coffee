@@ -1,7 +1,6 @@
+Widget = require './widget.coffee'
+Window = require './window.coffee'
 drag = require './drag.coffee'
-wdgt = require './widget.coffee'
-wndw = require './window.coffee'
-stg  = require './stage.coffee'
 pos  = require './pos.coffee'
 log  = require './log.coffee'
 tls  = require './tools.coffee'
@@ -20,10 +19,10 @@ class wid
             console.log "NO TYPE?"
         w = @elem(cfg.elem or "div", cfg.type)              # create element
         if cfg.type == 'window'
-            Object.extend w, wndw.prototype                 # merge in window functions
+            Object.extend w, Window.prototype               # merge in window functions
             #console.log "window", w
         else
-            Object.extend w, wdgt.prototype                 # merge in widget functions
+            Object.extend w, Widget.prototype               # merge in widget functions
             #console.log "widget", w
 
         w.config = Object.clone(cfg)                        # set config
@@ -49,8 +48,8 @@ class wid
         #__________________________________________________ DOM setup
 
         w.insert(w.config.text) if w.config.text
-        @insertWidget(w, w.config.parent)
-        @insertChildren(w)
+        w.addToParent(w.config.parent)
+        w.insertChildren()
 
         #__________________________________________________ position and size
 
@@ -93,29 +92,6 @@ class wid
         @nextWidgetID += 1
         e.addClassName clss
         e
-
-    @insertWidget = (w, p) ->
-        p = $(p)
-        if p
-            parentid = p.id
-            p = $(p.content) if p.hasOwnProperty('content')
-            if p
-                p.insert w
-                w.config.parent = parentid if w.config
-        this
-
-    @insertChild = (w, cfg) ->
-        cfg.parent = w
-        if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
-        else child = wid.create(cfg)
-        wid.insertWidget(child,w)
-
-    @insertChildren = (w) ->
-        if w.config.children
-            for cfg in w.config.children
-                @insertChild(w, cfg)
-        else if w.config.child
-            @insertChild(w, w.config.child)
 
     # ________________________________________________________________________________ event handling
 
@@ -182,59 +158,9 @@ class wid
     @get = (cfg) ->
         @[cfg.type or 'window'](@def cfg, {parent: 'stage_content'})
 
-    #   ###   ###  ###  ###   ###  #######     #######   ###   ###
-    #   ### # ###  ###  ####  ###  ###   ###  ###   ###  ### # ###
-    #   #########  ###  ### # ###  ###   ###  ###   ###  #########
-    #   ###   ###  ###  ###  ####  ###   ###  ###   ###  ###   ###
-    #   ##     ##  ###  ###   ###  #######     #######   ##     ##
-
     @window = (cfg) ->
 
-        chd = cfg.children
-        if cfg.child
-            if not chd? then chd = []
-            chd.push cfg.child
-        cfg.children = null
-        cfg.child = null
-
-        w = @create @def cfg,
-            type:     'window'
-            hasClose:  true
-            hasShade:  true
-            hasSize:   true
-            isMovable: true
-            onDown:    (event,e) -> e.getWindow().raise()
-
-        w.addCloseButton()  if w.config.hasClose
-        w.addShadeButton()  if w.config.hasShade
-        if w.config.buttons?
-            @insertChild(w, b) for b in w.config.buttons
-        w.addTitleBar()     if w.config.hasTitle or w.config.title
-
-        c = @create
-            elem: 'div',
-            type: 'content'
-            parent: w
-
-        w.addSizeButton()   if w.config.hasSize
-
-        if w.config.content == 'scroll'
-
-            w.on "size", (event,e) ->
-                content = $(@content)
-                content.setWidth  @getWidth()
-                content.setHeight @getHeight()-@headerSize()
-
-            c.setStyle
-                position:   'relative'
-                overflow:   'scroll'
-                width:      '100%'
-                height:     "%dpx".fmt(w.getHeight()-w.headerSize()-4)
-
-        w.content = c.id
-        w.config.children = chd
-        @insertChildren(w)
-        w
+        Window.create(cfg)
 
     @closeAll = -> # close all windows
         $$(".window").each (win) ->

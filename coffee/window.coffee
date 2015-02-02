@@ -1,40 +1,67 @@
 
 Widget = require './widget.coffee'
-drag   = require './drag.coffee'
+
+#   ###   ###  ###  ###   ###  #######     #######   ###   ###
+#   ### # ###  ###  ####  ###  ###   ###  ###   ###  ### # ###
+#   #########  ###  ### # ###  ###   ###  ###   ###  #########
+#   ###   ###  ###  ###  ####  ###   ###  ###   ###  ###   ###
+#   ##     ##  ###  ###   ###  #######     #######   ##     ##
 
 class Window extends Widget
 
-    # init: ->
-    #     @addCloseButton()  if @config.hasClose
-    #     @addShadeButton()  if @config.hasShade
-    #     if @config.buttons?
-    #         @insertChild(w, b) for b in w.config.buttons
-    #     @addTitleBar()     if w.config.hasTitle or w.config.title
-    #
-    #     c = @create
-    #         elem: 'div',
-    #         type: 'content'
-    #         parent: w
-    #
-    #     w.addSizeButton()   if w.config.hasSize
-    #
-    #     if w.config.content == 'scroll'
-    #
-    #         w.on "size", (event,e) ->
-    #             content = $(@content)
-    #             content.setWidth  @getWidth()
-    #             content.setHeight @getHeight()-@headerSize()
-    #
-    #         c.setStyle
-    #             position:   'relative'
-    #             overflow:   'scroll'
-    #             width:      '100%'
-    #             height:     "%dpx".fmt(w.getHeight()-w.headerSize()-4)
-    #
-    #     w.content = c.id
-    #     w.config.children = chd
-    #     @insertChildren(w)
-    #     this
+    @create: (cfg) ->
+
+        wid = require './wid.coffee'
+
+        children = cfg.children
+        if cfg.child
+            if not children? then children = []
+            children.push cfg.child
+        cfg.children = null
+        cfg.child = null
+
+        w = wid.create wid.def cfg,
+            type:     'window'
+            hasClose:  true
+            hasShade:  true
+            hasSize:   true
+            isMovable: true
+            onDown:    (event,e) -> e.getWindow().raise()
+
+        w.init()
+        w.config.children = children
+        w.insertChildren()
+        w
+
+    init: ->
+        @addCloseButton()  if @config.hasClose
+        @addShadeButton()  if @config.hasShade
+        if @config.buttons?
+            @insertChild(b) for b in @config.buttons
+        @addTitleBar()     if @config.hasTitle or @config.title
+
+        content = @create
+            elem: 'div',
+            type: 'content'
+            parent: @
+
+        @addSizeButton() if @config.hasSize
+
+        if @config.content == 'scroll'
+
+            @on "size", (event,e) ->
+                content = $(@content)
+                content.setWidth  @contentWidth()
+                content.setHeight @contentHeight()
+
+            content.setStyle
+                position:   'relative'
+                overflow:   'scroll'
+                width:      '100%'
+                height:     "%dpx".fmt(@contentHeight())
+
+        @content = content.id
+        this
 
     #__________________________________________________ header
 
@@ -107,7 +134,9 @@ class Window extends Widget
                 left: ''
                 top: ''
 
-        drag.create
+        Drag = require './drag.coffee'
+
+        Drag.create
             target:  btn
             onStart: dragStart
             onMove:  dragMove
@@ -136,7 +165,6 @@ class Window extends Widget
         ct.scrollTop = st
 
     headerSize: (box="border-box-height") ->
-        console.log 'headersize'
         children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
         i = 0
         while i < children.length
@@ -144,6 +172,12 @@ class Window extends Widget
             return height if height
             i++
         0
+
+    contentWidth: ->
+        @getLayout().get("padding-box-width")
+
+    contentHeight: ->
+        @getLayout().get("padding-box-height") - @headerSize()
 
     shade: ->
         size = @getChild 'size'

@@ -7,6 +7,32 @@ class Widget
         wid = require './wid.coffee'
         wid.create cfg
 
+    addToParent: (p) ->
+        p = $(p)
+        if p
+            parentid = p.id
+            p = $(p.content) if p.hasOwnProperty('content')
+            if p
+                p.insert this
+                @config.parent = parentid if @config
+        this
+
+    insertChild: (cfg) ->
+        cfg.parent = this
+        wid = require './wid.coffee'
+        if wid[cfg.type] != undefined then child = wid[cfg.type](cfg)
+        else child = wid.create(cfg)
+        child.addToParent(this)
+        child
+
+    insertChildren: ->
+        if @config.children
+            for cfg in @config.children
+                @insertChild(cfg)
+        else if @config.child
+            @insertChild(@config.child)
+        this
+
     # ____________________________________________________________________________ signals
 
     emit: (signal, args) ->
