@@ -31,14 +31,14 @@ class Console
             content:  'scroll'
             buttons:  \
             [
-                type:    "window-button"
+                type:    "window-button-right"
                 child:
                     type: 'icon'
                     icon: 'octicon-trashcan'
                 onClick: (event,e) ->
                     e.getWindow().getChild('console').clear()
             ,
-                type:    "window-button"
+                type:    "window-button-left"
                 child:
                     type: 'icon'
                     icon: 'octicon-diff-added'
