@@ -7,18 +7,18 @@ document.observe "dom:loaded", ->
 
     wid.init()
 
-    svg = wid.get
-        id:    'stage_svg'
-        type:  'svg'
-
-    set = svg.s.set()
-    p = svg.s.path()
-    p   .M  100, 100
-        .Q  200, 100, 200, 200
-        .Q  200, 300, 300, 300
-    set.add p
-    set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
-    set.stroke(color: "rgba(255,150,0,0.2)", width: 16).fill('none')
+    # svg = wid.get
+    #     id:    'stage_svg'
+    #     type:  'svg'
+    #
+    # set = svg.s.set()
+    # p = svg.s.path()
+    # p   .M  100, 100
+    #     .Q  200, 100, 200, 200
+    #     .Q  200, 300, 300, 300
+    # set.add p
+    # set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
+    # set.stroke(color: "rgba(255,150,0,0.2)", width: 16).fill('none')
 
     # _________________________________________________________________________ canvas test
 

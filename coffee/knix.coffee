@@ -23,7 +23,7 @@ class knix
         # cfg = _defaults(config,defaults)
 
         if @[cfg.type]? and typeof @[cfg.type] == 'function'
-            log 'create knix.' + cfg.type, __dirname
+            log 'create knix.' + cfg.type
             @[cfg.type] cfg
         else if window[_.capitalize(cfg.type)] and typeof window[_.capitalize(cfg.type)].create == 'function'
             log 'create class', _.capitalize(cfg.type)
