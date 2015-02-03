@@ -135,8 +135,6 @@ class Window extends Widget
                 left: ''
                 top: ''
 
-        # Drag = require '../tools/drag.coffee'
-
         Drag.create
             target:  btn
             onStart: dragStart
@@ -152,7 +150,6 @@ class Window extends Widget
             @setSize @config.size
             @config.isMaximized = false
         else
-            # stg = require('../tools/stage.coffee')
             @config.pos = @absPos()
             @config.size = @getSize()
             @moveTo 0, 0
