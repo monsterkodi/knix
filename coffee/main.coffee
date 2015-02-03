@@ -1,9 +1,9 @@
-log = require './tools/log.coffee'
-wid = require './knix.coffee'
 
 document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ svg test
+
+    wid = knix
 
     wid.init()
 
@@ -168,7 +168,6 @@ document.observe "dom:loaded", ->
 
     $('hello').click()
 
-    Console = require './widgets/console.coffee'
     Console.menu()
     Console.create()
 

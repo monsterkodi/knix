@@ -1,5 +1,3 @@
-pos = require './pos.coffee'
-log = require './log.coffee'
 
 class Drag
 
@@ -102,5 +100,3 @@ class Drag
         @listening = false
         @dragStop() if stopCurrentDragging and @dragging
         return
-
-module.exports = Drag

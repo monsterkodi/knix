@@ -8,5 +8,3 @@ class Stage
         s = window.getComputedStyle $('stage_content')
         width:  parseInt s.width
         height: parseInt s.height
-
-module.exports = Stage

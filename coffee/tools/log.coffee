@@ -1,11 +1,9 @@
-str = require('./str.coffee')
-con = require('../widgets/console.coffee')
 
 log = ->
 
-    f = printStackTrace()[4].split('@')[1]
-    f = f.substr('file:///Users/kodi/Projects/knix/'.length)
-    f = f.substr(0,f.length-2)
+    # f = printStackTrace()[4].split('@')[1]
+    # f = f.substr('file:///Users/kodi/Projects/knix/'.length)
+    # f = f.substr(0,f.length-2)
 
     # s = ""
     # for arg in arguments
@@ -16,10 +14,8 @@ log = ->
 
     # console.dir(console)
     # console.trace()
-    console.log "%s %c%o", s, 'color:gray', "http:localhost:8888/"+f
+    console.log "%c%s", 'color:white', s
 
-    con.log s
+    Console.log s
 
     return this
-
-module.exports = log

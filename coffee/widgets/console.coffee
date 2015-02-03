@@ -5,8 +5,6 @@
 #   ###       ###   ###  ###  ####        ###  ###   ###  ###      ###
 #    #######   #######   ###   ###   #######    #######   #######  ########
 
-Widget = require './widget.coffee'
-
 class Console extends Widget
 
     @log: (s) ->
@@ -27,10 +25,8 @@ class Console extends Widget
 
     @create: (cfg) ->
 
-        stg = require '../tools/stage.coffee'
-
-        w2 = stg.size().width/2
-        h2 = stg.size().height/2
+        w2 = Stage.size().width/2
+        h2 = Stage.size().height/2
 
         con = knix.get
             title:    'console'
@@ -59,5 +55,3 @@ class Console extends Widget
                 class:  'console'
                 text:   'knix 0.1.0'
                 noDown: true
-
-module.exports = Console

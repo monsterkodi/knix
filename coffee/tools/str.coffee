@@ -26,5 +26,3 @@ str = (o,indent="",visited=[]) ->
     else
         return String(o) # plain values
     return "<???>"
-
-module.exports = str

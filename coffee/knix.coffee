@@ -5,21 +5,11 @@
 #   ### ###   ###  ####  ###    #####
 #   ###  ###  ###   ###  ###  ###   ###
 
-pos     = require './tools/pos.coffee'
-log     = require './tools/log.coffee'
-tls     = require './tools/tools.coffee'
-drag    = require './tools/drag.coffee'
-
-Widget  = require './widgets/widget.coffee'
-Window  = require './widgets/window.coffee'
-Value   = require './widgets/value.coffee'
-Console = require './widgets/console.coffee'
-
-class Knix
+class knix
 
     # ________________________________________________________________________________ element creation
 
-    @init: window.knix = Knix
+    @init: -> log 'knix 0.1.1' #window.knix = Knix
 
     @create: (config, defaults) ->
 
@@ -141,7 +131,7 @@ class Knix
         win = slider.getWindow()
         win.on "size", sizeCB if win
 
-        drag.create
+        Drag.create
             cursor:     'ew-resize'
             target:     slider
             doMove:     false
@@ -180,5 +170,3 @@ class Knix
         inp.setAttribute "inputmode", "numeric"
         inp.getValue = -> parseFloat(@value)
         inp
-
-module.exports = Knix

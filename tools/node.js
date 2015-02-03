@@ -10,7 +10,7 @@ function onRequest(request, response)
   exec("atom " + process.cwd() + url.parse(request.url).path);
   response.write("<!DOCTYPE html><html><head><title>knixx</title></head><body></body></html>");
   response.end()
-  // console.log(":: " + process.cwd() + '/tools/close.applescript');
+  // console.log(":: " + process.cwd() + '/tools/close.applescript'); 
   exec('osascript ' + process.cwd() + '/tools/close.applescript');
 }
 

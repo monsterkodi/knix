@@ -4,11 +4,18 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
-        browserify:
-            compile:
-                files: 'js/knix.js': ['coffee/**/*.coffee']
-                options:
-                    transform: ['coffeeify']
+        coffee:
+            options:
+                sourceMap: true
+                bare:      true
+                joinExt:   '.coffee'
+            knix:
+                files:
+                    './js/tools.js':   ['./coffee/tools/*.coffee']
+                    './js/knix.js':    ['./coffee/knix.coffee']
+                    './js/widget.js':  ['./coffee/widget.coffee']
+                    './js/widgets.js': ['./coffee/widgets/*.coffee']
+                    './js/main.js':    ['./coffee/main.coffee']
 
         bower_concat:
             all:
@@ -62,14 +69,15 @@ module.exports = (grunt) ->
     # npm install --save-dev <nodepackage>          to add <nodepackage> to package.json devDependencies
 
     grunt.loadNpmTasks 'grunt-contrib-stylus'
+    grunt.loadNpmTasks 'grunt-contrib-concat'
+    grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-bower-concat'
-    grunt.loadNpmTasks 'grunt-browserify'
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'build',     [ 'bower_concat', 'browserify', 'stylus' ]
+    grunt.registerTask 'build',     [ 'coffee', 'bower_concat', 'stylus' ]
     grunt.registerTask 'default',   [ 'build', 'clean:tempfiles' ]
     grunt.registerTask 'test',      [ 'build', 'shell:touch', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]

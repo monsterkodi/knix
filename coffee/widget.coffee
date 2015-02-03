@@ -5,11 +5,6 @@
 #   ###   ###  ###  ###   ###  ###   ###  ###          ###
 #   ##     ##  ###  #######     #######   ########     ###
 
-pos  = require '../tools/pos.coffee'
-log  = require '../tools/log.coffee'
-tls  = require '../tools/tools.coffee'
-drag = require '../tools/drag.coffee'
-
 class Widget
 
     @create: (config, defaults) -> knix.create config, defaults
@@ -65,7 +60,7 @@ class Widget
         #__________________________________________________ event setup
 
         if w.config.isMovable
-            drag.create
+            Drag.create
                 target: w
                 minPos: pos(undefined,0)
                 cursor: null
@@ -302,5 +297,3 @@ class Widget
         c = Math.min(c, @config.valueMax) if @config.valueMax?
         c = Math.max(c, @config.valueMin) if @config.valueMin?
         c
-
-module.exports = Widget

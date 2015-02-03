@@ -1,4 +1,144 @@
 
+#    #######   #######   ###   ###    #######   #######   ###      ########
+#   ###       ###   ###  ####  ###  ###        ###   ###  ###      ###
+#   ###       ###   ###  ### # ###   #######   ###   ###  ###      #######
+#   ###       ###   ###  ###  ####        ###  ###   ###  ###      ###
+#    #######   #######   ###   ###   #######    #######   #######  ########
+
+class Console extends Widget
+
+    @log: (s) ->
+
+        $$(".console").each (e) ->
+            e.insert "<pre>"+s+"</pre>"
+            e.getWindow().scrollToBottom()
+        this
+
+    @menu: ->
+
+        Widget.create
+            type:   'button'
+            id:     'open_console'
+            text:   'console'
+            parent: 'menu'
+            onClick: -> Console.create()
+
+    @create: (cfg) ->
+
+        w2 = Stage.size().width/2
+        h2 = Stage.size().height/2
+
+        con = knix.get
+            title:    'console'
+            class:    'console-window'
+            x:        w2
+            y:        0
+            width:    w2-4
+            height:   h2-4
+            content:  'scroll'
+            buttons:  \
+            [
+                type:    "window-button-right"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-trashcan'
+                onClick: (event,e) ->
+                    e.getWindow().getChild('console').clear()
+            ,
+                type:    "window-button-left"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-diff-added'
+                onClick: (event,e) -> e.getWindow().maximize()
+            ]
+            child:
+                class:  'console'
+                text:   'knix 0.1.0'
+                noDown: true
+
+
+#   ###   ###   #######   ###      ###   ###  ########
+#   ###   ###  ###   ###  ###      ###   ###  ###
+#   ###   ###  #########  ###      ###   ###  #######
+#    ##   ##   ###   ###  ###      ###   ###  ###
+#      ###     ###   ###  #######   #######   ########
+
+class Value extends Widget
+
+    @create: (cfg) ->
+
+        value = Widget.setup cfg,
+            type:       'value'
+            value:      0
+            horizontal: true
+            slots:      \
+            {
+                setValue: (arg) ->
+                    v = @format(@round(@clamp(@slotArg(arg, 'value'))))
+                    @input.value = @strip0 v
+                    @emit 'onValue',
+                        value: v
+            }
+            child:
+                elem:   'table'
+                type:   'value-table'
+                onDown: (event,e) -> event.stopPropagation()
+                child:
+                    elem:   'tr'
+                    type:   'value-row'
+                    children: \
+                    [
+                        elem: 'td'
+                        type: 'value-td'
+                        child:
+                            type: 'icon'
+                            icon: 'octicon-triangle-left'
+                            onClick: (event,e) -> @getParent('value').incr '-'
+                    ,
+                        elem: 'td'
+                        type: 'value-content'
+                        child:
+                            type:   'input'
+                            class:  'value-input'
+                    ,
+                        elem: 'td'
+                        type: 'value-td'
+                        child:
+                            type: 'icon'
+                            icon: 'octicon-triangle-right'
+                        onClick: (event,e) -> @getParent('value').incr '+'
+                    ]
+
+        value.input = value.getChild 'value-input'
+
+        value.incr = (d) ->
+            if d in ['up', '+', '++'] then d = 1
+            else if d in ['down', '-', '--'] then d = -1
+            if @config.valueStep? then step = @config.valueStep else step = 1
+            @setValue @input.getValue() + step*d
+
+        value.on 'keypress', (event,e) ->
+            if event.key in ['Up', 'Down']
+                @incr event.key.toLowerCase()
+                event.stop()
+                return
+            if event.key not in '0123456789-.'
+                if event.key.length == 1
+                    event.stop()
+                    return
+            if event.key in '-.'
+                if @input.value.indexOf(event.key) > -1
+                    event.stop()
+                    return
+
+        value.on 'change', (event, e) ->
+            log 'value on change', e.id, e.getValue()
+            @setValue e.getValue()
+
+        value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
+        value                             # but at least it is not value.value value.value.value                  :)
+
+
 #   ###   ###  ###  ###   ###  #######     #######   ###   ###
 #   ### # ###  ###  ####  ###  ###   ###  ###   ###  ### # ###
 #   #########  ###  ### # ###  ###   ###  ###   ###  #########

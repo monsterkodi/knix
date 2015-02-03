@@ -5,8 +5,6 @@
 #    ##   ##   ###   ###  ###      ###   ###  ###
 #      ###     ###   ###  #######   #######   ########
 
-Widget = require './widget.coffee'
-
 class Value extends Widget
 
     @create: (cfg) ->
@@ -81,5 +79,3 @@ class Value extends Widget
 
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)
-
-module.exports = Value

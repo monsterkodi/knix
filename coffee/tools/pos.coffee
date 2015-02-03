@@ -1,5 +1,5 @@
 class Pos
-    
+
     constructor: (@x, @y) ->
 
     add: (val) ->
@@ -47,4 +47,4 @@ class Pos
         element.style.top = @y + "px"  unless isNaN(@y)
         return
 
-module.exports = (x,y) -> new Pos(x,y)
+pos = (x,y) -> new Pos x,y
