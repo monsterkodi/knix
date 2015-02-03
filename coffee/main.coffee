@@ -169,7 +169,7 @@ document.observe "dom:loaded", ->
     $('hello').click()
 
     Console.menu()
-    Console.create()
+    Console.create() #.shade()
 
     document.stageButtons()
 

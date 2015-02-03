@@ -1,30 +1,36 @@
+###
 
-#   ###  ###  ###   ###  ###  ###   ###
-#   ### ###   ####  ###  ###    #####
-#   #####     ### # ###  ###     ###
-#   ### ###   ###  ####  ###    #####
-#   ###  ###  ###   ###  ###  ###   ###
+    KKK  KKK  NNN   NNN  III  XXX   XXX
+    KKK KKK   NNNN  NNN  III    XXXXX
+    KKKKK     NNN N NNN  III     XXX
+    KKK KKK   NNN  NNNN  III    XXXXX
+    KKK  KKK  NNN   NNN  III  XXX   XXX
+
+###
 
 class knix
 
     # ________________________________________________________________________________ element creation
 
-    @init: -> log 'knix 0.1.1' #window.knix = Knix
+    @init: -> log 'knix 0.1.1'
 
     @create: (config, defaults) ->
 
+        _.defer (e) -> console.log 'exit'
+
         cfg = config
         cfg = Object.extend(defaults, config) if defaults?
+        # cfg = _defaults(config,defaults)
 
-        switch cfg.type
-            when 'svg', 'canvas', 'slider', 'button', 'input', 'icon' then @[cfg.type] cfg
-            when 'console' then Console.create cfg
-            when 'value'   then Value.create   cfg
-            when 'window'  then Window.create  cfg
-            when 'widget'  then Widget.setup   cfg
-            else
-                console.log 'fallback to widget for type', cfg.type
-                Widget.setup cfg, { type: 'widget' }
+        if @[cfg.type]? and typeof @[cfg.type] == 'function'
+            log 'create knix.' + cfg.type, __dirname
+            @[cfg.type] cfg
+        else if window[_.capitalize(cfg.type)] and typeof window[_.capitalize(cfg.type)].create == 'function'
+            log 'create class', _.capitalize(cfg.type)
+            window[_.capitalize(cfg.type)].create cfg
+        else
+            console.log 'fallback to widget for type', cfg.type
+            Widget.setup cfg, { type: 'widget' }
 
     @setup: (config, defaults) -> Widget.setup config, defaults
 

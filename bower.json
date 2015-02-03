@@ -32,6 +32,7 @@
     "sprintf": "~1.0.2",
     "stacktrace-js": "~0.6.4",
     "svg.js": "~1.0.1",
-    "svg.path": "~0.6.2"
+    "svg.path": "~0.6.2",
+    "lodash": "~3.1.0"
   }
 }
