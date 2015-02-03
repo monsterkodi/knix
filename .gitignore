@@ -33,8 +33,7 @@ node_modules
 # Debug log from npm
 npm-debug.log
 
-cs/*.js
-js/knix*.js
-style/style.css
+js/*.*
+style/*.css
 bower_components
 .atom-build.json
