@@ -47,6 +47,17 @@ noSelection()
       position: relative
       top: -2px
 
+.menu .icon
+      width:                30px
+      height:               30px
+      color:                textColors.menu
+      &:hover
+          color:            textColors.menu-hover
+      &:active
+          color:            textColors.menu-active
+      .octicon
+          top: 0px
+
 // ____________________________________ toplevel
 
 body
@@ -56,6 +67,14 @@ body
 
 html
     height:           100%
+
+canvas
+    background-color: rgba(255,0,0,0.5)
+
+a
+    text-decoration: none
+    color:           #63c0f5
+    text-shadow:     0 0 5px rgba(104, 182, 255, 0.5)
 
 #stage
     position:         relative
@@ -72,9 +91,6 @@ html
     overflow:         hidden
     background-color: widgetColors.stage
 
-canvas
-    background-color: rgba(255,0,0,0.5)
-
 #stage_svg
     position:         absolute
     width:            100%
@@ -86,6 +102,67 @@ canvas
     width:            100%
     height:           100%
     background-color: rgba(255,255,255,0.15)
+
+.tiny-text
+    font-size:        10px
+    color:            textColors.discreet
+
+// ____________________________________ button
+
+.button
+    handCursor()
+    noSelection()
+    overflow:         hidden
+    box-sizing:       border-box
+    padding-left:     6px
+    padding-right:    6px
+    text-align:       center
+    font-size:        14px
+    font-weight:      bold
+    border-radius:    buttonRadius
+    border:           widgetBorders.button
+    background-color: widgetColors.button
+    color:            textColors.button
+    height:           buttonHeight
+    &:hover
+        background-color: widgetColors.button-hover
+        color:            textColors.button-hover
+    &:active
+        background-color: widgetColors.button-active
+        color:            textColors.button-active
+
+.tool-button
+  padding-left: 0
+  padding-right: 0
+
+// ____________________________________ menus
+
+.menu
+    position:         absolute
+    height:           menuHeight
+    overflow:         hidden
+    & > *
+        noSelection()
+        color:        textColors.menu
+
+#menu
+    border-bottom-right-radius: 6px
+
+#tool
+    border-bottom-left-radius: 6px
+
+.menu .button
+    overflow:         hidden
+    float:            left
+    font-weight:      normal
+    height:           menuHeight
+    padding-top:      2px
+    bgColorHover(     widgetColors.menu )
+    border-radius:    0
+    &:hover
+        color: textColors.menu-hover
+    &:active
+        color: textColors.menu-active
 
 // ____________________________________ windows
 
@@ -106,13 +183,6 @@ canvas
     padding-top:   10px
     *
       margin-bottom: 10px
-
-.console-window
-  .content
-    padding: 0px
-    background-color: widgetColors.console
-    *
-      margin:  0px
 
 .window .title
     color:            textColors.title
@@ -166,18 +236,23 @@ canvas
     &:active
         background-color: lighten(widgetColors.size, 10)
 
-.relative
-    position:         relative
+// ____________________________________ console
 
-.top-right
-    position:         absolute
-    top:              0px
-    right:            0px
+.console-window
+    .content
+        padding: 0
+        margin: 0
+        background-color: widgetColors.console
+        *
+            margin:  0px
 
-.top-left
-    position:         absolute
-    top:              0px
-    left:             0px
+.console
+    background-color: widgetColors.console
+    if textColors.console
+        color:      textColors.console
+    padding-bottom: 6px
+    padding-left:   8px
+    padding-top:    6px
 
 // ____________________________________ scroll
 
@@ -273,56 +348,17 @@ canvas
       background:     widgetColors.value-active
       color:          black
 
-// ____________________________________ button
+// ____________________________________ position
 
-.button
-    handCursor()
-    noSelection()
-    overflow:         hidden
-    box-sizing:       border-box
-    padding-left:     6px
-    padding-right:    6px
-    text-align:       center
-    font-size:        14px
-    font-weight:      bold
-    border-radius:    buttonRadius
-    border:           widgetBorders.button
-    background-color: widgetColors.button
-    color:            textColors.button
-    height:           buttonHeight
-    &:hover
-        background-color: widgetColors.button-hover
-        color:            textColors.button-hover
-    &:active
-        background-color: widgetColors.button-active
-        color:            textColors.button-active
+.relative
+    position:         relative
 
-.console
-    background-color: widgetColors.console
-    if textColors.console
-      color:          textColors.console
-    bottom:           0px
-
-// ____________________________________ menus
-
-.menu
+.top-right
     position:         absolute
-    height:           menuHeight
-    border-radius:    buttonRadius
-    & > *
-        noSelection()
-        color:        textColors.menu
+    top:              0px
+    right:            0px
 
-.menu .button
-    overflow:         hidden
-    float:            left
-    font-weight:      normal
-    padding-left:     8px
-    padding-right:    8px
-    height:           menuHeight
-    bgColorHover(     widgetColors.menu )
-    border:           widgetBorders.menu
-    &:hover
-        color: textColors.menu-hover
-    &:active
-        color: textColors.menu-active
+.top-left
+    position:         absolute
+    top:              0px
+    left:             0px

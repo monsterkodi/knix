@@ -42,13 +42,46 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ widget test
 
+
     wid.get
         type:   'button'
-        id:     'hello'
         text:   'hello'
         parent: 'menu'
         onClick: ->
-            log 'hello!'
+            wid.get
+                title:     'hello'
+                hasSize:   true
+                minWidth:  130
+                center:    true
+                children: \
+                [
+                    id:         'slider'
+                    type:       'slider'
+                    hasBar:     true
+                    hasKnob:    true
+                    valueStep:  5
+                ,
+                    type:       'value'
+                    format:     "%3.2f"
+                    valueStep:  21
+                    connect: \
+                    [
+                        signal: 'slider:onValue'
+                        slot:   'setValue'
+                    ]
+                ,
+                    type:       'button'
+                    text:       'ok'
+                    onClick:    -> @getWindow().close()
+                ]
+
+            $('slider').setValue 33.3
+
+    wid.get
+        type:   'button'
+        text:   'again'
+        parent: 'menu'
+        onClick: ->
             wid.get
                 y:         30
                 title:     'hello'
@@ -86,26 +119,14 @@ document.observe "dom:loaded", ->
                     ,
                         signal: 'onValue'
                         slot:   'slider_1:setValue'
-                    # ,
-                    #     signal: 'slider_1:onValue'
-                    #     slot:   (event) ->
-                    #         log "---", event.detail.value
                     ]
                 ,
                     type:       'relative'
-                    children:   \
-                    [
+                    child:
                         type:       'button'
                         text:       'ok'
-                        class:      'top-left'
-                        onClick:    -> @getWindow().getChild('no').close()
-                    ,
-                        type:       'button'
-                        id:         'no'
-                        text:       'no'
                         class:      'top-right'
-                        onClick:    -> @getWindow().close()
-                    ]
+                        onClick:    -> @getWindow().shade()
                 ]
 
     @stageButtons = () ->
@@ -160,16 +181,28 @@ document.observe "dom:loaded", ->
             y:          150
             onClick:    wid.closeAll
 
+    Console.menu()
+
     wid.get
         type:   'button'
-        text:   'del'
-        parent: 'footer'
+        parent: 'tool'
+        icon:   'octicon-device-desktop'
+        class:  'tool-button'
+        onClick: -> Stage.toggleFullscreen()
+
+    About.menu()
+
+    wid.get
+        type:   'button'
+        parent: 'tool'
+        icon:   'octicon-x'
+        class:  'tool-button'
         onClick: -> wid.closeAll()
 
-    $('hello').click()
+    # $('hello').click()
 
-    Console.menu()
-    Console.create() #.shade()
+    Console.create()
+    # Console.create().shade()
 
     document.stageButtons()
 

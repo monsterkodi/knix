@@ -7,6 +7,7 @@
      0000000   0000000   000   000   0000000    0000000   0000000  00000000
 
 ###
+
 class Console extends Widget
 
     @log: (s) ->
@@ -21,8 +22,9 @@ class Console extends Widget
         Widget.create
             type:   'button'
             id:     'open_console'
-            text:   'console'
-            parent: 'menu'
+            icon:   'octicon-terminal'
+            class:  'tool-button'
+            parent: 'tool'
             onClick: -> Console.create()
 
     @create: (cfg) ->
@@ -34,18 +36,17 @@ class Console extends Widget
             title:    'console'
             class:    'console-window'
             x:        w2
-            y:        0
-            width:    w2-4
-            height:   h2-4
+            y:        $('menu').getHeight()+2
+            width:    w2
+            height:   h2
             content:  'scroll'
             buttons:  \
             [
-                type:    "window-button-right"
+                class:   'window-button-right'
                 child:
                     type: 'icon'
                     icon: 'octicon-trashcan'
-                onClick: (event,e) ->
-                    e.getWindow().getChild('console').clear()
+                onClick: (event,e) -> e.getWindow().getChild('console').clear()
             ,
                 type:    "window-button-left"
                 child:
@@ -55,5 +56,5 @@ class Console extends Widget
             ]
             child:
                 class:  'console'
-                text:   'knix 0.1.0'
+                text:   '<span class="tiny-text" style="vertical-align:top">console - knix version '+knix.version+'</span>'
                 noDown: true

@@ -10,7 +10,9 @@
 
 class Window extends Widget
 
-    @create: (cfg) ->
+    @create: (cfg={}, defs) ->
+
+        cfg = _.defaults(cfg, defs)
 
         children = cfg.children
         if cfg.child
@@ -21,6 +23,7 @@ class Window extends Widget
 
         w = Widget.setup cfg,
             type:     'window'
+            parent:   'stage_content'
             hasClose:  true
             hasShade:  true
             hasSize:   true
@@ -30,6 +33,10 @@ class Window extends Widget
         w.init()
         w.config.children = children
         w.insertChildren()
+
+        if cfg.center
+            w.moveTo Math.max(0,Stage.size().width/2 - w.getWidth()/2), Math.max(0,Stage.size().height/2 - w.getHeight()/2)
+
         w
 
     #__________________________________________________ init
@@ -105,6 +112,7 @@ class Window extends Widget
             parent:  this
 
         dragStart = (drag, event) ->
+            drag.target.getWindow().config.isMaximized = false
             return
 
         dragMove = (drag, event) ->
@@ -155,8 +163,9 @@ class Window extends Widget
         else
             @config.pos = @absPos()
             @config.size = @getSize()
-            @moveTo 0, 0
-            @setSize Stage.size()
+            menuHeight = $('menu').getHeight()
+            @moveTo 0, menuHeight+2
+            @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
 
     raise: ->
@@ -186,8 +195,8 @@ class Window extends Widget
             @setStyle('min-height': @config.minHeight+'px')
             @setHeight @config.height
             # adjust height for border size
-            diff = @getHeight() - @config.height
-            @setHeight @config.height - diff  if diff
+            # diff = @getHeight() - @config.height
+            # @setHeight @config.height - diff  if diff
             @config.isShaded = false
             size.show() if size
         else

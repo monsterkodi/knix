@@ -12,15 +12,12 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @init: -> log 'knix 0.1.1'
+    @version = '0.1.2'
+    @init: -> log 'knix '+@version
 
-    @create: (config, defaults) ->
+    @create: (config={}, defaults) ->
 
-        _.defer (e) -> console.log 'exit'
-
-        cfg = config
-        cfg = Object.extend(defaults, config) if defaults?
-        # cfg = _defaults(config,defaults)
+        cfg = _.defaults(config,defaults)
 
         if @[cfg.type]? and typeof @[cfg.type] == 'function'
             log 'create knix.' + cfg.type
@@ -49,10 +46,9 @@ class knix
     # ________________________________________________________________________________ get
 
     # shortcut to call any of the type functions below (@window, @button, @slider, ...)
-    # uses @window if no type is specified and sets the stage_content as default parent
+    # uses @window if no type is specified
 
-    @get: (cfg) ->
-        @create cfg, { type:'window', parent: 'stage_content'}
+    @get: (cfg) -> @create cfg, { type:'window' }
 
     @closeAll: -> # close all windows
         $$(".window").each (win) ->
@@ -128,9 +124,9 @@ class knix
                 knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
             @emit 'onValue', value:v
             log @id, v
-            return
+            @
 
-        slider.setValue(slider.config.value)
+        slider.setValue slider.config.value
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
         sizeCB = (event,e) -> slider.setValue(slider.config.value)
@@ -149,10 +145,14 @@ class knix
     # ________________________________________________________________________________ button
 
     @button: (cfg) ->
+        if cfg.icon?
+            cfg.child =
+                type: 'icon'
+                icon: cfg.icon
+
         @setup cfg,
             type:     'button'
             noDown:   true
-            minWidth: 50
 
     # ________________________________________________________________________________ icon
 

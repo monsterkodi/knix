@@ -12,10 +12,9 @@ class Widget
 
     @create: (config, defaults) -> knix.create config, defaults
 
-    @setup: (config, defaults) ->
+    @setup: (config={}, defaults) ->
 
-        cfg = config
-        cfg = Object.extend(defaults, config) if defaults?
+        cfg = _.def(config, defaults)
 
         #__________________________________________________ initialization
 
@@ -23,8 +22,12 @@ class Widget
             console.warn "NO TYPE?"
             cfg.type = 'unknown'
 
-        w = @elem(cfg.elem or "div", cfg.type)              # create element
-        w.config = Object.clone(cfg)                        # set config
+        if not cfg.elem?
+            cfg.elem = (cfg.attr?.href? or cfg.href? or null) and 'a'
+            cfg.elem ?= 'div'                               # div is default element
+
+        w = @elem(cfg.elem, cfg.type)                       # create element
+        w.config = cfg                                      # set config
 
         knix.mixin w
 
@@ -32,6 +35,9 @@ class Widget
 
         for a,v of w.config.attr                            # set element attributes
             w.writeAttribute(a, v)
+
+        for k in ['href']
+            w.writeAttribute(k, w.config[k]) if w.config[k]?
 
         if w.config.class                                   # add class names
             for clss in w.config.class.split(' ')
@@ -49,8 +55,8 @@ class Widget
         #__________________________________________________ DOM setup
 
         w.insert(w.config.text) if w.config.text
-        w.addToParent(w.config.parent)
         w.insertChildren()
+        w.addToParent(w.config.parent)
 
         #__________________________________________________ position and size
 
@@ -156,8 +162,7 @@ class Widget
         this
 
     insertChild: (config, defaults) ->
-        cfg = config
-        cfg = Object.extend defaults, config if defaults?
+        cfg = _.def config, defaults
         cfg.parent = this
         child = knix.create cfg
         child.addToParent this
@@ -231,8 +236,6 @@ class Widget
     # ____________________________________________________________________________ geometry
 
     setPos: (p) -> @moveTo p.x, p.y
-    setSize: (s) -> @resize s.width, s.height
-    getSize: -> return { width: @getWidth(), height: @getHeight() }
 
     moveTo: (x, y) ->
         @style.left = "%dpx".fmt(x) if x?
@@ -248,19 +251,30 @@ class Widget
     setWidth: (w) ->
         ow = @style.width
         @style.width = "%dpx".fmt(w) if w?
+
         @emitSize() if ow != @style.width
         return
 
     setHeight: (h) ->
         oh = @style.height
         @style.height = "%dpx".fmt(h) if h?
+
         @emitSize() if oh != @style.height
         return
 
     resize: (w, h) ->
         @setWidth w if w?
         @setHeight h if h?
+        if w?
+            diff = @getWidth() - w
+            @setWidth w - diff if diff
+        if h?
+            diff = @getHeight() - h
+            @setHeight h - diff if diff
         return
+
+    setSize: (s) -> @resize s.width, s.height
+    getSize: -> return { width: @getWidth(), height: @getHeight() }
 
     percentage: (v) -> # returns the percentage of value v in the [valueMin,valueMax] range
         cfg = @config
