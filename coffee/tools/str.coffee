@@ -26,3 +26,6 @@ str = (o,indent="",visited=[]) ->
     else
         return String(o) # plain values
     return "<???>"
+
+String.prototype.fmt = ->
+    vsprintf this, [].slice.call arguments
