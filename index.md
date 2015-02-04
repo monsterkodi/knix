@@ -13,7 +13,7 @@ wid.get
     type:   'button'
     text:   'hello'
     parent: 'menu'
-    onClick: -&gt;
+    onClick: ->
         wid.get
             title:     'hello'
             hasSize:   true
@@ -43,7 +43,7 @@ wid.get
                     type:       'button'
                     text:       'ok'
                     class:      'top-right'
-                    onClick:    -&gt; @getWindow().close()
+                    onClick:    -> @getWindow().close()
             ]
 
 {% endhighlight %}
