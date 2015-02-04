@@ -17,7 +17,6 @@ wid.get
         wid.get
             title:     'hello'
             hasSize:   true
-            width:     200
             minWidth:  130
             children: \
             [
@@ -30,9 +29,6 @@ wid.get
                 valueStep:  1
             ,
                 type:       'value'
-                value:      50
-                valueMin:   20
-                valueMax:   80
                 format:     "%3.2f"
                 connect:
                     signal: 'slider:onValue'
