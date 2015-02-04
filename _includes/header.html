@@ -1,14 +1,14 @@
 <header>
   <div class="container">
-    <h1>Knix</h1>
+    <h1><a href="index.html">Knix</a></h1>
     <h2>a small coffeescript gui framework in its infancy</h2>
 
     <nav class="site-nav">
 
       <div class="trigger">
-        {% for page in site.pages %}
-          {% if page.title %}
-          <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+        {% for p in site.pages %}
+          {% if p.title and p.title != "knix" %}
+            <a class="page-link" href="{{ p.title }}.html">{{ p.title }}</a>
           {% endif %}
         {% endfor %}
       </div>

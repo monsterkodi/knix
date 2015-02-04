@@ -35,17 +35,26 @@ li {
   line-height: 1.4 ;
 }
 
+a {
+  text-decoration: none;
+  color: #63c0f5;
+  text-shadow: 0 0 5px rgba(104, 182, 255, 0.5);
+}
+
 header h1 {
   float: left;
   margin-right: 10px;
   font-size: 42px;
   font-weight: bold;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
-  color: #EFAF31;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
                0 0 5px rgba(181, 232, 83, 0.1),
                0 0 10px rgba(181, 232, 83, 0.1);
   -webkit-font-smoothing: antialiased;
+}
+
+header h1 a {
+  color: #EFAF31;
 }
 
 header h2 {
@@ -189,10 +198,4 @@ path.kitty {
 
 .btn:hover path.kitty {
   fill: #EFAF31;
-}
-
-a {
-  text-decoration: none;
-  color: #63c0f5;
-  text-shadow: 0 0 5px rgba(104, 182, 255, 0.5);
 }
