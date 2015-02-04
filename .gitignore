@@ -37,3 +37,4 @@ js/*.*
 style/*.css
 bower_components
 .atom-build.json
+web
