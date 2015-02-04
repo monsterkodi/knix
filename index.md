@@ -42,7 +42,6 @@ wid.get
                 child:
                     type:       'button'
                     text:       'ok'
-                    class:      'top-right'
                     onClick:    -> @getWindow().close()
             ]
 
