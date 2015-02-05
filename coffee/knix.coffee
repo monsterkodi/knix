@@ -19,6 +19,7 @@ class knix
         log 'knix '+@version
 
         @initTools()
+        @
 
     @initTools: ->
 
@@ -39,18 +40,18 @@ class knix
             icon:   'octicon-x'
             onClick: -> knix.closeAll()
 
-    @create: (config={}, defaults) ->
+    @create: (config, defaults) ->
 
-        cfg = _.defaults(config,defaults)
+        cfg = _.def(config,defaults)
 
         if @[cfg.type]? and typeof @[cfg.type] == 'function'
-            log 'create knix.' + cfg.type
+            #log 'create knix.' + cfg.type
             @[cfg.type] cfg
         else if window[_.capitalize(cfg.type)] and typeof window[_.capitalize(cfg.type)].create == 'function'
-            log 'create class', _.capitalize(cfg.type)
+            #log 'create class', _.capitalize(cfg.type)
             window[_.capitalize(cfg.type)].create cfg
         else
-            console.log 'fallback to widget for type', cfg.type
+            #console.log 'fallback to widget for type', cfg.type
             Widget.setup cfg, { type: 'widget' }
 
     @setup: (config, defaults) -> Widget.setup config, defaults
@@ -72,7 +73,7 @@ class knix
     # shortcut to call any of the type functions below (@window, @button, @slider, ...)
     # uses @window if no type is specified
 
-    @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window' }
+    @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window', parent:'stage_content' }
 
     @closeAll: -> # close all windows
         $$(".window").each (win) ->
@@ -97,7 +98,7 @@ class knix
         svg = @setup cfg,
             elem: 'svg'
             parent: 'stage_content'
-        svg.s = SVG(svg.id)
+        svg.svg = SVG(svg.id)
         svg
 
     # ________________________________________________________________________________ slider

@@ -12,7 +12,7 @@ class Widget
 
     @create: (config, defaults) -> knix.create config, defaults
 
-    @setup: (config={}, defaults) ->
+    @setup: (config, defaults) ->
 
         cfg = _.def(config, defaults)
 
@@ -127,9 +127,12 @@ class Widget
         # log "@connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(w, signal)
         slotFunction = @resolveSlot(w, slot)
-        if not signalSender? then log "    sender not found!"; return
-        if not signalEvent?  then log "    event not found!";  return
-        if not slotFunction? then log "    slot not found!";   return
+        if not signalSender?
+            log "    sender not found!"; return
+        if not signalEvent?
+            log "    event not found!";  return
+        if not slotFunction?
+            log "    slot not found!";   return
         handler:  signalSender.on signalEvent, slotFunction
         sender:   signalSender
         event:    signalEvent

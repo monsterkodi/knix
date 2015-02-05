@@ -11,4 +11,8 @@ Element.addMethods
         element.parentElement.appendChild element
         return
 
-_.def = (c,d) -> _.defaults(_.cloneDeep(c), d)
+_.def = (c,d) -> 
+    if c?
+        _.defaults(_.clone(c), d)
+    else
+        d

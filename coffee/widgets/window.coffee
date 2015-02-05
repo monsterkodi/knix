@@ -10,9 +10,9 @@
 
 class Window extends Widget
 
-    @create: (cfg={}, defs) ->
+    @create: (cfg, defs) ->
 
-        cfg = _.defaults(cfg, defs)
+        cfg = _.def(cfg, defs)
 
         children = cfg.children
         if cfg.child

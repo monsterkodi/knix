@@ -38,7 +38,7 @@ class Console extends Widget
             x:        w2
             y:        $('menu').getHeight()+2
             width:    w2
-            height:   h2
+            height:   h2*2
             content:  'scroll'
             buttons:  \
             [
