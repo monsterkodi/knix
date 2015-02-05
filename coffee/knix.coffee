@@ -13,7 +13,31 @@ class knix
     # ________________________________________________________________________________ element creation
 
     @version = '0.1.2'
-    @init: -> log 'knix '+@version
+
+    @init: ->
+
+        log 'knix '+@version
+
+        @initTools()
+
+    @initTools: ->
+
+        Console.menu()
+
+        btn =
+            type:   'button'
+            parent: 'tool'
+            class:  'tool-button'
+
+        @get btn,
+            icon:   'octicon-device-desktop'
+            onClick: -> Stage.toggleFullscreen()
+
+        About.menu()
+
+        @get btn,
+            icon:   'octicon-x'
+            onClick: -> knix.closeAll()
 
     @create: (config={}, defaults) ->
 
@@ -48,7 +72,7 @@ class knix
     # shortcut to call any of the type functions below (@window, @button, @slider, ...)
     # uses @window if no type is specified
 
-    @get: (cfg) -> @create cfg, { type:'window' }
+    @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window' }
 
     @closeAll: -> # close all windows
         $$(".window").each (win) ->
@@ -72,7 +96,8 @@ class knix
     @svg: (cfg) ->
         svg = @setup cfg,
             elem: 'svg'
-        svg.s = SVG('stage_svg')
+            parent: 'stage_content'
+        svg.s = SVG(svg.id)
         svg
 
     # ________________________________________________________________________________ slider

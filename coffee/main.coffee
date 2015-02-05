@@ -7,18 +7,31 @@ document.observe "dom:loaded", ->
 
     wid.init()
 
-    # svg = wid.get
-    #     id:    'stage_svg'
-    #     type:  'svg'
-    #
-    # set = svg.s.set()
-    # p = svg.s.path()
-    # p   .M  100, 100
-    #     .Q  200, 100, 200, 200
-    #     .Q  200, 300, 300, 300
-    # set.add p
-    # set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
-    # set.stroke(color: "rgba(255,150,0,0.2)", width: 16).fill('none')
+    svg = wid.get
+        id:    'stage_svg'
+        type:  'svg'
+
+    set = svg.s.set()
+    p = svg.s.path()
+    p   .M  100, 100
+        .Q  200, 100, 200, 200
+        .Q  200, 300, 300, 300
+    set.add p
+    set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
+    set.stroke(color: "rgba(255,150,0,0.2)", width: 16).fill('none')
+
+    svg2 = wid.get
+        id:    'stage_svg2'
+        type:  'svg'
+
+    set = svg2.s.set()
+    p = svg2.s.path()
+    p   .M  300, 100
+        .Q  200, 100, 100, 200
+        .Q  200, 200, 300, 300
+    set.add p
+    set.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
+    set.stroke(color: "rgba(0,150,250,0.5)", width: 16).fill('none')
 
     # _________________________________________________________________________ canvas test
 
@@ -80,7 +93,7 @@ document.observe "dom:loaded", ->
     wid.get
         type:   'button'
         text:   'again'
-        parent: 'menu'
+        # parent: 'menu'
         onClick: ->
             wid.get
                 y:         30
@@ -136,6 +149,7 @@ document.observe "dom:loaded", ->
             type:       'slider'
             hasKnob:    false
             hasBar:     false
+            parent:     'stage_content'
             width:      200
             x:          150
             y:          30
@@ -152,6 +166,7 @@ document.observe "dom:loaded", ->
             ]
 
         wid.get
+            parent:     'stage_content'
             type:       'slider'
             hasKnob:    true
             hasBar:     true
@@ -160,6 +175,7 @@ document.observe "dom:loaded", ->
             y:          60
 
         wid.get
+            parent:     'stage_content'
             type:       'slider'
             hasKnob:    true
             hasBar:     false
@@ -168,12 +184,14 @@ document.observe "dom:loaded", ->
             y:          90
 
         wid.get
+            parent:     'stage_content'
             type:       'value'
             width:      200
             x:          150
             y:          120
 
         wid.get
+            parent:     'stage_content'
             type:       'button'
             text:       'del'
             width:      200
@@ -181,29 +199,11 @@ document.observe "dom:loaded", ->
             y:          150
             onClick:    wid.closeAll
 
-    Console.menu()
-
-    wid.get
-        type:   'button'
-        parent: 'tool'
-        icon:   'octicon-device-desktop'
-        class:  'tool-button'
-        onClick: -> Stage.toggleFullscreen()
-
-    About.menu()
-
-    wid.get
-        type:   'button'
-        parent: 'tool'
-        icon:   'octicon-x'
-        class:  'tool-button'
-        onClick: -> wid.closeAll()
-
     # $('hello').click()
 
-    Console.create()
-    # Console.create().shade()
+    # Console.create()
+    Console.create().shade()
 
-    document.stageButtons()
+    # document.stageButtons()
 
     return
