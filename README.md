@@ -18,11 +18,14 @@
 ## Install
 
 ```sh
-# download the required packages via npm
+# install the grunt and bower command line tools globally
+npm install -g grunt-cli bower
+
+# install the npm dependencies locally
 npm install
 
-# install the grunt command line tool if you haven't done that already
-npm install -g grunt-cli
+# install the bower packages locally
+bower install
 
 # build the sources
 grunt build

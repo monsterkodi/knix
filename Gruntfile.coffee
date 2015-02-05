@@ -45,13 +45,13 @@ module.exports = (grunt) ->
                 interrupt: true
 
         clean:
-            generated:    ["js/*js", "style/*.css", "js/*.map", "js/*.coffee"]
+            generated:    ["js/*", "style/*.css"]
             tempfiles:    ["coffee/**/.DS_STORE", "js/**/.DS_STORE", "style/**/.DS_STORE", "preview~*"]
-            node_modules: ["node_modules"]
+            deps:         ["node_modules", "bower_components"]
 
         shell:
             install:
-                command: 'npm install'
+                command: 'tools/install.sh'
             touch:
                 command: 'touch index.html'
             node:
@@ -82,7 +82,7 @@ module.exports = (grunt) ->
     grunt.registerTask 'test',      [ 'build', 'shell:touch', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'cc',        [ 'clean:generated' ]
-    grunt.registerTask 'install',   [ 'shell:install' ]
+    grunt.registerTask 'rebuild',   [ 'clean', 'shell:install' ]
     grunt.registerTask 'node',      [ 'shell:node' ]
     grunt.registerTask 'kill',      [ 'shell:kill' ]
     grunt.registerTask 'sleep',     [ 'shell:sleep' ]
