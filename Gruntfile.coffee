@@ -15,7 +15,7 @@ module.exports = (grunt) ->
                     './js/knix.js':    ['./coffee/knix.coffee']
                     './js/widget.js':  ['./coffee/widget.coffee']
                     './js/widgets.js': ['./coffee/widgets/*.coffee']
-                    './js/main.js':    ['./coffee/main.coffee']
+                    './js/main.js':    ['./coffee/test.coffee', './coffee/main.coffee']
 
         bower_concat:
             all:
