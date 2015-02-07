@@ -39,10 +39,10 @@ class Slider extends Widget
     valueToPercentOfWidth: (value) -> # returns the percentage of value v in the [valueMin,valueMax] range
         cfg = @config
         knobWidth = @getChild('slider-knob').getWidth()
-        knobMinPercent = 50 * (knobWidth+8) / @getWidth()
-        knobMaxPercent = 50 * knobWidth / @getWidth()
+        borderWidth = @getChild('slider-bar').getHeight() - @getChild('slider-bar').innerHeight()
+        knobMinPercent = 100 * (knobWidth+borderWidth) / @getWidth()
         barPercent = 100 * (value - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-        Math.max(knobMinPercent,Math.min(barPercent,100-knobMaxPercent))
+        Math.max(knobMinPercent,Math.min(barPercent,100))
 
     setValue: (arg) ->
         v = @slotArg(arg, 'value')

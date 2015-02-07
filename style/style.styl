@@ -1,5 +1,6 @@
 
 @import 'scheme-dark.styl'
+// @import 'scheme-bright.styl'
 
 // ____________________________________ functions
 
@@ -73,8 +74,12 @@ canvas
 
 a
     text-decoration: none
-    color:           #63c0f5
-    text-shadow:     0 0 5px rgba(104, 182, 255, 0.5)
+    color:           textColors.link
+    &:hover
+        color:       textColors.link-hover
+
+.kitty
+    fill:            textColors.link
 
 #stage
     position:         relative
@@ -278,40 +283,42 @@ a
 // ____________________________________ slider
 
 .slider
-    height:           sliderHeight
+    max-height:       valueHeight
     overflow:         hidden
     border-radius:    widgetTopRadius
     background-color: widgetColors.slider
-
-barSize = sliderHeight
+    &:hover
+        background-color: widgetColors.slider-hover
 
 .slider-bar
     position:         relative
     box-sizing:       border-box
     border:           widgetBorders.slider
-    border-top-left-radius:      barSize
-    border-bottom-left-radius:   barSize
-    height:           barSize
-    max-height:       barSize
-    margin: 0
-    padding: 0
+    border-top-right-radius:     knobSize + sliderBorderWidth
+    border-bottom-right-radius:  knobSize + sliderBorderWidth
+    border-top-left-radius:      valueHeight
+    border-bottom-left-radius:   valueHeight
+    height:           valueHeight
+    max-height:       valueHeight
+    margin:           0
+    padding:          0
     background-color: widgetColors.slider-bar
 
-knobSize = barSize - sliderBorderWidth * 2
-
 .slider-knob
-    opacity: 0.5
-    float:            right
-    margin-right:     - knobSize * 0.5
     border:           0
+    position:         absolute
+    right:            0
+    top:              ( valueHeight - 2 * sliderBorderWidth - knobSize ) * 0.5
     border-radius:    knobSize
     height:           knobSize
     width:            knobSize
-    background-color: widgetColors.scroll-handle
+    min-height:       knobSize
+    min-width:        knobSize
+    background-color: widgetColors.slider-knob
     &:hover
-      background-color: widgetColors.scroll-handle-hover
+      background-color: widgetColors.slider-knob-hover
     &:active
-      background-color: widgetColors.scroll-handle
+      background-color: widgetColors.slider-knob
 
 .connector
     overflow:         hidden
@@ -319,8 +326,8 @@ knobSize = barSize - sliderBorderWidth * 2
     min-height:       valueHeight
     max-width:        valueHeight
     max-height:       valueHeight
+    border-radius:    valueHeight
     background-color: widgetColors.slider-bar
-    border-radius:    sliderHeight
 
 // ____________________________________ value
 
@@ -347,6 +354,8 @@ knobSize = barSize - sliderBorderWidth * 2
     margin:           0
     padding:          0
     background-color: widgetColors.value-input
+    &:hover
+        background-color:  widgetColors.value-input-hover
 
 .value-input
     textCursor()

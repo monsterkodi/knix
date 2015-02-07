@@ -115,8 +115,8 @@ class Test
                     y:         30
                     title:     'slider & value'
                     hasSize:   true
-                    width:     130
-                    minWidth:  130
+                    width:     150
+                    minWidth:  150
                     minHeight: 150
                     maxHeight: 150
                     children: \

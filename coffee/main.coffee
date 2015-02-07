@@ -13,7 +13,7 @@ document.observe "dom:loaded", ->
     knix.get
         title:     'layout'
         hasSize:   true
-        minWidth:  130
+        minWidth:  180
         center:    true
         children: \
         [
@@ -71,8 +71,8 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ widget test
 
-    # Test.stageButtons()
-    # Test.sliderHello()
-    Test.sliderAndValue()
+    Test.stageButtons()
+    Test.sliderHello()
+    # Test.sliderAndValue()
 
     return
