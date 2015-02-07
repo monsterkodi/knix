@@ -23,10 +23,9 @@ class Value extends Widget
                 setValue: (arg) ->
                     oldValue = @config.value
                     v = @round(@clamp(@slotArg(arg, 'value')))
-                    log 'setValue', oldValue, v
+                    @input.value = @strip0 @format(v)
                     if v != oldValue
                         @config.value = v
-                        @input.value = @strip0 @format(v)
                         @emit 'onValue',
                             value: v
                     @
@@ -63,8 +62,6 @@ class Value extends Widget
 
         value.input = value.getChild 'value-input'
 
-        log value.input
-
         value.incr = (d) ->
             if d in ['up', '+', '++'] then d = 1
             else if d in ['down', '-', '--'] then d = -1
@@ -88,5 +85,6 @@ class Value extends Widget
         value.input.on 'change', (event,e) ->
             @getParent('value').setValue @getValue()
 
+        value.input.value = value.config.value
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)

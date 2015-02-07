@@ -20,7 +20,8 @@ class Slider extends Widget
                 child:
                     type: 'slider-knob'
 
-        slider.setValue slider.config.value
+        slider.setBarValue slider.config.value
+        # slider.setValue slider.config.value
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
         sizeCB = (event,e) -> slider.setValue(slider.config.value)
@@ -40,10 +41,14 @@ class Slider extends Widget
         cfg = @config
         knobWidth = @getChild('slider-knob').getWidth()
         borderWidth = @getChild('slider-bar').getHeight() - @getChild('slider-bar').innerHeight()
-        knobMinPercent = 100 * (knobWidth+borderWidth) / @getWidth()
+        knobMinPercent = 100 * (knobWidth+borderWidth) / Math.max(1, @getWidth())
         barFactor = (value - cfg.minValue) / (cfg.maxValue - cfg.minValue)
         barPercent = knobMinPercent + ( (100-knobMinPercent) * barFactor )
         barPercent
+
+    setBarValue: (barValue) ->
+        pct = @valueToPercentOfWidth(barValue)
+        @getChild('slider-bar').style.width = "%.2f%%".fmt(pct)
 
     setValue: (arg) ->
         oldValue = @config.value
@@ -51,10 +56,6 @@ class Slider extends Widget
         v = @clamp(v)
         if v != oldValue
             @config.value = v
-            pct = @valueToPercentOfWidth v
-            bar = @getChild('slider-bar')
-            bar.style.width = "%.2f%%".fmt(pct)
-
+            @setBarValue(v)
             @emit 'onValue', value:v
-            log @id, "%.2f%%".fmt(pct), v
         @

@@ -35,6 +35,7 @@ document.observe "dom:loaded", ->
                 ,
                     id:         'slider'
                     type:       'slider'
+                    value: 50
                     style:
                         display:  'table-cell'
                         width:    '100%'
@@ -42,6 +43,7 @@ document.observe "dom:loaded", ->
                     id:         'value'
                     type:       'value'
                     format:     "%3.0f"
+                    value: 50
                     style:
                         display:  'table-cell'
                         minWidth: '80px'
