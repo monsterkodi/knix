@@ -13,8 +13,8 @@ class Slider extends Widget
         slider = knix.setup cfg,
             type:      'slider'
             value:      0
-            valueMin:   0
-            valueMax:   100
+            minValue:   0
+            maxValue:   100
             child:
                 type:    'slider-bar'
                 child:
@@ -36,22 +36,25 @@ class Slider extends Widget
 
         slider
 
-    valueToPercentOfWidth: (value) -> # returns the percentage of value v in the [valueMin,valueMax] range
+    valueToPercentOfWidth: (value) -> # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
         knobWidth = @getChild('slider-knob').getWidth()
         borderWidth = @getChild('slider-bar').getHeight() - @getChild('slider-bar').innerHeight()
         knobMinPercent = 100 * (knobWidth+borderWidth) / @getWidth()
-        barPercent = 100 * (value - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-        Math.max(knobMinPercent,Math.min(barPercent,100))
+        barFactor = (value - cfg.minValue) / (cfg.maxValue - cfg.minValue)
+        barPercent = knobMinPercent + ( (100-knobMinPercent) * barFactor )
+        barPercent
 
     setValue: (arg) ->
+        oldValue = @config.value
         v = @slotArg(arg, 'value')
         v = @clamp(v)
-        @config.value = v
-        pct = @valueToPercentOfWidth v
-        bar = @getChild('slider-bar')
-        bar.style.width = "%.2f%%".fmt(pct)
+        if v != oldValue
+            @config.value = v
+            pct = @valueToPercentOfWidth v
+            bar = @getChild('slider-bar')
+            bar.style.width = "%.2f%%".fmt(pct)
 
-        @emit 'onValue', value:v
-        log @id, "%.2f%%".fmt(pct), v
+            @emit 'onValue', value:v
+            log @id, "%.2f%%".fmt(pct), v
         @

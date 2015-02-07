@@ -131,15 +131,9 @@ class Test
                         hasKnob:    true
                         hasBar:     true
                         value:      70.0
-                        # valueMin:   0.0
-                        # valueMax:   100.0
-                        # valueStep:  1
                     ,
                         type:       'value'
                         value:      50
-                        valueMin:   0
-                        valueMax:   100
-                        # valueStep:  1
                         format:     "%3.2f"
                         connect: \
                         [
@@ -171,8 +165,7 @@ class Test
             width:      200
             x:          150
             y:          30
-            valueMin:   0
-            valueMax:   255
+            maxValue:   255
             connect: \
             [
                 signal: 'onValue'

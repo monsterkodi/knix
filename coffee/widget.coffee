@@ -280,13 +280,13 @@ class Widget
     setSize: (s) -> @resize s.width, s.height
     getSize: -> return { width: @getWidth(), height: @getHeight() }
 
-    percentage: (v) -> # returns the percentage of value v in the [valueMin,valueMax] range
+    percentage: (v) -> # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
-        pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+        pct = 100 * (v - cfg.minValue) / (cfg.maxValue - cfg.minValue)
         Math.max(0,Math.min(pct,100))
 
-    size2value: (s) -> # returns the value in the [valueMin,valueMax] range that lies at point s
-        @config.valueMin + (@config.valueMax - @config.valueMin) * s / @innerWidth()
+    size2value: (s) -> # returns the value in the [minValue,maxValue] range that lies at point s
+        @config.minValue + (@config.maxValue - @config.minValue) * s / @innerWidth()
 
     innerWidth:  -> @getLayout().get("padding-box-width")
     innerHeight: -> @getLayout().get("padding-box-height")
@@ -307,8 +307,8 @@ class Widget
             d = v - Math.round(v/@config.valueStep)*@config.valueStep
             r -= d
         r
-    clamp: (v) -> # clamps v to the [valueMin,valueMax] range
+    clamp: (v) -> # clamps v to the [minValue,maxValue] range
         c = v
-        c = Math.min(c, @config.valueMax) if @config.valueMax?
-        c = Math.max(c, @config.valueMin) if @config.valueMin?
+        c = Math.min(c, @config.maxValue) if @config.maxValue?
+        c = Math.max(c, @config.minValue) if @config.minValue?
         c

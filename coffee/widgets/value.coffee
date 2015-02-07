@@ -1,9 +1,9 @@
 ###
 
     000   000   0000000   000      000   000  00000000
-    000   000  000   000  000      000   000  000     
+    000   000  000   000  000      000   000  000
     000   000  000000000  000      000   000  0000000
-     00   00   000   000  000      000   000  000     
+     00   00   000   000  000      000   000  000
        000     000   000  0000000   0000000   00000000
 
 ###
@@ -15,14 +15,21 @@ class Value extends Widget
         value = Widget.setup cfg,
             type:       'value'
             value:      0
+            minValue:   0
+            maxValue:   100
             horizontal: true
             slots:      \
             {
                 setValue: (arg) ->
-                    v = @format(@round(@clamp(@slotArg(arg, 'value'))))
-                    @input.value = @strip0 v
-                    @emit 'onValue',
-                        value: v
+                    oldValue = @config.value
+                    v = @round(@clamp(@slotArg(arg, 'value')))
+                    log 'setValue', oldValue, v
+                    if v != oldValue
+                        @config.value = v
+                        @input.value = @strip0 @format(v)
+                        @emit 'onValue',
+                            value: v
+                    @
             }
             child:
                 elem:   'table'
@@ -56,6 +63,8 @@ class Value extends Widget
 
         value.input = value.getChild 'value-input'
 
+        log value.input
+
         value.incr = (d) ->
             if d in ['up', '+', '++'] then d = 1
             else if d in ['down', '-', '--'] then d = -1
@@ -76,9 +85,8 @@ class Value extends Widget
                     event.stop()
                     return
 
-        value.on 'change', (event, e) ->
-            log 'value on change', e.id, e.getValue()
-            @setValue e.getValue()
+        value.input.on 'change', (event,e) ->
+            @getParent('value').setValue @getValue()
 
         value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
         value                             # but at least it is not value.value value.value.value                  :)

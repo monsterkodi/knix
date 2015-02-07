@@ -6,14 +6,15 @@ document.observe "dom:loaded", ->
     wid = knix.init()
 
     c = Console.create()
-    # c.shade()
+    c.shade()
 
     # _________________________________________________________________________ layout test
 
     knix.get
         title:     'layout'
         hasSize:   true
-        minWidth:  180
+        minWidth:  200
+        minHeight: 90
         center:    true
         children: \
         [
@@ -26,7 +27,6 @@ document.observe "dom:loaded", ->
                 style:
                     display: 'table-row'
                     width:   '100%'
-                    # backgroundColor: '#ff0'
                 children: \
                 [
                     type:       'connector'
@@ -35,22 +35,16 @@ document.observe "dom:loaded", ->
                 ,
                     id:         'slider'
                     type:       'slider'
-                    valueStep:  5
                     style:
                         display:  'table-cell'
                         width:    '100%'
                 ,
+                    id:         'value'
                     type:       'value'
-                    format:     "%3.2f"
-                    valueStep:  21
+                    format:     "%3.0f"
                     style:
                         display:  'table-cell'
                         minWidth: '80px'
-                    # connect: \
-                    # [
-                    #     signal: 'slider:onValue'
-                    #     slot:   'setValue'
-                    # ]
                 ,
                     type:       'connector'
                     style:
@@ -58,14 +52,19 @@ document.observe "dom:loaded", ->
                 ]
             ]
         ,
-            elem: 'i'
-            class: "fa fa-cog fa-spin"
-        ,
             type:       'button'
-            text:       'ok'
+            text:       '<i class="fa fa-cog fa-spin"></i> ok'
             style:
                 clear:  'both'
             onClick:    -> @getWindow().close()
+            connect: \
+            [
+                signal: 'slider:onValue'
+                slot:   'value:setValue'
+            ,
+                signal: 'value:onValue'
+                slot:   'slider:setValue'
+            ]
         ]
 
     # _________________________________________________________________________ raise
