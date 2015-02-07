@@ -58,6 +58,9 @@ document.observe "dom:loaded", ->
                 ]
             ]
         ,
+            elem: 'i'
+            class: "fa fa-cog fa-spin"
+        ,
             type:       'button'
             text:       'ok'
             style:
@@ -71,8 +74,8 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ widget test
 
-    Test.stageButtons()
-    Test.sliderHello()
+    # Test.stageButtons()
+    # Test.sliderHello()
     # Test.sliderAndValue()
 
     return

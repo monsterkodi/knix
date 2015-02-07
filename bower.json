@@ -1,38 +1,39 @@
 {
-    "name": "knix",
-    "version": "0.1.0",
-    "homepage": "https://github.com/monsterkodi/knix",
-    "authors": [
-        "monsterkodi <monsterkodi@gmx.net>"
-    ],
-    "description": "small javascript gui framework",
-    "main": "js/knix.js",
-    "keywords": [
-        "js",
-        "javascript",
-        "gui",
-        "svg",
-        "canvas",
-        "html5",
-        "coffeescript"
-    ],
-    "license": "none",
-    "private": true,
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "fabric": "~1.4.13",
-        "octicons": "~2.1.2",
-        "prototype.js": "~1.7.1",
-        "sprintf": "~1.0.2",
-        "stacktrace-js": "~0.6.4",
-        "svg.js": "~1.0.1",
-        "svg.path": "~0.6.2",
-        "lodash": "~3.1.0"
-    }
+  "name": "knix",
+  "version": "0.1.0",
+  "homepage": "https://github.com/monsterkodi/knix",
+  "authors": [
+    "monsterkodi <monsterkodi@gmx.net>"
+  ],
+  "description": "small javascript gui framework",
+  "main": "js/knix.js",
+  "keywords": [
+    "js",
+    "javascript",
+    "gui",
+    "svg",
+    "canvas",
+    "html5",
+    "coffeescript"
+  ],
+  "license": "none",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fabric": "~1.4.13",
+    "octicons": "~2.1.2",
+    "prototype.js": "~1.7.1",
+    "sprintf": "~1.0.2",
+    "stacktrace-js": "~0.6.4",
+    "svg.js": "~1.0.1",
+    "svg.path": "~0.6.2",
+    "lodash": "~3.1.0",
+    "font-awesome": "~4.3.0"
+  }
 }
