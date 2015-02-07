@@ -7,7 +7,7 @@ class Path extends Widget
             start:    [0,0]
             startDir: [100,0]
             end:      [200,200]
-            endDir:   [-100,0]
+            endDir:   [0,0]
 
         pth = cfg.svg.path()
         pth .M  0,0

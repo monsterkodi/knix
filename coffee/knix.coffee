@@ -56,17 +56,13 @@ class knix
 
     @setup: (config, defaults) -> Widget.setup config, defaults
 
-    # takes values from config and overwrites those in defaults
-
-    @def: (config, defaults) -> Object.extend(defaults, config)
-
     @mixin: (w) -> # merge in object functions
 
-        Object.extend w, switch w.config.type
-            when 'console' then Console.prototype
-            when 'value'   then Value.prototype
-            when 'window'  then Window.prototype
-            else Widget.prototype
+        className = _.capitalize(w.config.type)
+        if window[className] and typeof window[className].prototype?
+            Object.extend w, window[className].prototype
+        else:
+            Object.extend w, Widget.prototype
 
     # ________________________________________________________________________________ get
 
@@ -100,73 +96,6 @@ class knix
             parent: 'stage_content'
         svg.svg = SVG(svg.id)
         svg
-
-    # ________________________________________________________________________________ slider
-
-    @slider: (cfg) ->
-
-        sliderFunc = (drag, event) ->
-            sld = drag.target
-            sps = sld.absPos()
-            wdt = event.clientX-sps.x
-            v   = sld.size2value wdt
-            sld.setValue(v)
-
-        children = []
-        if cfg.hasBar or !cfg.hasKnob
-            children.push
-                type:    'slider-bar'
-        if cfg.hasKnob
-            children.push
-                type:    'slider-knob'
-
-        slider = @setup cfg,
-            type:       'slider'
-            value:      0
-            valueMin:   0
-            valueMax:   100
-            horizontal: true
-            children:   \
-            [
-                type:       'relative'
-                children:   children
-            ]
-
-        slider.setValue = (arg) ->
-            v = @slotArg(arg, 'value')
-            if isNaN v
-                log @id, 'farz', arg.detail
-                return
-            v = @clamp(v)
-            @config.value = v
-            pct = @percentage v
-            slb = @getChild('slider-bar')
-            if slb
-                slb.style.width = "%d%%".fmt(pct)
-
-            knb = @getChild('slider-knob')
-            if knb
-                knb.style.left = "%d%%".fmt(pct)
-                knb.style.marginLeft = "-%dpx".fmt knb.getWidth()/2
-            @emit 'onValue', value:v
-            log @id, v
-            @
-
-        slider.setValue slider.config.value
-
-        # this is only to fix a minor glitch in the knob display, might cost too much performance:
-        sizeCB = (event,e) -> slider.setValue(slider.config.value)
-        win = slider.getWindow()
-        win.on "size", sizeCB if win
-
-        Drag.create
-            cursor:     'ew-resize'
-            target:     slider
-            doMove:     false
-            onMove:     sliderFunc
-            onStart:    sliderFunc
-
-        slider
 
     # ________________________________________________________________________________ button
 

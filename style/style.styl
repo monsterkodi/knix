@@ -181,8 +181,9 @@ a
     padding-left:  10px
     padding-right: 10px
     padding-top:   10px
-    *
-      margin-bottom: 10px
+
+.content > div
+    margin-bottom: 10px
 
 .window .title
     color:            textColors.title
@@ -280,28 +281,46 @@ a
     height:           sliderHeight
     overflow:         hidden
     border-radius:    widgetTopRadius
-    border:           widgetBorders.slider
     background-color: widgetColors.slider
-    box-sizing:       border-box
+
+barSize = sliderHeight
 
 .slider-bar
-    position:         absolute
-    border-radius:    0
-    border:           0
-    height:           sliderHeight
+    position:         relative
+    box-sizing:       border-box
+    border:           widgetBorders.slider
+    border-top-left-radius:      barSize
+    border-bottom-left-radius:   barSize
+    height:           barSize
+    max-height:       barSize
+    margin: 0
+    padding: 0
     background-color: widgetColors.slider-bar
 
+knobSize = barSize - sliderBorderWidth * 2
+
 .slider-knob
-    position:         absolute
-    border-radius:    sliderHeight - sliderBorderWidth * 2
+    opacity: 0.5
+    float:            right
+    margin-right:     - knobSize * 0.5
     border:           0
-    height:           sliderHeight - sliderBorderWidth * 2
-    width:            sliderHeight - sliderBorderWidth * 2
+    border-radius:    knobSize
+    height:           knobSize
+    width:            knobSize
     background-color: widgetColors.scroll-handle
     &:hover
       background-color: widgetColors.scroll-handle-hover
     &:active
       background-color: widgetColors.scroll-handle
+
+.connector
+    overflow:         hidden
+    min-width:        valueHeight
+    min-height:       valueHeight
+    max-width:        valueHeight
+    max-height:       valueHeight
+    background-color: widgetColors.slider-bar
+    border-radius:    sliderHeight
 
 // ____________________________________ value
 
@@ -352,6 +371,7 @@ a
 
 .relative
     position:         relative
+    display:          block
 
 .top-right
     position:         absolute

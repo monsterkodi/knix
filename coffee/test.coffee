@@ -1,6 +1,71 @@
 
 class Test
 
+
+    # _________________________________________________________________________ svg path test
+
+    @svgPath: ->
+
+        svg = knix.get
+            id:    'stage_svg'
+            type:  'svg'
+
+        pth = knix.get
+            svg:   svg.svg
+            type:  'path'
+
+        start = knix.get
+            x: pth.config.start[0]
+            y: pth.config.start[1]
+            type: 'button'
+            path: pth
+
+        end = knix.get
+            x: pth.config.end[0]
+            y: pth.config.end[1]
+            type: 'button'
+            path: pth
+
+        startHead = knix.get
+            x: pth.config.startHead[0]
+            y: pth.config.startHead[1]
+            type: 'button'
+            path: pth
+            style:
+                backgroundColor: '#ff0'
+
+        endHead = knix.get
+            x: pth.config.endHead[0]
+            y: pth.config.endHead[1]
+            type: 'button'
+            path: pth
+            style:
+                backgroundColor: '#f00'
+
+        Drag.create
+            target: start
+            onMove: (drag, event) ->
+                p = drag.target.absPos()
+                drag.target.config.path.setStart [p.x, p.y]
+
+        Drag.create
+            target: startHead
+            onMove: (drag, event) ->
+                p = drag.target.absPos()
+                drag.target.config.path.setStartHead [p.x, p.y]
+
+        Drag.create
+            target: end
+            onMove: (drag, event) ->
+                p = drag.target.absPos()
+                drag.target.config.path.setEnd [p.x, p.y]
+
+        Drag.create
+            target: endHead
+            onMove: (drag, event) ->
+                p = drag.target.absPos()
+                drag.target.config.path.setEndHead [p.x, p.y]
+
     @sliderHello: ->
 
         b = knix.get
@@ -48,7 +113,7 @@ class Test
             onClick: ->
                 knix.get
                     y:         30
-                    title:     'hello'
+                    title:     'slider & value'
                     hasSize:   true
                     width:     130
                     minWidth:  130
@@ -59,22 +124,22 @@ class Test
                         id:         'slider_1'
                         type:       'slider'
                         value:      50.0
-                        valueStep:  10
+                        # valueStep:  10
                     ,
                         id:         'slider_2'
                         type:       'slider'
                         hasKnob:    true
                         hasBar:     true
                         value:      70.0
-                        valueMin:   0.0
-                        valueMax:   100.0
-                        valueStep:  1
+                        # valueMin:   0.0
+                        # valueMax:   100.0
+                        # valueStep:  1
                     ,
                         type:       'value'
                         value:      50
-                        valueMin:   -20
-                        valueMax:   80
-                        valueStep:  1
+                        valueMin:   0
+                        valueMax:   100
+                        # valueStep:  1
                         format:     "%3.2f"
                         connect: \
                         [
@@ -154,7 +219,7 @@ class Test
 
     # _________________________________________________________________________ canvas test
     #
-    # sc = wid.get
+    # sc = knix.get
     #     id:      'stage_canvas'
     #     type:    'canvas'
     #     width:   parseInt window.innerWidth

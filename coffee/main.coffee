@@ -6,70 +6,64 @@ document.observe "dom:loaded", ->
     wid = knix.init()
 
     c = Console.create()
-    c.shade()
+    # c.shade()
 
-    # _________________________________________________________________________ svg test
+    # _________________________________________________________________________ layout test
 
-    svg = wid.get
-        id:    'stage_svg'
-        type:  'svg'
-
-    pth = wid.get
-        svg:   svg.svg
-        type:  'path'
-
-    start = wid.get
-        x: pth.config.start[0]
-        y: pth.config.start[1]
-        type: 'button'
-        path: pth
-
-    end = wid.get
-        x: pth.config.end[0]
-        y: pth.config.end[1]
-        type: 'button'
-        path: pth
-
-    startHead = wid.get
-        x: pth.config.startHead[0]
-        y: pth.config.startHead[1]
-        type: 'button'
-        path: pth
-        style:
-            backgroundColor: '#ff0'
-
-    endHead = wid.get
-        x: pth.config.endHead[0]
-        y: pth.config.endHead[1]
-        type: 'button'
-        path: pth
-        style:
-            backgroundColor: '#f00'
-
-    Drag.create
-        target: start
-        onMove: (drag, event) ->
-            p = drag.target.absPos()
-            drag.target.config.path.setStart [p.x, p.y]
-
-    Drag.create
-        target: startHead
-        onMove: (drag, event) ->
-            p = drag.target.absPos()
-            drag.target.config.path.setStartHead [p.x, p.y]
-
-    Drag.create
-        target: end
-        onMove: (drag, event) ->
-            p = drag.target.absPos()
-            drag.target.config.path.setEnd [p.x, p.y]
-
-    Drag.create
-        target: endHead
-        onMove: (drag, event) ->
-            p = drag.target.absPos()
-            drag.target.config.path.setEndHead [p.x, p.y]
-
+    knix.get
+        title:     'layout'
+        hasSize:   true
+        minWidth:  130
+        center:    true
+        children: \
+        [
+            type: 'table'
+            style:
+                display: 'table'
+            children: \
+            [
+                type: 'horizontal-layout'
+                style:
+                    display: 'table-row'
+                    width:   '100%'
+                    # backgroundColor: '#ff0'
+                children: \
+                [
+                    type:       'connector'
+                    style:
+                        display: 'table-cell'
+                ,
+                    id:         'slider'
+                    type:       'slider'
+                    valueStep:  5
+                    style:
+                        display:  'table-cell'
+                        width:    '100%'
+                ,
+                    type:       'value'
+                    format:     "%3.2f"
+                    valueStep:  21
+                    style:
+                        display:  'table-cell'
+                        minWidth: '80px'
+                    # connect: \
+                    # [
+                    #     signal: 'slider:onValue'
+                    #     slot:   'setValue'
+                    # ]
+                ,
+                    type:       'connector'
+                    style:
+                        display:  'table-cell'
+                ]
+            ]
+        ,
+            type:       'button'
+            text:       'ok'
+            style:
+                clear:  'both'
+            onClick:    -> @getWindow().close()
+        ]
 
     # _________________________________________________________________________ raise
 
@@ -79,6 +73,6 @@ document.observe "dom:loaded", ->
 
     # Test.stageButtons()
     # Test.sliderHello()
-    # Test.sliderAndValue()
+    Test.sliderAndValue()
 
     return

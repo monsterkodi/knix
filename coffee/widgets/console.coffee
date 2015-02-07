@@ -29,16 +29,16 @@ class Console extends Widget
 
     @create: (cfg) ->
 
-        w2 = Stage.size().width/2
-        h2 = Stage.size().height/2
+        w  = Stage.size().width/2
+        h  = Stage.size().height - $('menu').getHeight() - 2
 
         con = knix.get
             title:    'console'
             class:    'console-window'
-            x:        w2
+            x:        w
             y:        $('menu').getHeight()+2
-            width:    w2
-            height:   h2*2
+            width:    w
+            height:   h
             content:  'scroll'
             buttons:  \
             [

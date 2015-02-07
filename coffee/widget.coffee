@@ -213,7 +213,8 @@ class Widget
     getParent: ->
         args = $A(arguments)
         if args.length
-            for a in @ancestors()
+            anc = @ancestors()
+            for a in anc
                 if a.match("#"+args[0]) or a.match("."+args[0])
                     return a
             return
@@ -225,10 +226,10 @@ class Widget
             return this
         @getParent('window')
 
-    getChild: (name) -> # returns first child element that matches class or id <name>
-        c = Selector.findChildElements(this, ['#'+name, '.'+name])
+    getChild: (classOrID) -> # returns first child element that matches class or element id
+        c = @select('#'+classOrID, '.'+classOrID)
         return c[0] if c.length
-        return null
+        return undefined
 
     close: -> @remove(); return
 
@@ -281,14 +282,8 @@ class Widget
 
     percentage: (v) -> # returns the percentage of value v in the [valueMin,valueMax] range
         cfg = @config
-        if cfg.hasKnob
-            knv = @size2value @getChild('slider-knob').getWidth()
-            knp = 100 * (knv - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            Math.max(knp/2,Math.min(pct,100-knp/2))
-        else
-            pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
-            Math.max(0,Math.min(pct,100))
+        pct = 100 * (v - cfg.valueMin) / (cfg.valueMax - cfg.valueMin)
+        Math.max(0,Math.min(pct,100))
 
     size2value: (s) -> # returns the value in the [valueMin,valueMax] range that lies at point s
         @config.valueMin + (@config.valueMax - @config.valueMin) * s / @innerWidth()
