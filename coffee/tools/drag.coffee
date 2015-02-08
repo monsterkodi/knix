@@ -4,8 +4,6 @@ class Drag
     @create: (cfg) -> new Drag(cfg)
 
     constructor: (cfg) ->
-        # Object.extend(this, Drag.config)
-        # Object.extend(this, cfg)
         _.extend @, _.def cfg,
                 target:  null
                 handle:  null
