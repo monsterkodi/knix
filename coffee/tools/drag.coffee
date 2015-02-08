@@ -73,7 +73,7 @@ class Drag
         @cancelEvent event
 
     dragUp: (event) ->
-        @dragStop()
+        @dragStop event
         @cancelEvent event
 
     dragStop: (event) ->
@@ -82,7 +82,7 @@ class Drag
         @eventUp.stop()
         @cursorStartPos = null
         @targetStartPos = null
-        @onStop this, event if @onStop?
+        @onStop this, event if @onStop? and event?
         @dragging = false
         return
 
