@@ -15,7 +15,9 @@ document.observe "dom:loaded", ->
         hasSize:   true
         minWidth:  200
         minHeight: 90
-        center:    true
+        # center:    true
+        x: 100
+        y: 100
         children: \
         [
             type: 'hbox'
@@ -64,5 +66,6 @@ document.observe "dom:loaded", ->
     # Test.stageButtons()
     # Test.sliderHello()
     # Test.sliderAndValue()
+    # Test.svgPath()
 
     return

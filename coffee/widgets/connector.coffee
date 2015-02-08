@@ -19,7 +19,15 @@ class Connector extends Widget
         @handle = knix.get
             type:  'handle'
             style:
+                pointerEvents: 'none'
                 cursor: 'grabbing'
+
+        @path = knix.get
+            type:  'path'
+
+        @elem.style.cursor = 'grabbing'
+        @path.setStart drag.absPos(event)
+        @path.setEnd drag.absPos(event)
 
         log "Connector::onStart", drag.absPos(event)
         @handle.setPos drag.absPos(event)
@@ -27,10 +35,14 @@ class Connector extends Widget
     dragMove: (drag,event) ->
 
         # log "Connector::onMove", drag.absPos(event)
-
-        @handle.setPos drag.absPos(event)
+        p = drag.absPos(event)
+        elem = document.elementFromPoint p.x, p.y
+        log elem.id if elem?
+        @handle.setPos p
+        @path.setEnd p
 
     dragStop: (drag,event) ->
 
         log "Connector::onStop", drag.absPos(event)
-        @handle.close()
+        # @handle.close()
+        # @path.path.remove()

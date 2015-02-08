@@ -16,6 +16,13 @@ class Pos
             newPos.y -= val.y  unless isNaN(val.y)
         newPos
 
+    mul: (val) ->
+        @x *= val
+        @y *= val
+        @
+
+    mid: (other) -> @add(other).mul(0.5)
+
     min: (val) ->
         newPos = new Pos(@x, @y)
         return newPos unless val?

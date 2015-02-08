@@ -6,12 +6,7 @@ class Test
 
     @svgPath: ->
 
-        svg = knix.get
-            id:    'stage_svg'
-            type:  'svg'
-
         pth = knix.get
-            svg:   svg.svg
             type:  'path'
 
         start = knix.get
@@ -43,28 +38,28 @@ class Test
                 backgroundColor: '#f00'
 
         Drag.create
-            target: start
+            target: start.elem
             onMove: (drag, event) ->
-                p = drag.target.absPos()
-                drag.target.config.path.setStart [p.x, p.y]
+                p = drag.absPos(event)
+                pth.setStart [p.x, p.y]
 
         Drag.create
-            target: startHead
+            target: startHead.elem
             onMove: (drag, event) ->
-                p = drag.target.absPos()
-                drag.target.config.path.setStartHead [p.x, p.y]
+                p = drag.absPos(event)
+                pth.setStartHead [p.x, p.y]
 
         Drag.create
-            target: end
+            target: end.elem
             onMove: (drag, event) ->
-                p = drag.target.absPos()
-                drag.target.config.path.setEnd [p.x, p.y]
+                p = drag.absPos(event)
+                pth.setEnd [p.x, p.y]
 
         Drag.create
-            target: endHead
+            target: endHead.elem
             onMove: (drag, event) ->
-                p = drag.target.absPos()
-                drag.target.config.path.setEndHead [p.x, p.y]
+                p = drag.absPos(event)
+                pth.setEndHead [p.x, p.y]
 
     @sliderHello: ->
 

@@ -1,61 +1,54 @@
 
 class Path extends Widget
 
-    @create: (config, defaults) ->
+    constructor: (config, defaults) ->
 
-        cfg = _.def config, _.def defaults,
-            start:    [0,0]
-            startDir: [100,0]
-            end:      [200,200]
-            endDir:   [0,0]
+        @config = _.def config, _.def defaults,
+            start:    pos(0,0)
+            startDir: pos(100,0)
+            end:      pos(200,200)
+            endDir:   pos(0,0)
+            svg:      knix.svg
 
-        pth = cfg.svg.path()
-        pth .M  0,0
+        @path = @config.svg.path()
+        @path .M  0,0
             .Q  0,0,0,0
             .Q  0,0,0,0
 
-        pth.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
-        pth.stroke(color: "rgba(0,0,255,0.4)", width: 16).fill('none')
+        @path.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
+        @path.stroke(color: "rgba(0,0,255,0.4)", width: 16).fill('none')
+        @path.style(cursor: 'grabbing')
 
-        _.extend pth, @prototype
-
-        cfg.endHead = pth.add(cfg.end,cfg.endDir)
-        pth.config  = cfg
-        pth.setStart cfg.start
-        pth.setEnd   cfg.end
-        pth
-
-    add: (a,b) -> [a[0]+b[0], a[1]+b[1]]
-    sub: (a,b) -> [a[0]-b[0], a[1]-b[1]]
-    mid: (a,b) -> [(a[0]+b[0])*0.5, (a[1]+b[1])*0.5]
+        @config.endHead = @config.end.add(@config.endDir)
+        @setStart @config.start
+        @setEnd   @config.end
 
     setEndDir:    (p) -> @config.endDir = p; @setEnd @config.end
     setStartDir:  (p) -> @config.startDir = p; @setStart @config.start
-    setEndHead:   (p) -> @setEndDir @sub(p,@config.end)
-    setStartHead: (p) -> @setStartDir @sub(p,@config.start)
+    setEndHead:   (p) -> @setEndDir p.sub(@config.end)
+    setStartHead: (p) -> @setStartDir p.sub(@config.start)
 
     setStart: (p) ->
-        c = @config
-        c.start = p
-        c.startHead = @add(c.start,c.startDir)
-        c.mid = @mid(c.startHead,c.endHead)
-        @setCtrl 0, c.start
-        @setCtrl 1, c.startHead
-        @setCtrl 2, c.mid
+
+        @config.start = p
+        @config.startHead = @config.start.add(@config.startDir)
+        @config.mid = @config.startHead.mid(@config.endHead)
+        @setCtrl 0, @config.start
+        @setCtrl 1, @config.startHead
+        @setCtrl 2, @config.mid
 
     setEnd: (p) ->
-        c = @config
-        c.end = p
-        c.endHead = @add(c.end,c.endDir)
-        c.mid = @mid(c.startHead,c.endHead)
-        @setCtrl 2, c.mid
-        @setCtrl 3, c.endHead
-        @setCtrl 4, c.end
+        @config.end = p
+        @config.endHead = @config.end.add(@config.endDir)
+        @config.mid = @config.startHead.mid(@config.endHead)
+        @setCtrl 2, @config.mid
+        @setCtrl 3, @config.endHead
+        @setCtrl 4, @config.end
 
     setCtrl: (c, p) ->
         si = [0,1,1,2,2][c]
         o  = [0,0,2,0,2][c]
-        s  = @getSegment(si)
-        s.coords[0+o] = p[0]
-        s.coords[1+o] = p[1]
-        @replaceSegment si, s
+        s  = @path.getSegment(si)
+        s.coords[0+o] = p.x
+        s.coords[1+o] = p.y
+        @path.replaceSegment si, s

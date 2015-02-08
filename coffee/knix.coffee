@@ -18,10 +18,19 @@ class knix
 
         log 'knix '+@version
 
+        @initSVG()
         @initTools()
         @
 
-    @initTools: -> 
+    @initSVG: ->
+        
+        svg = knix.get
+            id:    'stage_svg'
+            type:  'svg'
+
+        @svg = svg.svg
+
+    @initTools: ->
 
         Console.menu()
 
@@ -95,10 +104,10 @@ class knix
     # ________________________________________________________________________________ svg
 
     @svg: (cfg) ->
-        svg = new Widget setup cfg,
+        svg = new Widget cfg,
             elem: 'svg'
             parent: 'stage_content'
-        svg.svg = SVG(svg.id)
+        svg.svg = SVG(svg.elem.id)
         svg
 
     # ________________________________________________________________________________ button

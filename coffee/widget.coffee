@@ -93,7 +93,7 @@ class Widget
 
     @elem: (type, clss) -> # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
-        e.id = "knix_%d".fmt(@nextWidgetID)
+        e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
         @nextWidgetID += 1
         e.addClassName clss
         e
@@ -116,7 +116,7 @@ class Widget
         slots = @config.slots
         return if not slots?
         for slot, func of slots
-            log "@initSlots", @elem.id, slot
+            # log "@initSlots", @elem.id, slot
             @[slot] = func
 
     # ____________________________________________________________________________ connections
@@ -128,7 +128,7 @@ class Widget
             @connect connection.signal, connection.slot
 
     connect: (signal, slot) ->
-        log "connect", signal, slot
+        # log "connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
