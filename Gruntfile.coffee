@@ -28,7 +28,8 @@ module.exports = (grunt) ->
         stylus:
             compile:
                 files:
-                    'style/style.css': ['style/style.styl']
+                    'style/bright.css': ['style/bright.styl']
+                    'style/dark.css': ['style/dark.styl']
 
         watch:
           scripts:
@@ -80,7 +81,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'build',     [ 'coffee', 'bower_concat', 'stylus' ]
     grunt.registerTask 'default',   [ 'build', 'clean:tempfiles' ]
-    grunt.registerTask 'test',      [ 'build', 'shell:touch', 'open', 'clean:tempfiles' ]
+    grunt.registerTask 'test',      [ 'build', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]
     grunt.registerTask 'cc',        [ 'clean:generated' ]
     grunt.registerTask 'rebuild',   [ 'clean', 'shell:install' ]

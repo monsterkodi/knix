@@ -21,7 +21,7 @@ class knix
         @initTools()
         @
 
-    @initTools: ->
+    @initTools: -> 
 
         Console.menu()
 
@@ -35,6 +35,10 @@ class knix
         @get btn,
             icon:   'octicon-device-desktop'
             onClick: -> Stage.toggleFullscreen()
+
+        @get btn,
+            icon:   'octicon-color-mode'
+            onClick: -> StyleSwitch.toggle()
 
         @get btn,
             icon:   'octicon-x'
