@@ -5,8 +5,8 @@ document.observe "dom:loaded", ->
 
     wid = knix.init()
 
-    c = Console.create()
-    c.shade()
+    c = new Console()
+    # c.shade()
 
     # _________________________________________________________________________ layout test
 
@@ -18,40 +18,25 @@ document.observe "dom:loaded", ->
         center:    true
         children: \
         [
-            type: 'table'
-            style:
-                display: 'table'
+            type: 'hbox'
             children: \
             [
-                type: 'horizontal-layout'
+                type:       'connector'
+            ,
+                id:         'slider'
+                type:       'slider'
+                value:      50
                 style:
-                    display: 'table-row'
-                    width:   '100%'
-                children: \
-                [
-                    type:       'connector'
-                    style:
-                        display: 'table-cell'
-                ,
-                    id:         'slider'
-                    type:       'slider'
-                    value: 50
-                    style:
-                        display:  'table-cell'
-                        width:    '100%'
-                ,
-                    id:         'value'
-                    type:       'value'
-                    format:     "%3.0f"
-                    value: 50
-                    style:
-                        display:  'table-cell'
-                        minWidth: '80px'
-                ,
-                    type:       'connector'
-                    style:
-                        display:  'table-cell'
-                ]
+                    width:    '100%'
+            ,
+                id:         'value'
+                type:       'value'
+                format:     "%3.0f"
+                value:      50
+                style:
+                    minWidth: '80px'
+            ,
+                type:       'connector'
             ]
         ,
             type:       'button'
@@ -59,15 +44,16 @@ document.observe "dom:loaded", ->
             style:
                 clear:  'both'
             onClick:    -> @getWindow().close()
-            connect: \
-            [
-                signal: 'slider:onValue'
-                slot:   'value:setValue'
-            ,
-                signal: 'value:onValue'
-                slot:   'slider:setValue'
-            ]
         ]
+        connect: \
+        [
+            signal: 'slider:onValue'
+            slot:   'value:setValue'
+        ,
+            signal: 'value:onValue'
+            slot:   'slider:setValue'
+        ]
+
 
     # _________________________________________________________________________ raise
 

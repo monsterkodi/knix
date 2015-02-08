@@ -14,6 +14,7 @@ module.exports = (grunt) ->
                     './js/tools.js':   ['./coffee/tools/*.coffee']
                     './js/knix.js':    ['./coffee/knix.coffee']
                     './js/widget.js':  ['./coffee/widget.coffee']
+                    './js/window.js':  ['./coffee/window.coffee']
                     './js/widgets.js': ['./coffee/widgets/*.coffee']
                     './js/main.js':    ['./coffee/test.coffee', './coffee/main.coffee']
 

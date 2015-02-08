@@ -10,9 +10,9 @@
 
 class About extends Window
 
-    @create: (cfg={}) ->
+    constructor: (cfg={}, defs) ->
 
-        Window.create cfg,
+        super _.def(cfg,defs),
             title:     'about'
             id:        'about'
             width:     240
@@ -51,11 +51,11 @@ class About extends Window
 
     @show: ->
         if $('about') then $('about').raise()
-        else @create()
+        else new About
 
     @menu: ->
 
-        Widget.create
+        knix.create
             type:   'button'
             id:     'show_about'
             icon:   'octicon-info'

@@ -10,9 +10,9 @@
 
 class Value extends Widget
 
-    @create: (cfg) ->
+    constructor: (cfg) ->
 
-        value = Widget.setup cfg,
+        super cfg,
             type:       'value'
             value:      0
             minValue:   0
@@ -44,7 +44,9 @@ class Value extends Widget
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-left'
-                            onClick: (event,e) -> @getParent('value').incr '-'
+                            onClick: (event,e) ->
+                                value = e.getParent('value')
+                                value.incr '-'
                     ,
                         elem: 'td'
                         type: 'value-content'
@@ -57,20 +59,14 @@ class Value extends Widget
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-right'
-                        onClick: (event,e) -> @getParent('value').incr '+'
+                        onClick: (event,e) -> e.getParent('value').incr '+'
                     ]
 
-        value.input = value.getChild 'value-input'
+        @input = @getChild('value-input').elem
 
-        value.incr = (d) ->
-            if d in ['up', '+', '++'] then d = 1
-            else if d in ['down', '-', '--'] then d = -1
-            if @config.valueStep? then step = @config.valueStep else step = 1
-            @setValue @input.getValue() + step*d
-
-        value.on 'keypress', (event,e) ->
+        @elem.on 'keypress', (event,e) ->
             if event.key in ['Up', 'Down']
-                @incr event.key.toLowerCase()
+                @widget.incr event.key.toLowerCase()
                 event.stop()
                 return
             if event.key not in '0123456789-.'
@@ -78,13 +74,18 @@ class Value extends Widget
                     event.stop()
                     return
             if event.key in '-.'
-                if @input.value.indexOf(event.key) > -1
+                if @widget.input.value.indexOf(event.key) > -1
                     event.stop()
                     return
 
-        value.input.on 'change', (event,e) ->
+        @input.on 'change', (event,e) ->
             @getParent('value').setValue @getValue()
 
-        value.input.value = value.config.value
-        value.setValue value.config.value # i don't want to know how many good-coding-style-rules are broken here :)
-        value                             # but at least it is not value.value value.value.value                  :)
+        @input.value = @config.value
+        @setValue @config.value
+
+    incr: (d) ->
+        if d in ['up', '+', '++'] then d = 1
+        else if d in ['down', '-', '--'] then d = -1
+        if @config.valueStep? then step = @config.valueStep else step = 1
+        @setValue @input.getValue() + step*d

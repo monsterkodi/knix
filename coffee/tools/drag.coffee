@@ -1,23 +1,23 @@
 
 class Drag
 
-    @config =
-        target:  null
-        handle:  null
-        minPos:  null
-        maxPos:  null
-        cursor: "move"
-        onStart: null
-        onMove:  null
-        onStop:  null
-        doMove:  true
-        active:  true
-
     @create: (cfg) -> new Drag(cfg)
 
     constructor: (cfg) ->
-        Object.extend(this, Drag.config)
-        Object.extend(this, cfg)
+        # Object.extend(this, Drag.config)
+        # Object.extend(this, cfg)
+        _.extend @, _.def cfg,
+                target:  null
+                handle:  null
+                minPos:  null
+                maxPos:  null
+                cursor: "move"
+                onStart: null
+                onMove:  null
+                onStop:  null
+                doMove:  true
+                active:  true
+
         @target = document.getElementById(@target) if typeof (@target) is "string"
         return unless @target?
         if @minPos? and @maxPos?

@@ -89,20 +89,20 @@ class Test
                         type:       'value'
                         format:     "%3.2f"
                         valueStep:  21
-                        connect: \
-                        [
-                            signal: 'slider:onValue'
-                            slot:   'setValue'
-                        ]
                     ,
                         type:       'button'
                         text:       'ok'
                         onClick:    -> @getWindow().close()
                     ]
+                    connect: \
+                    [
+                        signal: 'slider:onValue'
+                        slot:   'setValue'
+                    ]
 
-                $('slider').setValue 33.3
+                $('slider').widget.setValue 33.3
 
-        b.click()
+        b.elem.click()
 
     @sliderAndValue: ->
 
@@ -132,17 +132,10 @@ class Test
                         hasBar:     true
                         value:      70.0
                     ,
+                        id:         'value'
                         type:       'value'
                         value:      50
                         format:     "%3.2f"
-                        connect: \
-                        [
-                            signal: 'slider_2:onValue'
-                            slot:   'setValue'
-                        ,
-                            signal: 'onValue'
-                            slot:   'slider_1:setValue'
-                        ]
                     ,
                         type:       'relative'
                         child:
@@ -151,8 +144,16 @@ class Test
                             class:      'top-right'
                             onClick:    -> @getWindow().close()
                     ]
+                    connect: \
+                    [
+                        signal: 'slider_2:onValue'
+                        slot:   'value:setValue'
+                    ,
+                        signal: 'value:onValue'
+                        slot:   'slider_1:setValue'
+                    ]
 
-        b.click()
+        b.elem.click()
 
     @stageButtons: () ->
 

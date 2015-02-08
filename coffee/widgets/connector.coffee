@@ -1,8 +1,7 @@
 
 class Connector extends Widget
 
-    @create: (config) ->
+    constructor: (config) ->
 
-        con = knix.setup config,
+        super config,
             type: 'connector'
-        con

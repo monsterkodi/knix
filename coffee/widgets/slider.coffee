@@ -1,16 +1,16 @@
 
 class Slider extends Widget
 
-    @create: (cfg) ->
+    constructor: (cfg) ->
 
         sliderFunc = (drag, event) ->
-            slider = drag.target
+            slider = drag.target.widget
             pos    = slider.absPos()
             width  = event.clientX-pos.x
             v      = slider.size2value width
             slider.setValue(v)
 
-        slider = knix.setup cfg,
+        super cfg,
             type:      'slider'
             value:      0
             minValue:   0
@@ -20,22 +20,18 @@ class Slider extends Widget
                 child:
                     type: 'slider-knob'
 
-        slider.setBarValue slider.config.value
-        # slider.setValue slider.config.value
+        @setBarValue @config.value
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
-        sizeCB = (event,e) -> slider.setValue(slider.config.value)
-        win = slider.getWindow()
-        win.on "size", sizeCB if win
+        sizeCB = (event,e) -> @setValue(@config.value)
+        @getWindow().elem.on "size", sizeCB.bind(@) if @getWindow()
 
         Drag.create
             cursor:     'ew-resize'
-            target:     slider
+            target:     @elem
             doMove:     false
             onMove:     sliderFunc
             onStart:    sliderFunc
-
-        slider
 
     valueToPercentOfWidth: (value) -> # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
@@ -48,7 +44,7 @@ class Slider extends Widget
 
     setBarValue: (barValue) ->
         pct = @valueToPercentOfWidth(barValue)
-        @getChild('slider-bar').style.width = "%.2f%%".fmt(pct)
+        @getChild('slider-bar').elem.style.width = "%.2f%%".fmt(pct)
 
     setValue: (arg) ->
         oldValue = @config.value

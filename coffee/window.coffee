@@ -10,7 +10,12 @@
 
 class Window extends Widget
 
-    @create: (cfg, defs) ->
+    constructor: (config={}, defaults) ->
+        super config, defaults
+
+    #__________________________________________________ init
+
+    init: (cfg, defs) ->
 
         cfg = _.def(cfg, defs)
 
@@ -21,7 +26,10 @@ class Window extends Widget
         cfg.children = null
         cfg.child = null
 
-        w = Widget.setup cfg,
+        connect = cfg.connect
+        cfg.connect = null
+
+        super cfg,
             type:     'window'
             parent:   'stage_content'
             hasClose:  true
@@ -30,18 +38,20 @@ class Window extends Widget
             isMovable: true
             onDown:    (event,e) -> e.getWindow().raise()
 
-        w.init()
-        w.config.children = children
-        w.insertChildren()
+        @initWindow()
+        @config.children = children
+        @insertChildren()
+        @config.connect = connect
+        @initConnections()
 
         if cfg.center
-            w.moveTo Math.max(0,Stage.size().width/2 - w.getWidth()/2), Math.max(0,Stage.size().height/2 - w.getHeight()/2)
+            @moveTo Math.max(0,Stage.size().width/2 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
 
-        w
+        @
 
-    #__________________________________________________ init
+    #__________________________________________________ init window
 
-    init: ->
+    initWindow: ->
 
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
@@ -52,20 +62,21 @@ class Window extends Widget
         content = knix.create
             elem:  'div',
             type:  'content'
-            parent: @
+            parent: @elem.id
 
         @addSizeButton() if @config.hasSize
 
-        @content = content.id
+        @content = content.elem.id
 
         if @config.content == 'scroll'
 
-            @on "size", (event,e) ->
-                content = $(@content)
-                content.setWidth  @contentWidth()
-                content.setHeight @contentHeight()
+            @elem.on "size", (event,e) ->
+                win = e.getWindow()
+                content = $(win.content).widget
+                content.setWidth  win.contentWidth()
+                content.setHeight win.contentHeight()
 
-            content.setStyle
+            content.elem.setStyle
                 position:   'relative'
                 overflow:   'scroll'
                 width:      '100%'
@@ -116,25 +127,25 @@ class Window extends Widget
             return
 
         dragMove = (drag, event) ->
-            sizer = drag.target
-            win   = sizer.getWindow()
+            sizer = drag.target.widget
+            windw = sizer.getWindow()
 
-            wpos = win.absPos()
+            wpos = windw.absPos()
             spos = sizer.absPos()
 
-            hdr = win.headerSize()
+            hdr = windw.headerSize()
 
             wdt = spos.x-wpos.x+sizer.getWidth()
             wdt = Math.max(hdr*2, wdt)
-            wdt = Math.max(win.minWidth(), wdt)
-            wdt = Math.min(win.maxWidth(), wdt)
+            wdt = Math.max(windw.minWidth(), wdt)
+            wdt = Math.min(windw.maxWidth(), wdt)
 
             hgt = spos.y-wpos.y+sizer.getHeight()
             hgt = Math.max(hdr+sizer.getHeight(), hgt)
-            hgt = Math.max(win.minHeight(), hgt)
-            hgt = Math.min(win.maxHeight(), hgt)
+            hgt = Math.max(windw.minHeight(), hgt)
+            hgt = Math.min(windw.maxHeight(), hgt)
 
-            win.resize(wdt, hgt)
+            windw.resize(wdt, hgt)
 
             return
 
@@ -147,7 +158,7 @@ class Window extends Widget
                 top: ''
 
         Drag.create
-            target:  btn
+            target:  btn.elem
             onStart: dragStart
             onMove:  dragMove
             onStop:  dragStop
@@ -171,11 +182,11 @@ class Window extends Widget
     raise: ->
         ct = $(@content)
         st = ct.scrollTop
-        @parentElement.appendChild this
+        @elem.parentElement.appendChild this.elem
         ct.scrollTop = st
 
     headerSize: (box="border-box-height") ->
-        children = Selector.findChildElements(this, [ "*.title", "*.close", "*.shade" ])
+        children = Selector.findChildElements(@elem, [ "*.title", "*.close", "*.shade" ])
         i = 0
         while i < children.length
             height = children[i].getLayout().get(box)
@@ -184,25 +195,22 @@ class Window extends Widget
         0
 
     contentWidth: ->
-        @getLayout().get("padding-box-width")
+        @elem.getLayout().get("padding-box-width")
 
     contentHeight: ->
-        @getLayout().get("padding-box-height") - @headerSize()
+        @elem.getLayout().get("padding-box-height") - @headerSize()
 
     shade: ->
         size = @getChild 'size'
         if @config.isShaded
-            @setStyle('min-height': @config.minHeight+'px')
+            @elem.setStyle('min-height': @config.minHeight+'px')
             @setHeight @config.height
-            # adjust height for border size
-            # diff = @getHeight() - @config.height
-            # @setHeight @config.height - diff  if diff
             @config.isShaded = false
-            size.show() if size
+            size.elem.show() if size
         else
             @config.height = @getHeight()
-            @setStyle('min-height': '0px')
+            @elem.setStyle('min-height': '0px')
             @setHeight @headerSize("padding-box-height")
             @config.isShaded = true
-            size.hide() if size
+            size.elem.hide() if size
         return

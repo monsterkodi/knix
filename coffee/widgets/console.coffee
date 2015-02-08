@@ -8,7 +8,7 @@
 
 ###
 
-class Console extends Widget
+class Console extends Window
 
     @log: (s) ->
 
@@ -19,20 +19,20 @@ class Console extends Widget
 
     @menu: ->
 
-        Widget.create
+        knix.create
             type:   'button'
             id:     'open_console'
             icon:   'octicon-terminal'
             class:  'tool-button'
             parent: 'tool'
-            onClick: -> Console.create()
+            onClick: -> new Console()
 
-    @create: (cfg) ->
+    constructor: (cfg) ->
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2
 
-        con = knix.get
+        super cfg,
             title:    'console'
             class:    'console-window'
             x:        w

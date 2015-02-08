@@ -10,9 +10,10 @@
 
 class Widget
 
-    @create: (config, defaults) -> knix.create config, defaults
+    constructor: (config, defaults) ->
+        @init config, defaults
 
-    @setup: (config, defaults) ->
+    init: (config, defaults) ->
 
         cfg = _.def(config, defaults)
 
@@ -26,62 +27,65 @@ class Widget
             cfg.elem = (cfg.attr?.href? or cfg.href? or null) and 'a'
             cfg.elem ?= 'div'                               # div is default element
 
-        w = @elem(cfg.elem, cfg.type)                       # create element
-        w.config = cfg                                      # set config
+        @elem = Widget.elem(cfg.elem, cfg.type)             # create element
+        @elem.widget = @                                    # let this be the elements widget
+        @config = cfg                                       # set config
 
-        knix.mixin w
+        @elem.getWindow = @getWindow.bind(@)
+        @elem.getChild  = @getChild.bind(@)
+        @elem.getParent = @getParent.bind(@)
 
-        w.writeAttribute('id', w.config.id) if w.config.id? # set element id
+        @elem.writeAttribute('id', @config.id) if @config.id? # set element id
 
-        for a,v of w.config.attr                            # set element attributes
-            w.writeAttribute(a, v)
+        for a,v of @config.attr                             # set element attributes
+            @elem.writeAttribute(a, v)
 
         for k in ['href']
-            w.writeAttribute(k, w.config[k]) if w.config[k]?
+            @elem.writeAttribute(k, @config[k]) if @config[k]?
 
-        if w.config.class                                   # add class names
-            for clss in w.config.class.split(' ')
-                w.addClassName clss
+        if @config.class                                    # add class names
+            for clss in @config.class.split(' ')
+                @elem.addClassName clss
 
         #__________________________________________________ CSS setup
 
-        if w.config.style
-            w.setStyle w.config.style
+        if @config.style
+            @elem.setStyle @config.style
 
         style = $H()
-        style.set(s, w.config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when w.config[s]?
-        w.setStyle style.toObject() if style.keys().length
+        style.set(s, @config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
+        @elem.setStyle style.toObject() if style.keys().length
 
         #__________________________________________________ DOM setup
 
-        w.insert(w.config.text) if w.config.text
-        w.insertChildren()
-        w.addToParent(w.config.parent)
+        @elem.insert(@config.text) if @config.text?
+        @insertChildren()
+        @addToParent(@config.parent) if @config.parent?
 
         #__________________________________________________ position and size
 
-        if w.config.x? or w.config.y?
-            w.style.position = 'absolute'
-            w.moveTo w.config.x, w.config.y
+        if @config.x? or @config.y?
+            @elem.style.position = 'absolute'
+            @moveTo @config.x, @config.y
 
-        w.resize w.config.width, w.config.height if w.config.width? or w.config.height?
+        @resize @config.width, @config.height if @config.width? or @config.height?
 
         #__________________________________________________ event setup
 
-        if w.config.isMovable
+        if @config.isMovable
             Drag.create
-                target: w
+                target: @elem
                 minPos: pos(undefined,0)
                 cursor: null
 
-        @initSlots(w)
-        @initConnections(w)
-        @initEvents(w)
+        @initSlots()
+        @initConnections()
+        @initEvents()
 
-        if w.config.noDown
-            w.on 'mousedown', (event,e) -> event.stopPropagation()
+        if @config.noDown
+            @elem.on 'mousedown', (event,e) -> event.stopPropagation()
 
-        return w
+        return @
 
     # __________________________________________________________________________ elem and widget hierarchy
 
@@ -96,78 +100,83 @@ class Widget
 
     # ________________________________________________________________________________ event handling
 
-    @initEvents: (w) ->
-        w.on "click",      w.config.onClick  if w.config.onClick
-        w.on "mousedown",  w.config.onDown   if w.config.onDown
-        w.on "mouseup",    w.config.onUp     if w.config.onUp
-        w.on "mouseover",  w.config.onOver   if w.config.onOver
-        w.on "mousemove",  w.config.onMove   if w.config.onMove
-        w.on "mouseout",   w.config.onOut    if w.config.onOut
-        w.on "ondblclick", w.config.onDouble if w.config.onDouble
-        this
+    initEvents: ->
+        @elem.on "click",      @config.onClick  if @config.onClick
+        @elem.on "mousedown",  @config.onDown   if @config.onDown
+        @elem.on "mouseup",    @config.onUp     if @config.onUp
+        @elem.on "mouseover",  @config.onOver   if @config.onOver
+        @elem.on "mousemove",  @config.onMove   if @config.onMove
+        @elem.on "mouseout",   @config.onOut    if @config.onOut
+        @elem.on "ondblclick", @config.onDouble if @config.onDouble
+        @
 
     # ____________________________________________________________________________ slots
 
-    @initSlots: (w) ->
-        slots = w.config.slots
+    initSlots: ->
+        slots = @config.slots
         return if not slots?
         for slot, func of slots
-            # log "@initSlots", w.id, slot
-            w[slot] = func
+            log "@initSlots", @elem.id, slot
+            @[slot] = func
 
     # ____________________________________________________________________________ connections
 
-    @initConnections: (w) ->
-        connections = w.config.connect
+    initConnections: ->
+        connections = @config.connect
         return if not connections?
         for connection in connections
-            @connect w, connection.signal, connection.slot
+            @connect connection.signal, connection.slot
 
-    @connect: (w, signal, slot) ->
-        # log "@connect", signal, slot
-        [signalSender, signalEvent] = @resolveSignal(w, signal)
-        slotFunction = @resolveSlot(w, slot)
+    connect: (signal, slot) ->
+        log "connect", signal, slot
+        [signalSender, signalEvent] = @resolveSignal(signal)
+        slotFunction = @resolveSlot(slot)
         if not signalSender?
             log "    sender not found!"; return
         if not signalEvent?
             log "    event not found!";  return
         if not slotFunction?
             log "    slot not found!";   return
-        handler:  signalSender.on signalEvent, slotFunction
+        handler:  signalSender.elem.on signalEvent, slotFunction
         sender:   signalSender
         event:    signalEvent
         receiver: slotFunction
 
-    @resolveSignal: (w, signal) ->
-        [event, sender] =  signal.split(':').reverse()
-        sender = w.getWindow().getChild(sender) if sender?
-        sender = w unless sender?
+    resolveSignal: (signal) ->
+        [event, sender] = signal.split(':').reverse()
+        sender = @getWindow().getChild(sender) if sender?
+        sender = @ unless sender?
         [sender, event]
 
-    @resolveSlot: (w, slot) ->
+    resolveSlot: (slot) ->
         if typeof slot == 'function'
             return slot
         if typeof slot == 'string'
             [func, receiver] = slot.split(':').reverse()
-            receiver = w.getWindow().getChild(receiver) if receiver?
-            receiver = w unless receiver?
+            receiver = @getWindow().getChild(receiver) if receiver?
+            receiver = @ unless receiver?
             return receiver[func].bind(receiver) if receiver[func]?
         null
 
     addToParent: (p) ->
-        p = $(p)
-        if p
-            parentid = p.id
-            p = $(p.content) if p.hasOwnProperty('content')
-            if p
-                p.insert this
-                @config.parent = parentid if @config
+        if not @elem?
+            log 'no @elem?'
+            return this
+        if not p?
+            log 'no p?'
+            return this
+        parentElement = $(p.content) if p.content?
+        parentElement = p.elem unless parentElement
+        parentElement = $(p) unless parentElement
+        if not parentElement?
+            log 'no element?', p
+            return this
+        parentElement.insert @elem
+        @config.parent = parentElement.id
         this
 
     insertChild: (config, defaults) ->
-        cfg = _.def config, defaults
-        cfg.parent = this
-        child = knix.create cfg
+        child = knix.create config, defaults
         child.addToParent this
         child
 
@@ -186,7 +195,7 @@ class Widget
             bubbles:    true,
             cancelable: true,
             detail:     args
-        @dispatchEvent event
+        @elem.dispatchEvent event
 
     emitSize: ->
         @emit "size",
@@ -213,58 +222,61 @@ class Widget
     getParent: ->
         args = $A(arguments)
         if args.length
-            anc = @ancestors()
+            anc = @elem.ancestors()
             for a in anc
                 if a.match("#"+args[0]) or a.match("."+args[0])
-                    return a
+                    return a.widget
             return
-        return $(@config.parent) if @config.parent
-        return $(@parentElement.id)
+        return $(@config.parent).widget if @config.parent
+        return $(@parentElement.id).wiget
 
     getWindow: -> # returns this or first ancestor element with class 'window'
-        if @hasClassName('window')
+        if @elem.hasClassName('window')
             return this
         @getParent('window')
 
     getChild: (classOrID) -> # returns first child element that matches class or element id
-        c = @select('#'+classOrID, '.'+classOrID)
-        return c[0] if c.length
+        c = @elem.select('#'+classOrID, '.'+classOrID)
+        return c[0].widget if c.length
         return undefined
 
-    close: -> @remove(); return
+    close: -> @elem.remove(); return
 
     clear: ->
-        while @hasChildNodes()
-            @removeChild @lastChild
+        while @elem.hasChildNodes()
+            @elem.removeChild @elem.lastChild
 
     # ____________________________________________________________________________ geometry
 
     setPos: (p) -> @moveTo p.x, p.y
 
     moveTo: (x, y) ->
-        @style.left = "%dpx".fmt(x) if x?
-        @style.top  = "%dpx".fmt(y) if y?
+        @elem.style.left = "%dpx".fmt(x) if x?
+        @elem.style.top  = "%dpx".fmt(y) if y?
         return
 
     moveBy: (dx, dy) ->
         p = @relPos()
-        @style.left = "%dpx".fmt(p.x+dx) if dx?
-        @style.top  = "%dpx".fmt(p.y+dy) if dy?
+        @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
+        @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
         return
 
     setWidth: (w) ->
-        ow = @style.width
-        @style.width = "%dpx".fmt(w) if w?
+        ow = @elem.style.width
+        @elem.style.width = "%dpx".fmt(w) if w?
 
-        @emitSize() if ow != @style.width
+        @emitSize() if ow != @elem.style.width
         return
 
     setHeight: (h) ->
-        oh = @style.height
-        @style.height = "%dpx".fmt(h) if h?
+        oh = @elem.style.height
+        @elem.style.height = "%dpx".fmt(h) if h?
 
-        @emitSize() if oh != @style.height
+        @emitSize() if oh != @elem.style.height
         return
+
+    getWidth: -> @elem.getWidth()
+    getHeight: -> @elem.getHeight()
 
     resize: (w, h) ->
         @setWidth w if w?
@@ -288,14 +300,14 @@ class Widget
     size2value: (s) -> # returns the value in the [minValue,maxValue] range that lies at point s
         @config.minValue + (@config.maxValue - @config.minValue) * s / @innerWidth()
 
-    innerWidth:  -> @getLayout().get("padding-box-width")
-    innerHeight: -> @getLayout().get("padding-box-height")
-    minWidth:    -> w = parseInt @getStyle('min-width' ); if w then w else 0
-    minHeight:   -> h = parseInt @getStyle('min-height'); if h then h else 0
-    maxWidth:    -> w = parseInt @getStyle('max-width' ); if w then w else Number.MAX_VALUE
-    maxHeight:   -> h = parseInt @getStyle('max-height'); if h then h else Number.MAX_VALUE
-    relPos:      -> o = @positionedOffset(); pos o.left, o.top
-    absPos:      -> o = @cumulativeOffset(); s = @cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
+    innerWidth:  -> @elem.getLayout().get("padding-box-width")
+    innerHeight: -> @elem.getLayout().get("padding-box-height")
+    minWidth:    -> w = parseInt @elem.getStyle('min-width' ); if w then w else 0
+    minHeight:   -> h = parseInt @elem.getStyle('min-height'); if h then h else 0
+    maxWidth:    -> w = parseInt @elem.getStyle('max-width' ); if w then w else Number.MAX_VALUE
+    maxHeight:   -> h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
+    relPos:      -> o = @elem.positionedOffset(); pos o.left, o.top
+    absPos:      -> o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
 
     # ____________________________________________________________________________ tools
 
