@@ -35,7 +35,7 @@ noSelection()
   background-color:     transparent
   text-align:           center
   vertical-align:       top
-  color:                widgetColors.bg
+  color:                colors.bg
   &:hover
       color:            textColors.button-hover
   &:active
@@ -91,7 +91,7 @@ a
     width:            100%
     height:           100%
     overflow:         hidden
-    background-color: widgetColors.stage
+    background-color: colors.stage
 
 #stage_svg
     position:         absolute
@@ -122,15 +122,15 @@ a
     font-size:        14px
     font-weight:      bold
     border-radius:    buttonRadius
-    border:           widgetBorders.button
-    background-color: widgetColors.button
+    border:           borders.button
+    background-color: colors.button
     color:            textColors.button
     height:           buttonHeight
     &:hover
-        background-color: widgetColors.button-hover
+        background-color: colors.button-hover
         color:            textColors.button-hover
     &:active
-        background-color: widgetColors.button-active
+        background-color: colors.button-active
         color:            textColors.button-active
 
 .tool-button
@@ -146,7 +146,7 @@ a
     height:           20px
     margin-left:      - 10px
     margin-top:       - 10px
-    background-color: widgetColors.button-hover
+    background-color: colors.button-hover
 
 // ____________________________________ menus
 
@@ -170,7 +170,7 @@ a
     font-weight:      normal
     height:           menuHeight
     padding-top:      2px
-    bgColorHover(     widgetColors.menu )
+    bgColorHover(     colors.menu )
     border-radius:    0
     &:hover
         color: textColors.menu-hover
@@ -182,8 +182,8 @@ a
 .window
     position:         absolute
     overflow:         hidden
-    border:           widgetBorders.bg
-    background-color: widgetColors.bg
+    border:           borders.bg
+    background-color: colors.bg
     border-top-left-radius:     widgetTopRadius
     border-top-right-radius:    widgetTopRadius
     border-bottom-left-radius:  widgetBotRadius
@@ -205,8 +205,8 @@ a
     vertical-align:   top
     overflow:         hidden
     font-size:        widgetTitleFontSize
-    border-bottom:    widgetBorders.title
-    bgColorHover(widgetColors.title)
+    border-bottom:    borders.title
+    bgColorHover(colors.title)
     noSelection()
     defaultCursor()
 
@@ -215,10 +215,10 @@ a
     float:            left
     width:            widgetHeaderSize
     height:           widgetHeaderSize
-    border-right:     widgetBorders.close
-    border-bottom:    widgetBorders.close
+    border-right:     borders.close
+    border-bottom:    borders.close
     margin-bottom:  - widgetBorderWidth
-    bgColorHover(widgetColors.close)
+    bgColorHover(colors.close)
     noSelection()
     handCursor()
 
@@ -226,10 +226,10 @@ a
 .window .window-button-right
     float:            right
     height:           widgetHeaderSize
-    border-left:      widgetBorders.shade
-    border-bottom:    widgetBorders.close
+    border-left:      borders.shade
+    border-bottom:    borders.close
     margin-bottom:  - widgetBorderWidth
-    bgColorHover(widgetColors.shade)
+    bgColorHover(colors.shade)
     noSelection()
     handCursor()
 
@@ -242,13 +242,13 @@ a
     right:            0px
     width:            widgetHeaderSize * 0.5
     height:           widgetHeaderSize * 0.5
-    border-left:      widgetBorders.size
-    border-top:       widgetBorders.size
-    background-color: widgetColors.size
+    border-left:      borders.size
+    border-top:       borders.size
+    background-color: colors.size
     &:hover
-        background-color: darken(widgetColors.size, 2)
+        background-color: darken(colors.size, 2)
     &:active
-        background-color: lighten(widgetColors.size, 10)
+        background-color: lighten(colors.size, 10)
 
 // ____________________________________ console
 
@@ -256,12 +256,12 @@ a
     .content
         padding: 0
         margin: 0
-        background-color: widgetColors.console
+        background-color: colors.console
         *
             margin:  0px
 
 .console
-    background-color: widgetColors.console
+    background-color: colors.console
     color:            textColors.console
     padding-bottom: 6px
     padding-left:   8px
@@ -285,19 +285,19 @@ a
     overflow:         hidden
     noSelection()
     border-radius:    widgetTopRadius
-    border:           widgetBorders.scroll
-    background-color: widgetColors.scroll
+    border:           borders.scroll
+    background-color: colors.scroll
     box-sizing:       border-box
 
 .scroll-handle
     position:         relative
     border-radius:    widgetTopRadius - scrollBorderWidth
     border:           0
-    background-color: widgetColors.scroll-handle
+    background-color: colors.scroll-handle
     &:hover
-        background-color: widgetColors.scroll-handle-hover
+        background-color: colors.scroll-handle-hover
     &:active
-        background-color: widgetColors.scroll-handle
+        background-color: colors.scroll-handle
 
 // ____________________________________ slider
 
@@ -305,14 +305,14 @@ a
     max-height:       valueHeight
     overflow:         hidden
     border-radius:    widgetTopRadius
-    background-color: widgetColors.slider
+    background-color: colors.slider
     &:hover
-        background-color: widgetColors.slider-hover
+        background-color: colors.slider-hover
 
 .slider-bar
     position:         relative
     box-sizing:       border-box
-    border:           widgetBorders.slider
+    border:           borders.slider
     border-top-right-radius:     knobSize + sliderBorderWidth
     border-bottom-right-radius:  knobSize + sliderBorderWidth
     border-top-left-radius:      valueHeight
@@ -321,7 +321,7 @@ a
     max-height:       valueHeight
     margin:           0
     padding:          0
-    background-color: widgetColors.slider-bar
+    background-color: colors.slider-bar
 
 .slider-knob
     border:           0
@@ -333,11 +333,11 @@ a
     width:            knobSize
     min-height:       knobSize
     min-width:        knobSize
-    background-color: widgetColors.slider-knob
+    background-color: colors.slider-knob
     &:hover
-      background-color: widgetColors.slider-knob-hover
+      background-color: colors.slider-knob-hover
     &:active
-      background-color: widgetColors.slider-knob
+      background-color: colors.slider-knob
 
 // ____________________________________ connections
 
@@ -348,22 +348,32 @@ a
     max-width:        valueHeight
     max-height:       valueHeight
     border-radius:    valueHeight
-    background-color: widgetColors.slider-bar
+    border:           borders.connector
+    box-sizing:       border-box
+    background-clip:  padding-box
+    &.signal
+        background-color: colors.connector-signal
+        &.connected
+            border: borders.connector-signal-connected
+    &.slot
+        background-color: colors.connector-slot
+        &.connected
+            border: borders.connector-slot-connected
 
 .path
     stroke-width:     14
 
 .connector
 
-    stroke:           deepskyblue
+    stroke:           colors.connector-unconnectable
 
 .connectable
 
-    stroke:           orange
+    stroke:           colors.connector-connectable
 
 .connection
 
-    stroke:           firebrick
+    stroke:           colors.connection
     stroke-width:     10
 
 // ____________________________________ value
@@ -373,8 +383,8 @@ a
     overflow:         hidden
     handCursor()
     border-radius:    widgetTopRadius
-    border:           widgetBorders.value
-    background-color: widgetColors.value
+    border:           borders.value
+    background-color: colors.value
 
 .value-table
 .value-row
@@ -390,9 +400,9 @@ a
     max-height:           valueHeight
     margin:           0
     padding:          0
-    background-color: widgetColors.value-input
+    background-color: colors.value-input
     &:hover
-        background-color:  widgetColors.value-input-hover
+        background-color:  colors.value-input-hover
 
 .value-input
     textCursor()
@@ -401,7 +411,7 @@ a
     border:           0
     text-align:       center
     background-color: transparent
-    color:            widgetColors.value-active
+    color:            colors.value-active
     box-sizing:       border-box
     font-weight:      bold
     font-size:        16px
@@ -410,7 +420,7 @@ a
     height:           valueHeight
     width:            100%
     &::-moz-selection
-      background:     widgetColors.value-active
+      background:     colors.value-active
       color:          black
 
 // ____________________________________ position

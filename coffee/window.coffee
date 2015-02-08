@@ -180,10 +180,9 @@ class Window extends Widget
             @config.isMaximized = true
 
     raise: ->
-        ct = $(@content)
-        st = ct.scrollTop
+        scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
-        ct.scrollTop = st
+        $(@content).scrollTop = scrolltop
 
     headerSize: (box="border-box-height") ->
         children = Selector.findChildElements(@elem, [ "*.title", "*.close", "*.shade" ])
@@ -194,11 +193,8 @@ class Window extends Widget
             i++
         0
 
-    contentWidth: ->
-        @elem.getLayout().get("padding-box-width")
-
-    contentHeight: ->
-        @elem.getLayout().get("padding-box-height") - @headerSize()
+    contentWidth:  -> @elem.getLayout().get("padding-box-width")
+    contentHeight: -> @elem.getLayout().get("padding-box-height") - @headerSize()
 
     shade: ->
         size = @getChild 'size'
@@ -207,10 +203,12 @@ class Window extends Widget
             @setHeight @config.height
             @config.isShaded = false
             size.elem.show() if size
+            $(@content).show()
         else
             @config.height = @getHeight()
             @elem.setStyle('min-height': '0px')
             @setHeight @headerSize("padding-box-height")
             @config.isShaded = true
             size.elem.hide() if size
+            $(@content).hide()
         return

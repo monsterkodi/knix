@@ -24,14 +24,15 @@ class Connector extends Widget
     dragMove: (drag,event) ->
 
         p = drag.absPos(event)
-        # log "Connector::onMove", p
 
         if conn = @connectorAtPos p
             @path.path.addClass('connectable')
-        #     @path.path.stroke color: "rgba(0,100,255,1)"
+            @path.setStartDir if @elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
+            @path.setEndDir if conn.elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
         else
             @path.path.removeClass('connectable')
-        #     @path.path.stroke color: "rgba(255,100,0,1)"
+            @path.setStartDir if @elem.hasClassName('signal') then pos(200,0) else pos(-200,0)
+            @path.setEndDir pos(0,0)
 
         @handle.setPos p
         @path.setEnd p
@@ -50,6 +51,7 @@ class Connector extends Widget
         @path = knix.get
             type:  'path'
             class: 'connector'
+            startDir: if @elem.hasClassName('signal') then pos(200,0) else pos(-200,0)
 
         @elem.style.cursor = 'grabbing'
         @path.setStart p

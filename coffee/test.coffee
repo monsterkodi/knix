@@ -1,6 +1,88 @@
 
 class Test
 
+    @connectorBox: ->
+
+        knix.get
+
+            title:     'connector'
+            hasSize:   true
+            minWidth:  200
+            minHeight: 150
+            x:         100
+            y:         100
+            children: \
+            [
+                type: 'hbox'
+                children: \
+                [
+                    type:       'connector'
+                    class:      'slot'
+                ,
+                    id:         'slider'
+                    type:       'slider'
+                    value:      50
+                    style:
+                        width:  '100%'
+                ,
+                    id:         'value'
+                    type:       'value'
+                    format:     "%3.0f"
+                    value:      50
+                    style:
+                        minWidth: '80px'
+                ,
+                    type:       'connector'
+                    class:      'signal'
+                ]
+            ,
+                type: 'hbox'
+                children: \
+                [
+                    type:       'connector'
+                    class:      'slot'
+                ,
+                    id:         'slider2'
+                    type:       'slider'
+                    value:      50
+                    style:
+                        width:  '100%'
+                ,
+                    type:       'connector'
+                    class:      'signal'
+                ]
+            ,
+                type: 'hbox'
+                children: \
+                [
+                    type:       'connector'
+                    class:      'slot'
+                ,
+                    id:         'slider3'
+                    type:       'slider'
+                    value:      50
+                    style:
+                        width:  '100%'
+                ,
+                    type:       'connector'
+                    class:      'signal'
+                ]
+            ,
+                type:       'button'
+                text:       '<i class="fa fa-cog fa-spin"></i> ok'
+                style:
+                    clear:  'both'
+                onClick:    -> @getWindow().close()
+            ]
+            connect: \
+            [
+                signal: 'slider:onValue'
+                slot:   'value:setValue'
+            ,
+                signal: 'value:onValue'
+                slot:   'slider:setValue'
+            ]
+
 
     # _________________________________________________________________________ svg path test
 

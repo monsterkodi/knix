@@ -16,10 +16,6 @@ class Path extends Widget
             .Q  0,0,0,0
 
         @path.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
-        # @path.stroke(color: "rgba(0,0,255,0.4)", width: 16).fill('none')
-        # log 'set classes', @config.class.split(' ') if @config.class?
-        # @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
-        # log @path.classes()
         @path.style(cursor: 'grabbing')
         @path.stroke(width: 4)
         @path.addClass('path')
