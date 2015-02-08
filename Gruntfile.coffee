@@ -79,7 +79,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'build',     [ 'coffee', 'bower_concat', 'stylus' ]
+    grunt.registerTask 'build',     [ 'coffee', 'bower_concat', 'stylus', 'shell:touch' ]
     grunt.registerTask 'default',   [ 'build', 'clean:tempfiles' ]
     grunt.registerTask 'test',      [ 'build', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]

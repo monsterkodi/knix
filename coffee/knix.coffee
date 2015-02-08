@@ -67,20 +67,9 @@ class knix
             # console.log 'fallback to widget for type', cfg.type
             new Widget cfg, { type: 'widget' }
 
-    @mixin: (w) -> # merge in object functions
-
-        className = _.capitalize(w.config.type)
-        if window[className] and typeof window[className].prototype?
-            # Object.extend w, window[className].prototype
-            _.extend w, window[className].prototype
-        else:
-            # Object.extend w, Widget.prototype
-            _.extend w, Widget.prototype
-
     # ________________________________________________________________________________ get
 
-    # shortcut to call any of the type functions below (@window, @button, @slider, ...)
-    # uses @window if no type is specified
+    # shortcut to call @create with default type window and stage_content as parent
 
     @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window', parent:'stage_content' }
 

@@ -308,6 +308,7 @@ class Widget
     maxHeight:   -> h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
     relPos:      -> o = @elem.positionedOffset(); pos o.left, o.top
     absPos:      -> o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
+    absCenter:   -> @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
 
     # ____________________________________________________________________________ tools
 

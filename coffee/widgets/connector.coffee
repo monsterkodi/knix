@@ -27,9 +27,11 @@ class Connector extends Widget
         # log "Connector::onMove", p
 
         if conn = @connectorAtPos p
-            @path.path.stroke color: "rgba(0,100,255,1)"
+            @path.path.addClass('connectable')
+        #     @path.path.stroke color: "rgba(0,100,255,1)"
         else
-            @path.path.stroke color: "rgba(255,100,0,1)"
+            @path.path.removeClass('connectable')
+        #     @path.path.stroke color: "rgba(255,100,0,1)"
 
         @handle.setPos p
         @path.setEnd p
@@ -47,6 +49,7 @@ class Connector extends Widget
 
         @path = knix.get
             type:  'path'
+            class: 'connector'
 
         @elem.style.cursor = 'grabbing'
         @path.setStart p
