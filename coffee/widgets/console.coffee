@@ -10,7 +10,16 @@
 
 class Console extends Window
 
-    @log: (s) ->
+    @toHtml: ->
+
+        html = (str(arg) for arg in arguments).join(" ")
+        html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>')
+            .replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>')
+            .replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>')
+
+    @log: ->
+
+        s = Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0))
 
         $$(".console").each (e) ->
             e.insert "<pre>"+s+"</pre>"

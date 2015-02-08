@@ -16,6 +16,7 @@ log = ->
     # console.trace()
     console.log "%c%s", 'color:white', s
 
-    Console.log s
+    # Console.log arguments
+    Console.log.apply(Console, Array.prototype.slice.call(arguments, 0))
 
     return this

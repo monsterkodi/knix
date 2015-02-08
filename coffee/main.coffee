@@ -41,6 +41,34 @@ document.observe "dom:loaded", ->
                 type:       'connector'
             ]
         ,
+            type: 'hbox'
+            children: \
+            [
+                type:       'connector'
+            ,
+                id:         'slider2'
+                type:       'slider'
+                value:      50
+                style:
+                    width:    '100%'
+            ,
+                type:       'connector'
+            ]
+        ,
+            type: 'hbox'
+            children: \
+            [
+                type:       'connector'
+            ,
+                id:         'slider3'
+                type:       'slider'
+                value:      50
+                style:
+                    width:    '100%'
+            ,
+                type:       'connector'
+            ]
+        ,
             type:       'button'
             text:       '<i class="fa fa-cog fa-spin"></i> ok'
             style:

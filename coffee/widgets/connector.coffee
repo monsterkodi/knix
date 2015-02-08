@@ -14,7 +14,30 @@ class Connector extends Widget
             onMove:  @dragMove.bind(@)
             onStop:  @dragStop.bind(@)
 
+    connectorAtPos: (p) ->
+        elem = document.elementFromPoint p.x, p.y
+        if elem?.widget?
+            if elem.widget.constructor == Connector and elem.widget != @
+                return elem.widget
+        undefined
+
+    dragMove: (drag,event) ->
+
+        p = drag.absPos(event)
+        # log "Connector::onMove", p
+
+        if conn = @connectorAtPos p
+            @path.path.stroke color: "rgba(0,100,255,1)"
+        else
+            @path.path.stroke color: "rgba(255,100,0,1)"
+
+        @handle.setPos p
+        @path.setEnd p
+
     dragStart: (drag,event) ->
+
+        p = drag.absPos(event)
+        # log "Connector::onStart", p
 
         @handle = knix.get
             type:  'handle'
@@ -26,23 +49,22 @@ class Connector extends Widget
             type:  'path'
 
         @elem.style.cursor = 'grabbing'
-        @path.setStart drag.absPos(event)
-        @path.setEnd drag.absPos(event)
-
-        log "Connector::onStart", drag.absPos(event)
-        @handle.setPos drag.absPos(event)
-
-    dragMove: (drag,event) ->
-
-        # log "Connector::onMove", drag.absPos(event)
-        p = drag.absPos(event)
-        elem = document.elementFromPoint p.x, p.y
-        log elem.id if elem?
-        @handle.setPos p
+        @path.setStart p
         @path.setEnd p
+
+        @handle.setPos p
 
     dragStop: (drag,event) ->
 
-        log "Connector::onStop", drag.absPos(event)
-        # @handle.close()
-        # @path.path.remove()
+        p = drag.absPos(event)
+        # log "Connector::onStop", p
+
+        if conn = @connectorAtPos p
+            @path.path.stroke color: "rgba(0,100,255,1)"
+            new Connection
+                source: @
+                target: conn
+
+        if 1
+            @handle.close()
+            @path.path.remove()

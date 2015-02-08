@@ -12,7 +12,7 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @version = '0.1.2'
+    @version = '0.1.3'
 
     @init: ->
 
@@ -23,7 +23,7 @@ class knix
         @
 
     @initSVG: ->
-        
+
         svg = knix.get
             id:    'stage_svg'
             type:  'svg'
@@ -57,10 +57,10 @@ class knix
 
         cfg = _.def(config,defaults)
 
-        if @[cfg.type]? and typeof @[cfg.type] == 'function'
+        if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
             # log 'create knix.' + cfg.type
             @[cfg.type] cfg
-        else if window[_.capitalize(cfg.type)] and typeof window[_.capitalize(cfg.type)] == 'function'
+        else if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'
             # log 'create class', _.capitalize(cfg.type)
             new window[_.capitalize(cfg.type)] cfg
         else
