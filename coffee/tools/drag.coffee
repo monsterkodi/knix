@@ -32,7 +32,7 @@ class Drag
         @startListening() if @active
         return
 
-    cancelEvent: (e) ->
+    cancelEvent: (e) =>
         e = (if e then e else window.event)
         e.stopPropagation()  if e.stopPropagation
         e.preventDefault()  if e.preventDefault
@@ -41,7 +41,7 @@ class Drag
         e.returnValue = false
         false
 
-    absPos: (event) ->
+    absPos: (event) =>
         event = (if event then event else window.event)
         if isNaN(window.scrollX)
             return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
@@ -49,7 +49,7 @@ class Drag
         else
             return pos(event.clientX + window.scrollX, event.clientY + window.scrollY)
 
-    dragStart: (event) ->
+    dragStart: (event) =>
         return if @dragging or not @listening
         @dragging = true
         @onStart this, event if @onStart?
@@ -61,7 +61,7 @@ class Drag
         @eventUp   = $(document).on 'mouseup',   @dragUp.bind(this)
         @cancelEvent event
 
-    dragMove: (event) ->
+    dragMove: (event) =>
         return if not @dragging
         if @doMove
             newPos = @absPos(event)
@@ -72,11 +72,11 @@ class Drag
             @onMove this, event
         @cancelEvent event
 
-    dragUp: (event) ->
+    dragUp: (event) =>
         @dragStop event
         @cancelEvent event
 
-    dragStop: (event) ->
+    dragStop: (event) =>
         return if not @dragging
         @eventMove.stop()
         @eventUp.stop()
@@ -86,13 +86,13 @@ class Drag
         @dragging = false
         return
 
-    startListening: ->
+    startListening: =>
         return if @listening
         @listening = true
         @eventDown = @handle.on 'mousedown', @dragStart.bind(this)
         return
 
-    stopListening: (stopCurrentDragging) ->
+    stopListening: (stopCurrentDragging) =>
         return if not @listening
         @eventDown.stop()
         @listening = false

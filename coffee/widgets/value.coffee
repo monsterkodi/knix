@@ -18,18 +18,6 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
             horizontal: true
-            slots:      \
-            {
-                setValue: (arg) ->
-                    oldValue = @config.value
-                    v = @round(@clamp(@slotArg(arg, 'value')))
-                    @input.value = @strip0 @format(v)
-                    if v != oldValue
-                        @config.value = v
-                        @emit 'onValue',
-                            value: v
-                    @
-            }
             child:
                 elem:   'table'
                 type:   'value-table'
@@ -66,7 +54,7 @@ class Value extends Widget
 
         @elem.on 'keypress', (event,e) ->
             if event.key in ['Up', 'Down']
-                @widget.incr event.key.toLowerCase()
+                @widget.incr event.key == 'Up' and '+' or '-'
                 event.stop()
                 return
             if event.key not in '0123456789-.'
@@ -84,8 +72,18 @@ class Value extends Widget
         @input.value = @config.value
         @setValue @config.value
 
-    incr: (d) ->
-        if d in ['up', '+', '++'] then d = 1
-        else if d in ['down', '-', '--'] then d = -1
+    setValue: (arg) =>
+        oldValue = @config.value
+        v = @round(@clamp(@slotArg(arg, 'value')))
+        @input.value = @strip0 @format(v)
+        if v != oldValue
+            @config.value = v
+            @emit 'onValue',
+                value: v
+        @
+
+    incr: (d) =>
+        if d in ['+', '++'] then d = 1
+        else if d in ['-', '--'] then d = -1
         if @config.valueStep? then step = @config.valueStep else step = 1
         @setValue @input.getValue() + step*d

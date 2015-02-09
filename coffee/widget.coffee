@@ -86,7 +86,7 @@ class Widget
         if @config.noDown
             @elem.on 'mousedown', (event,e) -> event.stopPropagation()
 
-        return @
+        @
 
     # __________________________________________________________________________ elem and widget hierarchy
 
@@ -119,6 +119,7 @@ class Widget
         for slot, func of slots
             # log "@initSlots", @elem.id, slot
             @[slot] = func
+        @
 
     # ____________________________________________________________________________ connections
 
@@ -127,6 +128,7 @@ class Widget
         return if not connections?
         for connection in connections
             @connect connection.signal, connection.slot
+        @
 
     connect: (signal, slot) =>
         # log "connect", signal, slot
@@ -156,7 +158,13 @@ class Widget
             [func, receiver] = slot.split(':').reverse()
             receiver = @getWindow().getChild(receiver) if receiver?
             receiver = @ unless receiver?
-            return receiver[func].bind(receiver) if receiver[func]?
+            if receiver[func]?
+                log typeof receiver[func]
+                if typeof receiver[func] == 'function'
+                    # return receiver[func].bind(receiver)
+                    return receiver[func]
+                else
+                    log 'not a function'
         null
 
     addToParent: (p) =>
@@ -174,7 +182,7 @@ class Widget
             return this
         parentElement.insert @elem
         @config.parent = parentElement.id
-        this
+        @
 
     insertChild: (config, defaults) =>
         child = knix.create config, defaults
@@ -187,7 +195,7 @@ class Widget
                 @insertChild(cfg)
         else if @config.child
             @insertChild(@config.child)
-        this
+        @
 
     # ____________________________________________________________________________ signals
 
@@ -197,15 +205,18 @@ class Widget
             cancelable: true,
             detail:     args
         @elem.dispatchEvent event
+        @
 
     emitSize: =>
         @emit 'size',
             width:  @getWidth()
             height: @getHeight()
+        @
 
     emitMove: =>
         @emit 'move',
             pos: @absPos()
+        @
 
     # ____________________________________________________________________________ slots
 
@@ -256,6 +267,7 @@ class Widget
     clear: =>
         while @elem.hasChildNodes()
             @elem.removeChild @elem.lastChild
+        @
 
     # ____________________________________________________________________________ geometry
 

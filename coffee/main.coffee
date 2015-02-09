@@ -3,27 +3,20 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ console
 
-    wid = knix.init()
+    knix.init()
 
-    c = new Console()
+    # _________________________________________________________________________ console
+
+    # c = new Console()
     # c.shade()
-
-    # _________________________________________________________________________ connector test
-
-    Test.connectorBox()
-    Test.connectorBox().setPos pos(200,400)
-    Test.connectorBox().setPos pos(200,600)
-    Test.connectorBox().setPos pos(400,200)
-
-    # _________________________________________________________________________ raise
-
-    c.raise()
+    # c.raise()
 
     # _________________________________________________________________________ widget test
 
+    Test.connectors()
     # Test.stageButtons()
-    # Test.sliderHello()
-    # Test.sliderAndValue()
+    Test.sliderHello()
+    Test.sliderAndValue()
     # Test.svgPath()
 
     return

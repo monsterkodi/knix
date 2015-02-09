@@ -83,6 +83,18 @@ class Test
                 slot:   'slider:setValue'
             ]
 
+    @connectors: ->
+
+        b = knix.get
+            type:   'button'
+            text:   'connectors'
+            parent: 'menu'
+            onClick: ->
+
+                a = Test.connectorBox()
+                b = Test.connectorBox().setPos pos(200,400)
+                c = Test.connectorBox().setPos pos(200,600)
+                d = Test.connectorBox().setPos pos(400,200)
 
     # _________________________________________________________________________ svg path test
 
@@ -150,14 +162,13 @@ class Test
             text:   'slider hello'
             parent: 'menu'
             onClick: ->
-                knix.get
+                w = knix.get
                     title:     'hello'
                     hasSize:   true
                     minWidth:  130
                     center:    true
                     children: \
                     [
-                        id:         'slider'
                         type:       'slider'
                         hasBar:     true
                         hasKnob:    true
@@ -174,10 +185,10 @@ class Test
                     connect: \
                     [
                         signal: 'slider:onValue'
-                        slot:   'setValue'
+                        slot:   'value:setValue'
                     ]
 
-                $('slider').widget.setValue 33.3
+                w.resolveSlot('slider:setValue') 33.3
 
         b.elem.click()
 
