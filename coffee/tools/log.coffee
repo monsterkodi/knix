@@ -19,4 +19,10 @@ log = ->
     # Console.log arguments
     Console.log.apply(Console, Array.prototype.slice.call(arguments, 0))
 
-    return this
+error = ->
+
+    s = (str(arg) for arg in arguments).join(" ")
+
+    console.log "%c%s", 'color:yellow', s
+
+    Console.error.apply(Console, Array.prototype.slice.call(arguments, 0))

@@ -20,6 +20,14 @@ class Console extends Window
     @log: ->
 
         s = Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0))
+        Console.insert s
+
+    @error: ->
+
+        s = '<span class="console-error">%s</span> '.fmt(str(arguments[0])) + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 1))
+        Console.insert s
+
+    @insert: (s) ->
 
         $$(".console").each (e) ->
             e.insert "<pre>"+s+"</pre>"

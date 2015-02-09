@@ -129,7 +129,7 @@ class Widget
                 if e.hasClassName 'connector'
                     if e.widget.config[t] == name
                         return e.widget
-        log 'connector not found!', name
+        error 'connector not found!', name
         undefined
 
     initConnections: =>
