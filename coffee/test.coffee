@@ -47,19 +47,28 @@ class Test
                     type:       'slider'
                     value:      50
                     style:
-                        width:  '100%'
+                        width:  '50%'
+                ,
+                    id:         'slider3'
+                    type:       'slider'
+                    value:      0
+                    minValue:   20
+                    maxValue:   80
+                    valueStep:  10
+                    style:
+                        width:  '50%'
                 ,
                     type:       'connector'
-                    signal:     'slider2:onValue'
+                    signal:     'slider3:onValue'
                 ]
             ,
                 type: 'hbox'
                 children: \
                 [
                     type:       'connector'
-                    slot:       'slider3:setValue'
+                    slot:       'slider4:setValue'
                 ,
-                    id:         'slider3'
+                    id:         'slider4'
                     type:       'slider'
                     value:      50
                     valueStep:  20
@@ -67,7 +76,7 @@ class Test
                         width:  '100%'
                 ,
                     type:       'connector'
-                    signal:     'slider3:onValue'
+                    signal:     'slider4:onValue'
                 ]
             ,
                 type:       'button'
@@ -88,7 +97,7 @@ class Test
                 slot:   'slider3:setValue'
             ,
                 signal: 'slider3:onValue'
-                slot:   'slider:setValue'
+                slot:   'slider2:setValue'
             ]
 
     @connectors: ->
@@ -106,7 +115,7 @@ class Test
 
                 new Connection
                     source: a.connector 'value:onValue'
-                    target: b.connector 'slider3:setValue'
+                    target: b.connector 'slider2:setValue'
 
         b.elem.click()
 

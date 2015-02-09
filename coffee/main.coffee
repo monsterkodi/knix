@@ -7,7 +7,7 @@ document.observe "dom:loaded", ->
 
     # _________________________________________________________________________ console
 
-    # c = new Console()
+    c = new Console()
     # c.shade()
     # c.raise()
 

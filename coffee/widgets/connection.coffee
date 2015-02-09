@@ -11,7 +11,7 @@ class Connection
             c.getWindow().elem.on 'size',  @update
             c.getWindow().elem.on 'move',  @update
             c.getWindow().elem.on 'shade', @shaded
-            c.getWindow().elem.on 'close', @closed
+            c.getWindow().elem.on 'close', @close
 
         @path = knix.get
             type:  'path'
@@ -23,18 +23,26 @@ class Connection
         @path.setEnd   config.target.absCenter()
         @config = config
 
-        @connect()
+        @connection = @connect()
 
     connect: =>
         [signalConnector, slotConnector] = @signalSlotConnector()
         signal = signalConnector.config.signal
         slot   = slotConnector.config.slot
+        log @path.path.id(), "connect", signal, slot
         [signalSender, signalEvent] = signalConnector.resolveSignal(signal)
         slotFunction = slotConnector.resolveSlot(slot)
         handler:  signalSender.elem.on signalEvent, slotFunction
         sender:   signalSender
         event:    signalEvent
+        signal:   signal
+        slot:     slot
         receiver: slotFunction
+
+    disconnect: =>
+        log @path.path.id(), "disconnect", @connection.signal, @connection.slot
+        @connection.handler.stop()
+        @conncetion = null
 
     signalSlotConnector: =>
         [
@@ -46,7 +54,8 @@ class Connection
         @path.setStart @config.source.absCenter()
         @path.setEnd   @config.target.absCenter()
 
-    closed: (event,e) =>
+    close: =>
+        @disconnect()
         @config.source.delConnection @
         @config.target.delConnection @
         @path.close()

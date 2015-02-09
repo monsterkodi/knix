@@ -94,7 +94,8 @@ class Widget
 
     @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
-        e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
+        # e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
+        e.id = "%s.%d".fmt(clss, @nextWidgetID)
         @nextWidgetID += 1
         e.addClassName clss
         e
@@ -140,15 +141,15 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        log "widget.connect", signal, slot
+        log @elem.id, "connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
-            log "    sender not found!"; return
+            error "sender not found!"; return
         if not signalEvent?
-            log "    event not found!";  return
+            error "event not found!";  return
         if not slotFunction?
-            log "    slot not found!";   return
+            error "slot not found!";   return
         handler:  signalSender.elem.on signalEvent, slotFunction
         sender:   signalSender
         event:    signalEvent
@@ -168,14 +169,12 @@ class Widget
             receiver = @getWindow().getChild(receiver) if receiver?
             receiver = @ unless receiver?
             if receiver[func]?
-                log typeof receiver[func]
                 if typeof receiver[func] == 'function'
-                    log 'resolved', slot
+                    # log 'resolved', slot
                     return receiver[func].bind(receiver)
-                    # return receiver[func]
                 else
-                    log 'not a function'
-        log 'null:', typeof slot
+                    error 'not a function'
+        error 'cant resolve slot:', slot, typeof slot
         null
 
     # ____________________________________________________________________________ signals
@@ -215,16 +214,16 @@ class Widget
 
     addToParent: (p) =>
         if not @elem?
-            log 'no @elem?'
+            error 'no @elem?'
             return this
         if not p?
-            log 'no p?'
+            error 'no p?'
             return this
         parentElement = $(p.content) if p.content?
         parentElement = p.elem unless parentElement
         parentElement = $(p) unless parentElement
         if not parentElement?
-            log 'no element?', p
+            error 'no element?', p
             return this
         parentElement.insert @elem
         @config.parent = parentElement.id
