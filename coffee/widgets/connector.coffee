@@ -3,6 +3,9 @@ class Connector extends Widget
 
     constructor: (config) ->
 
+        config.class = 'slot'   if config.slot?
+        config.class = 'signal' if config.signal?
+
         super config,
             type: 'connector'
 

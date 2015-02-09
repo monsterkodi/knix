@@ -15,7 +15,7 @@ document.observe "dom:loaded", ->
 
     Test.connectors()
     # Test.stageButtons()
-    Test.sliderHello()
+    Test.helloSlider()
     Test.sliderAndValue()
     # Test.svgPath()
 

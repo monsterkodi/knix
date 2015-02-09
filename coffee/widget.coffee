@@ -123,6 +123,17 @@ class Widget
 
     # ____________________________________________________________________________ connections
 
+    connector: (name) =>
+        for t in ['slot', 'signal']
+            for e in @elem.select('.'+t)
+                log 'found', t, e.id
+                if e.hasClassName 'connector'
+                    log 'found connector'
+                    if e.widget.config[t] == name
+                        log 'found matching'
+                        return e.widget
+        undefined
+
     initConnections: =>
         connections = @config.connect
         return if not connections?
@@ -167,36 +178,6 @@ class Widget
                     log 'not a function'
         null
 
-    addToParent: (p) =>
-        if not @elem?
-            log 'no @elem?'
-            return this
-        if not p?
-            log 'no p?'
-            return this
-        parentElement = $(p.content) if p.content?
-        parentElement = p.elem unless parentElement
-        parentElement = $(p) unless parentElement
-        if not parentElement?
-            log 'no element?', p
-            return this
-        parentElement.insert @elem
-        @config.parent = parentElement.id
-        @
-
-    insertChild: (config, defaults) =>
-        child = knix.create config, defaults
-        child.addToParent this
-        child
-
-    insertChildren: =>
-        if @config.children
-            for cfg in @config.children
-                @insertChild(cfg)
-        else if @config.child
-            @insertChild(@config.child)
-        @
-
     # ____________________________________________________________________________ signals
 
     emit: (signal, args) =>
@@ -231,6 +212,36 @@ class Widget
         event
 
     # ____________________________________________________________________________ hierarchy
+
+    addToParent: (p) =>
+        if not @elem?
+            log 'no @elem?'
+            return this
+        if not p?
+            log 'no p?'
+            return this
+        parentElement = $(p.content) if p.content?
+        parentElement = p.elem unless parentElement
+        parentElement = $(p) unless parentElement
+        if not parentElement?
+            log 'no element?', p
+            return this
+        parentElement.insert @elem
+        @config.parent = parentElement.id
+        @
+
+    insertChild: (config, defaults) =>
+        child = knix.create config, defaults
+        child.addToParent this
+        child
+
+    insertChildren: =>
+        if @config.children
+            for cfg in @config.children
+                @insertChild(cfg)
+        else if @config.child
+            @insertChild(@config.child)
+        @
 
     # returns first ancestor element that matches class or id of first argument
     # with no arument: the element with config.parent id or the parent element

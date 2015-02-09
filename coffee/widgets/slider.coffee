@@ -48,8 +48,9 @@ class Slider extends Widget
 
     setValue: (arg) =>
         oldValue = @config.value
-        v = @slotArg(arg, 'value')
-        v = @clamp(v)
+        # v = @slotArg(arg, 'value')
+        # v = @clamp(v)
+        v = @round(@clamp(@slotArg(arg, 'value')))
         if v != oldValue
             @config.value = v
             @setBarValue(v)

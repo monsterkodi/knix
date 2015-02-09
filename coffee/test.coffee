@@ -7,8 +7,9 @@ class Test
 
             title:     'connector'
             hasSize:   true
-            minWidth:  200
+            minWidth:  260
             minHeight: 150
+            maxHeight: 150
             x:         100
             y:         100
             children: \
@@ -17,7 +18,7 @@ class Test
                 children: \
                 [
                     type:       'connector'
-                    class:      'slot'
+                    slot:       'slider:setValue'
                 ,
                     id:         'slider'
                     type:       'slider'
@@ -33,14 +34,14 @@ class Test
                         minWidth: '80px'
                 ,
                     type:       'connector'
-                    class:      'signal'
+                    signal:     'value:onValue'
                 ]
             ,
                 type: 'hbox'
                 children: \
                 [
                     type:       'connector'
-                    class:      'slot'
+                    slot:       'slider2:setValue'
                 ,
                     id:         'slider2'
                     type:       'slider'
@@ -49,23 +50,24 @@ class Test
                         width:  '100%'
                 ,
                     type:       'connector'
-                    class:      'signal'
+                    signal:     'slider2:onValue'
                 ]
             ,
                 type: 'hbox'
                 children: \
                 [
                     type:       'connector'
-                    class:      'slot'
+                    slot:       'slider3:setValue'
                 ,
                     id:         'slider3'
                     type:       'slider'
                     value:      50
+                    valueStep:  20
                     style:
                         width:  '100%'
                 ,
                     type:       'connector'
-                    class:      'signal'
+                    signal:     'slider3:onValue'
                 ]
             ,
                 type:       'button'
@@ -81,6 +83,12 @@ class Test
             ,
                 signal: 'value:onValue'
                 slot:   'slider:setValue'
+            ,
+                signal: 'slider2:onValue'
+                slot:   'slider3:setValue'
+            ,
+                signal: 'slider3:onValue'
+                slot:   'slider:setValue'
             ]
 
     @connectors: ->
@@ -95,6 +103,12 @@ class Test
                 b = Test.connectorBox().setPos pos(200,400)
                 c = Test.connectorBox().setPos pos(200,600)
                 d = Test.connectorBox().setPos pos(400,200)
+
+                new Connection
+                    source: a.connector 'value:onValue'
+                    target: b.connector 'slider3:setValue'
+
+        b.elem.click()
 
     # _________________________________________________________________________ svg path test
 
@@ -155,11 +169,11 @@ class Test
                 p = drag.absPos(event)
                 pth.setEndHead [p.x, p.y]
 
-    @sliderHello: ->
+    @helloSlider: ->
 
         b = knix.get
             type:   'button'
-            text:   'slider hello'
+            text:   'hello slider'
             parent: 'menu'
             onClick: ->
                 w = knix.get
@@ -190,7 +204,7 @@ class Test
 
                 w.resolveSlot('slider:setValue') 33.3
 
-        b.elem.click()
+        # b.elem.click()
 
     @sliderAndValue: ->
 
@@ -241,7 +255,7 @@ class Test
                         slot:   'slider_1:setValue'
                     ]
 
-        b.elem.click()
+        # b.elem.click()
 
     @stageButtons: () ->
 

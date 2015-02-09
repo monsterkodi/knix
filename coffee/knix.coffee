@@ -50,6 +50,10 @@ class knix
             onClick: -> StyleSwitch.toggle()
 
         @get btn,
+            icon:   'octicon-dash'
+            onClick: -> knix.shadeAll()
+
+        @get btn,
             icon:   'octicon-x'
             onClick: -> knix.closeAll()
 
@@ -76,8 +80,10 @@ class knix
     @closeAll: -> # close all windows
         $$('.window').each (windowElement) ->
             windowElement.widget.close()
-            return
-        return
+
+    @shadeAll: -> # shade all windows
+        $$('.window').each (windowElement) ->
+            windowElement.widget.shade()
 
     # ________________________________________________________________________________ canvas
 
