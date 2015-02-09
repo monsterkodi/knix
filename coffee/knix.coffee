@@ -12,7 +12,7 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @version = '0.1.3'
+    @version = '0.1.4'
 
     @init: ->
 
@@ -74,7 +74,7 @@ class knix
     @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window', parent:'stage_content' }
 
     @closeAll: -> # close all windows
-        $$(".window").each (windowElement) ->
+        $$('.window').each (windowElement) ->
             windowElement.widget.close()
             return
         return
@@ -127,8 +127,8 @@ class knix
             elem: 'input'
             type: 'input'
 
-        inp.elem.setAttribute "size", 6
-        inp.elem.setAttribute "type", "text"
-        inp.elem.setAttribute "inputmode", "numeric"
+        inp.elem.setAttribute 'size', 6
+        inp.elem.setAttribute 'type', 'text'
+        inp.elem.setAttribute 'inputmode', 'numeric'
         inp.elem.getValue = -> parseFloat(@value)
         inp

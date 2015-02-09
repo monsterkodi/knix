@@ -46,7 +46,6 @@ class Window extends Widget
 
         if cfg.center
             @moveTo Math.max(0,Stage.size().width/2 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
-
         @
 
     #__________________________________________________ init window
@@ -70,7 +69,7 @@ class Window extends Widget
 
         if @config.content == 'scroll'
 
-            @elem.on "size", (event,e) ->
+            @elem.on 'size', (event,e) ->
                 win = e.getWindow()
                 content = $(win.content).widget
                 content.setWidth  win.contentWidth()
@@ -88,19 +87,19 @@ class Window extends Widget
 
     addTitleBar: ->
         knix.create
-            type:    "title"
+            type:    'title'
             text:    @config.title
             parent:  this
             onDouble: (event,e) -> console.log 'maxi'; e.getWindow().maximize()
 
     addCloseButton: ->
         knix.create
-            type:    "close"
+            type:    'close'
             noDown:  true
             parent:  this
-            # child:
-            #     type: 'icon'
-            #     icon: 'octicon-x'
+            child:
+                type: 'icon'
+                icon: 'octicon-x'
             onClick: (event,e) -> e.getWindow().close()
 
     addShadeButton: ->
@@ -108,9 +107,9 @@ class Window extends Widget
             type:    "shade"
             noDown:  true
             parent:  this
-            # child:
-            #     type: 'icon'
-            #     icon: 'octicon-dash'
+            child:
+                type: 'icon'
+                icon: 'octicon-dash'
             onClick: (event,e) -> e.getWindow().shade()
 
     scrollToBottom: ->
@@ -119,7 +118,7 @@ class Window extends Widget
 
     addSizeButton: ->
         btn = knix.create
-            type:    "size"
+            type:    'size'
             parent:  this
 
         dragStart = (drag, event) ->
@@ -162,7 +161,7 @@ class Window extends Widget
             onStart: dragStart
             onMove:  dragMove
             onStop:  dragStop
-            cursor:  "nwse-resize"
+            cursor:  'nwse-resize'
 
         btn
 
@@ -185,7 +184,7 @@ class Window extends Widget
         $(@content).scrollTop = scrolltop
 
     headerSize: (box="border-box-height") ->
-        children = Selector.findChildElements(@elem, [ "*.title", "*.close", "*.shade" ])
+        children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
         i = 0
         while i < children.length
             height = children[i].getLayout().get(box)
@@ -193,8 +192,8 @@ class Window extends Widget
             i++
         0
 
-    contentWidth:  -> @elem.getLayout().get("padding-box-width")
-    contentHeight: -> @elem.getLayout().get("padding-box-height") - @headerSize()
+    contentWidth:  -> @elem.getLayout().get('padding-box-width')
+    contentHeight: -> @elem.getLayout().get('padding-box-height') - @headerSize()
 
     shade: ->
         size = @getChild 'size'
@@ -207,8 +206,12 @@ class Window extends Widget
         else
             @config.height = @getHeight()
             @elem.setStyle('min-height': '0px')
-            @setHeight @headerSize("padding-box-height")
+            @setHeight @headerSize('padding-box-height')
             @config.isShaded = true
             size.elem.hide() if size
             $(@content).hide()
+
+        @emit 'shade',
+            shaded: @config.isShaded
+            
         return

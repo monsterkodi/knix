@@ -48,7 +48,7 @@ textColors                  = {}
 textColors.global           = black
 textColors.menu             = textColors.global
 textColors.title            = textColors.global
-textColors.button           = #333
+textColors.button           = textColors.global
 textColors.button-hover     = #000
 textColors.button-active    = #fff
 textColors.discreet         = darken(colors.bg, 6)
@@ -88,12 +88,14 @@ borders.connector       = 0px solid white
 borders.connector-signal-connected = 2px solid colors.connector-signal-border-connected
 borders.connector-slot-connected = 2px solid colors.connector-slot-border-connected
 
+pathStrokeWidth         = 16
+connectionStrokeWidth   = 10
+
 buttonRadius            = widgetTopRadius
 buttonHeight            = 20px
 menuHeight              = 24px
 valueHeight             = 20px
-// knobSize                = valueHeight - sliderBorderWidth * 2
-knobSize = 0px
+knobSize                = 0px
 shadowDef               = 2px 2px 10px 2px rgba(0,0,0,0.1)
 
 ::selection

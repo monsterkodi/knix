@@ -129,8 +129,12 @@ a
     &:hover
         background-color: colors.button-hover
         color:            textColors.button-hover
+    &:hover *
+        color:            textColors.button-hover
     &:active
         background-color: colors.button-active
+        color:            textColors.button-active
+    &:hover *
         color:            textColors.button-active
 
 .tool-button
@@ -213,28 +217,42 @@ a
 .window .close
 .window .window-button-left
     float:            left
-    width:            widgetHeaderSize
-    height:           widgetHeaderSize
     border-right:     borders.close
     border-bottom:    borders.close
-    margin-bottom:  - widgetBorderWidth
     bgColorHover(colors.close)
-    noSelection()
-    handCursor()
 
 .window .shade
 .window .window-button-right
     float:            right
-    height:           widgetHeaderSize
     border-left:      borders.shade
     border-bottom:    borders.close
-    margin-bottom:  - widgetBorderWidth
     bgColorHover(colors.shade)
-    noSelection()
-    handCursor()
 
 .window .shade
    width:             widgetHeaderSize
+
+.window .shade
+.window .close
+   & *
+       color: colors.title
+   &:hover *
+       color: textColors.button-hover
+   &:active *
+       color: textColors.button-active
+
+.window .shade
+.window .close
+.window .window-button-left
+.window .window-button-right
+    height:           widgetHeaderSize
+    width:            widgetHeaderSize
+    margin-bottom:  - widgetBorderWidth
+    noSelection()
+    handCursor()
+    &:hover *
+        color: textColors.button-hover
+    &:active *
+        color: textColors.button-active
 
 .window .size
     position:         absolute
@@ -361,7 +379,7 @@ a
             border: borders.connector-slot-connected
 
 .path
-    stroke-width:     14
+    stroke-width:     pathStrokeWidth
 
 .connector
 
@@ -374,7 +392,7 @@ a
 .connection
 
     stroke:           colors.connection
-    stroke-width:     10
+    stroke-width:     connectionStrokeWidth
 
 // ____________________________________ value
 

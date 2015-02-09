@@ -14,10 +14,13 @@ class Connector extends Widget
             onMove:  @dragMove.bind(@)
             onStop:  @dragStop.bind(@)
 
+    isSignal: -> @elem.hasClassName('signal')
+    isSlot:   -> @elem.hasClassName('slot')
+
     connectorAtPos: (p) ->
         elem = document.elementFromPoint p.x, p.y
         if elem?.widget?
-            if elem.widget.constructor == Connector and elem.widget != @
+            if elem.widget.constructor == Connector and elem.widget.isSignal() != @isSignal()
                 return elem.widget
         undefined
 

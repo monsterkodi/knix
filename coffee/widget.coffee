@@ -76,6 +76,7 @@ class Widget
             Drag.create
                 target: @elem
                 minPos: pos(undefined,0)
+                onMove: @emitMove.bind(@)
                 cursor: null
 
         @initSlots()
@@ -202,6 +203,10 @@ class Widget
             width:  @getWidth()
             height: @getHeight()
 
+    emitMove: ->
+        @emit 'move',
+            pos: @absPos()
+
     # ____________________________________________________________________________ slots
 
     slotArg: (event, argname='value') ->
@@ -253,12 +258,14 @@ class Widget
     moveTo: (x, y) ->
         @elem.style.left = "%dpx".fmt(x) if x?
         @elem.style.top  = "%dpx".fmt(y) if y?
+        @emitMove()
         return
 
     moveBy: (dx, dy) ->
         p = @relPos()
         @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
         @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
+        @emitMove()
         return
 
     setWidth: (w) ->
