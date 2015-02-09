@@ -93,8 +93,11 @@ About = (function(_super) {
 Connection = (function() {
   function Connection(config) {
     this.shaded = __bind(this.shaded, this);
-    this.closed = __bind(this.closed, this);
+    this.close = __bind(this.close, this);
     this.update = __bind(this.update, this);
+    this.signalSlotConnector = __bind(this.signalSlotConnector, this);
+    this.disconnect = __bind(this.disconnect, this);
+    this.connect = __bind(this.connect, this);
     var c, e, _i, _len, _ref;
     _ref = [config.source, config.target];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -104,25 +107,55 @@ Connection = (function() {
       c.getWindow().elem.on('size', this.update);
       c.getWindow().elem.on('move', this.update);
       c.getWindow().elem.on('shade', this.shaded);
-      c.getWindow().elem.on('close', this.closed);
+      c.getWindow().elem.on('close', this.close);
     }
     this.path = knix.get({
       type: 'path',
       "class": 'connection',
-      startDir: config.source.elem.hasClassName('signal') ? pos(100, 0) : pos(-100, 0),
-      endDir: config.target.elem.hasClassName('signal') ? pos(100, 0) : pos(-100, 0)
+      startDir: config.source.isSignal() ? pos(100, 0) : pos(-100, 0),
+      endDir: config.target.isSignal() ? pos(100, 0) : pos(-100, 0)
     });
     this.path.setStart(config.source.absCenter());
     this.path.setEnd(config.target.absCenter());
     this.config = config;
+    this.connection = this.connect();
   }
+
+  Connection.prototype.connect = function() {
+    var signal, signalConnector, signalEvent, signalSender, slot, slotConnector, slotFunction, _ref, _ref1;
+    _ref = this.signalSlotConnector(), signalConnector = _ref[0], slotConnector = _ref[1];
+    signal = signalConnector.config.signal;
+    slot = slotConnector.config.slot;
+    log(this.path.path.id(), "connect", signal, slot);
+    _ref1 = signalConnector.resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
+    slotFunction = slotConnector.resolveSlot(slot);
+    return {
+      handler: signalSender.elem.on(signalEvent, slotFunction),
+      sender: signalSender,
+      event: signalEvent,
+      signal: signal,
+      slot: slot,
+      receiver: slotFunction
+    };
+  };
+
+  Connection.prototype.disconnect = function() {
+    log(this.path.path.id(), "disconnect", this.connection.signal, this.connection.slot);
+    this.connection.handler.stop();
+    return this.conncetion = null;
+  };
+
+  Connection.prototype.signalSlotConnector = function() {
+    return [(this.config.source.config.signal != null ? this.config.source : void 0) || this.config.target, (this.config.source.config.slot != null ? this.config.source : void 0) || this.config.target];
+  };
 
   Connection.prototype.update = function(event, e) {
     this.path.setStart(this.config.source.absCenter());
     return this.path.setEnd(this.config.target.absCenter());
   };
 
-  Connection.prototype.closed = function(event, e) {
+  Connection.prototype.close = function() {
+    this.disconnect();
     this.config.source.delConnection(this);
     this.config.target.delConnection(this);
     this.path.close();
@@ -157,6 +190,12 @@ Connector = (function(_super) {
     this.isSlot = __bind(this.isSlot, this);
     this.isSignal = __bind(this.isSignal, this);
     this.close = __bind(this.close, this);
+    if (config.slot != null) {
+      config["class"] = 'slot';
+    }
+    if (config.signal != null) {
+      config["class"] = 'signal';
+    }
     Connector.__super__.constructor.call(this, config, {
       type: 'connector'
     });
@@ -213,11 +252,11 @@ Connector = (function(_super) {
     p = drag.absPos(event);
     if (conn = this.connectorAtPos(p)) {
       this.path.path.addClass('connectable');
-      this.path.setStartDir(this.elem.hasClassName('signal') ? pos(100, 0) : pos(-100, 0));
-      this.path.setEndDir(conn.elem.hasClassName('signal') ? pos(100, 0) : pos(-100, 0));
+      this.path.setStartDir(this.isSignal() ? pos(100, 0) : pos(-100, 0));
+      this.path.setEndDir(conn.isSignal() ? pos(100, 0) : pos(-100, 0));
     } else {
       this.path.path.removeClass('connectable');
-      this.path.setStartDir(this.elem.hasClassName('signal') ? pos(200, 0) : pos(-200, 0));
+      this.path.setStartDir(this.isSignal() ? pos(200, 0) : pos(-200, 0));
       this.path.setEndDir(pos(0, 0));
     }
     this.handle.setPos(p);
@@ -237,7 +276,7 @@ Connector = (function(_super) {
     this.path = knix.get({
       type: 'path',
       "class": 'connector',
-      startDir: this.elem.hasClassName('signal') ? pos(200, 0) : pos(-200, 0)
+      startDir: this.isSignal() ? pos(200, 0) : pos(-200, 0)
     });
     this.elem.style.cursor = 'grabbing';
     this.path.setStart(p);
@@ -297,6 +336,16 @@ Console = (function(_super) {
   Console.log = function() {
     var s;
     s = Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0));
+    return Console.insert(s);
+  };
+
+  Console.error = function() {
+    var s;
+    s = '<span class="console-error">%s</span> '.fmt(str(arguments[0])) + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 1));
+    return Console.insert(s);
+  };
+
+  Console.insert = function(s) {
     $$(".console").each(function(e) {
       e.insert("<pre>" + s + "</pre>");
       return e.getWindow().scrollToBottom();
@@ -515,6 +564,9 @@ Slider = (function(_super) {
   __extends(Slider, _super);
 
   function Slider(cfg) {
+    this.setValue = __bind(this.setValue, this);
+    this.setBarValue = __bind(this.setBarValue, this);
+    this.valueToPercentOfWidth = __bind(this.valueToPercentOfWidth, this);
     var sizeCB, sliderFunc;
     sliderFunc = function(drag, event) {
       var pos, slider, v, width;
@@ -572,8 +624,7 @@ Slider = (function(_super) {
   Slider.prototype.setValue = function(arg) {
     var oldValue, v;
     oldValue = this.config.value;
-    v = this.slotArg(arg, 'value');
-    v = this.clamp(v);
+    v = this.round(this.clamp(this.slotArg(arg, 'value')));
     if (v !== oldValue) {
       this.config.value = v;
       this.setBarValue(v);
@@ -602,27 +653,14 @@ Value = (function(_super) {
   __extends(Value, _super);
 
   function Value(cfg) {
+    this.incr = __bind(this.incr, this);
+    this.setValue = __bind(this.setValue, this);
     Value.__super__.constructor.call(this, cfg, {
       type: 'value',
       value: 0,
       minValue: 0,
       maxValue: 100,
       horizontal: true,
-      slots: {
-        setValue: function(arg) {
-          var oldValue, v;
-          oldValue = this.config.value;
-          v = this.round(this.clamp(this.slotArg(arg, 'value')));
-          this.input.value = this.strip0(this.format(v));
-          if (v !== oldValue) {
-            this.config.value = v;
-            this.emit('onValue', {
-              value: v
-            });
-          }
-          return this;
-        }
-      },
       child: {
         elem: 'table',
         type: 'value-table',
@@ -671,7 +709,7 @@ Value = (function(_super) {
     this.elem.on('keypress', function(event, e) {
       var _ref, _ref1, _ref2;
       if ((_ref = event.key) === 'Up' || _ref === 'Down') {
-        this.widget.incr(event.key.toLowerCase());
+        this.widget.incr(event.key === 'Up' && '+' || '-');
         event.stop();
         return;
       }
@@ -694,11 +732,25 @@ Value = (function(_super) {
     this.setValue(this.config.value);
   }
 
+  Value.prototype.setValue = function(arg) {
+    var oldValue, v;
+    oldValue = this.config.value;
+    v = this.round(this.clamp(this.slotArg(arg, 'value')));
+    this.input.value = this.strip0(this.format(v));
+    if (v !== oldValue) {
+      this.config.value = v;
+      this.emit('onValue', {
+        value: v
+      });
+    }
+    return this;
+  };
+
   Value.prototype.incr = function(d) {
     var step;
-    if (d === 'up' || d === '+' || d === '++') {
+    if (d === '+' || d === '++') {
       d = 1;
-    } else if (d === 'down' || d === '-' || d === '--') {
+    } else if (d === '-' || d === '--') {
       d = -1;
     }
     if (this.config.valueStep != null) {

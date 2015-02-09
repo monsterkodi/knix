@@ -1,4 +1,5 @@
-var Drag, Pos, Stage, StyleSwitch, log, pos, str, strIndent,
+var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Drag = (function() {
@@ -7,6 +8,14 @@ Drag = (function() {
   };
 
   function Drag(cfg) {
+    this.stopListening = __bind(this.stopListening, this);
+    this.startListening = __bind(this.startListening, this);
+    this.dragStop = __bind(this.dragStop, this);
+    this.dragUp = __bind(this.dragUp, this);
+    this.dragMove = __bind(this.dragMove, this);
+    this.dragStart = __bind(this.dragStart, this);
+    this.absPos = __bind(this.absPos, this);
+    this.cancelEvent = __bind(this.cancelEvent, this);
     var tempPos;
     _.extend(this, _.def(cfg, {
       target: null,
@@ -184,8 +193,22 @@ log = function() {
     return _results;
   }).apply(this, arguments)).join(" ");
   console.log("%c%s", 'color:white', s);
-  Console.log.apply(Console, Array.prototype.slice.call(arguments, 0));
-  return this;
+  return Console.log.apply(Console, Array.prototype.slice.call(arguments, 0));
+};
+
+error = function() {
+  var arg, s;
+  s = ((function() {
+    var _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+      arg = arguments[_i];
+      _results.push(str(arg));
+    }
+    return _results;
+  }).apply(this, arguments)).join(" ");
+  console.log("%c%s", 'color:yellow', s);
+  return Console.error.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
 Pos = (function() {

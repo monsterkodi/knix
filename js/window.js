@@ -279,7 +279,7 @@ Window = (function(_super) {
       this.elem.setStyle({
         'min-height': '0px'
       });
-      this.setHeight(this.headerSize('padding-box-height'));
+      this.setHeight(this.headerSize());
       this.config.isShaded = true;
       if (size) {
         size.elem.hide();

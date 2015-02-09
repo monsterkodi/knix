@@ -51,6 +51,12 @@ knix = (function() {
         return StyleSwitch.toggle();
       }
     });
+    this.get(btn, {
+      icon: 'octicon-dash',
+      onClick: function() {
+        return knix.shadeAll();
+      }
+    });
     return this.get(btn, {
       icon: 'octicon-x',
       onClick: function() {
@@ -84,8 +90,14 @@ knix = (function() {
   };
 
   knix.closeAll = function() {
-    $$('.window').each(function(windowElement) {
-      windowElement.widget.close();
+    return $$('.window').each(function(windowElement) {
+      return windowElement.widget.close();
+    });
+  };
+
+  knix.shadeAll = function() {
+    return $$('.window').each(function(windowElement) {
+      return windowElement.widget.shade();
     });
   };
 

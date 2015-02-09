@@ -7,8 +7,9 @@ Test = (function() {
     return knix.get({
       title: 'connector',
       hasSize: true,
-      minWidth: 200,
+      minWidth: 260,
       minHeight: 150,
+      maxHeight: 150,
       x: 100,
       y: 100,
       children: [
@@ -17,7 +18,7 @@ Test = (function() {
           children: [
             {
               type: 'connector',
-              "class": 'slot'
+              slot: 'slider:setValue'
             }, {
               id: 'slider',
               type: 'slider',
@@ -35,7 +36,7 @@ Test = (function() {
               }
             }, {
               type: 'connector',
-              "class": 'signal'
+              signal: 'value:onValue'
             }
           ]
         }, {
@@ -43,17 +44,27 @@ Test = (function() {
           children: [
             {
               type: 'connector',
-              "class": 'slot'
+              slot: 'slider2:setValue'
             }, {
               id: 'slider2',
               type: 'slider',
               value: 50,
               style: {
-                width: '100%'
+                width: '50%'
+              }
+            }, {
+              id: 'slider3',
+              type: 'slider',
+              value: 0,
+              minValue: 20,
+              maxValue: 80,
+              valueStep: 10,
+              style: {
+                width: '50%'
               }
             }, {
               type: 'connector',
-              "class": 'signal'
+              signal: 'slider3:onValue'
             }
           ]
         }, {
@@ -61,17 +72,18 @@ Test = (function() {
           children: [
             {
               type: 'connector',
-              "class": 'slot'
+              slot: 'slider4:setValue'
             }, {
-              id: 'slider3',
+              id: 'slider4',
               type: 'slider',
               value: 50,
+              valueStep: 20,
               style: {
                 width: '100%'
               }
             }, {
               type: 'connector',
-              "class": 'signal'
+              signal: 'slider4:onValue'
             }
           ]
         }, {
@@ -92,9 +104,36 @@ Test = (function() {
         }, {
           signal: 'value:onValue',
           slot: 'slider:setValue'
+        }, {
+          signal: 'slider2:onValue',
+          slot: 'slider3:setValue'
+        }, {
+          signal: 'slider3:onValue',
+          slot: 'slider2:setValue'
         }
       ]
     });
+  };
+
+  Test.connectors = function() {
+    var b;
+    b = knix.get({
+      type: 'button',
+      text: 'connectors',
+      parent: 'menu',
+      onClick: function() {
+        var a, c, d;
+        a = Test.connectorBox();
+        b = Test.connectorBox().setPos(pos(200, 400));
+        c = Test.connectorBox().setPos(pos(200, 600));
+        d = Test.connectorBox().setPos(pos(400, 200));
+        return new Connection({
+          source: a.connector('value:onValue'),
+          target: b.connector('slider2:setValue')
+        });
+      }
+    });
+    return b.elem.click();
   };
 
   Test.svgPath = function() {
@@ -166,21 +205,21 @@ Test = (function() {
     });
   };
 
-  Test.sliderHello = function() {
+  Test.helloSlider = function() {
     var b;
-    b = knix.get({
+    return b = knix.get({
       type: 'button',
-      text: 'slider hello',
+      text: 'hello slider',
       parent: 'menu',
       onClick: function() {
-        knix.get({
+        var w;
+        w = knix.get({
           title: 'hello',
           hasSize: true,
           minWidth: 130,
           center: true,
           children: [
             {
-              id: 'slider',
               type: 'slider',
               hasBar: true,
               hasKnob: true,
@@ -200,19 +239,18 @@ Test = (function() {
           connect: [
             {
               signal: 'slider:onValue',
-              slot: 'setValue'
+              slot: 'value:setValue'
             }
           ]
         });
-        return $('slider').widget.setValue(33.3);
+        return w.resolveSlot('slider:setValue')(33.3);
       }
     });
-    return b.elem.click();
   };
 
   Test.sliderAndValue = function() {
     var b;
-    b = knix.get({
+    return b = knix.get({
       type: 'button',
       text: 'slider & value',
       parent: 'menu',
@@ -265,7 +303,6 @@ Test = (function() {
         });
       }
     });
-    return b.elem.click();
   };
 
   Test.stageButtons = function() {
@@ -331,14 +368,12 @@ Test = (function() {
 })();
 
 document.observe("dom:loaded", function() {
-  var c, wid;
-  wid = knix.init();
+  var c;
+  knix.init();
   c = new Console();
-  Test.connectorBox();
-  Test.connectorBox().setPos(pos(200, 400));
-  Test.connectorBox().setPos(pos(200, 600));
-  Test.connectorBox().setPos(pos(400, 200));
-  c.raise();
+  Test.connectors();
+  Test.helloSlider();
+  Test.sliderAndValue();
 });
 
 //# sourceMappingURL=main.js.map

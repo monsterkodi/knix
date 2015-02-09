@@ -27,11 +27,11 @@ Widget = (function() {
     this.innerWidth = __bind(this.innerWidth, this);
     this.size2value = __bind(this.size2value, this);
     this.percentage = __bind(this.percentage, this);
+    this.getHeight = __bind(this.getHeight, this);
+    this.getWidth = __bind(this.getWidth, this);
     this.getSize = __bind(this.getSize, this);
     this.setSize = __bind(this.setSize, this);
     this.resize = __bind(this.resize, this);
-    this.getHeight = __bind(this.getHeight, this);
-    this.getWidth = __bind(this.getWidth, this);
     this.setHeight = __bind(this.setHeight, this);
     this.setWidth = __bind(this.setWidth, this);
     this.moveBy = __bind(this.moveBy, this);
@@ -42,17 +42,18 @@ Widget = (function() {
     this.getChild = __bind(this.getChild, this);
     this.getWindow = __bind(this.getWindow, this);
     this.getParent = __bind(this.getParent, this);
+    this.insertChildren = __bind(this.insertChildren, this);
+    this.insertChild = __bind(this.insertChild, this);
+    this.addToParent = __bind(this.addToParent, this);
     this.slotArg = __bind(this.slotArg, this);
     this.emitMove = __bind(this.emitMove, this);
     this.emitSize = __bind(this.emitSize, this);
     this.emit = __bind(this.emit, this);
-    this.insertChildren = __bind(this.insertChildren, this);
-    this.insertChild = __bind(this.insertChild, this);
-    this.addToParent = __bind(this.addToParent, this);
     this.resolveSlot = __bind(this.resolveSlot, this);
     this.resolveSignal = __bind(this.resolveSignal, this);
     this.connect = __bind(this.connect, this);
     this.initConnections = __bind(this.initConnections, this);
+    this.connector = __bind(this.connector, this);
     this.initSlots = __bind(this.initSlots, this);
     this.initEvents = __bind(this.initEvents, this);
     this.init = __bind(this.init, this);
@@ -152,7 +153,7 @@ Widget = (function() {
   Widget.elem = function(type, clss) {
     var e;
     e = new Element(type);
-    e.id = "%s.%s.%d".fmt(type, clss, Widget.nextWidgetID);
+    e.id = "%s.%d".fmt(clss, Widget.nextWidgetID);
     Widget.nextWidgetID += 1;
     e.addClassName(clss);
     return e;
@@ -184,47 +185,65 @@ Widget = (function() {
   };
 
   Widget.prototype.initSlots = function() {
-    var func, slot, slots, _results;
+    var func, slot, slots;
     slots = this.config.slots;
     if (slots == null) {
       return;
     }
-    _results = [];
     for (slot in slots) {
       func = slots[slot];
-      _results.push(this[slot] = func);
+      this[slot] = func;
     }
-    return _results;
+    return this;
+  };
+
+  Widget.prototype.connector = function(name) {
+    var e, t, _i, _j, _len, _len1, _ref, _ref1;
+    _ref = ['slot', 'signal'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      t = _ref[_i];
+      _ref1 = this.elem.select('.' + t);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        e = _ref1[_j];
+        if (e.hasClassName('connector')) {
+          if (e.widget.config[t] === name) {
+            return e.widget;
+          }
+        }
+      }
+    }
+    error('connector not found!', name);
+    return void 0;
   };
 
   Widget.prototype.initConnections = function() {
-    var connection, connections, _i, _len, _results;
+    var connection, connections, _i, _len;
     connections = this.config.connect;
     if (connections == null) {
       return;
     }
-    _results = [];
     for (_i = 0, _len = connections.length; _i < _len; _i++) {
       connection = connections[_i];
-      _results.push(this.connect(connection.signal, connection.slot));
+      this.connect(connection.signal, connection.slot);
     }
-    return _results;
+    return this;
   };
 
   Widget.prototype.connect = function(signal, slot) {
     var signalEvent, signalSender, slotFunction, _ref;
+    log(this.elem.id, "connect", signal, slot);
     _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
     slotFunction = this.resolveSlot(slot);
     if (signalSender == null) {
-      log("    sender not found!");
+      error("sender not found!");
       return;
     }
     if (signalEvent == null) {
-      log("    event not found!");
+      error("event not found!");
       return;
     }
     if (slotFunction == null) {
-      log("    slot not found!");
+      error("slot not found!");
       return;
     }
     return {
@@ -261,20 +280,68 @@ Widget = (function() {
         receiver = this;
       }
       if (receiver[func] != null) {
-        return receiver[func].bind(receiver);
+        if (typeof receiver[func] === 'function') {
+          return receiver[func].bind(receiver);
+        } else {
+          error('not a function');
+        }
       }
     }
+    error('cant resolve slot:', slot, typeof slot);
     return null;
+  };
+
+  Widget.prototype.emit = function(signal, args) {
+    var event;
+    event = new CustomEvent(signal, {
+      bubbles: true,
+      cancelable: true,
+      detail: args
+    });
+    this.elem.dispatchEvent(event);
+    return this;
+  };
+
+  Widget.prototype.emitSize = function() {
+    this.emit('size', {
+      width: this.getWidth(),
+      height: this.getHeight()
+    });
+    return this;
+  };
+
+  Widget.prototype.emitMove = function() {
+    this.emit('move', {
+      pos: this.absPos()
+    });
+    return this;
+  };
+
+  Widget.prototype.slotArg = function(event, argname) {
+    if (argname == null) {
+      argname = 'value';
+    }
+    if (typeof event === 'object') {
+      if (event.detail[argname] != null) {
+        return event.detail[argname];
+      } else {
+        return event.detail;
+      }
+    }
+    if (argname === 'value') {
+      return parseFloat(event);
+    }
+    return event;
   };
 
   Widget.prototype.addToParent = function(p) {
     var parentElement;
     if (this.elem == null) {
-      log('no @elem?');
+      error('no @elem?');
       return this;
     }
     if (p == null) {
-      log('no p?');
+      error('no p?');
       return this;
     }
     if (p.content != null) {
@@ -287,7 +354,7 @@ Widget = (function() {
       parentElement = $(p);
     }
     if (parentElement == null) {
-      log('no element?', p);
+      error('no element?', p);
       return this;
     }
     parentElement.insert(this.elem);
@@ -314,46 +381,6 @@ Widget = (function() {
       this.insertChild(this.config.child);
     }
     return this;
-  };
-
-  Widget.prototype.emit = function(signal, args) {
-    var event;
-    event = new CustomEvent(signal, {
-      bubbles: true,
-      cancelable: true,
-      detail: args
-    });
-    return this.elem.dispatchEvent(event);
-  };
-
-  Widget.prototype.emitSize = function() {
-    return this.emit('size', {
-      width: this.getWidth(),
-      height: this.getHeight()
-    });
-  };
-
-  Widget.prototype.emitMove = function() {
-    return this.emit('move', {
-      pos: this.absPos()
-    });
-  };
-
-  Widget.prototype.slotArg = function(event, argname) {
-    if (argname == null) {
-      argname = 'value';
-    }
-    if (typeof event === 'object') {
-      if (event.detail[argname] != null) {
-        return event.detail[argname];
-      } else {
-        return event.detail;
-      }
-    }
-    if (argname === 'value') {
-      return parseFloat(event);
-    }
-    return event;
   };
 
   Widget.prototype.getParent = function() {
@@ -396,15 +423,14 @@ Widget = (function() {
     this.elem.remove();
     this.elem = null;
     this.config = null;
+    return void 0;
   };
 
   Widget.prototype.clear = function() {
-    var _results;
-    _results = [];
     while (this.elem.hasChildNodes()) {
-      _results.push(this.elem.removeChild(this.elem.lastChild));
+      this.elem.removeChild(this.elem.lastChild);
     }
-    return _results;
+    return this;
   };
 
   Widget.prototype.setPos = function(p) {
@@ -419,6 +445,7 @@ Widget = (function() {
       this.elem.style.top = "%dpx".fmt(y);
     }
     this.emitMove();
+    return this;
   };
 
   Widget.prototype.moveBy = function(dx, dy) {
@@ -431,58 +458,47 @@ Widget = (function() {
       this.elem.style.top = "%dpx".fmt(p.y + dy);
     }
     this.emitMove();
+    return this;
   };
 
   Widget.prototype.setWidth = function(w) {
-    var ow;
-    ow = this.elem.style.width;
+    var diff, ow;
     if (w != null) {
+      ow = this.elem.style.width;
       this.elem.style.width = "%dpx".fmt(w);
+      diff = this.getWidth() - w;
+      if (diff) {
+        this.elem.style.width = "%dpx".fmt(w - diff);
+      }
+      if (ow !== this.elem.style.width) {
+        this.emitSize();
+      }
     }
-    if (ow !== this.elem.style.width) {
-      this.emitSize();
-    }
+    return this;
   };
 
   Widget.prototype.setHeight = function(h) {
-    var oh;
-    oh = this.elem.style.height;
+    var diff, oh;
     if (h != null) {
-      this.elem.style.height = "%dpx".fmt(h);
+      oh = this.elem.style.height;
+      if (h != null) {
+        this.elem.style.height = "%dpx".fmt(h);
+      }
+      diff = this.getHeight() - h;
+      if (diff) {
+        this.elem.style.height = "%dpx".fmt(h - diff);
+      }
+      if (oh !== this.elem.style.height) {
+        this.emitSize();
+      }
     }
-    if (oh !== this.elem.style.height) {
-      this.emitSize();
-    }
-  };
-
-  Widget.prototype.getWidth = function() {
-    return this.elem.getWidth();
-  };
-
-  Widget.prototype.getHeight = function() {
-    return this.elem.getHeight();
+    return this;
   };
 
   Widget.prototype.resize = function(w, h) {
-    var diff;
-    if (w != null) {
-      this.setWidth(w);
-    }
-    if (h != null) {
-      this.setHeight(h);
-    }
-    if (w != null) {
-      diff = this.getWidth() - w;
-      if (diff) {
-        this.setWidth(w - diff);
-      }
-    }
-    if (h != null) {
-      diff = this.getHeight() - h;
-      if (diff) {
-        this.setHeight(h - diff);
-      }
-    }
+    this.setWidth(w);
+    this.setHeight(h);
+    return this;
   };
 
   Widget.prototype.setSize = function(s) {
@@ -494,6 +510,14 @@ Widget = (function() {
       width: this.getWidth(),
       height: this.getHeight()
     };
+  };
+
+  Widget.prototype.getWidth = function() {
+    return this.elem.getWidth();
+  };
+
+  Widget.prototype.getHeight = function() {
+    return this.elem.getHeight();
   };
 
   Widget.prototype.percentage = function(v) {
