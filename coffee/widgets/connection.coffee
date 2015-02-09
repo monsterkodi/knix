@@ -16,12 +16,31 @@ class Connection
         @path = knix.get
             type:  'path'
             class: 'connection'
-            startDir: if config.source.elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
-            endDir:   if config.target.elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
+            startDir: if config.source.isSignal() then pos(100,0) else pos(-100,0)
+            endDir:   if config.target.isSignal() then pos(100,0) else pos(-100,0)
 
         @path.setStart config.source.absCenter()
         @path.setEnd   config.target.absCenter()
         @config = config
+
+        @connect()
+
+    connect: =>
+        [signalConnector, slotConnector] = @signalSlotConnector()
+        signal = signalConnector.config.signal
+        slot   = slotConnector.config.slot
+        [signalSender, signalEvent] = signalConnector.resolveSignal(signal)
+        slotFunction = slotConnector.resolveSlot(slot)
+        handler:  signalSender.elem.on signalEvent, slotFunction
+        sender:   signalSender
+        event:    signalEvent
+        receiver: slotFunction
+
+    signalSlotConnector: =>
+        [
+            (@config.source if @config.source.config.signal?) or @config.target,
+            (@config.source if @config.source.config.slot?)   or @config.target
+        ]
 
     update: (event,e) =>
         @path.setStart @config.source.absCenter()

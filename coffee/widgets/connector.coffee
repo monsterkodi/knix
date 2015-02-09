@@ -48,11 +48,11 @@ class Connector extends Widget
 
         if conn = @connectorAtPos p
             @path.path.addClass('connectable')
-            @path.setStartDir if @elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
-            @path.setEndDir if conn.elem.hasClassName('signal') then pos(100,0) else pos(-100,0)
+            @path.setStartDir if @isSignal() then pos(100,0) else pos(-100,0)
+            @path.setEndDir if conn.isSignal() then pos(100,0) else pos(-100,0)
         else
             @path.path.removeClass('connectable')
-            @path.setStartDir if @elem.hasClassName('signal') then pos(200,0) else pos(-200,0)
+            @path.setStartDir if @isSignal() then pos(200,0) else pos(-200,0)
             @path.setEndDir pos(0,0)
 
         @handle.setPos p
@@ -72,7 +72,7 @@ class Connector extends Widget
         @path = knix.get
             type:  'path'
             class: 'connector'
-            startDir: if @elem.hasClassName('signal') then pos(200,0) else pos(-200,0)
+            startDir: if @isSignal() then pos(200,0) else pos(-200,0)
 
         @elem.style.cursor = 'grabbing'
         @path.setStart p

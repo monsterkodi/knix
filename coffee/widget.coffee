@@ -126,12 +126,10 @@ class Widget
     connector: (name) =>
         for t in ['slot', 'signal']
             for e in @elem.select('.'+t)
-                log 'found', t, e.id
                 if e.hasClassName 'connector'
-                    log 'found connector'
                     if e.widget.config[t] == name
-                        log 'found matching'
                         return e.widget
+        log 'connector not found!', name
         undefined
 
     initConnections: =>
@@ -142,7 +140,7 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        # log "connect", signal, slot
+        log "widget.connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
@@ -172,10 +170,12 @@ class Widget
             if receiver[func]?
                 log typeof receiver[func]
                 if typeof receiver[func] == 'function'
-                    # return receiver[func].bind(receiver)
-                    return receiver[func]
+                    log 'resolved', slot
+                    return receiver[func].bind(receiver)
+                    # return receiver[func]
                 else
                     log 'not a function'
+        log 'null:', typeof slot
         null
 
     # ____________________________________________________________________________ signals
