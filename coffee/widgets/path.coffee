@@ -26,12 +26,14 @@ class Path extends Widget
         @setStart @config.start
         @setEnd   @config.end
 
-    setEndDir:    (p) -> @config.endDir = p; @setEnd @config.end
-    setStartDir:  (p) -> @config.startDir = p; @setStart @config.start
-    setEndHead:   (p) -> @setEndDir p.sub(@config.end)
-    setStartHead: (p) -> @setStartDir p.sub(@config.start)
+    setVisible:   (v) => if v then @path.show() else @path.hide()
 
-    setStart: (p) ->
+    setEndDir:    (p) => @config.endDir = p; @setEnd @config.end
+    setStartDir:  (p) => @config.startDir = p; @setStart @config.start
+    setEndHead:   (p) => @setEndDir p.sub(@config.end)
+    setStartHead: (p) => @setStartDir p.sub(@config.start)
+
+    setStart: (p) =>
 
         @config.start = p
         @config.startHead = @config.start.add(@config.startDir)
@@ -40,7 +42,7 @@ class Path extends Widget
         @setCtrl 1, @config.startHead
         @setCtrl 2, @config.mid
 
-    setEnd: (p) ->
+    setEnd: (p) =>
         @config.end = p
         @config.endHead = @config.end.add(@config.endDir)
         @config.mid = @config.startHead.mid(@config.endHead)
@@ -48,7 +50,7 @@ class Path extends Widget
         @setCtrl 3, @config.endHead
         @setCtrl 4, @config.end
 
-    setCtrl: (c, p) ->
+    setCtrl: (c, p) =>
         si = [0,1,1,2,2][c]
         o  = [0,0,2,0,2][c]
         s  = @path.getSegment(si)

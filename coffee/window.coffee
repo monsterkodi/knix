@@ -15,7 +15,7 @@ class Window extends Widget
 
     #__________________________________________________ init
 
-    init: (cfg, defs) ->
+    init: (cfg, defs) =>
 
         cfg = _.def(cfg, defs)
 
@@ -36,6 +36,7 @@ class Window extends Widget
             hasShade:  true
             hasSize:   true
             isMovable: true
+            isShaded:  false
             onDown:    (event,e) -> e.getWindow().raise()
 
         @initWindow()
@@ -50,7 +51,7 @@ class Window extends Widget
 
     #__________________________________________________ init window
 
-    initWindow: ->
+    initWindow: =>
 
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
@@ -85,14 +86,14 @@ class Window extends Widget
 
     #__________________________________________________ header
 
-    addTitleBar: ->
+    addTitleBar: =>
         knix.create
             type:    'title'
             text:    @config.title
             parent:  this
             onDouble: (event,e) -> console.log 'maxi'; e.getWindow().maximize()
 
-    addCloseButton: ->
+    addCloseButton: =>
         knix.create
             type:    'close'
             noDown:  true
@@ -102,7 +103,7 @@ class Window extends Widget
                 icon: 'octicon-x'
             onClick: (event,e) -> e.getWindow().close()
 
-    addShadeButton: ->
+    addShadeButton: =>
         knix.create
             type:    "shade"
             noDown:  true
@@ -112,11 +113,11 @@ class Window extends Widget
                 icon: 'octicon-dash'
             onClick: (event,e) -> e.getWindow().shade()
 
-    scrollToBottom: ->
+    scrollToBottom: =>
         content = $(@content)
         content.scrollTop = content.scrollHeight
 
-    addSizeButton: ->
+    addSizeButton: =>
         btn = knix.create
             type:    'size'
             parent:  this
@@ -165,7 +166,7 @@ class Window extends Widget
 
         btn
 
-    maximize: ->
+    maximize: =>
         if @config.isMaximized
             @setPos @config.pos
             @setSize @config.size
@@ -178,12 +179,12 @@ class Window extends Widget
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
 
-    raise: ->
+    raise: =>
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
         $(@content).scrollTop = scrolltop
 
-    headerSize: (box="border-box-height") ->
+    headerSize: (box="border-box-height") =>
         children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
         i = 0
         while i < children.length
@@ -192,10 +193,10 @@ class Window extends Widget
             i++
         0
 
-    contentWidth:  -> @elem.getLayout().get('padding-box-width')
-    contentHeight: -> @elem.getLayout().get('padding-box-height') - @headerSize()
+    contentWidth:  => @elem.getLayout().get('padding-box-width')
+    contentHeight: => @elem.getLayout().get('padding-box-height') - @headerSize()
 
-    shade: ->
+    shade: =>
         size = @getChild 'size'
         if @config.isShaded
             @elem.setStyle('min-height': @config.minHeight+'px')
@@ -213,5 +214,5 @@ class Window extends Widget
 
         @emit 'shade',
             shaded: @config.isShaded
-            
+
         return

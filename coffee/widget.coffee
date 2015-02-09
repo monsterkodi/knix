@@ -13,7 +13,7 @@ class Widget
     constructor: (config, defaults) ->
         @init config, defaults
 
-    init: (config, defaults) ->
+    init: (config, defaults) =>
 
         cfg = _.def(config, defaults)
 
@@ -92,7 +92,7 @@ class Widget
 
     @nextWidgetID  = 0
 
-    @elem: (type, clss) -> # create element of <type>, add class <clss> and assign 'unique' id
+    @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
         e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
         @nextWidgetID += 1
@@ -101,7 +101,7 @@ class Widget
 
     # ________________________________________________________________________________ event handling
 
-    initEvents: ->
+    initEvents: =>
         @elem.on "click",      @config.onClick  if @config.onClick
         @elem.on "mousedown",  @config.onDown   if @config.onDown
         @elem.on "mouseup",    @config.onUp     if @config.onUp
@@ -113,7 +113,7 @@ class Widget
 
     # ____________________________________________________________________________ slots
 
-    initSlots: ->
+    initSlots: =>
         slots = @config.slots
         return if not slots?
         for slot, func of slots
@@ -122,13 +122,13 @@ class Widget
 
     # ____________________________________________________________________________ connections
 
-    initConnections: ->
+    initConnections: =>
         connections = @config.connect
         return if not connections?
         for connection in connections
             @connect connection.signal, connection.slot
 
-    connect: (signal, slot) ->
+    connect: (signal, slot) =>
         # log "connect", signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
@@ -143,13 +143,13 @@ class Widget
         event:    signalEvent
         receiver: slotFunction
 
-    resolveSignal: (signal) ->
+    resolveSignal: (signal) =>
         [event, sender] = signal.split(':').reverse()
         sender = @getWindow().getChild(sender) if sender?
         sender = @ unless sender?
         [sender, event]
 
-    resolveSlot: (slot) ->
+    resolveSlot: (slot) =>
         if typeof slot == 'function'
             return slot
         if typeof slot == 'string'
@@ -159,7 +159,7 @@ class Widget
             return receiver[func].bind(receiver) if receiver[func]?
         null
 
-    addToParent: (p) ->
+    addToParent: (p) =>
         if not @elem?
             log 'no @elem?'
             return this
@@ -176,12 +176,12 @@ class Widget
         @config.parent = parentElement.id
         this
 
-    insertChild: (config, defaults) ->
+    insertChild: (config, defaults) =>
         child = knix.create config, defaults
         child.addToParent this
         child
 
-    insertChildren: ->
+    insertChildren: =>
         if @config.children
             for cfg in @config.children
                 @insertChild(cfg)
@@ -191,25 +191,25 @@ class Widget
 
     # ____________________________________________________________________________ signals
 
-    emit: (signal, args) ->
+    emit: (signal, args) =>
         event = new CustomEvent signal,
             bubbles:    true,
             cancelable: true,
             detail:     args
         @elem.dispatchEvent event
 
-    emitSize: ->
+    emitSize: =>
         @emit "size",
             width:  @getWidth()
             height: @getHeight()
 
-    emitMove: ->
+    emitMove: =>
         @emit 'move',
             pos: @absPos()
 
     # ____________________________________________________________________________ slots
 
-    slotArg: (event, argname='value') ->
+    slotArg: (event, argname='value') =>
         if typeof event == 'object'
             if event.detail[argname]?
                 return event.detail[argname]
@@ -224,7 +224,7 @@ class Widget
     # returns first ancestor element that matches class or id of first argument
     # with no arument: the element with config.parent id or the parent element
 
-    getParent: ->
+    getParent: =>
         args = $A(arguments)
         if args.length
             anc = @elem.ancestors()
@@ -235,57 +235,57 @@ class Widget
         return $(@config.parent).widget if @config.parent
         return $(@parentElement.id).wiget
 
-    getWindow: -> # returns this or first ancestor element with class 'window'
+    getWindow: => # returns this or first ancestor element with class 'window'
         if @elem.hasClassName('window')
             return this
         @getParent('window')
 
-    getChild: (classOrID) -> # returns first child element that matches class or element id
+    getChild: (classOrID) => # returns first child element that matches class or element id
         c = @elem.select('#'+classOrID, '.'+classOrID)
         return c[0].widget if c.length
         return undefined
 
-    close: -> @elem.remove(); return
+    close: => @elem.remove(); return
 
-    clear: ->
+    clear: =>
         while @elem.hasChildNodes()
             @elem.removeChild @elem.lastChild
 
     # ____________________________________________________________________________ geometry
 
-    setPos: (p) -> @moveTo p.x, p.y
+    setPos: (p) => @moveTo p.x, p.y
 
-    moveTo: (x, y) ->
+    moveTo: (x, y) =>
         @elem.style.left = "%dpx".fmt(x) if x?
         @elem.style.top  = "%dpx".fmt(y) if y?
         @emitMove()
         return
 
-    moveBy: (dx, dy) ->
+    moveBy: (dx, dy) =>
         p = @relPos()
         @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
         @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
         @emitMove()
         return
 
-    setWidth: (w) ->
+    setWidth: (w) =>
         ow = @elem.style.width
         @elem.style.width = "%dpx".fmt(w) if w?
 
         @emitSize() if ow != @elem.style.width
         return
 
-    setHeight: (h) ->
+    setHeight: (h) =>
         oh = @elem.style.height
         @elem.style.height = "%dpx".fmt(h) if h?
 
         @emitSize() if oh != @elem.style.height
         return
 
-    getWidth: -> @elem.getWidth()
-    getHeight: -> @elem.getHeight()
+    getWidth: => @elem.getWidth()
+    getHeight: => @elem.getHeight()
 
-    resize: (w, h) ->
+    resize: (w, h) =>
         @setWidth w if w?
         @setHeight h if h?
         if w?
@@ -296,38 +296,38 @@ class Widget
             @setHeight h - diff if diff
         return
 
-    setSize: (s) -> @resize s.width, s.height
-    getSize: -> return { width: @getWidth(), height: @getHeight() }
+    setSize: (s) => @resize s.width, s.height
+    getSize: => return { width: @getWidth(), height: @getHeight() }
 
-    percentage: (v) -> # returns the percentage of value v in the [minValue,maxValue] range
+    percentage: (v) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
         pct = 100 * (v - cfg.minValue) / (cfg.maxValue - cfg.minValue)
         Math.max(0,Math.min(pct,100))
 
-    size2value: (s) -> # returns the value in the [minValue,maxValue] range that lies at point s
+    size2value: (s) => # returns the value in the [minValue,maxValue] range that lies at point s
         @config.minValue + (@config.maxValue - @config.minValue) * s / @innerWidth()
 
-    innerWidth:  -> @elem.getLayout().get("padding-box-width")
-    innerHeight: -> @elem.getLayout().get("padding-box-height")
-    minWidth:    -> w = parseInt @elem.getStyle('min-width' ); if w then w else 0
-    minHeight:   -> h = parseInt @elem.getStyle('min-height'); if h then h else 0
-    maxWidth:    -> w = parseInt @elem.getStyle('max-width' ); if w then w else Number.MAX_VALUE
-    maxHeight:   -> h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
-    relPos:      -> o = @elem.positionedOffset(); pos o.left, o.top
-    absPos:      -> o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
-    absCenter:   -> @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
+    innerWidth:  => @elem.getLayout().get("padding-box-width")
+    innerHeight: => @elem.getLayout().get("padding-box-height")
+    minWidth:    => w = parseInt @elem.getStyle('min-width' ); if w then w else 0
+    minHeight:   => h = parseInt @elem.getStyle('min-height'); if h then h else 0
+    maxWidth:    => w = parseInt @elem.getStyle('max-width' ); if w then w else Number.MAX_VALUE
+    maxHeight:   => h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
+    relPos:      => o = @elem.positionedOffset(); pos o.left, o.top
+    absPos:      => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
+    absCenter:   => @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
 
     # ____________________________________________________________________________ tools
 
-    format: (s) -> return @config.format.fmt(s) if @config.format?; String(s)
-    strip0: (s) -> return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s)
-    round: (v) -> # rounds v to multiples of valueStep
+    format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
+    strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s)
+    round: (v) => # rounds v to multiples of valueStep
         r = v
         if @config.valueStep?
             d = v - Math.round(v/@config.valueStep)*@config.valueStep
             r -= d
         r
-    clamp: (v) -> # clamps v to the [minValue,maxValue] range
+    clamp: (v) => # clamps v to the [minValue,maxValue] range
         c = v
         c = Math.min(c, @config.maxValue) if @config.maxValue?
         c = Math.max(c, @config.minValue) if @config.minValue?
