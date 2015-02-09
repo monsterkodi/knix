@@ -27,8 +27,8 @@ class About extends Window
                 children: \
                 [
                     text:   'Home'
-                    # href:   'http://monsterkodi.github.io/knix/'
-                    href:   'http://localhost:4000/'
+                    href:   'http://monsterkodi.github.io/knix/'
+                    # href:   'http://localhost:4000/'
                     style:
                         width: '100%'
                         display: 'inline-block'

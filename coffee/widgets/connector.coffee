@@ -10,21 +10,36 @@ class Connector extends Widget
             target: @elem
             minPos: pos(undefined,0)
             cursor: 'grab'
-            onStart: @dragStart.bind(@)
-            onMove:  @dragMove.bind(@)
-            onStop:  @dragStop.bind(@)
+            onStart: @dragStart
+            onMove:  @dragMove
+            onStop:  @dragStop
 
-    isSignal: -> @elem.hasClassName('signal')
-    isSlot:   -> @elem.hasClassName('slot')
+        @connections = new Set()
 
-    connectorAtPos: (p) ->
+    close: =>
+        @connections.clear()
+        @connections = null
+        super()
+
+    isSignal: => @elem.hasClassName('signal')
+    isSlot:   => @elem.hasClassName('slot')
+
+    addConnection: (c) =>
+        @connections.add c
+        @elem.addClassName 'connected'
+
+    delConnection: (c) =>
+        @connections.delete c
+        @elem.removeClassName('connected') if @connections.size == 0
+
+    connectorAtPos: (p) =>
         elem = document.elementFromPoint p.x, p.y
         if elem?.widget?
             if elem.widget.constructor == Connector and elem.widget.isSignal() != @isSignal()
                 return elem.widget
         undefined
 
-    dragMove: (drag,event) ->
+    dragMove: (drag,event) =>
 
         p = drag.absPos(event)
 
@@ -40,7 +55,7 @@ class Connector extends Widget
         @handle.setPos p
         @path.setEnd p
 
-    dragStart: (drag,event) ->
+    dragStart: (drag,event) =>
 
         p = drag.absPos(event)
         # log "Connector::onStart", p
@@ -62,7 +77,7 @@ class Connector extends Widget
 
         @handle.setPos p
 
-    dragStop: (drag,event) ->
+    dragStop: (drag,event) =>
 
         p = drag.absPos(event)
         # log "Connector::onStop", p

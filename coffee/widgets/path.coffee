@@ -26,6 +26,11 @@ class Path extends Widget
         @setStart @config.start
         @setEnd   @config.end
 
+    close: =>
+        @path.remove()
+        @path = null
+        super()
+
     setVisible:   (v) => if v then @path.show() else @path.hide()
 
     setEndDir:    (p) => @config.endDir = p; @setEnd @config.end

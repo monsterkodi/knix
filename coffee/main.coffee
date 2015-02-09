@@ -12,6 +12,8 @@ document.observe "dom:loaded", ->
 
     Test.connectorBox()
     Test.connectorBox().setPos pos(200,400)
+    Test.connectorBox().setPos pos(200,600)
+    Test.connectorBox().setPos pos(200,800)
 
     # _________________________________________________________________________ raise
 

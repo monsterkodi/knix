@@ -199,7 +199,7 @@ class Widget
         @elem.dispatchEvent event
 
     emitSize: =>
-        @emit "size",
+        @emit 'size',
             width:  @getWidth()
             height: @getHeight()
 
@@ -245,7 +245,13 @@ class Widget
         return c[0].widget if c.length
         return undefined
 
-    close: => @elem.remove(); return
+    close: =>
+        # log 'close', @elem.id
+        @emit 'close'
+        @elem.remove()
+        @elem = null
+        @config = null
+        return
 
     clear: =>
         while @elem.hasChildNodes()
