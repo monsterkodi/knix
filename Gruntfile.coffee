@@ -62,6 +62,8 @@ module.exports = (grunt) ->
                 command: 'sleep 1'
             kill:
                 command: 'tools/unwatch'
+            demo:
+                command: 'tools/makedemo.sh'
 
         open:
           browser:
@@ -88,3 +90,4 @@ module.exports = (grunt) ->
     grunt.registerTask 'node',      [ 'shell:node' ]
     grunt.registerTask 'kill',      [ 'shell:kill' ]
     grunt.registerTask 'sleep',     [ 'shell:sleep' ]
+    grunt.registerTask 'demo',      [ 'shell:demo' ]

@@ -207,7 +207,7 @@ class Window extends Widget
         else
             @config.height = @getHeight()
             @elem.setStyle('min-height': '0px')
-            @setHeight @headerSize('padding-box-height')
+            @setHeight @headerSize()
             @config.isShaded = true
             size.elem.hide() if size
             $(@content).hide()

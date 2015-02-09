@@ -243,7 +243,7 @@ class Widget
     getChild: (classOrID) => # returns first child element that matches class or element id
         c = @elem.select('#'+classOrID, '.'+classOrID)
         return c[0].widget if c.length
-        return undefined
+        undefined
 
     close: =>
         # log 'close', @elem.id
@@ -251,7 +251,7 @@ class Widget
         @elem.remove()
         @elem = null
         @config = null
-        return
+        undefined
 
     clear: =>
         while @elem.hasChildNodes()
@@ -265,45 +265,46 @@ class Widget
         @elem.style.left = "%dpx".fmt(x) if x?
         @elem.style.top  = "%dpx".fmt(y) if y?
         @emitMove()
-        return
+        @
 
     moveBy: (dx, dy) =>
         p = @relPos()
         @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
         @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
         @emitMove()
-        return
+        @
 
     setWidth: (w) =>
-        ow = @elem.style.width
-        @elem.style.width = "%dpx".fmt(w) if w?
+        if w?
+            ow = @elem.style.width
+            @elem.style.width = "%dpx".fmt(w)
 
-        @emitSize() if ow != @elem.style.width
-        return
+            diff = @getWidth() - w
+            @elem.style.width = "%dpx".fmt(w - diff) if diff
+
+            @emitSize() if ow != @elem.style.width
+        @
 
     setHeight: (h) =>
-        oh = @elem.style.height
-        @elem.style.height = "%dpx".fmt(h) if h?
+        if h?
+            oh = @elem.style.height
+            @elem.style.height = "%dpx".fmt(h) if h?
 
-        @emitSize() if oh != @elem.style.height
-        return
+            diff = @getHeight() - h
+            @elem.style.height = "%dpx".fmt(h - diff) if diff
 
-    getWidth: => @elem.getWidth()
-    getHeight: => @elem.getHeight()
+            @emitSize() if oh != @elem.style.height
+        @
 
     resize: (w, h) =>
-        @setWidth w if w?
-        @setHeight h if h?
-        if w?
-            diff = @getWidth() - w
-            @setWidth w - diff if diff
-        if h?
-            diff = @getHeight() - h
-            @setHeight h - diff if diff
-        return
+        @setWidth w
+        @setHeight h
+        @
 
     setSize: (s) => @resize s.width, s.height
     getSize: => return { width: @getWidth(), height: @getHeight() }
+    getWidth: => @elem.getWidth()
+    getHeight: => @elem.getHeight()
 
     percentage: (v) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
