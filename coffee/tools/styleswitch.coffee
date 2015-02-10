@@ -2,6 +2,7 @@
 class StyleSwitch
 
     @schemes = ['dark.css', 'bright.css']
+    @filter = null
 
     @toggle: ->
 
@@ -15,3 +16,16 @@ class StyleSwitch
         newlink.setAttribute 'id',   'style-link'
 
         link.parentNode.replaceChild(newlink, link)
+
+    @togglePathFilter: ->
+
+        if not @filter?
+            for p in $$('.path')
+                if not filter?
+                    s = window.getComputedStyle p
+                    @filter = p.instance.style('filter')
+                p.instance.style 'filter: none'
+        else
+            for p in $$('.path')
+                p.instance.style({ filter: @filter })
+            @filter = null

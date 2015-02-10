@@ -84,6 +84,8 @@ class Widget
                 target: @elem
                 minPos: pos(undefined,0)
                 onMove: @emitMove
+                onStart: StyleSwitch.togglePathFilter
+                onStop:  StyleSwitch.togglePathFilter
                 cursor: null
 
         @initSlots()
