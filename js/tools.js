@@ -89,10 +89,12 @@ Drag = (function() {
       this.onStart(this, event);
     }
     this.cursorStartPos = this.absPos(event);
-    this.targetStartPos = this.target.widget.relPos();
-    this.targetStartPos = this.targetStartPos.check();
-    this.eventMove = $(document).on('mousemove', this.dragMove.bind(this));
-    this.eventUp = $(document).on('mouseup', this.dragUp.bind(this));
+    if (this.doMove) {
+      this.targetStartPos = this.target.relPos();
+      this.targetStartPos = this.targetStartPos.check();
+    }
+    this.eventMove = $(document).on('mousemove', this.dragMove);
+    this.eventUp = $(document).on('mouseup', this.dragUp);
     return this.cancelEvent(event);
   };
 
@@ -137,7 +139,7 @@ Drag = (function() {
       return;
     }
     this.listening = true;
-    this.eventDown = this.handle.on('mousedown', this.dragStart.bind(this));
+    this.eventDown = this.handle.on('mousedown', this.dragStart);
   };
 
   Drag.prototype.stopListening = function(stopCurrentDragging) {
@@ -229,6 +231,9 @@ Pos = (function() {
     this.y = y;
     this.apply = __bind(this.apply, this);
     this.check = __bind(this.check, this);
+    this.dist = __bind(this.dist, this);
+    this.distSquare = __bind(this.distSquare, this);
+    this.square = __bind(this.square, this);
     this.clamp = __bind(this.clamp, this);
     this.max = __bind(this.max, this);
     this.min = __bind(this.min, this);
@@ -314,6 +319,18 @@ Pos = (function() {
     return this;
   };
 
+  Pos.prototype.square = function() {
+    return (this.x * this.x) + (this.y * this.y);
+  };
+
+  Pos.prototype.distSquare = function(o) {
+    return this.sub(o).square();
+  };
+
+  Pos.prototype.dist = function(o) {
+    return Math.sqrt(this.distSquare(o));
+  };
+
   Pos.prototype.check = function() {
     var newPos;
     newPos = new Pos(this.x, this.y);
@@ -395,6 +412,15 @@ Stage = (function() {
     }
   };
 
+  Stage.absPos = function(event) {
+    event = event != null ? event : window.event;
+    if (isNaN(window.scrollX)) {
+      return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft, event.clientY + document.documentElement.scrollTop + document.body.scrollTop);
+    } else {
+      return pos(event.clientX + window.scrollX, event.clientY + window.scrollY);
+    }
+  };
+
   return Stage;
 
 })();
@@ -460,6 +486,8 @@ StyleSwitch = (function() {
 
   StyleSwitch.schemes = ['dark.css', 'bright.css'];
 
+  StyleSwitch.filter = null;
+
   StyleSwitch.toggle = function() {
     var currentScheme, link, newlink, nextSchemeIndex;
     link = document.getElementById('style-link');
@@ -471,6 +499,32 @@ StyleSwitch = (function() {
     newlink.setAttribute('href', 'style/' + this.schemes[nextSchemeIndex]);
     newlink.setAttribute('id', 'style-link');
     return link.parentNode.replaceChild(newlink, link);
+  };
+
+  StyleSwitch.togglePathFilter = function() {
+    var p, s, _i, _j, _len, _len1, _ref, _ref1, _results;
+    if (this.filter == null) {
+      _ref = $$('.path');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        p = _ref[_i];
+        if (typeof filter === "undefined" || filter === null) {
+          s = window.getComputedStyle(p);
+          this.filter = p.instance.style('filter');
+        }
+        _results.push(p.instance.style('filter: none'));
+      }
+      return _results;
+    } else {
+      _ref1 = $$('.path');
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        p = _ref1[_j];
+        p.instance.style({
+          filter: this.filter
+        });
+      }
+      return this.filter = null;
+    }
   };
 
   return StyleSwitch;

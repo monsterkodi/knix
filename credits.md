@@ -21,7 +21,7 @@ layout: default
 
 [fabric.js](http://fabricjs.com/)
 [svgjs](http://svgjs.com/)
-[svg.path.js](http://otm.github.io/svg.path.js/)
+[svg.path.js](https://github.com/otm/svg.path.js)
 
 [grunt](http://gruntjs.com/)
 [bower](http://bower.io/)

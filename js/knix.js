@@ -12,7 +12,7 @@ var knix;
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.4';
+  knix.version = '0.1.5';
 
   knix.init = function() {
     log('knix ' + this.version);

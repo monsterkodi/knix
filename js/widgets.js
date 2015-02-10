@@ -98,8 +98,16 @@ Connection = (function() {
     this.signalSlotConnector = __bind(this.signalSlotConnector, this);
     this.disconnect = __bind(this.disconnect, this);
     this.connect = __bind(this.connect, this);
+    this.onOut = __bind(this.onOut, this);
+    this.onMove = __bind(this.onMove, this);
+    this.onOver = __bind(this.onOver, this);
+    this.dragStop = __bind(this.dragStop, this);
+    this.dragMove = __bind(this.dragMove, this);
+    this.dragStart = __bind(this.dragStart, this);
+    this.closestConnectors = __bind(this.closestConnectors, this);
     var c, e, _i, _len, _ref;
-    _ref = [config.source, config.target];
+    this.config = config;
+    _ref = [this.config.source, this.config.target];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       c = _ref[_i];
       c.addConnection(this);
@@ -112,14 +120,75 @@ Connection = (function() {
     this.path = knix.get({
       type: 'path',
       "class": 'connection',
-      startDir: config.source.isSignal() ? pos(100, 0) : pos(-100, 0),
-      endDir: config.target.isSignal() ? pos(100, 0) : pos(-100, 0)
+      startDir: this.config.source.isSignal() ? pos(100, 0) : pos(-100, 0),
+      endDir: this.config.target.isSignal() ? pos(100, 0) : pos(-100, 0),
+      onOver: this.onOver,
+      onOut: this.onOut,
+      onMove: this.onMove
     });
-    this.path.setStart(config.source.absCenter());
-    this.path.setEnd(config.target.absCenter());
-    this.config = config;
+    this.drag = Drag.create({
+      target: this.path.path,
+      cursor: 'grab',
+      doMove: false,
+      onStart: this.dragStart,
+      onMove: this.dragMove,
+      onStop: this.dragStop
+    });
+    this.path.setStart(this.config.source.absCenter());
+    this.path.setEnd(this.config.target.absCenter());
     this.connection = this.connect();
   }
+
+  Connection.prototype.closestConnectors = function(p) {
+    var ds, dt;
+    ds = p.distSquare(this.config.source.absPos());
+    dt = p.distSquare(this.config.target.absPos());
+    if (ds < dt) {
+      return [this.config.source, this.config.target];
+    } else {
+      return [this.config.target, this.config.source];
+    }
+  };
+
+  Connection.prototype.dragStart = function(drag, event) {
+    var target, _ref;
+    _ref = this.closestConnectors(drag.absPos(event)), target = _ref[0], drag.connector = _ref[1];
+    drag.connector.dragStart(drag, event);
+    target.delConnection(this);
+    return this.path.path.hide();
+  };
+
+  Connection.prototype.dragMove = function(drag, event) {
+    return drag.connector.dragMove(drag, event);
+  };
+
+  Connection.prototype.dragStop = function(drag, event) {
+    drag.connector.dragStop(drag, event);
+    return this.close();
+  };
+
+  Connection.prototype.onOver = function(event, e) {
+    var closer, farther, _ref;
+    _ref = this.closestConnectors(Stage.absPos(event)), closer = _ref[0], farther = _ref[1];
+    closer.elem.addClassName('highlight');
+    farther.elem.removeClassName('highlight');
+    return this.path.path.addClass('highlight');
+  };
+
+  Connection.prototype.onMove = function(event, e) {
+    var closer, farther, _ref;
+    _ref = this.closestConnectors(Stage.absPos(event)), closer = _ref[0], farther = _ref[1];
+    closer.elem.addClassName('highlight');
+    return farther.elem.removeClassName('highlight');
+  };
+
+  Connection.prototype.onOut = function(event, e) {
+    var closer, farther, _ref;
+    _ref = this.closestConnectors(Stage.absPos(event)), closer = _ref[0], farther = _ref[1];
+    closer.elem.removeClassName('highlight');
+    farther.elem.removeClassName('highlight');
+    return this.path.path.removeClass('highlight');
+  };
 
   Connection.prototype.connect = function() {
     var signal, signalConnector, signalEvent, signalSender, slot, slotConnector, slotFunction, _ref, _ref1;
@@ -182,8 +251,10 @@ Connector = (function(_super) {
 
   function Connector(config) {
     this.dragStop = __bind(this.dragStop, this);
-    this.dragStart = __bind(this.dragStart, this);
     this.dragMove = __bind(this.dragMove, this);
+    this.dragStart = __bind(this.dragStart, this);
+    this.onOut = __bind(this.onOut, this);
+    this.onOver = __bind(this.onOver, this);
     this.connectorAtPos = __bind(this.connectorAtPos, this);
     this.delConnection = __bind(this.delConnection, this);
     this.addConnection = __bind(this.addConnection, this);
@@ -197,12 +268,15 @@ Connector = (function(_super) {
       config["class"] = 'signal';
     }
     Connector.__super__.constructor.call(this, config, {
-      type: 'connector'
+      type: 'connector',
+      onOver: this.onOver,
+      onOut: this.onOut
     });
     Drag.create({
       target: this.elem,
       minPos: pos(void 0, 0),
       cursor: 'grab',
+      doMove: false,
       onStart: this.dragStart,
       onMove: this.dragMove,
       onStop: this.dragStop
@@ -238,13 +312,48 @@ Connector = (function(_super) {
 
   Connector.prototype.connectorAtPos = function(p) {
     var elem;
+    this.handle.elem.style.pointerEvents = 'none';
     elem = document.elementFromPoint(p.x, p.y);
+    this.handle.elem.style.pointerEvents = 'auto';
     if ((elem != null ? elem.widget : void 0) != null) {
       if (elem.widget.constructor === Connector && elem.widget.isSignal() !== this.isSignal()) {
         return elem.widget;
       }
     }
     return void 0;
+  };
+
+  Connector.prototype.onOver = function(event) {
+    var p;
+    p = Stage.absPos(event);
+    if (this.elem === document.elementFromPoint(p.x, p.y)) {
+      return this.elem.addClassName('highlight');
+    }
+  };
+
+  Connector.prototype.onOut = function() {
+    return this.elem.removeClassName('highlight');
+  };
+
+  Connector.prototype.dragStart = function(drag, event) {
+    var p;
+    p = drag.absPos(event);
+    this.handle = knix.get({
+      type: 'handle',
+      style: {
+        cursor: 'grabbing'
+      }
+    });
+    this.handle.setPos(p);
+    this.elem.addClassName('connected');
+    this.path = knix.get({
+      type: 'path',
+      "class": 'connector',
+      start: this.absCenter(),
+      end: p,
+      startDir: this.isSignal() ? pos(200, 0) : pos(-200, 0)
+    });
+    return this.elem.style.cursor = 'grabbing';
   };
 
   Connector.prototype.dragMove = function(drag, event) {
@@ -254,47 +363,34 @@ Connector = (function(_super) {
       this.path.path.addClass('connectable');
       this.path.setStartDir(this.isSignal() ? pos(100, 0) : pos(-100, 0));
       this.path.setEndDir(conn.isSignal() ? pos(100, 0) : pos(-100, 0));
+      this.conn = conn;
+      this.conn.elem.addClassName('highlight');
+      this.handle.elem.addClassName('highlight');
     } else {
       this.path.path.removeClass('connectable');
       this.path.setStartDir(this.isSignal() ? pos(200, 0) : pos(-200, 0));
       this.path.setEndDir(pos(0, 0));
+      if (this.conn) {
+        this.conn.elem.removeClassName('highlight');
+        this.conn = null;
+      }
+      this.handle.elem.removeClassName('highlight');
     }
     this.handle.setPos(p);
     return this.path.setEnd(p);
-  };
-
-  Connector.prototype.dragStart = function(drag, event) {
-    var p;
-    p = drag.absPos(event);
-    this.handle = knix.get({
-      type: 'handle',
-      style: {
-        pointerEvents: 'none',
-        cursor: 'grabbing'
-      }
-    });
-    this.path = knix.get({
-      type: 'path',
-      "class": 'connector',
-      startDir: this.isSignal() ? pos(200, 0) : pos(-200, 0)
-    });
-    this.elem.style.cursor = 'grabbing';
-    this.path.setStart(p);
-    this.path.setEnd(p);
-    return this.handle.setPos(p);
   };
 
   Connector.prototype.dragStop = function(drag, event) {
     var conn, p;
     p = drag.absPos(event);
     if (conn = this.connectorAtPos(p)) {
-      this.path.path.stroke({
-        color: "rgba(0,100,255,1)"
-      });
       new Connection({
         source: this,
         target: conn
       });
+      conn.elem.removeClassName('highlight');
+    } else if (this.connections.size === 0) {
+      this.elem.removeClassName('connected');
     }
     if (1) {
       this.handle.close();
@@ -465,8 +561,8 @@ Path = (function(_super) {
     var clss, _i, _len, _ref;
     this.config = _.def(config, _.def(defaults, {
       start: pos(0, 0),
-      startDir: pos(100, 0),
-      end: pos(200, 200),
+      startDir: pos(0, 0),
+      end: pos(0, 0),
       endDir: pos(0, 0),
       svg: knix.svg
     }));
@@ -491,9 +587,12 @@ Path = (function(_super) {
       }
     }
     this.path.fill('none');
+    this.elem = this.path;
     this.config.endHead = this.config.end.add(this.config.endDir);
+    this.config.startHead = this.config.start.add(this.config.startDir);
     this.setStart(this.config.start);
     this.setEnd(this.config.end);
+    this.initEvents();
   }
 
   Path.prototype.close = function() {

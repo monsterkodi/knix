@@ -79,6 +79,11 @@ Widget = (function() {
     this.elem.getWindow = this.getWindow.bind(this);
     this.elem.getChild = this.getChild.bind(this);
     this.elem.getParent = this.getParent.bind(this);
+    this.elem.relPos = function() {
+      var o;
+      o = this.positionedOffset();
+      return pos(o.left, o.top);
+    };
     if (this.config.id != null) {
       this.elem.writeAttribute('id', this.config.id);
     }
@@ -141,6 +146,8 @@ Widget = (function() {
         target: this.elem,
         minPos: pos(void 0, 0),
         onMove: this.emitMove,
+        onStart: StyleSwitch.togglePathFilter,
+        onStop: StyleSwitch.togglePathFilter,
         cursor: null
       });
     }
@@ -614,7 +621,7 @@ Widget = (function() {
     if (s.indexOf('.') > -1) {
       return s.replace(/(0+)$/, '').replace(/([\.]+)$/, '');
     }
-    return String(s);
+    return String(s.strip());
   };
 
   Widget.prototype.round = function(v) {
