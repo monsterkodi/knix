@@ -34,6 +34,7 @@ class Widget
         @elem.getWindow = @getWindow.bind(@)
         @elem.getChild  = @getChild.bind(@)
         @elem.getParent = @getParent.bind(@)
+        @elem.relPos    = -> o = @positionedOffset(); pos o.left, o.top
 
         @elem.writeAttribute('id', @config.id) if @config.id? # set element id
 

@@ -54,10 +54,11 @@ class Drag
         @dragging = true
         @onStart this, event if @onStart?
         @cursorStartPos = @absPos(event)
-        @targetStartPos = @target.widget.relPos()
-        @targetStartPos = @targetStartPos.check()
-        @eventMove = $(document).on 'mousemove', @dragMove.bind(this)
-        @eventUp   = $(document).on 'mouseup',   @dragUp.bind(this)
+        if @doMove
+            @targetStartPos = @target.relPos()
+            @targetStartPos = @targetStartPos.check()
+        @eventMove = $(document).on 'mousemove', @dragMove
+        @eventUp   = $(document).on 'mouseup',   @dragUp
         @cancelEvent event
 
     dragMove: (event) =>
@@ -88,7 +89,7 @@ class Drag
     startListening: =>
         return if @listening
         @listening = true
-        @eventDown = @handle.on 'mousedown', @dragStart.bind(this)
+        @eventDown = @handle.on 'mousedown', @dragStart
         return
 
     stopListening: (stopCurrentDragging) =>

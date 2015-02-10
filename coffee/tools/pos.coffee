@@ -43,6 +43,10 @@ class Pos
             @y = _.clamp(lower.y, upper.y, y)
         @
 
+    square:         => (@x * @x) + (@y * @y)
+    distSquare: (o) => @sub(o).square()
+    dist:       (o) => Math.sqrt @distSquare(o)
+
     check: =>
         newPos = new Pos(@x, @y)
         newPos.x = 0  if isNaN(newPos.x)

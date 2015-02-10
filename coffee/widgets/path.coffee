@@ -5,8 +5,8 @@ class Path extends Widget
 
         @config = _.def config, _.def defaults,
             start:    pos(0,0)
-            startDir: pos(100,0)
-            end:      pos(200,200)
+            startDir: pos(0,0)
+            end:      pos(0,0)
             endDir:   pos(0,0)
             svg:      knix.svg
 
@@ -21,10 +21,13 @@ class Path extends Widget
         @path.addClass('path')
         @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
         @path.fill('none')
+        @elem = @path
 
-        @config.endHead = @config.end.add(@config.endDir)
+        @config.endHead   = @config.end.add(@config.endDir)
+        @config.startHead = @config.start.add(@config.startDir)
         @setStart @config.start
         @setEnd   @config.end
+        @initEvents()
 
     close: =>
         @path.remove()

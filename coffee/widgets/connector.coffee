@@ -13,6 +13,7 @@ class Connector extends Widget
             target: @elem
             minPos: pos(undefined,0)
             cursor: 'grab'
+            doMove: false
             onStart: @dragStart
             onMove:  @dragMove
             onStop:  @dragStop
@@ -42,6 +43,27 @@ class Connector extends Widget
                 return elem.widget
         undefined
 
+    dragStart: (drag,event) =>
+
+        p = drag.absPos(event)
+
+        @handle = knix.get
+            type:  'handle'
+            style:
+                pointerEvents: 'none'
+                cursor: 'grabbing'
+
+        @handle.setPos p
+
+        @path = knix.get
+            type:  'path'
+            class: 'connector'
+            start:  @absPos()
+            end:    p
+            startDir: if @isSignal() then pos(200,0) else pos(-200,0)
+
+        @elem.style.cursor = 'grabbing'
+
     dragMove: (drag,event) =>
 
         p = drag.absPos(event)
@@ -58,35 +80,11 @@ class Connector extends Widget
         @handle.setPos p
         @path.setEnd p
 
-    dragStart: (drag,event) =>
-
-        p = drag.absPos(event)
-        # log "Connector::onStart", p
-
-        @handle = knix.get
-            type:  'handle'
-            style:
-                pointerEvents: 'none'
-                cursor: 'grabbing'
-
-        @path = knix.get
-            type:  'path'
-            class: 'connector'
-            startDir: if @isSignal() then pos(200,0) else pos(-200,0)
-
-        @elem.style.cursor = 'grabbing'
-        @path.setStart p
-        @path.setEnd p
-
-        @handle.setPos p
-
     dragStop: (drag,event) =>
 
         p = drag.absPos(event)
-        # log "Connector::onStop", p
 
         if conn = @connectorAtPos p
-            @path.path.stroke color: "rgba(0,100,255,1)"
             new Connection
                 source: @
                 target: conn

@@ -5,7 +5,9 @@ class Connection
 
         # log 'Connection', config.source.elem.id, config.target.elem.id
 
-        for c in [config.source, config.target]
+        @config = config
+
+        for c in [@config.source, @config.target]
             c.addConnection @
             e = c.elem
             c.getWindow().elem.on 'size',  @update
@@ -16,14 +18,49 @@ class Connection
         @path = knix.get
             type:  'path'
             class: 'connection'
-            startDir: if config.source.isSignal() then pos(100,0) else pos(-100,0)
-            endDir:   if config.target.isSignal() then pos(100,0) else pos(-100,0)
+            startDir: if @config.source.isSignal() then pos(100,0) else pos(-100,0)
+            endDir:   if @config.target.isSignal() then pos(100,0) else pos(-100,0)
+            onOver: @onOver
+            onOut:  @onOut
 
-        @path.setStart config.source.absCenter()
-        @path.setEnd   config.target.absCenter()
-        @config = config
+        @drag = Drag.create
+            target: @path.path
+            cursor: 'grab'
+            doMove: false
+            onStart: @dragStart
+            onMove:  @dragMove
+            onStop:  @dragStop
+
+        @path.setStart @config.source.absCenter()
+        @path.setEnd   @config.target.absCenter()
 
         @connection = @connect()
+
+    closestConnectors: (p) =>
+        ds = p.distSquare(@config.source.absPos())
+        dt = p.distSquare(@config.target.absPos())
+        if ds < dt then [@config.source, @config.target] else [@config.target, @config.source]
+
+    dragStart: (drag,event) =>
+        [target, drag.connector] = @closestConnectors drag.absPos(event)
+        drag.connector.dragStart drag, event
+        target.delConnection @
+        @path.path.hide()
+
+    dragMove: (drag,event) =>
+        drag.connector.dragMove drag, event
+
+    dragStop: (drag,event) =>
+        drag.connector.dragStop drag, event
+        @close()
+
+    onOver: (event,e) =>
+        log 'onOver', @path.path.id()
+        @path.path.addClass 'highlight'
+
+    onOut: (event,e) =>
+        log 'onOut', @path.path.id()
+        @path.path.removeClass 'highlight'
 
     connect: =>
         [signalConnector, slotConnector] = @signalSlotConnector()
