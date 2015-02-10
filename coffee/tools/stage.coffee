@@ -26,3 +26,11 @@ class Stage
             s.mozRequestFullScreen?()
             s.webkitRequestFullscreen?()
             s.requestFullscreen?()
+
+    @absPos: (event) ->
+        event = if event? then event else window.event
+        if isNaN window.scrollX
+            return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
+                       event.clientY + document.documentElement.scrollTop + document.body.scrollTop)
+        else
+            return pos(event.clientX + window.scrollX, event.clientY + window.scrollY)

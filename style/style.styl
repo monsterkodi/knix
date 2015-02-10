@@ -5,6 +5,10 @@ shadow()
     -webkit-box-shadow: shadowDef
     box-shadow:         shadowDef
 
+shadowInner()
+    -webkit-box-shadow: shadowInnerDef
+    box-shadow:         shadowInnerDef
+
 defaultCursor()
     cursor:             default
 
@@ -373,14 +377,21 @@ a
     border:           borders.connector
     box-sizing:       border-box
     background-clip:  padding-box
+    shadowInner()
     &.signal
         background-color: colors.connector-signal
         &.connected
+            background-color: colors.connector-signal-connected
             border: borders.connector-signal-connected
+        &.highlight
+            border: borders.connector-signal-highlight
     &.slot
         background-color: colors.connector-slot
         &.connected
+            background-color: colors.connector-slot-connected
             border: borders.connector-slot-connected
+        &.highlight
+            border: borders.connector-slot-highlight
 
 .path
     stroke-width:     pathStrokeWidth

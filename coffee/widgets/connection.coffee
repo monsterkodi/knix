@@ -16,17 +16,18 @@ class Connection
             c.getWindow().elem.on 'close', @close
 
         @path = knix.get
-            type:  'path'
-            class: 'connection'
+            type:     'path'
+            class:    'connection'
             startDir: if @config.source.isSignal() then pos(100,0) else pos(-100,0)
             endDir:   if @config.target.isSignal() then pos(100,0) else pos(-100,0)
-            onOver: @onOver
-            onOut:  @onOut
+            onOver:   @onOver
+            onOut:    @onOut
+            onMove:   @onMove
 
         @drag = Drag.create
-            target: @path.path
-            cursor: 'grab'
-            doMove: false
+            target:  @path.path
+            cursor:  'grab'
+            doMove:  false
             onStart: @dragStart
             onMove:  @dragMove
             onStop:  @dragStop
@@ -55,11 +56,20 @@ class Connection
         @close()
 
     onOver: (event,e) =>
-        log 'onOver', @path.path.id()
+        [closer, farther] = @closestConnectors Stage.absPos(event)
+        closer.elem.addClassName 'highlight'
+        farther.elem.removeClassName 'highlight'
         @path.path.addClass 'highlight'
 
-    onOut: (event,e) =>
-        log 'onOut', @path.path.id()
+    onMove: (event,e) =>
+        [closer, farther] = @closestConnectors Stage.absPos(event)
+        closer.elem.addClassName 'highlight'
+        farther.elem.removeClassName 'highlight'
+
+    onOut: (event,e)  =>
+        [closer, farther] = @closestConnectors Stage.absPos(event)
+        closer.elem.removeClassName 'highlight'
+        farther.elem.removeClassName 'highlight'
         @path.path.removeClass 'highlight'
 
     connect: =>

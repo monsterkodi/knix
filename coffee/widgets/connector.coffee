@@ -8,6 +8,8 @@ class Connector extends Widget
 
         super config,
             type: 'connector'
+            onOver: @onOver
+            onOut:  @onOut
 
         Drag.create
             target: @elem
@@ -37,11 +39,21 @@ class Connector extends Widget
         @elem.removeClassName('connected') if @connections.size == 0
 
     connectorAtPos: (p) =>
+        @handle.elem.style.pointerEvents = 'none'
         elem = document.elementFromPoint p.x, p.y
+        @handle.elem.style.pointerEvents = 'auto'
         if elem?.widget?
             if elem.widget.constructor == Connector and elem.widget.isSignal() != @isSignal()
                 return elem.widget
         undefined
+
+    onOver: (event) =>
+        p = Stage.absPos(event)
+        if @elem == document.elementFromPoint(p.x, p.y)
+            @elem.addClassName 'highlight'
+
+    onOut: =>
+        @elem.removeClassName 'highlight'
 
     dragStart: (drag,event) =>
 
@@ -50,15 +62,16 @@ class Connector extends Widget
         @handle = knix.get
             type:  'handle'
             style:
-                pointerEvents: 'none'
+                # pointerEvents: 'none'
                 cursor: 'grabbing'
 
         @handle.setPos p
+        @elem.addClassName 'connected'
 
         @path = knix.get
             type:  'path'
             class: 'connector'
-            start:  @absPos()
+            start:  @absCenter()
             end:    p
             startDir: if @isSignal() then pos(200,0) else pos(-200,0)
 
@@ -69,13 +82,16 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         if conn = @connectorAtPos p
-            @path.path.addClass('connectable')
+            @path.path.addClass 'connectable'
             @path.setStartDir if @isSignal() then pos(100,0) else pos(-100,0)
             @path.setEndDir if conn.isSignal() then pos(100,0) else pos(-100,0)
+            @conn = conn
+            @conn.elem.addClassName 'highlight'
         else
-            @path.path.removeClass('connectable')
+            @path.path.removeClass 'connectable'
             @path.setStartDir if @isSignal() then pos(200,0) else pos(-200,0)
             @path.setEndDir pos(0,0)
+            if @conn then @conn.elem.removeClassName 'highlight'; @conn = null
 
         @handle.setPos p
         @path.setEnd p
@@ -88,6 +104,9 @@ class Connector extends Widget
             new Connection
                 source: @
                 target: conn
+            conn.elem.removeClassName 'highlight'
+        else if @connections.size == 0
+            @elem.removeClassName 'connected'
 
         if 1
             @handle.close()
