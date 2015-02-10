@@ -2,52 +2,54 @@ class Pos
 
     constructor: (@x, @y) ->
 
-    add: (val) ->
+    add: (val) =>
         newPos = new Pos(@x, @y)
         if val?
             newPos.x += val.x  unless isNaN(val.x)
             newPos.y += val.y  unless isNaN(val.y)
         newPos
 
-    sub: (val) ->
+    sub: (val) =>
         newPos = new Pos(@x, @y)
         if val?
             newPos.x -= val.x  unless isNaN(val.x)
             newPos.y -= val.y  unless isNaN(val.y)
         newPos
 
-    mul: (val) ->
+    mul: (val) =>
         @x *= val
         @y *= val
         @
 
-    mid: (other) -> @add(other).mul(0.5)
+    mid: (other) => @add(other).mul(0.5)
 
-    min: (val) ->
+    min: (val) =>
         newPos = new Pos(@x, @y)
         return newPos unless val?
         newPos.x = val.x  if not isNaN(val.x) and @x > val.x
         newPos.y = val.y  if not isNaN(val.y) and @y > val.y
         newPos
 
-    max: (val) ->
+    max: (val) =>
         newPos = new Pos(@x, @y)
         return newPos unless val?
         newPos.x = val.x  if not isNaN(val.x) and @x < val.x
         newPos.y = val.y  if not isNaN(val.y) and @y < val.y
         newPos
 
-    bound: (lower, upper) ->
-        newPos = @max(lower)
-        newPos.min upper
+    clamp: (lower, upper) =>
+        if lower? and upper?
+            @x = _.clamp(lower.x, upper.x, x)
+            @y = _.clamp(lower.y, upper.y, y)
+        @
 
-    check: ->
+    check: =>
         newPos = new Pos(@x, @y)
         newPos.x = 0  if isNaN(newPos.x)
         newPos.y = 0  if isNaN(newPos.y)
         newPos
 
-    apply: (element) ->
+    apply: (element) =>
         element = document.getElementById(element)  if typeof (element) is "string"
         return  unless element?
         element.style.left = @x + "px"  unless isNaN(@x)

@@ -53,7 +53,13 @@ class Widget
             @elem.setStyle @config.style
 
         style = $H()
-        style.set(s, @config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
+        # style.set(s, @config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
+        for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
+            style.set(s, @config[s]+'px')
+            if not @config.width and s in ['minWidth', 'maxWidth']
+                @config.width = @config[s]
+            if not @config.height and s in ['minHeight', 'maxHeight']
+                @config.height = @config[s]
         @elem.setStyle style.toObject() if style.keys().length
 
         #__________________________________________________ DOM setup
@@ -76,7 +82,7 @@ class Widget
             Drag.create
                 target: @elem
                 minPos: pos(undefined,0)
-                onMove: @emitMove.bind(@)
+                onMove: @emitMove
                 cursor: null
 
         @initSlots()
@@ -357,7 +363,4 @@ class Widget
             r -= d
         r
     clamp: (v) => # clamps v to the [minValue,maxValue] range
-        c = v
-        c = Math.min(c, @config.maxValue) if @config.maxValue?
-        c = Math.max(c, @config.minValue) if @config.minValue?
-        c
+        _.clamp @config.minValue, @config.maxValue, v

@@ -122,49 +122,48 @@ class Window extends Widget
             type:    'size'
             parent:  this
 
-        dragStart = (drag, event) ->
-            drag.target.getWindow().config.isMaximized = false
-            return
-
-        dragMove = (drag, event) ->
-            sizer = drag.target.widget
-            windw = sizer.getWindow()
-
-            wpos = windw.absPos()
-            spos = sizer.absPos()
-
-            hdr = windw.headerSize()
-
-            wdt = spos.x-wpos.x+sizer.getWidth()
-            wdt = Math.max(hdr*2, wdt)
-            wdt = Math.max(windw.minWidth(), wdt)
-            wdt = Math.min(windw.maxWidth(), wdt)
-
-            hgt = spos.y-wpos.y+sizer.getHeight()
-            hgt = Math.max(hdr+sizer.getHeight(), hgt)
-            hgt = Math.max(windw.minHeight(), hgt)
-            hgt = Math.min(windw.maxHeight(), hgt)
-
-            windw.resize(wdt, hgt)
-
-            return
-
-        dragStop = (drag, event) ->
-            sizer = drag.target
-            sizer.setStyle
-                bottom: '0px'
-                right: '0px'
-                left: ''
-                top: ''
-
         Drag.create
             target:  btn.elem
-            onStart: dragStart
-            onMove:  dragMove
-            onStop:  dragStop
+            onStart: @sizeStart
+            onMove:  @sizeMove
+            onStop:  @sizeStop
             cursor:  'nwse-resize'
-
         btn
+
+    sizeStart: (drag, event) =>
+        @config.isMaximized = false
+        drag.target.style.opacity = '0.0'
+
+    sizeMove: (drag, event) =>
+        sizer = drag.target.widget
+
+        wpos = @absPos()
+        spos = sizer.absPos()
+
+        hdr = @headerSize()
+
+        wdt = spos.x-wpos.x+sizer.getWidth()
+        wdt = Math.max(hdr*2, wdt)
+        wdt = Math.max(@minWidth(), wdt)
+        wdt = Math.min(@maxWidth(), wdt)
+
+        hgt = spos.y-wpos.y+sizer.getHeight()
+        hgt = Math.max(hdr+sizer.getHeight(), hgt)
+        hgt = Math.max(@minHeight(), hgt)
+        hgt = Math.min(@maxHeight(), hgt)
+
+        @resize(wdt, hgt)
+
+        return
+
+    sizeStop: (drag, event) =>
+        sizer = drag.target
+        sizer.setStyle
+            bottom: '0px'
+            right: '0px'
+            left: ''
+            top: ''
+            opacity: '1.0'
 
     maximize: =>
         if @config.isMaximized

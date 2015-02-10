@@ -17,3 +17,10 @@ _.def = (c,d) ->
         # _.defaults(c, d)
     else
         d
+
+_.clamp = (r1, r2, v) ->
+        if r1 > r2
+            [r1,r2] = [r2,r1]
+        v = Math.max(v, r1) if r1?
+        v = Math.min(v, r2) if r2?
+        v

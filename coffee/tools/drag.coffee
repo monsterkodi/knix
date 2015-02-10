@@ -54,8 +54,7 @@ class Drag
         @dragging = true
         @onStart this, event if @onStart?
         @cursorStartPos = @absPos(event)
-        style = window.getComputedStyle(@target)
-        @targetStartPos = pos(parseInt(style.left), parseInt(style.top))
+        @targetStartPos = @target.widget.relPos()
         @targetStartPos = @targetStartPos.check()
         @eventMove = $(document).on 'mousemove', @dragMove.bind(this)
         @eventUp   = $(document).on 'mouseup',   @dragUp.bind(this)
@@ -66,7 +65,7 @@ class Drag
         if @doMove
             newPos = @absPos(event)
             newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
-            newPos = newPos.bound(@minPos, @maxPos)
+            newPos.clamp @minPos, @maxPos
             newPos.apply @target
         if @onMove?
             @onMove this, event
