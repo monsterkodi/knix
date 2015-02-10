@@ -3,42 +3,49 @@ title:  knix
 layout: default
 ---
 
-![screenshot](http://monsterkodi.github.io/knix/images/knix01.png)
+![screenshot](http://monsterkodi.github.io/knix/images/knix02.png)
 
 # example code
 
 {% highlight coffee %}
 
-wid.get
+b = knix.get
     type:   'button'
-    text:   'hello'
+    text:   'hello slider'
     parent: 'menu'
     onClick: ->
-        wid.get
+        w = knix.get
             title:     'hello'
             hasSize:   true
             minWidth:  130
+            center:    true
             children: \
             [
-                id:         'slider'
                 type:       'slider'
-                hasKnob:    true
                 hasBar:     true
-                value:      50.0
-                valueMax:   200.0
-                valueStep:  1
+                hasKnob:    true
+                valueStep:  5
             ,
                 type:       'value'
                 format:     "%3.2f"
-                connect:
-                    signal: 'slider:onValue'
-                    slot:   'setValue'
+                valueStep:  21
             ,
-                type:       'relative'
-                child:
-                    type:       'button'
-                    text:       'ok'
-                    onClick:    -> @getWindow().close()
+                type:       'button'
+                text:       'ok'
+                onClick:    -> @getWindow().close()
+            ]
+            connect: \
+            [
+                signal: 'slider:onValue'
+                slot:   'value:setValue'
             ]
 
+        w.resolveSlot('slider:setValue') 33.3
+
 {% endhighlight %}
+
+# demo
+
+I am currently only supporting firefox. But it might work with some layout glitches on non-IE browsers as well:
+
+[demo](demo.html)
