@@ -25,20 +25,20 @@ colors.menu                 = colors.title
 colors.close                = colors.title
 colors.shade                = colors.close
 colors.size                 = darken(colors.bg,0)
-colors.slider               = colors.grayDark
+colors.slider               = lighten(colors.grayDark, 4) // colors.grayDark
+colors.slider-hover         = colors.grayDark // colors.grayVeryDark
 colors.slider-bar           = colors.red
-colors.slider-hover         = colors.grayVeryDark
 colors.slider-knob          = colors.redBright
 colors.slider-knob-hover    = yellow
 colors.value                = colors.slider
 colors.value-border         = colors.grayMedium
 colors.value-active         = colors.green
-colors.value-input          = lighten(colors.slider,4)
+colors.value-input          = transparent // colors.slider
 colors.value-input-hover    = colors.slider-hover
 colors.console              = black
 colors.connector-highlight  = yellow
-colors.connector-signal     = colors.stage
-colors.connector-slot       = colors.stage
+colors.connector-signal     = colors.slider
+colors.connector-slot       = colors.slider
 colors.connector-signal-connected   = colors.slider-bar
 colors.connector-slot-connected     = colors.button
 colors.connector-slot-border-connected   = colors.connector-slot
@@ -47,6 +47,7 @@ colors.connector-signal-border-highlight = yellow
 colors.connector-connectable   = orange
 colors.connector-unconnectable = deepskyblue
 colors.connection              = firebrick
+colors.connection-highlight    = yellow
 
 textColors = {}
 textColors.global           = white
@@ -92,9 +93,9 @@ borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid colors.slider
 borders.scroll          = scrollBorderWidth solid colors.scroll
 borders.value           = 0px solid colors.value-border
-borders.connector       = 2px solid colors.slider
-borders.connector-signal-connected = 2px solid colors.connector-signal-border-connected
-borders.connector-slot-connected   = 2px solid colors.connector-slot-border-connected
+borders.connector       = 0px solid colors.slider
+borders.connector-signal-connected = 1px solid colors.connector-signal-border-connected
+borders.connector-slot-connected   = 1px solid colors.connector-slot-border-connected
 borders.connector-signal-highlight = 2px solid colors.connector-signal-border-highlight
 borders.connector-slot-highlight   = 2px solid colors.connector-slot-border-highlight
 
@@ -116,3 +117,11 @@ shadowInnerDef          = inset 1px 1px 6px 0px rgba(0,0,0,0.4)
 ::-moz-selection
     background: colors.blue
     color: black
+
+.content .button
+    box-shadow:         1px 1px 2px 0px rgba(0,0,0,0.4)
+
+.slider
+.value-table
+    -webkit-box-shadow: shadowInnerDef
+    box-shadow:         shadowInnerDef

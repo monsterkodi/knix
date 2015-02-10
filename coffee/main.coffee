@@ -19,4 +19,6 @@ document.observe "dom:loaded", ->
     Test.sliderAndValue()
     # Test.svgPath()
 
+    # StyleSwitch.toggle()
+
     return
