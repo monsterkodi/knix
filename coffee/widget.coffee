@@ -356,7 +356,7 @@ class Widget
     # ____________________________________________________________________________ tools
 
     format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
-    strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s)
+    strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s.strip())
     round: (v) => # rounds v to multiples of valueStep
         r = v
         if @config.valueStep?

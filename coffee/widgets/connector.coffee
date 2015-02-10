@@ -87,11 +87,13 @@ class Connector extends Widget
             @path.setEndDir if conn.isSignal() then pos(100,0) else pos(-100,0)
             @conn = conn
             @conn.elem.addClassName 'highlight'
+            @handle.elem.addClassName 'highlight'
         else
             @path.path.removeClass 'connectable'
             @path.setStartDir if @isSignal() then pos(200,0) else pos(-200,0)
             @path.setEndDir pos(0,0)
             if @conn then @conn.elem.removeClassName 'highlight'; @conn = null
+            @handle.elem.removeClassName 'highlight'
 
         @handle.setPos p
         @path.setEnd p
