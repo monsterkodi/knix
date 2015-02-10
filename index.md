@@ -9,38 +9,33 @@ layout: default
 
 {% highlight coffee %}
 
-b = knix.get
-    type:   'button'
-    text:   'hello slider'
-    parent: 'menu'
-    onClick: ->
-        w = knix.get
-            title:     'hello'
-            hasSize:   true
-            minWidth:  130
-            center:    true
-            children: \
-            [
-                type:       'slider'
-                hasBar:     true
-                hasKnob:    true
-                valueStep:  5
-            ,
-                type:       'value'
-                format:     "%3.2f"
-                valueStep:  21
-            ,
-                type:       'button'
-                text:       'ok'
-                onClick:    -> @getWindow().close()
-            ]
-            connect: \
-            [
-                signal: 'slider:onValue'
-                slot:   'value:setValue'
-            ]
+w = knix.get
+    title:     'hello'
+    hasSize:   true
+    minWidth:  130
+    center:    true
+    children: \
+    [
+        type:       'slider'
+        hasBar:     true
+        hasKnob:    true
+        valueStep:  5
+    ,
+        type:       'value'
+        format:     "%3.2f"
+        valueStep:  21
+    ,
+        type:       'button'
+        text:       'ok'
+        onClick:    -> @getWindow().close()
+    ]
+    connect: \
+    [
+        signal: 'slider:onValue'
+        slot:   'value:setValue'
+    ]
 
-        w.resolveSlot('slider:setValue') 33.3
+w.resolveSlot('slider:setValue') 33.3
 
 {% endhighlight %}
 
