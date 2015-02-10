@@ -25,6 +25,9 @@ Window = (function(_super) {
     this.headerSize = __bind(this.headerSize, this);
     this.raise = __bind(this.raise, this);
     this.maximize = __bind(this.maximize, this);
+    this.sizeStop = __bind(this.sizeStop, this);
+    this.sizeMove = __bind(this.sizeMove, this);
+    this.sizeStart = __bind(this.sizeStart, this);
     this.addSizeButton = __bind(this.addSizeButton, this);
     this.scrollToBottom = __bind(this.scrollToBottom, this);
     this.addShadeButton = __bind(this.addShadeButton, this);
@@ -168,49 +171,53 @@ Window = (function(_super) {
   };
 
   Window.prototype.addSizeButton = function() {
-    var btn, dragMove, dragStart, dragStop;
+    var btn;
     btn = knix.create({
       type: 'size',
       parent: this
     });
-    dragStart = function(drag, event) {
-      drag.target.getWindow().config.isMaximized = false;
-    };
-    dragMove = function(drag, event) {
-      var hdr, hgt, sizer, spos, wdt, windw, wpos;
-      sizer = drag.target.widget;
-      windw = sizer.getWindow();
-      wpos = windw.absPos();
-      spos = sizer.absPos();
-      hdr = windw.headerSize();
-      wdt = spos.x - wpos.x + sizer.getWidth();
-      wdt = Math.max(hdr * 2, wdt);
-      wdt = Math.max(windw.minWidth(), wdt);
-      wdt = Math.min(windw.maxWidth(), wdt);
-      hgt = spos.y - wpos.y + sizer.getHeight();
-      hgt = Math.max(hdr + sizer.getHeight(), hgt);
-      hgt = Math.max(windw.minHeight(), hgt);
-      hgt = Math.min(windw.maxHeight(), hgt);
-      windw.resize(wdt, hgt);
-    };
-    dragStop = function(drag, event) {
-      var sizer;
-      sizer = drag.target;
-      return sizer.setStyle({
-        bottom: '0px',
-        right: '0px',
-        left: '',
-        top: ''
-      });
-    };
     Drag.create({
       target: btn.elem,
-      onStart: dragStart,
-      onMove: dragMove,
-      onStop: dragStop,
+      onStart: this.sizeStart,
+      onMove: this.sizeMove,
+      onStop: this.sizeStop,
       cursor: 'nwse-resize'
     });
     return btn;
+  };
+
+  Window.prototype.sizeStart = function(drag, event) {
+    this.config.isMaximized = false;
+    return drag.target.style.opacity = '0.0';
+  };
+
+  Window.prototype.sizeMove = function(drag, event) {
+    var hdr, hgt, sizer, spos, wdt, wpos;
+    sizer = drag.target.widget;
+    wpos = this.absPos();
+    spos = sizer.absPos();
+    hdr = this.headerSize();
+    wdt = spos.x - wpos.x + sizer.getWidth();
+    wdt = Math.max(hdr * 2, wdt);
+    wdt = Math.max(this.minWidth(), wdt);
+    wdt = Math.min(this.maxWidth(), wdt);
+    hgt = spos.y - wpos.y + sizer.getHeight();
+    hgt = Math.max(hdr + sizer.getHeight(), hgt);
+    hgt = Math.max(this.minHeight(), hgt);
+    hgt = Math.min(this.maxHeight(), hgt);
+    this.resize(wdt, hgt);
+  };
+
+  Window.prototype.sizeStop = function(drag, event) {
+    var sizer;
+    sizer = drag.target;
+    return sizer.setStyle({
+      bottom: '0px',
+      right: '0px',
+      left: '',
+      top: '',
+      opacity: '1.0'
+    });
   };
 
   Window.prototype.maximize = function() {

@@ -108,8 +108,15 @@ Widget = (function() {
     _ref4 = ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'];
     for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
       s = _ref4[_k];
-      if (this.config[s] != null) {
-        style.set(s, this.config[s] + 'px');
+      if (!(this.config[s] != null)) {
+        continue;
+      }
+      style.set(s, this.config[s] + 'px');
+      if (!this.config.width && (s === 'minWidth' || s === 'maxWidth')) {
+        this.config.width = this.config[s];
+      }
+      if (!this.config.height && (s === 'minHeight' || s === 'maxHeight')) {
+        this.config.height = this.config[s];
       }
     }
     if (style.keys().length) {
@@ -133,7 +140,7 @@ Widget = (function() {
       Drag.create({
         target: this.elem,
         minPos: pos(void 0, 0),
-        onMove: this.emitMove.bind(this),
+        onMove: this.emitMove,
         cursor: null
       });
     }
@@ -621,15 +628,7 @@ Widget = (function() {
   };
 
   Widget.prototype.clamp = function(v) {
-    var c;
-    c = v;
-    if (this.config.maxValue != null) {
-      c = Math.min(c, this.config.maxValue);
-    }
-    if (this.config.minValue != null) {
-      c = Math.max(c, this.config.minValue);
-    }
-    return c;
+    return _.clamp(this.config.minValue, this.config.maxValue, v);
   };
 
   return Widget;

@@ -81,7 +81,6 @@ Drag = (function() {
   };
 
   Drag.prototype.dragStart = function(event) {
-    var style;
     if (this.dragging || !this.listening) {
       return;
     }
@@ -90,8 +89,7 @@ Drag = (function() {
       this.onStart(this, event);
     }
     this.cursorStartPos = this.absPos(event);
-    style = window.getComputedStyle(this.target);
-    this.targetStartPos = pos(parseInt(style.left), parseInt(style.top));
+    this.targetStartPos = this.target.widget.relPos();
     this.targetStartPos = this.targetStartPos.check();
     this.eventMove = $(document).on('mousemove', this.dragMove.bind(this));
     this.eventUp = $(document).on('mouseup', this.dragUp.bind(this));
@@ -106,7 +104,7 @@ Drag = (function() {
     if (this.doMove) {
       newPos = this.absPos(event);
       newPos = newPos.add(this.targetStartPos).sub(this.cursorStartPos);
-      newPos = newPos.bound(this.minPos, this.maxPos);
+      newPos.clamp(this.minPos, this.maxPos);
       newPos.apply(this.target);
     }
     if (this.onMove != null) {
@@ -181,6 +179,20 @@ _.def = function(c, d) {
   }
 };
 
+_.clamp = function(r1, r2, v) {
+  var _ref;
+  if (r1 > r2) {
+    _ref = [r2, r1], r1 = _ref[0], r2 = _ref[1];
+  }
+  if (r1 != null) {
+    v = Math.max(v, r1);
+  }
+  if (r2 != null) {
+    v = Math.min(v, r2);
+  }
+  return v;
+};
+
 log = function() {
   var arg, s;
   s = ((function() {
@@ -215,6 +227,15 @@ Pos = (function() {
   function Pos(x, y) {
     this.x = x;
     this.y = y;
+    this.apply = __bind(this.apply, this);
+    this.check = __bind(this.check, this);
+    this.clamp = __bind(this.clamp, this);
+    this.max = __bind(this.max, this);
+    this.min = __bind(this.min, this);
+    this.mid = __bind(this.mid, this);
+    this.mul = __bind(this.mul, this);
+    this.sub = __bind(this.sub, this);
+    this.add = __bind(this.add, this);
   }
 
   Pos.prototype.add = function(val) {
@@ -285,10 +306,12 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.bound = function(lower, upper) {
-    var newPos;
-    newPos = this.max(lower);
-    return newPos.min(upper);
+  Pos.prototype.clamp = function(lower, upper) {
+    if ((lower != null) && (upper != null)) {
+      this.x = _.clamp(lower.x, upper.x, x);
+      this.y = _.clamp(lower.y, upper.y, y);
+    }
+    return this;
   };
 
   Pos.prototype.check = function() {
