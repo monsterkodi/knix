@@ -1,0 +1,97 @@
+#!/usr/bin/env coffee
+
+ansi   = require 'ansi'
+cursor = ansi process.stdout
+fs     = require 'fs'
+_      = require 'lodash'
+
+argparse = require('argparse').ArgumentParser
+parser   = new argparse
+      version: '0.0.1'
+      addHelp:true
+      description: 'logpepper'
+
+parser.addArgument [ 'input' ],
+  help:              'input files or directories. default: current directory.'
+  nargs:             '*'
+  defaultValue:      '.'
+
+parser.addArgument [ '-t', '--type' ],
+    help:            'file type, default: coffee'
+    defaultValue:    'coffee'
+
+args = parser.parseArgs()
+
+strIndent = "    "
+
+str = (o,indent="",visited=[]) ->
+    if o == null
+        return "<null>"
+    t = typeof o
+    if t == 'string'
+        return o
+    else if t == 'object'
+        if o in visited
+            if o.id? and typeof o.id == 'string' and o.localName? then return "<" + o.localName + "#" + o.id + ">"
+            return "<visited>"
+        protoname = o.constructor.name
+        if not protoname? or protoname == ""
+            if o.id? and typeof o.id == 'string' and o.localName?
+                protoname = o.localName + "#"+o.id
+            else
+                protoname = "object"
+        if protoname == 'Array'
+            s = '[\n'
+            visited.push o
+            s += (indent+strIndent + str(v,indent+strIndent,visited) for v in o).join("\n")
+            s += '\n'+indent+strIndent+']'
+        else
+            s = "<" + protoname + ">\n"
+            visited.push o
+            s += (indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o)).join("\n")
+        return s+"\n"
+    else if t == 'function'
+        return "->"
+    else
+        return String(o) # plain values
+    return "<???>"
+
+log   = -> cursor.write((str(arg) for arg in arguments).join(" ")).write('\n')
+error = -> cursor.yellow().bold().write('[ERROR] ').red().write((str(arg) for arg in arguments).join(" ")).reset().write('\n')
+
+# error args
+
+parseFile = (f) ->
+
+    s = fs.readFileSync f,
+        encoding: 'utf8'
+
+    lines = s.split '\n'
+    newlines = []
+
+    error 'parseFile', f, lines.length
+
+    for li in [0...lines.length]
+        line = lines[li]
+        logpat = /// ^[^#]* # begin of line and no comment sign
+                      \s(log)\s
+                      .*    # anything
+                      $ /// # end of line
+        if m = line.match(logpat)
+            # log line
+            lines[li] = line.replace /(^[^#]*\s)(log)(\s)/, "$1 _log '"+f+"', "+li+", "
+            # log repl
+
+    log lines.join('\n')
+
+parseFileOrDirectory = (fod) ->
+    stats = fs.statSync(fod)
+    if stats.isDirectory()
+        for f in fs.readdirSync(fod)
+            parseFileOrDirectory(fod+'/'+f)
+    else if stats.isFile()
+        if _.endsWith(fod, args.type)
+          parseFile(fod)
+
+for i in args.input
+    parseFileOrDirectory i

@@ -1,11 +1,11 @@
 ###
 
-     0000000  000000000 00000000  
-    000          000    000   000 
-     0000000     000    0000000   
-          000    000    000   000 
-     0000000     000    000   000 
-     
+     0000000  000000000 00000000
+    000          000    000   000
+     0000000     000    0000000
+          000    000    000   000
+     0000000     000    000   000
+
 ###
 
 strIndent = "    "
@@ -26,9 +26,16 @@ str = (o,indent="",visited=[]) ->
                 protoname = o.localName + "#"+o.id
             else
                 protoname = "object"
-        s = "<" + protoname + ">\n"
-        visited.push o
-        s += (indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o)).join("\n")
+
+        if protoname == 'Array'
+            s = '[\n'
+            visited.push o
+            s += (indent+strIndent + str(v,indent+strIndent,visited) for v in o).join("\n")
+            s += '\n'+indent+strIndent+']'
+        else
+            s = "<" + protoname + ">\n"
+            visited.push o
+            s += (indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o)).join("\n")
         return s+"\n"
     else if t == 'function'
         return "->"

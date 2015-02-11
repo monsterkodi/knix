@@ -1,9 +1,9 @@
 ###
 
     000   000  000   000  000  000   000
-    000  000   0000  000  000   000 000 
-    0000000    000 0 000  000    00000  
-    000  000   000  0000  000   000 000 
+    000  000   0000  000  000   000 000
+    0000000    000 0 000  000    00000
+    000  000   000  0000  000   000 000
     000   000  000   000  000  000   000
 
 ###
@@ -12,25 +12,27 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @version = '0.1.5'
+    @version = '0.1.6'
 
-    @init: ->
+    @init: (config) =>
 
-        log 'knix '+@version
+        s = 'welcome to'; log 'knix'+@version
 
+        if config.console?
+            c = new Console()
+            c.shade() if config.console == 'shade'
+
+        Stage.initContextMenu()
         @initSVG()
+        @initAnim()
         @initTools()
+        @initAudio()
+        c.raise()
         @
 
-    @initSVG: ->
+    # ________________________________________________________________________________ tools menu
 
-        svg = knix.get
-            id:    'stage_svg'
-            type:  'svg'
-
-        @svg = svg.svg
-
-    @initTools: ->
+    @initTools: =>
 
         Console.menu()
 
@@ -51,13 +53,15 @@ class knix
 
         @get btn,
             icon:   'octicon-dash'
-            onClick: -> knix.shadeAll()
+            onClick: -> @shadeAll()
 
         @get btn,
             icon:   'octicon-x'
-            onClick: -> knix.closeAll()
+            onClick: -> @closeAll()
 
-    @create: (config, defaults) ->
+    # ________________________________________________________________________________ element creation
+
+    @create: (config, defaults) =>
 
         cfg = _.def(config,defaults)
 
@@ -75,9 +79,9 @@ class knix
 
     # shortcut to call @create with default type window and stage_content as parent
 
-    @get: (cfg={},def) -> @create _.def(cfg,def), { type:'window', parent:'stage_content' }
+    @get: (cfg={},def) => @create _.def(cfg,def), { type:'window', parent:'stage_content' }
 
-    @closeAll: -> # close all windows
+    @closeAll: => # close all windows
         $$('.window').each (windowElement) ->
             windowElement.widget.close()
 
@@ -85,9 +89,40 @@ class knix
         $$('.window').each (windowElement) ->
             windowElement.widget.shade()
 
+    # ________________________________________________________________________________ animation
+
+    @initAnim: => window.requestAnimationFrame @anim
+
+    @animObjects = []
+    @animate: (o) => @animObjects.push(o)
+    @anim: (timestamp) =>
+        for animObject in @animObjects
+            animObject.anim timestamp
+        window.requestAnimationFrame @anim
+
+
+    @initAudio: => Audio.init()
+
+    # ________________________________________________________________________________ svg
+
+    @initSVG: =>
+
+        svg = @get
+            id:    'stage_svg'
+            type:  'svg'
+
+        @svg = svg.svg
+
+    @svg: (cfg) =>
+        svg = new Widget cfg,
+            elem: 'svg'
+            parent: 'stage_content'
+        svg.svg = SVG(svg.elem.id)
+        svg
+
     # ________________________________________________________________________________ canvas
 
-    @canvas: (cfg) ->
+    @canvas: (cfg) =>
         cvs = new Widget cfg,
             elem: 'canvas'
         fbc = new fabric.StaticCanvas cvs.elem.id
@@ -96,18 +131,9 @@ class knix
         cvs.fc = fbc
         cvs
 
-    # ________________________________________________________________________________ svg
-
-    @svg: (cfg) ->
-        svg = new Widget cfg,
-            elem: 'svg'
-            parent: 'stage_content'
-        svg.svg = SVG(svg.elem.id)
-        svg
-
     # ________________________________________________________________________________ button
 
-    @button: (cfg) ->
+    @button: (cfg) =>
         if cfg.icon?
             cfg.child =
                 type: 'icon'
@@ -119,7 +145,7 @@ class knix
 
     # ________________________________________________________________________________ icon
 
-    @icon: (cfg) ->
+    @icon: (cfg) =>
         new Widget cfg,
             child:
                 elem:   'span'
@@ -128,7 +154,7 @@ class knix
 
     # ________________________________________________________________________________ input
 
-    @input: (cfg) ->
+    @input: (cfg) =>
         inp = new Widget cfg,
             elem: 'input'
             type: 'input'
