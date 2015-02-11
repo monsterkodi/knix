@@ -1,10 +1,10 @@
 ###
 
-    KKK  KKK  NNN   NNN  III  XXX   XXX
-    KKK KKK   NNNN  NNN  III    XXXXX
-    KKKKK     NNN N NNN  III     XXX
-    KKK KKK   NNN  NNNN  III    XXXXX
-    KKK  KKK  NNN   NNN  III  XXX   XXX
+    000   000  000   000  000  000   000
+    000  000   0000  000  000   000 000 
+    0000000    000 0 000  000    00000  
+    000  000   000  0000  000   000 000 
+    000   000  000   000  000  000   000
 
 ###
 
