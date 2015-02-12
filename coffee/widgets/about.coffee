@@ -18,9 +18,9 @@ class About extends Window
         super _.def(cfg,defs),
             title:     'about'
             id:        'about'
-            width:     160
-            minWidth:  140
-            minHeight: 240
+            hasSize:   'horizontal'
+            # minWidth:  140
+            # minHeight: 240
             center:    true
             children:
                 [
@@ -44,10 +44,10 @@ class About extends Window
                         href:   'https://github.com/monsterkodi/knix'
                 ,
                     style:
-                        position: 'absolute'
-                        left:     0
-                        right:    0
-                        bottom:   0
+                        # position: 'absolute'
+                        # left:     0
+                        # right:    0
+                        # bottom:   0
                         textAlign: 'center'
                     child:
                         elem: 'span'

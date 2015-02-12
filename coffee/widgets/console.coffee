@@ -50,8 +50,21 @@ class Console extends Window
 
     onContextMenu: (event,e) =>
 
+        children = []
         for tag of @logTags
-            console.log 'logTags', tag, @logTags[tag]
+            # console.log 'logTags', tag, @logTags[tag]
+            children.push
+                type: 'button'
+                text: tag
+
+        knix.get
+            hasClose: false
+            hasMaxi:  false
+            hasTitle: false
+            hasSize:  false
+            hasShade: false
+            pos:      Stage.absPos(event)
+            children: children
 
         event.preventDefault()
 

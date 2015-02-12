@@ -1,5 +1,5 @@
 ###
- 
+
     000   000  000  0000000     00000000  00000000  000000000
     000 0 000  000  000   000  000        000          000
     000000000  000  000   000  000  0000  0000000      000
@@ -54,7 +54,6 @@ class Widget
             @elem.setStyle @config.style
 
         style = $H()
-        # style.set(s, @config[s]+'px') for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
         for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
             style.set(s, @config[s]+'px')
             if not @config.width and s in ['minWidth', 'maxWidth']
@@ -70,6 +69,10 @@ class Widget
         @addToParent(@config.parent) if @config.parent?
 
         #__________________________________________________ position and size
+
+        if @config.pos?
+            @config.x = @config.pos.x if @config.pos.x?
+            @config.y = @config.pos.y if @config.pos.y?
 
         if @config.x? or @config.y?
             @elem.style.position = 'absolute'
@@ -96,18 +99,6 @@ class Widget
             @elem.on 'mousedown', (event,e) -> event.stopPropagation()
 
         @
-
-    # __________________________________________________________________________ elem and widget hierarchy
-
-    @nextWidgetID  = 0
-
-    @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
-        e = new Element type
-        # e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
-        e.id = "%s.%d".fmt(clss, @nextWidgetID)
-        @nextWidgetID += 1
-        e.addClassName clss
-        e
 
     # ________________________________________________________________________________ event handling
 
@@ -218,6 +209,18 @@ class Widget
         if argname == 'value'
             return parseFloat event
         event
+
+    # ____________________________________________________________________________ elements
+
+    @nextWidgetID  = 0
+
+    @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
+        e = new Element type
+        # e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
+        e.id = "%s.%d".fmt(clss, @nextWidgetID)
+        @nextWidgetID += 1
+        e.addClassName clss
+        e
 
     # ____________________________________________________________________________ hierarchy
 
@@ -354,6 +357,20 @@ class Widget
     relPos:      => o = @elem.positionedOffset(); pos o.left, o.top
     absPos:      => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
     absCenter:   => @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
+
+    layoutChildren: =>
+        e = @config.content? and $(@config.content) or @elem
+        if not @config.width?
+            @setWidth e.getWidth()
+        if not @config.height?
+            @setHeight e.getHeight()
+        if @config.hasSize
+            e.style.minWidth  = "%dpx".fmt(e.getWidth()) if not @config.minWidth?
+            e.style.minHeight = "%dpx".fmt(e.getHeight()) if not @config.minHeight?
+            if @config.hasSize == 'horizontal'
+                e.style.maxHeight = "%dpx".fmt(e.getHeight()) if not @config.maxHeight?
+            if @config.hasSize == 'vertical'
+                e.style.maxWidth = "%dpx".fmt(e.getWidth()) if not @config.maxWidth?
 
     # ____________________________________________________________________________ tools
 

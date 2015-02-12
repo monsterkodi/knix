@@ -53,11 +53,11 @@ class knix
 
         @get btn,
             icon:   'octicon-dash'
-            onClick: -> @shadeAll()
+            onClick: -> knix.shadeAll()
 
         @get btn,
             icon:   'octicon-x'
-            onClick: -> @closeAll()
+            onClick: -> knix.closeAll()
 
     # ________________________________________________________________________________ element creation
 
