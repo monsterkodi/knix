@@ -121,8 +121,8 @@ class Window extends Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        tag '.stretchWidth', 'layout'
-        log 'horizontal stretcher', @elem.id
+        tag '.stretchWidth', 'layout', 'todo'
+        log 'add horizontal stretching handles and get rid of addSize crap!'
 
     # ____________________________________________________________________________ size
 

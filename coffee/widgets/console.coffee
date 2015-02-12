@@ -10,16 +10,18 @@
 
 class Console extends Window
 
+    @seenTags  = []
+
     constructor: (cfg) ->
 
         @logTags =
-            # 'widget':              false
-            # 'window':              false
-            # 'window.stretchWidth': false
-            # 'layout':              false
-            # 'tools/stage':         false
-            'connections':         false
-            'widgets/connection':  false
+            # 'widget':              'off'
+            # 'window':              'off'
+            # 'window.stretchWidth': 'off'
+            # 'layout':              'off'
+            # 'tools/stage':         'off'
+            'connections':         'off'
+            'widgets/connection':  'off'
 
         @scopeTags = []
 
@@ -61,8 +63,9 @@ class Console extends Window
         for tag of @logTags
             console.log 'logTags', tag, @logTags[tag]
             children.push
-                type: 'toggle'
-                text: tag
+                type:   'toggle'
+                text:   tag
+                state:  @logTags[tag]
 
         children.push
             type: 'button'
@@ -87,7 +90,7 @@ class Console extends Window
     logFileTag: (fileTag,url,s) =>
         @addLogTag fileTag
         onclick = "new Ajax.Request('"+url+"');"
-        tags = @allTags fileTag, Console.scopeTags
+        tags = @fileScopeTags fileTag, Console.scopeTags
         styles = ("log_"+t.replace(/[\/]/g, '_') for t in tags).join(' ')
         @insert '<pre class="'+styles+'"><a onClick="'+onclick+
             '" class="console-link" title="'+tags.join(' ')+
@@ -96,12 +99,12 @@ class Console extends Window
 
         @filterTags tags
 
-    allTags: (fileTag, scopeTags) =>
+    fileScopeTags: (fileTag, scopeTags) =>
         scopeTags? and [fileTag, (((s.startsWith('.') or s.startsWith('@')) and fileTag+s or s) for s in scopeTags) ].flatten() or [fileTag]
 
     filterTags: (tags) =>
         for tag in tags
-            if @logTags[tag] == false
+            if not @logTags[tag]? or @logTags[tag] == false or @logTags[tag] == 'off'
                 t = tag.replace(/[\/]/g, '_')  # replace slashes with _
                 tagElems = @elem.select('.log_'+t)
                 for tagElem in tagElems
@@ -114,7 +117,10 @@ class Console extends Window
 
     # _________________________________________________________________________________________ static
 
-    @setScopeTags: => @scopeTags = Array.prototype.slice.call(arguments, 0)
+    @setScopeTags: =>
+        @scopeTags = Array.prototype.slice.call(arguments, 0)
+        for t in @scopeTags
+            @allConsoles().each (c) -> c.addLogTag(t)
 
     @logFileLine: (file, line, s) =>
 
