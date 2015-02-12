@@ -18,7 +18,7 @@ class About extends Window
         super _.def(cfg,defs),
             title:     'about'
             id:        'about'
-            hasSize:   'horizontal'
+            resize:   'horizontal'
             # minWidth:  140
             # minHeight: 240
             center:    true

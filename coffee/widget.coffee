@@ -56,10 +56,6 @@ class Widget
         style = $H()
         for s in ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'] when @config[s]?
             style.set(s, @config[s]+'px')
-            if not @config.width and s in ['minWidth', 'maxWidth']
-                @config.width = @config[s]
-            if not @config.height and s in ['minHeight', 'maxHeight']
-                @config.height = @config[s]
         @elem.setStyle style.toObject() if style.keys().length
 
         #__________________________________________________ DOM setup
@@ -358,18 +354,29 @@ class Widget
     absPos:      => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
     absCenter:   => @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
 
+    # ____________________________________________________________________________ layout
+
+    stretchWidth: =>
+        tag 'stretchWidth', 'layout'
+        log @
+        @elem.style.width = '50%'
+
     layoutChildren: =>
         e = @config.content? and $(@config.content) or @elem
         if not @config.width?
-            @setWidth e.getWidth()
+            if e.widget.config.resize?
+                if e.widget.config.resize == 'horizontal' or e.widget.config.resize == true
+                    e.widget.stretchWidth()
+            else
+                @setWidth e.getWidth()
         if not @config.height?
             @setHeight e.getHeight()
-        if @config.hasSize
+        if @config.resize
             e.style.minWidth  = "%dpx".fmt(e.getWidth()) if not @config.minWidth?
             e.style.minHeight = "%dpx".fmt(e.getHeight()) if not @config.minHeight?
-            if @config.hasSize == 'horizontal'
+            if @config.resize == 'horizontal'
                 e.style.maxHeight = "%dpx".fmt(e.getHeight()) if not @config.maxHeight?
-            if @config.hasSize == 'vertical'
+            if @config.resize == 'vertical'
                 e.style.maxWidth = "%dpx".fmt(e.getWidth()) if not @config.maxWidth?
 
     # ____________________________________________________________________________ tools

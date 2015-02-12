@@ -8,6 +8,10 @@
 
 ###
 
+tag = ->
+    for t in arguments
+        console.log 'tag:', t
+
 log = ->
 
     # f = printStackTrace()[4].split('@')[1]

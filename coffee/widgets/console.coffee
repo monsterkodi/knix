@@ -13,7 +13,7 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            widget:             false
+            # widget:             false
             widgets_connection: false
 
         w  = Stage.size().width/2
@@ -61,7 +61,7 @@ class Console extends Window
             hasClose: false
             hasMaxi:  false
             hasTitle: false
-            hasSize:  false
+            resize:  false
             hasShade: false
             pos:      Stage.absPos(event)
             children: children
@@ -74,6 +74,7 @@ class Console extends Window
 
     insertTag: (tag,url,s) =>
         @addLogTag tag
+        onclick = "new Ajax.Request('"+url+"');"
         @insert '<pre class="log_'+tag+'"><a onClick="'+onclick+
             '" class="console-link" title="'+tag+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
@@ -93,7 +94,6 @@ class Console extends Window
     @logTag: (file, line, s) =>
 
         url = 'http://localhost:8888/'+file+':'+line
-        onclick = "new Ajax.Request('"+url+"');"
         tag = file.substr(9)             # remove 'coffee/' prefix
         tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
         tag = tag.replace(/[\/]/g, '_')  # replace slashes with _

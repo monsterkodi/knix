@@ -34,7 +34,7 @@ class Window extends Widget
             parent:   'stage_content'
             hasClose:  true
             hasShade:  true
-            hasSize:   true
+            resize:   true
             isMovable: true
             isShaded:  false
             onDown:    (event,e) -> e.getWindow().raise()
@@ -65,7 +65,7 @@ class Window extends Widget
             type:  'content'
             parent: @elem.id
 
-        @addSizeButton() if @config.hasSize
+        @addSizeButton() if @config.resize
 
         @content = content.elem.id
 
@@ -117,6 +117,13 @@ class Window extends Widget
     scrollToBottom: =>
         content = $(@content)
         content.scrollTop = content.scrollHeight
+
+    #__________________________________________________ size
+
+    stretchWidth: =>
+        # log 'stretchWidth', @
+        # @elem.style.width = '50%'
+        log 'horizontal stretcher', @elem.id
 
     addSizeButton: =>
         btn = knix.create
