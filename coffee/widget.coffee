@@ -154,11 +154,11 @@ class Widget
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
-            error "sender not found!"; return
+            error "sender not found!"
         if not signalEvent?
-            error "event not found!";  return
+            error "event not found!"
         if not slotFunction?
-            error "slot not found!";   return
+            error "slot not found!"
         handler:  signalSender.elem.on signalEvent, slotFunction
         sender:   signalSender
         event:    signalEvent

@@ -20,6 +20,14 @@ parser.addArgument [ '-t', '--type' ],
     help:            'file type, default: coffee'
     defaultValue:    'coffee'
 
+parser.addArgument [ '-o', '--output' ],
+    help:            'output file, default: peppered.coffee'
+    defaultValue:    'peppered.coffee'
+
+parser.addArgument [ '-n', '--dryrun' ],
+    help:            'just prints the peppered version'
+    action:          'storeTrue'
+
 args = parser.parseArgs()
 
 strIndent = "    "
@@ -69,7 +77,7 @@ parseFile = (f) ->
     lines = s.split '\n'
     newlines = []
 
-    error 'parseFile', f, lines.length
+    log 'pepper:', f, lines.length
 
     for li in [0...lines.length]
         line = lines[li]
@@ -78,20 +86,28 @@ parseFile = (f) ->
                       .*    # anything
                       $ /// # end of line
         if m = line.match(logpat)
-            # log line
-            lines[li] = line.replace /(^[^#]*\s)(log)(\s)/, "$1 _log '"+f+"', "+li+", "
-            # log repl
+            lines[li] = line.replace /(^[^#]*\s)(log)(\s)/, "$1_log '"+f+"', "+(li+1)+", "
 
-    log lines.join('\n')
+    lines.join('\n')
 
-parseFileOrDirectory = (fod) ->
+collectFiles = (fod, set) ->
     stats = fs.statSync(fod)
     if stats.isDirectory()
         for f in fs.readdirSync(fod)
-            parseFileOrDirectory(fod+'/'+f)
+            collectFiles(fod+'/'+f, set)
     else if stats.isFile()
         if _.endsWith(fod, args.type)
-          parseFile(fod)
+          set.push(fod) if fod not in set
 
+files = []
 for i in args.input
-    parseFileOrDirectory i
+    collectFiles i, files
+
+result = ""
+for f in files
+    result += parseFile f
+
+if args.dryrun
+    log result
+else
+    fs.writeFileSync(args.output, result)

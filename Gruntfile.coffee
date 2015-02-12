@@ -1,5 +1,21 @@
 
+execSync = require "exec-sync"
+mkpath   = require 'mkpath'
+
 module.exports = (grunt) ->
+
+    pepper = (files) ->
+        result = {}
+        for joined, list of files
+            # console.log files;
+            mkpath.sync '.pepper'
+            ppr = '.pepper/'+joined+'.coffee'
+            pfs = 'tools/pepper -o ' + ppr + ' ' + list.join(' ')
+            console.log pfs
+            rst = execSync pfs
+            console.log rst
+            result['js/'+joined+'.js'] = ppr
+        result
 
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
@@ -11,13 +27,14 @@ module.exports = (grunt) ->
                 joinExt:   '.coffee'
             knix:
                 files:
-                    './js/tools.js':   ['./coffee/tools/*.coffee']
-                    './js/knix.js':    ['./coffee/knix.coffee']
-                    './js/widget.js':  ['./coffee/widget.coffee']
-                    './js/window.js':  ['./coffee/window.coffee']
-                    './js/widgets.js': ['./coffee/widgets/*.coffee']
-                    './js/audio.js':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
-                    './js/main.js':    ['./coffee/test.coffee', './coffee/main.coffee']
+                    pepper
+                        'tools':   ['./coffee/tools/*.coffee']
+                        'knix':    ['./coffee/knix.coffee']
+                        'widget':  ['./coffee/widget.coffee']
+                        'window':  ['./coffee/window.coffee']
+                        'widgets': ['./coffee/widgets/*.coffee']
+                        'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
+                        'main':    ['./coffee/test.coffee', './coffee/main.coffee']
 
         bower_concat:
             all:

@@ -21,7 +21,7 @@ class Console extends Window
 
         s = Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0))
         Console.insert s
-
+        
     @error: ->
 
         s = '<span class="console-error">%s</span> '.fmt(str(arguments[0])) + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 1))

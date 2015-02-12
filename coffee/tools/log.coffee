@@ -25,8 +25,17 @@ log = ->
     # console.trace()
     console.log "%c%s", 'color:white', s
 
-    # Console.log arguments
     Console.log.apply(Console, Array.prototype.slice.call(arguments, 0))
+
+_log = ->
+
+    url = 'http://localhost:8888/'+arguments[0]+':'+arguments[1]
+    onclick = "new Ajax.Request('"+url+"');"
+
+    shortfile = arguments[0].substr(9)
+    Console.insert '<a onClick="'+onclick+'" class="console-link"><span class="tiny-text" style="vertical-align:top">'+shortfile+":"+arguments[1]+'</span></a>'
+
+    log.apply(@, Array.prototype.slice.call(arguments, 2))
 
 error = ->
 
