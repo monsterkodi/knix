@@ -15,7 +15,7 @@ class Analyser
         knix.create
             type:   'button'
             id:     'new_analyser'
-            icon:   'octicon-terminal'
+            icon:   'octicon-graph'
             class:  'tool-button'
             parent: 'menu'
             onClick: -> new Analyser()

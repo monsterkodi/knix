@@ -12,7 +12,7 @@ class Oscillator
         knix.create
             type:   'button'
             id:     'new_oscillator'
-            icon:   'octicon-terminal'
+            icon:   'octicon-megaphone'
             class:  'tool-button'
             parent: 'menu'
             onClick: -> new Oscillator()

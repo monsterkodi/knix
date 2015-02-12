@@ -10,9 +10,9 @@ class Audio
         # osc2.connect(gain)
         # gain.connect(context.destination)
 
+        Oscillator.menu()
         Analyser.menu()
         Gain.menu()
-        Oscillator.menu()
 
     @oscillator: =>
 

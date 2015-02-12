@@ -12,7 +12,7 @@ class Gain
         knix.create
             type:   'button'
             id:     'new_gain'
-            icon:   'octicon-terminal'
+            icon:   'octicon-unmute'
             class:  'tool-button'
             parent: 'menu'
             onClick: -> new Gain()
