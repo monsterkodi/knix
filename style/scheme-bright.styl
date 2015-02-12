@@ -36,22 +36,23 @@ colors.scroll-handle        = colors.slider-bar
 colors.value                = colors.slider
 colors.value-border         = colors.grayMedium
 colors.value-active         = colors.button
-colors.value-input          = transparent // colors.value
+colors.value-input          = transparent
 colors.console              = colors.bg
-colors.connector-signal     = colors.slider
-colors.connector-slot       = colors.slider
-colors.connector-slot-border-connected   = black
-colors.connector-signal-border-connected = black
-colors.connector-connectable   = white
-colors.connector-unconnectable = darken(colors.connector-connectable, 20)
-colors.connection              = colors.button
-colors.connection-highlight    = colors.connector-connectable
 
-colors.connector-highlight           = colors.slider-bar
-colors.connector-signal-connected    = colors.slider-bar
-colors.connector-slot-connected      = colors.button
-colors.connector-signal-border-highlight = white
-colors.connector-slot-border-highlight   = white
+colors.connector-signal                     = colors.slider
+colors.connector-slot                       = colors.slider
+colors.connector-slot-border-connected      = black
+colors.connector-signal-border-connected    = black
+colors.connector-connectable                = white
+colors.connector-unconnectable              = darken(colors.connector-connectable, 20)
+colors.connection                           = colors.button
+colors.connection-highlight                 = colors.connector-connectable
+
+colors.connector-highlight                  = colors.slider-bar
+colors.connector-signal-connected           = colors.slider-bar
+colors.connector-slot-connected             = colors.button
+colors.connector-signal-border-highlight    = white
+colors.connector-slot-border-highlight      = white
 
 
 textColors                  = {}
@@ -95,11 +96,12 @@ borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid borderColors.widget
 borders.scroll          = borders.slider
 borders.value           = 0px solid colors.value-border
-borders.connector       = 0px solid white
-borders.connector-signal-connected = 2px solid colors.connector-signal-border-connected
-borders.connector-slot-connected   = 2px solid colors.connector-slot-border-connected
-borders.connector-signal-highlight = 2px solid colors.connector-signal-border-highlight
-borders.connector-slot-highlight   = 2px solid colors.connector-slot-border-highlight
+
+borders.connector                   = 0px solid white
+borders.connector-signal-connected  = 2px solid colors.connector-signal-border-connected
+borders.connector-slot-connected    = 2px solid colors.connector-slot-border-connected
+borders.connector-signal-highlight  = 2px solid colors.connector-signal-border-highlight
+borders.connector-slot-highlight    = 2px solid colors.connector-slot-border-highlight
 
 pathStrokeWidth         = 16
 connectionStrokeWidth   = 10

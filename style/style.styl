@@ -216,8 +216,8 @@ a
 .window
     position:         absolute
     overflow:         hidden
-    border:           borders.bg
-    background-color: colors.bg
+    border:               borders.bg
+    background-color:     colors.bg
     border-top-left-radius:     widgetTopRadius
     border-top-right-radius:    widgetTopRadius
     border-bottom-left-radius:  widgetBotRadius
@@ -348,7 +348,7 @@ a
     position:         relative
     border-radius:    widgetTopRadius - scrollBorderWidth
     border:           0
-    background-color: colors.scroll-handle
+    background-color:     colors.scroll-handle
     &:hover
         background-color: colors.scroll-handle-hover
     &:active
@@ -367,13 +367,13 @@ a
 .slider-bar
     position:         relative
     box-sizing:       border-box
-    border:           borders.slider
-    border-top-right-radius:     knobSize + sliderBorderWidth
-    border-bottom-right-radius:  knobSize + sliderBorderWidth
-    border-top-left-radius:      valueHeight
-    border-bottom-left-radius:   valueHeight
-    height:           valueHeight
-    max-height:       valueHeight
+    border:                       borders.slider
+    border-top-right-radius:      knobSize + sliderBorderWidth
+    border-bottom-right-radius:   knobSize + sliderBorderWidth
+    border-top-left-radius:       valueHeight
+    border-bottom-left-radius:    valueHeight
+    height:                       valueHeight
+    max-height:                   valueHeight
     margin:           0
     padding:          0
     background-color: colors.slider-bar
@@ -408,19 +408,19 @@ a
     background-clip:  padding-box
     shadowInner()
     &.signal
-        background-color: colors.connector-signal
+        background-color:       colors.connector-signal
         &.connected
-            background-color: colors.connector-signal-connected
-            border: borders.connector-signal-connected
+            background-color:   colors.connector-signal-connected
+            border:             borders.connector-signal-connected
         &.highlight
-            border: borders.connector-signal-highlight
+            border:             borders.connector-signal-highlight
     &.slot
-        background-color: colors.connector-slot
+        background-color:       colors.connector-slot
         &.connected
-            background-color: colors.connector-slot-connected
-            border: borders.connector-slot-connected
+            background-color:   colors.connector-slot-connected
+            border:             borders.connector-slot-connected
         &.highlight
-            border: borders.connector-slot-highlight
+            border:             borders.connector-slot-highlight
 
 .path
     stroke-width:     pathStrokeWidth
@@ -466,9 +466,9 @@ a
     max-height:       valueHeight
     margin:           0
     padding:          0
-    background-color: colors.value-input
+    background-color:       colors.value-input
     &:hover
-        background-color:  colors.value-input-hover
+        background-color:   colors.value-input-hover
 
 .value-input
     textCursor()

@@ -27,15 +27,15 @@ colors.menu                 = colors.title
 colors.close                = colors.title
 colors.shade                = colors.close
 colors.size                 = darken(colors.bg,0)
-colors.slider               = lighten(colors.grayDark, 4) // colors.grayDark
-colors.slider-hover         = colors.grayDark // colors.grayVeryDark
+colors.slider               = lighten(colors.grayDark, 4)
+colors.slider-hover         = colors.grayDark
 colors.slider-bar           = colors.red
 colors.slider-knob          = colors.redBright
 colors.slider-knob-hover    = yellow
 colors.value                = colors.slider
 colors.value-border         = colors.grayMedium
 colors.value-active         = colors.green
-colors.value-input          = transparent // colors.slider
+colors.value-input          = transparent
 colors.value-input-hover    = colors.slider-hover
 colors.console              = black
 
@@ -70,7 +70,7 @@ textColors.console-punct    = darken(textColors.console, 25)
 textColors.console-error    = yellow
 
 borderColors                = {}
-borderColors.widget         = colors.title // #191A1E
+borderColors.widget         = colors.title
 borderColors.menu           = #24252A
 borderColors.button         = colors.grayMedium
 
@@ -96,7 +96,8 @@ borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid colors.slider
 borders.scroll          = scrollBorderWidth solid colors.scroll
 borders.value           = 0px solid colors.value-border
-borders.connector       = 0px solid colors.slider
+
+borders.connector                  = 0px solid colors.slider
 borders.connector-signal-connected = 1px solid colors.connector-signal-border-connected
 borders.connector-slot-connected   = 1px solid colors.connector-slot-border-connected
 borders.connector-signal-highlight = 2px solid colors.connector-signal-border-highlight
