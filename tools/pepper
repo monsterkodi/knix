@@ -1,15 +1,16 @@
 #!/usr/bin/env coffee
 
-ansi   = require 'ansi'
-cursor = ansi process.stdout
-fs     = require 'fs'
-_      = require 'lodash'
+ansi     = require 'ansi'
+cursor   = ansi process.stdout
+fs       = require 'fs'
+_        = require 'lodash'
 
 argparse = require('argparse').ArgumentParser
+
 parser   = new argparse
       version: '0.0.1'
       addHelp:true
-      description: 'logpepper'
+      description: 'peppers the coffee'
 
 parser.addArgument [ 'input' ],
   help:              'input files or directories. default: current directory.'
@@ -66,8 +67,6 @@ str = (o,indent="",visited=[]) ->
 
 log   = -> cursor.write((str(arg) for arg in arguments).join(" ")).write('\n')
 error = -> cursor.yellow().bold().write('[ERROR] ').red().write((str(arg) for arg in arguments).join(" ")).reset().write('\n')
-
-# error args
 
 parseFile = (f) ->
 

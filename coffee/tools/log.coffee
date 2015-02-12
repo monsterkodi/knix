@@ -31,11 +31,13 @@ _log = ->
 
     url = 'http://localhost:8888/'+arguments[0]+':'+arguments[1]
     onclick = "new Ajax.Request('"+url+"');"
-
-    shortfile = arguments[0].substr(9)
-    Console.insert '<a onClick="'+onclick+'" class="console-link"><span class="tiny-text" style="vertical-align:top">'+shortfile+":"+arguments[1]+'</span></a>'
-
-    log.apply(@, Array.prototype.slice.call(arguments, 2))
+    short = arguments[0].substr(9)         # remove 'coffee/' prefix
+    short = short.substr(0,short.length-7) # remove '.coffee' suffix
+    array = Array.prototype.slice.call(arguments, 2)
+    s = (str(arg) for arg in array).join(" ")
+    console.log "%c%s", 'color:white', s
+    s = '<pre><a onClick="'+onclick+'" class="console-link" title="'+short+'"><span class="octicon octicon-primitive-dot"></span></a> ' + Console.toHtml(s) + '</pre>'
+    Console.insert(s)
 
 error = ->
 
