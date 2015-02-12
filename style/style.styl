@@ -121,18 +121,18 @@ a
 .button
     handCursor()
     noSelection()
-    overflow:         hidden
-    box-sizing:       border-box
-    padding-left:     6px
-    padding-right:    6px
-    text-align:       center
-    font-size:        14px
-    font-weight:      bold
-    border-radius:    buttonRadius
-    border:           borders.button
-    background-color: colors.button
-    color:            textColors.button
-    height:           buttonHeight
+    overflow:             hidden
+    box-sizing:           border-box
+    padding-left:         6px
+    padding-right:        6px
+    text-align:           center
+    font-size:            14px
+    font-weight:          bold
+    border-radius:        buttonRadius
+    border:               borders.button
+    background-color:     colors.button
+    color:                textColors.button
+    height:               buttonHeight
     &:hover
         background-color: colors.button-hover
         color:            textColors.button-hover
@@ -144,9 +144,29 @@ a
     &:hover *
         color:            textColors.button-active
 
+// ____________________________________ toggle
+
+.toggle
+    text-align:           left
+    background-color:     colors.toggle
+
+    & > .octicon
+      padding-right:      6px
+
+    &:hover
+        background-color: colors.toggle-hover
+        color:            textColors.toggle-hover
+    &:hover *
+        color:            textColors.toggle-hover
+    &:active
+        background-color: colors.toggle-active
+        color:            textColors.toggle-active
+    &:hover *
+        color:            textColors.toggle-active
+
 .tool-button
-  padding-left: 0
-  padding-right: 0
+    padding-left: 0
+    padding-right: 0
 
 .handle
     handCursor()
