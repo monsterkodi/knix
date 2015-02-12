@@ -8,10 +8,6 @@
 
 ###
 
-tag = ->
-    for t in arguments
-        console.log 'tag:', t
-
 log = ->
 
     # f = printStackTrace()[4].split('@')[1]
@@ -36,7 +32,7 @@ _log = ->
     array = Array.prototype.slice.call(arguments, 2)
     s = (str(arg) for arg in array).join " "
     console.log "%c%s", 'color:white', s
-    Console.logTag arguments[0], arguments[1], s
+    Console.logFileLine arguments[0], arguments[1], s
 
 error = ->
 

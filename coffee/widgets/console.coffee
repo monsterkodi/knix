@@ -13,8 +13,15 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            # widget:             false
-            widgets_connection: false
+            # 'widget':              false
+            # 'window':              false
+            # 'window.stretchWidth': false
+            # 'layout':              false
+            # 'tools/stage':         false
+            'connections':         false
+            'widgets/connection':  false
+
+        @scopeTags = []
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2
@@ -52,16 +59,21 @@ class Console extends Window
 
         children = []
         for tag of @logTags
-            # console.log 'logTags', tag, @logTags[tag]
+            console.log 'logTags', tag, @logTags[tag]
             children.push
-                type: 'button'
+                type: 'toggle'
                 text: tag
+
+        children.push
+            type: 'button'
+            text: 'ok'
+            onClick: (event,e) -> e.getWindow().close()
 
         knix.get
             hasClose: false
             hasMaxi:  false
             hasTitle: false
-            resize:  false
+            resize:   false
             hasShade: false
             pos:      Stage.absPos(event)
             children: children
@@ -72,17 +84,28 @@ class Console extends Window
         @getChild('console').elem.insert s
         @scrollToBottom()
 
-    insertTag: (tag,url,s) =>
-        @addLogTag tag
+    logFileTag: (fileTag,url,s) =>
+        @addLogTag fileTag
         onclick = "new Ajax.Request('"+url+"');"
-        @insert '<pre class="log_'+tag+'"><a onClick="'+onclick+
-            '" class="console-link" title="'+tag+
+        tags = @allTags fileTag, Console.scopeTags
+        styles = ("log_"+t.replace(/[\/]/g, '_') for t in tags).join(' ')
+        @insert '<pre class="'+styles+'"><a onClick="'+onclick+
+            '" class="console-link" title="'+tags.join(' ')+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
             '</pre>'
-        if @logTags[tag] == false
-            tagElems = @elem.select('.log_'+tag)
-            for tagElem in tagElems
-                tagElem.style.display = 'none'
+
+        @filterTags tags
+
+    allTags: (fileTag, scopeTags) =>
+        scopeTags? and [fileTag, (((s.startsWith('.') or s.startsWith('@')) and fileTag+s or s) for s in scopeTags) ].flatten() or [fileTag]
+
+    filterTags: (tags) =>
+        for tag in tags
+            if @logTags[tag] == false
+                t = tag.replace(/[\/]/g, '_')  # replace slashes with _
+                tagElems = @elem.select('.log_'+t)
+                for tagElem in tagElems
+                    tagElem.style.display = 'none'
 
     addLogTag: (tag) =>
 
@@ -91,14 +114,16 @@ class Console extends Window
 
     # _________________________________________________________________________________________ static
 
-    @logTag: (file, line, s) =>
+    @setScopeTags: => @scopeTags = Array.prototype.slice.call(arguments, 0)
+
+    @logFileLine: (file, line, s) =>
 
         url = 'http://localhost:8888/'+file+':'+line
         tag = file.substr(9)             # remove 'coffee/' prefix
         tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
-        tag = tag.replace(/[\/]/g, '_')  # replace slashes with _
+        # tag = tag.replace(/[\/]/g, '_')  # replace slashes with _
 
-        @allConsoles().each (c) -> c.insertTag tag, url, s
+        @allConsoles().each (c) -> c.logFileTag tag, url, s
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))
 
@@ -130,3 +155,5 @@ class Console extends Window
             class:  'tool-button'
             parent: 'tool'
             onClick: -> new Console()
+
+tag = Console.setScopeTags

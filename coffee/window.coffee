@@ -118,12 +118,13 @@ class Window extends Widget
         content = $(@content)
         content.scrollTop = content.scrollHeight
 
-    #__________________________________________________ size
+    # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        # log 'stretchWidth', @
-        # @elem.style.width = '50%'
+        tag '.stretchWidth', 'layout'
         log 'horizontal stretcher', @elem.id
+
+    # ____________________________________________________________________________ size
 
     addSizeButton: =>
         btn = knix.create

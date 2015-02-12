@@ -60,8 +60,8 @@ class Widget
 
         #__________________________________________________ DOM setup
 
-        @elem.insert(@config.text) if @config.text?
         @insertChildren()
+        @elem.insert(@config.text) if @config.text?
         @addToParent(@config.parent) if @config.parent?
 
         #__________________________________________________ position and size
@@ -137,7 +137,8 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        log @elem.id, "connect", signal, slot
+        tag '.connect', 'connections'
+        log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
@@ -357,7 +358,7 @@ class Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        tag 'stretchWidth', 'layout'
+        tag '.stretchWidth', 'layout'
         log @
         @elem.style.width = '50%'
 

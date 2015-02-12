@@ -131,18 +131,6 @@ class knix
         cvs.fc = fbc
         cvs
 
-    # ________________________________________________________________________________ button
-
-    @button: (cfg) =>
-        if cfg.icon?
-            cfg.child =
-                type: 'icon'
-                icon: cfg.icon
-
-        new Widget cfg,
-            type:     'button'
-            noDown:   true
-
     # ________________________________________________________________________________ icon
 
     @icon: (cfg) =>
