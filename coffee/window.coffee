@@ -37,7 +37,7 @@ class Window extends Widget
             resize:   true
             isMovable: true
             isShaded:  false
-            onDown:    (event,e) -> e.getWindow().raise()
+            onDown:    (event,e) -> @raise
 
         @initWindow()
         @config.children = children
@@ -45,6 +45,9 @@ class Window extends Widget
         @config.connect = connect
         @initConnections()
         @layoutChildren()
+
+        if cfg.popup
+            knix.addPopup @
 
         if cfg.center
             @moveTo Math.max(0,Stage.size().width/2 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
@@ -188,6 +191,7 @@ class Window extends Widget
             @config.isMaximized = true
 
     raise: =>
+        knix.closePopups()
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
         $(@content).scrollTop = scrolltop
@@ -224,3 +228,9 @@ class Window extends Widget
             shaded: @config.isShaded
 
         return
+
+    close: =>
+        log 'close'
+        if @config.popup?
+            knix.delPopup @
+        super

@@ -12,7 +12,7 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @version = '0.1.6'
+    @version = '::package.json:version::'
 
     @init: (config) =>
 
@@ -81,6 +81,8 @@ class knix
 
     @get: (cfg={},def) => @create _.def(cfg,def), { type:'window', parent:'stage_content' }
 
+    # ________________________________________________________________________________ widget handling
+
     @closeAll: => # close all windows
         $$('.window').each (windowElement) ->
             windowElement.widget.close()
@@ -88,6 +90,25 @@ class knix
     @shadeAll: -> # shade all windows
         $$('.window').each (windowElement) ->
             windowElement.widget.shade()
+
+    @addPopup: (p) =>
+        @popups = [] if not @popups?
+        @popups.push p
+        log 'install popup handler'
+        if not @popupHandler?
+            @popupHandler = document.on 'mousedown', @closePopups
+
+    @delPopup: (p) =>
+        log 'delpopup'
+        @popups = @popups.without p
+
+    @closePopups: =>
+        log 'closepopups'
+        if @popups?
+            p.close() for p in @popups
+        if @popupHandler?
+            @popupHandler.stop()
+            @popupHandler = null
 
     # ________________________________________________________________________________ animation
 

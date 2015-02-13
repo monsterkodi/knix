@@ -4,21 +4,19 @@ mkpath   = require 'mkpath'
 
 module.exports = (grunt) ->
 
-    pepper = (files) ->
-        result = {}
-        for joined, list of files
-            # console.log files;
-            mkpath.sync '.pepper'
-            ppr = '.pepper/'+joined+'.coffee'
-            pfs = 'tools/pepper -o ' + ppr + ' ' + list.join(' ')
-            console.log pfs
-            rst = execSync pfs
-            console.log rst
-            result['js/'+joined+'.js'] = ppr
-        result
-
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
+
+        pepper:
+            knix:
+                files:
+                    'tools':   ['./coffee/tools/*.coffee']
+                    'knix':    ['./coffee/knix.coffee']
+                    'widget':  ['./coffee/widget.coffee']
+                    'window':  ['./coffee/window.coffee']
+                    'widgets': ['./coffee/widgets/*.coffee']
+                    'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
+                    'main':    ['./coffee/test.coffee', './coffee/main.coffee']
 
         coffee:
             options:
@@ -26,15 +24,12 @@ module.exports = (grunt) ->
                 bare:      true
                 joinExt:   '.coffee'
             knix:
-                files:
-                    pepper
-                        'tools':   ['./coffee/tools/*.coffee']
-                        'knix':    ['./coffee/knix.coffee']
-                        'widget':  ['./coffee/widget.coffee']
-                        'window':  ['./coffee/window.coffee']
-                        'widgets': ['./coffee/widgets/*.coffee']
-                        'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
-                        'main':    ['./coffee/test.coffee', './coffee/main.coffee']
+                expand:     true
+                flatten:    true
+                cwd:        '.pepper'
+                src:        ['*.coffee']
+                dest:       'js'
+                ext:        '.js'
 
         bower_concat:
             all:
@@ -64,9 +59,12 @@ module.exports = (grunt) ->
                 force:     true
                 interrupt: true
 
+        bumpup:
+            file: 'package.json'
+
         clean:
-            generated:    ["js/*", "style/*.css"]
-            tempfiles:    ["coffee/**/.DS_STORE", "js/**/.DS_STORE", "style/**/.DS_STORE", "preview~*"]
+            generated:    ["js/*", "style/*.css", ".pepper"]
+            tempfiles:    ["**/.DS_STORE", "preview~*"]
             deps:         ["node_modules", "bower_components"]
 
         shell:
@@ -96,10 +94,12 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-watch'
     grunt.loadNpmTasks 'grunt-bower-concat'
+    grunt.loadNpmTasks 'grunt-bumpup'
+    grunt.loadNpmTasks 'grunt-pepper'
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'build',     [ 'coffee', 'bower_concat', 'stylus', 'shell:touch' ]
+    grunt.registerTask 'build',     [ 'bumpup', 'pepper', 'coffee', 'bower_concat', 'stylus', 'shell:touch' ]
     grunt.registerTask 'default',   [ 'build', 'clean:tempfiles' ]
     grunt.registerTask 'test',      [ 'build', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]

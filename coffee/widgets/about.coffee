@@ -51,6 +51,8 @@ class About extends Window
                 ]
 
     @show: ->
+        tag "@show"
+        log "about..."
         if $('about') then $('about').raise()
         else new About
 

@@ -16,7 +16,7 @@ class Console extends Window
 
         @logTags =
             'widget':              'off'
-            'window':              'off'
+            # 'window':              'off'
             'layout':              'off'
             'tools/stage':         'off'
             'todo':                'off'
@@ -79,6 +79,7 @@ class Console extends Window
             title:    'tags'
             resize:   false
             hasShade: false
+            popup:    true
             pos:      Stage.absPos(event)
             children: children
             buttons:  \
@@ -87,7 +88,7 @@ class Console extends Window
                 child:
                     type: 'icon'
                     icon: 'octicon-x'
-                onClick: (event,e) -> 
+                onClick: (event,e) ->
                     for t in e.getWindow().elem.select('.toggle')
                         t.widget.setState('off')
             ,
@@ -95,7 +96,7 @@ class Console extends Window
                 child:
                     type: 'icon'
                     icon: 'octicon-check'
-                onClick: (event,e) -> 
+                onClick: (event,e) ->
                     for t in e.getWindow().elem.select('.toggle')
                         t.widget.setState('on')
             ]
@@ -128,7 +129,7 @@ class Console extends Window
     updateTags: (tags) =>
         tagElems = @elem.select('pre')
         for tagElem in tagElems
-            tagElem.style.display = 'none'            
+            tagElem.style.display = 'none'
         for tag of @logTags
             if @logTags[tag]? and (@logTags[tag] == true or @logTags[tag] == 'on')
                 tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
@@ -150,7 +151,7 @@ class Console extends Window
         url = 'http://localhost:8888/'+file+':'+line
         tag = file.substr(9)             # remove 'coffee/' prefix
         tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
-        
+
         @allConsoles().each (c) -> c.logFileTag tag, url, s
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))

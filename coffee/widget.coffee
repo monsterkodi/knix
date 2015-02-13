@@ -92,8 +92,14 @@ class Widget
         @initEvents()
 
         if @config.noDown
-            @elem.on 'mousedown', (event,e) -> event.stopPropagation()
-
+            @elem.on 'mousedown', (event,e) ->
+                log 'noDown'
+                if e.getWindow() not in knix.popups
+                    log 'noDown close popups'
+                    knix.closePopups()
+                else
+                    log 'noDown in popups'
+                event.stopPropagation()
         @
 
     # ________________________________________________________________________________ event handling
@@ -276,7 +282,8 @@ class Widget
         undefined
 
     close: =>
-        # log 'close', @elem.id
+        tag '.close'
+        log 'close', @elem.id
         @emit 'close'
         @elem.remove()
         @elem = null
