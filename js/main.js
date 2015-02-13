@@ -1,15 +1,31 @@
+
+/*
+
+    000000000 00000000  0000000  000000000
+       000    000      000          000
+       000    0000000   0000000     000
+       000    000            000    000
+       000    00000000  0000000     000
+ */
 var Test;
 
 Test = (function() {
   function Test() {}
 
+
+  /*
+  
+       0000000  0000000   000   000  000   000  00000000  0000000 000000000  0000000   00000000
+      000      000   000  0000  000  0000  000  000      000         000    000   000  000   000
+      000      000   000  000 0 000  000 0 000  000000   000         000    000   000  0000000
+      000      000   000  000  0000  000  0000  000      000         000    000   000  000   000
+       0000000  0000000   000   000  000   000  00000000  0000000    000     0000000   000   000
+   */
+
   Test.connectorBox = function() {
     return knix.get({
       title: 'connector',
-      hasSize: true,
-      minWidth: 260,
-      minHeight: 150,
-      maxHeight: 150,
+      resize: 'horizontal',
       x: 100,
       y: 100,
       children: [
@@ -136,6 +152,16 @@ Test = (function() {
     return b.elem.click();
   };
 
+
+  /*
+  
+      00000000    0000000   000000000  000   000
+      000   000  000   000     000     000   000
+      00000000   000000000     000     000000000
+      000        000   000     000     000   000
+      000        000   000     000     000   000
+   */
+
   Test.svgPath = function() {
     var end, endHead, pth, start, startHead;
     pth = knix.get({
@@ -205,6 +231,16 @@ Test = (function() {
     });
   };
 
+
+  /*
+  
+       000   000  00000000  000      000       0000000      0000000   000      000  0000000    00000000  00000000
+       000   000  000       000      000      000   000    000        000      000  000   000  000       000   000
+       000000000  0000000   000      000      000   000     0000000   000      000  000   000  0000000   0000000
+       000   000  000       000      000      000   000          000  000      000  000   000  000       000   000
+       000   000  00000000  0000000  0000000   0000000      0000000   0000000  000  0000000    00000000  000   000
+   */
+
   Test.helloSlider = function() {
     var b;
     return b = knix.get({
@@ -215,7 +251,7 @@ Test = (function() {
         var w;
         w = knix.get({
           title: 'hello',
-          hasSize: true,
+          resize: true,
           minWidth: 130,
           center: true,
           children: [
@@ -248,6 +284,16 @@ Test = (function() {
     });
   };
 
+
+  /*
+  
+    0000000   000      000  0000000    00000000  00000000       000   000   0000000   000     000   000  00000000
+   000        000      000  000   000  000       000   000      000   000  000   000  000     000   000  000
+    0000000   000      000  000   000  0000000   0000000         000 000   000000000  000     000   000  0000000
+         000  000      000  000   000  000       000   000         000     000   000  000     000   000  000
+    0000000   0000000  000  0000000    00000000  000   000          0      000   000  0000000  0000000   00000000
+   */
+
   Test.sliderAndValue = function() {
     var b;
     return b = knix.get({
@@ -258,11 +304,7 @@ Test = (function() {
         return knix.get({
           y: 30,
           title: 'slider & value',
-          hasSize: true,
-          width: 150,
-          minWidth: 150,
-          minHeight: 150,
-          maxHeight: 150,
+          resize: 'horizontal',
           children: [
             {
               id: 'slider_1',
@@ -280,14 +322,10 @@ Test = (function() {
               value: 50,
               format: "%3.2f"
             }, {
-              type: 'relative',
-              child: {
-                type: 'button',
-                text: 'ok',
-                "class": 'top-right',
-                onClick: function() {
-                  return this.getWindow().close();
-                }
+              type: 'button',
+              text: 'ok',
+              onClick: function() {
+                return this.getWindow().close();
               }
             }
           ],
@@ -304,6 +342,16 @@ Test = (function() {
       }
     });
   };
+
+
+  /*
+  
+       0000000  000000000  0000000    0000000   00000000
+      000          000    000   000  000        000
+       0000000     000    000000000  000  0000  0000000
+            000    000    000   000  000   000  000
+       0000000     000    000   000   0000000   00000000
+   */
 
   Test.stageButtons = function() {
     knix.get({
@@ -367,10 +415,20 @@ Test = (function() {
 
 })();
 
+
+/*
+
+    00     00   0000000   000  000   000
+    000   000  000   000  000  0000  000
+    000000000  000000000  000  000 0 000
+    000 0 000  000   000  000  000  0000
+    000   000  000   000  000  000   000
+ */
+
 document.observe("dom:loaded", function() {
-  var c;
-  knix.init();
-  c = new Console();
+  knix.init({
+    console: true
+  });
   Test.connectors();
   Test.helloSlider();
   Test.sliderAndValue();

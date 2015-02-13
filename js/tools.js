@@ -1,4 +1,13 @@
-var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent,
+
+/*
+
+    0000000    00000000    0000000    0000000 
+    000   000  000   000  000   000  000      
+    000   000  0000000    000000000  000  0000
+    000   000  000   000  000   000  000   000
+    0000000    000   000  000   000   0000000
+ */
+var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent, _log,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -157,43 +166,15 @@ Drag = (function() {
 
 })();
 
-this.newElement = function(type) {
-  var e;
-  e = new Element(type);
-  e.identify();
-  return e;
-};
 
-Element.addMethods({
-  raise: function(element) {
-    if (!(element = $(element))) {
-      return;
-    }
-    element.parentElement.appendChild(element);
-  }
-});
+/*
 
-_.def = function(c, d) {
-  if (c != null) {
-    return _.defaults(_.clone(c), d);
-  } else {
-    return d;
-  }
-};
-
-_.clamp = function(r1, r2, v) {
-  var _ref;
-  if (r1 > r2) {
-    _ref = [r2, r1], r1 = _ref[0], r2 = _ref[1];
-  }
-  if (r1 != null) {
-    v = Math.max(v, r1);
-  }
-  if (r2 != null) {
-    v = Math.min(v, r2);
-  }
-  return v;
-};
+    000        0000000    0000000
+    000       000   000  000
+    000       000   000  000  0000
+    000       000   000  000   000
+    000000000  0000000    0000000
+ */
 
 log = function() {
   var arg, s;
@@ -210,6 +191,21 @@ log = function() {
   return Console.log.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
+_log = function() {
+  var arg, array, s;
+  array = Array.prototype.slice.call(arguments, 2);
+  s = ((function() {
+    var _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = array.length; _i < _len; _i++) {
+      arg = array[_i];
+      _results.push(str(arg));
+    }
+    return _results;
+  })()).join(" ");
+  return Console.logFileLine(arguments[0], arguments[1], s);
+};
+
 error = function() {
   var arg, s;
   s = ((function() {
@@ -224,6 +220,16 @@ error = function() {
   console.log("%c%s", 'color:yellow', s);
   return Console.error.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
+
+
+/*
+
+    00000000    0000000    0000000  
+    000   000  000   000  000       
+    00000000   000   000   0000000  
+    000        000   000        000 
+    000         0000000    0000000
+ */
 
 Pos = (function() {
   function Pos(x, y) {
@@ -366,15 +372,45 @@ pos = function(x, y) {
   return new Pos(x, y);
 };
 
+
+/*
+
+     0000000  000000000  0000000    0000000   00000000
+    000          000    000   000  000        000
+     0000000     000    000000000  000  0000  0000000
+          000    000    000   000  000   000  000
+     0000000     000    000   000   0000000   00000000
+ */
+
 Stage = (function() {
   function Stage() {}
 
+  Stage.initContextMenu = function() {
+    _log('./coffee/tools/stage.coffee', 15, 'initContextMenu');
+    $('stage_content').on('mousedown', Stage.showContextMenu);
+    Stage.contextMenu = knix.get({
+      id: 'context-menu',
+      type: 'context-menu',
+      title: 'context',
+      style: {
+        position: 'absolute'
+      }
+    });
+    Stage.contextMenu.elem.hide();
+    return Stage.contextMenu;
+  };
+
+  Stage.showContextMenu = function() {
+    _log('./coffee/tools/stage.coffee', 29, 'showContextMenu');
+    return Stage.contextMenu.elem.show();
+  };
+
   Stage.width = function() {
-    return this.size().width;
+    return Stage.size().width;
   };
 
   Stage.height = function() {
-    return this.size().height;
+    return Stage.size().height;
   };
 
   Stage.size = function() {
@@ -392,7 +428,7 @@ Stage = (function() {
 
   Stage.toggleFullscreen = function() {
     var s;
-    if (this.isFullscreen() != null) {
+    if (Stage.isFullscreen() != null) {
       if (typeof document.mozCancelFullScreen === "function") {
         document.mozCancelFullScreen();
       }
@@ -425,10 +461,20 @@ Stage = (function() {
 
 })();
 
+
+/*
+
+     0000000  000000000 00000000
+    000          000    000   000
+     0000000     000    0000000
+          000    000    000   000
+     0000000     000    000   000
+ */
+
 strIndent = "    ";
 
 str = function(o, indent, visited) {
-  var k, protoname, s, t;
+  var k, protoname, s, t, v;
   if (indent == null) {
     indent = "";
   }
@@ -456,18 +502,33 @@ str = function(o, indent, visited) {
         protoname = "object";
       }
     }
-    s = "<" + protoname + ">\n";
-    visited.push(o);
-    s += ((function() {
-      var _i, _len, _ref, _results;
-      _ref = Object.getOwnPropertyNames(o);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        k = _ref[_i];
-        _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
-      }
-      return _results;
-    })()).join("\n");
+    if (protoname === 'Array') {
+      s = '[\n';
+      visited.push(o);
+      s += ((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = o.length; _i < _len; _i++) {
+          v = o[_i];
+          _results.push(indent + strIndent + str(v, indent + strIndent, visited));
+        }
+        return _results;
+      })()).join("\n");
+      s += '\n' + indent + strIndent + ']';
+    } else {
+      s = "<" + protoname + ">\n";
+      visited.push(o);
+      s += ((function() {
+        var _i, _len, _ref, _results;
+        _ref = Object.getOwnPropertyNames(o);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          k = _ref[_i];
+          _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+        }
+        return _results;
+      })()).join("\n");
+    }
     return s + "\n";
   } else if (t === 'function') {
     return "->";
@@ -480,6 +541,16 @@ str = function(o, indent, visited) {
 String.prototype.fmt = function() {
   return vsprintf(this, [].slice.call(arguments));
 };
+
+
+/*
+
+     0000000  000000000 000   000 000      00000000
+    000          000     000 000  000      000     
+     0000000     000      00000   000      0000000 
+          000    000       000    000      000     
+     0000000     000       000    00000000 00000000
+ */
 
 StyleSwitch = (function() {
   function StyleSwitch() {}
@@ -530,5 +601,65 @@ StyleSwitch = (function() {
   return StyleSwitch;
 
 })();
+
+
+/*
+
+     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000 
+    000   000  000   000  000       000   000  000       000       000        000   000   000 
+    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000 
+    000   000  000   000  000       000   000  000       000       000   000  000   000   000 
+    000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000 
+    
+          000  000   000  000        00     00  000   000   0000000   00000000    0000000       
+          000  000  000   000        000   000  0000  000  000   000  000   000  000   000      
+          000  0000000    000        000000000  000 0 000  000   000  00000000   000 00 00      
+    000   000  000  000   000        000 0 000  000  0000  000   000  000        000 0000       
+     0000000   000   000  000000000  000   000  000   000   0000000   000         00000 00            
+
+     00000000    0000000   000000000  000   000  000   000  000   000  000   000  000   000  0000000
+     000   000  000           000     000   000  000   000  000 0 000   000 000    000 000      000  
+     0000000     0000000      000     000   000   000 000   000000000    00000      00000      000    
+     000   000        000     000     000   000     000     000   000   000 000      000      000
+     000   000   0000000      000      0000000       0      00     00  000   000     000     0000000
+ */
+
+this.newElement = function(type) {
+  var e;
+  e = new Element(type);
+  e.identify();
+  return e;
+};
+
+Element.addMethods({
+  raise: function(element) {
+    if (!(element = $(element))) {
+      return;
+    }
+    element.parentElement.appendChild(element);
+  }
+});
+
+_.def = function(c, d) {
+  if (c != null) {
+    return _.defaults(_.clone(c), d);
+  } else {
+    return d;
+  }
+};
+
+_.clamp = function(r1, r2, v) {
+  var _ref;
+  if (r1 > r2) {
+    _ref = [r2, r1], r1 = _ref[0], r2 = _ref[1];
+  }
+  if (r1 != null) {
+    v = Math.max(v, r1);
+  }
+  if (r2 != null) {
+    v = Math.min(v, r2);
+  }
+  return v;
+};
 
 //# sourceMappingURL=tools.js.map

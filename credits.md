@@ -13,6 +13,7 @@ layout: default
 
 [node](http://nodejs.org/)
 [npm](https://www.npmjs.com/)
+[ansi](https://www.npmjs.com/package/ansi)
 
 [prototypejs](http://prototypejs.org/)
 [lodash](https://lodash.com/)

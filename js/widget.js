@@ -8,7 +8,8 @@
     00     00  000  0000000     0000000   00000000     000
  */
 var Widget,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Widget = (function() {
   function Widget(config, defaults) {
@@ -16,6 +17,8 @@ Widget = (function() {
     this.round = __bind(this.round, this);
     this.strip0 = __bind(this.strip0, this);
     this.format = __bind(this.format, this);
+    this.layoutChildren = __bind(this.layoutChildren, this);
+    this.stretchWidth = __bind(this.stretchWidth, this);
     this.absCenter = __bind(this.absCenter, this);
     this.absPos = __bind(this.absPos, this);
     this.relPos = __bind(this.relPos, this);
@@ -113,26 +116,27 @@ Widget = (function() {
     _ref4 = ['minWidth', 'minHeight', 'maxWidth', 'maxHeight'];
     for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
       s = _ref4[_k];
-      if (!(this.config[s] != null)) {
-        continue;
-      }
-      style.set(s, this.config[s] + 'px');
-      if (!this.config.width && (s === 'minWidth' || s === 'maxWidth')) {
-        this.config.width = this.config[s];
-      }
-      if (!this.config.height && (s === 'minHeight' || s === 'maxHeight')) {
-        this.config.height = this.config[s];
+      if (this.config[s] != null) {
+        style.set(s, this.config[s] + 'px');
       }
     }
     if (style.keys().length) {
       this.elem.setStyle(style.toObject());
     }
+    this.insertChildren();
     if (this.config.text != null) {
       this.elem.insert(this.config.text);
     }
-    this.insertChildren();
     if (this.config.parent != null) {
       this.addToParent(this.config.parent);
+    }
+    if (this.config.pos != null) {
+      if (this.config.pos.x != null) {
+        this.config.x = this.config.pos.x;
+      }
+      if (this.config.pos.y != null) {
+        this.config.y = this.config.pos.y;
+      }
     }
     if ((this.config.x != null) || (this.config.y != null)) {
       this.elem.style.position = 'absolute';
@@ -156,21 +160,18 @@ Widget = (function() {
     this.initEvents();
     if (this.config.noDown) {
       this.elem.on('mousedown', function(event, e) {
+        var _ref5;
+        _log('./coffee/widget.coffee', 96, 'noDown');
+        if (_ref5 = e.getWindow(), __indexOf.call(knix.popups, _ref5) < 0) {
+          _log('./coffee/widget.coffee', 98, 'noDown close popups');
+          knix.closePopups();
+        } else {
+          _log('./coffee/widget.coffee', 101, 'noDown in popups');
+        }
         return event.stopPropagation();
       });
     }
     return this;
-  };
-
-  Widget.nextWidgetID = 0;
-
-  Widget.elem = function(type, clss) {
-    var e;
-    e = new Element(type);
-    e.id = "%s.%d".fmt(clss, Widget.nextWidgetID);
-    Widget.nextWidgetID += 1;
-    e.addClassName(clss);
-    return e;
   };
 
   Widget.prototype.initEvents = function() {
@@ -245,20 +246,18 @@ Widget = (function() {
 
   Widget.prototype.connect = function(signal, slot) {
     var signalEvent, signalSender, slotFunction, _ref;
-    log(this.elem.id, "connect", signal, slot);
+    tag('.connect', 'connections');
+    _log('./coffee/widget.coffee', 147, this.elem.id, signal, slot);
     _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
     slotFunction = this.resolveSlot(slot);
     if (signalSender == null) {
       error("sender not found!");
-      return;
     }
     if (signalEvent == null) {
       error("event not found!");
-      return;
     }
     if (slotFunction == null) {
       error("slot not found!");
-      return;
     }
     return {
       handler: signalSender.elem.on(signalEvent, slotFunction),
@@ -348,6 +347,17 @@ Widget = (function() {
     return event;
   };
 
+  Widget.nextWidgetID = 0;
+
+  Widget.elem = function(type, clss) {
+    var e;
+    e = new Element(type);
+    e.id = "%s.%d".fmt(clss, Widget.nextWidgetID);
+    Widget.nextWidgetID += 1;
+    e.addClassName(clss);
+    return e;
+  };
+
   Widget.prototype.addToParent = function(p) {
     var parentElement;
     if (this.elem == null) {
@@ -433,6 +443,8 @@ Widget = (function() {
   };
 
   Widget.prototype.close = function() {
+    tag('.close');
+    _log('./coffee/widget.coffee', 286, 'close', this.elem.id);
     this.emit('close');
     this.elem.remove();
     this.elem = null;
@@ -608,6 +620,47 @@ Widget = (function() {
 
   Widget.prototype.absCenter = function() {
     return this.absPos().add(pos(this.elem.getWidth(), this.elem.getHeight()).mul(0.5));
+  };
+
+  Widget.prototype.stretchWidth = function() {
+    tag('.stretchWidth', 'layout');
+    _log('./coffee/widget.coffee', 369, this);
+    return this.elem.style.width = '50%';
+  };
+
+  Widget.prototype.layoutChildren = function() {
+    var e;
+    e = (this.config.content != null) && $(this.config.content) || this.elem;
+    if (this.config.width == null) {
+      if (e.widget.config.resize != null) {
+        if (e.widget.config.resize === 'horizontal' || e.widget.config.resize === true) {
+          e.widget.stretchWidth();
+        }
+      } else {
+        this.setWidth(e.getWidth());
+      }
+    }
+    if (this.config.height == null) {
+      this.setHeight(e.getHeight());
+    }
+    if (this.config.resize) {
+      if (this.config.minWidth == null) {
+        e.style.minWidth = "%dpx".fmt(e.getWidth());
+      }
+      if (this.config.minHeight == null) {
+        e.style.minHeight = "%dpx".fmt(e.getHeight());
+      }
+      if (this.config.resize === 'horizontal') {
+        if (this.config.maxHeight == null) {
+          e.style.maxHeight = "%dpx".fmt(e.getHeight());
+        }
+      }
+      if (this.config.resize === 'vertical') {
+        if (this.config.maxWidth == null) {
+          return e.style.maxWidth = "%dpx".fmt(e.getWidth());
+        }
+      }
+    }
   };
 
   Widget.prototype.format = function(s) {

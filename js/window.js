@@ -19,6 +19,7 @@ Window = (function(_super) {
     if (config == null) {
       config = {};
     }
+    this.close = __bind(this.close, this);
     this.shade = __bind(this.shade, this);
     this.contentHeight = __bind(this.contentHeight, this);
     this.contentWidth = __bind(this.contentWidth, this);
@@ -29,6 +30,7 @@ Window = (function(_super) {
     this.sizeMove = __bind(this.sizeMove, this);
     this.sizeStart = __bind(this.sizeStart, this);
     this.addSizeButton = __bind(this.addSizeButton, this);
+    this.stretchWidth = __bind(this.stretchWidth, this);
     this.scrollToBottom = __bind(this.scrollToBottom, this);
     this.addShadeButton = __bind(this.addShadeButton, this);
     this.addCloseButton = __bind(this.addCloseButton, this);
@@ -57,11 +59,11 @@ Window = (function(_super) {
       parent: 'stage_content',
       hasClose: true,
       hasShade: true,
-      hasSize: true,
+      resize: true,
       isMovable: true,
       isShaded: false,
       onDown: function(event, e) {
-        return e.getWindow().raise();
+        return this.raise;
       }
     });
     this.initWindow();
@@ -69,6 +71,10 @@ Window = (function(_super) {
     this.insertChildren();
     this.config.connect = connect;
     this.initConnections();
+    this.layoutChildren();
+    if (cfg.popup) {
+      knix.addPopup(this);
+    }
     if (cfg.center) {
       this.moveTo(Math.max(0, Stage.size().width / 2 - this.getWidth() / 2), Math.max(0, Stage.size().height / 2 - this.getHeight() / 2));
     }
@@ -100,7 +106,7 @@ Window = (function(_super) {
       type: 'content',
       parent: this.elem.id
     });
-    if (this.config.hasSize) {
+    if (this.config.resize) {
       this.addSizeButton();
     }
     this.content = content.elem.id;
@@ -168,6 +174,11 @@ Window = (function(_super) {
     var content;
     content = $(this.content);
     return content.scrollTop = content.scrollHeight;
+  };
+
+  Window.prototype.stretchWidth = function() {
+    tag('.stretchWidth', 'layout', 'todo');
+    return _log('./coffee/window.coffee', 128, 'add horizontal stretching handles and get rid of addSize crap!');
   };
 
   Window.prototype.addSizeButton = function() {
@@ -238,6 +249,7 @@ Window = (function(_super) {
 
   Window.prototype.raise = function() {
     var scrolltop;
+    knix.closePopups();
     scrolltop = $(this.content).scrollTop;
     this.elem.parentElement.appendChild(this.elem);
     return $(this.content).scrollTop = scrolltop;
@@ -296,6 +308,14 @@ Window = (function(_super) {
     this.emit('shade', {
       shaded: this.config.isShaded
     });
+  };
+
+  Window.prototype.close = function() {
+    _log('./coffee/window.coffee', 233, 'close');
+    if (this.config.popup != null) {
+      knix.delPopup(this);
+    }
+    return Window.__super__.close.apply(this, arguments);
   };
 
   return Window;
