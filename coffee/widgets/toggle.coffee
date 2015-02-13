@@ -19,14 +19,12 @@ class Toggle extends Button
             onClick:    @onClick
             state:      'off'
 
+        @elem.on 'onState', @config.onState if @config.onState?
         @setState cfg.state
 
     getState: => ((not @config.state) or @config.state == 'off') and 'off' or 'on'
 
     setState: (state) =>
-
-        tag '.setState'
-        log 'state', state
 
         @elem.removeClassName @getState()
 
@@ -42,9 +40,9 @@ class Toggle extends Button
 
         @elem.addClassName @config.state
 
+        @emit 'onState',
+            state: @config.state
+
     toggle: => @setState(@getState() == 'on' and 'off' or 'on')
 
-    onClick: =>
-        tag '.onClick'
-        log '@config.state', @config.state
-        @toggle()
+    onClick: => @toggle()

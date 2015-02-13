@@ -61,11 +61,11 @@ class Console extends Window
 
         children = []
         for tag of @logTags
-            console.log 'logTags', tag, @logTags[tag]
             children.push
-                type:   'toggle'
-                text:   tag
-                state:  @logTags[tag]
+                type:       'toggle'
+                text:       tag
+                state:      @logTags[tag]
+                onState:    @onTagState
 
         children.push
             type: 'button'
@@ -83,6 +83,13 @@ class Console extends Window
 
         event.preventDefault()
 
+    onTagState: (event,e) =>
+        tag = e.widget.config.text
+        @logTags[tag] = event.detail.state
+        tags = {}
+        tags[tag] = @logTags[tag]
+        @applyTags tags
+
     insert: (s) =>
         @getChild('console').elem.insert s
         @scrollToBottom()
@@ -96,19 +103,29 @@ class Console extends Window
             '" class="console-link" title="'+tags.join(' ')+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
             '</pre>'
-
-        @filterTags tags
+        @filterTagList tags
 
     fileScopeTags: (fileTag, scopeTags) =>
         scopeTags? and [fileTag, (((s.startsWith('.') or s.startsWith('@')) and fileTag+s or s) for s in scopeTags) ].flatten() or [fileTag]
 
-    filterTags: (tags) =>
+    filterTagList: (tags) =>
         for tag in tags
+            tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
+            tagElems = @elem.select(tclass)
             if not @logTags[tag]? or @logTags[tag] == false or @logTags[tag] == 'off'
-                t = tag.replace(/[\/]/g, '_')  # replace slashes with _
-                tagElems = @elem.select('.log_'+t)
                 for tagElem in tagElems
                     tagElem.style.display = 'none'
+
+    applyTags: (tags) =>
+        for tag of tags
+            tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
+            tagElems = @elem.select(tclass)
+            if not @logTags[tag]? or @logTags[tag] == false or @logTags[tag] == 'off'
+                for tagElem in tagElems
+                    tagElem.style.display = 'none'
+            else
+                for tagElem in tagElems
+                    tagElem.style.display = ''
 
     addLogTag: (tag) =>
 
