@@ -15,11 +15,11 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            # 'widget':              'off'
-            # 'window':              'off'
-            # 'window.stretchWidth': 'off'
-            # 'layout':              'off'
-            # 'tools/stage':         'off'
+            'widget':              'off'
+            'window':              'off'
+            'layout':              'off'
+            'tools/stage':         'off'
+            'todo':                'off'
             'connections':         'off'
             'widgets/connection':  'off'
 
@@ -61,11 +61,12 @@ class Console extends Window
 
         children = []
         for tag of @logTags
-            children.push
-                type:       'toggle'
-                text:       tag
-                state:      @logTags[tag]
-                onState:    @onTagState
+            if not tag.startsWith('@') and not tag.startsWith('.')
+                children.push
+                    type:       'toggle'
+                    text:       tag
+                    state:      @logTags[tag]
+                    onState:    @onTagState
 
         children.push
             type: 'button'
@@ -75,20 +76,36 @@ class Console extends Window
         knix.get
             hasClose: false
             hasMaxi:  false
-            hasTitle: false
+            title:    'tags'
             resize:   false
             hasShade: false
             pos:      Stage.absPos(event)
             children: children
+            buttons:  \
+            [
+                class:   'window-button-right'
+                child:
+                    type: 'icon'
+                    icon: 'octicon-x'
+                onClick: (event,e) -> 
+                    for t in e.getWindow().elem.select('.toggle')
+                        t.widget.setState('off')
+            ,
+                type:    "window-button-left"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-check'
+                onClick: (event,e) -> 
+                    for t in e.getWindow().elem.select('.toggle')
+                        t.widget.setState('on')
+            ]
 
         event.preventDefault()
 
     onTagState: (event,e) =>
         tag = e.widget.config.text
         @logTags[tag] = event.detail.state
-        tags = {}
-        tags[tag] = @logTags[tag]
-        @applyTags tags
+        @updateTags()
 
     insert: (s) =>
         @getChild('console').elem.insert s
@@ -103,34 +120,23 @@ class Console extends Window
             '" class="console-link" title="'+tags.join(' ')+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
             '</pre>'
-        @filterTagList tags
+        @updateTags()
 
     fileScopeTags: (fileTag, scopeTags) =>
         scopeTags? and [fileTag, (((s.startsWith('.') or s.startsWith('@')) and fileTag+s or s) for s in scopeTags) ].flatten() or [fileTag]
 
-    filterTagList: (tags) =>
-        for tag in tags
-            tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
-            tagElems = @elem.select(tclass)
-            if not @logTags[tag]? or @logTags[tag] == false or @logTags[tag] == 'off'
-                for tagElem in tagElems
-                    tagElem.style.display = 'none'
-
-    applyTags: (tags) =>
-        for tag of tags
-            tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
-            tagElems = @elem.select(tclass)
-            if not @logTags[tag]? or @logTags[tag] == false or @logTags[tag] == 'off'
-                for tagElem in tagElems
-                    tagElem.style.display = 'none'
-            else
+    updateTags: (tags) =>
+        tagElems = @elem.select('pre')
+        for tagElem in tagElems
+            tagElem.style.display = 'none'            
+        for tag of @logTags
+            if @logTags[tag]? and (@logTags[tag] == true or @logTags[tag] == 'on')
+                tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
+                tagElems = @elem.select(tclass)
                 for tagElem in tagElems
                     tagElem.style.display = ''
 
-    addLogTag: (tag) =>
-
-        @logTags[tag] = true if not @logTags[tag]?
-        # console.log @logTags
+    addLogTag: (tag) => @logTags[tag] = true if not @logTags[tag]?
 
     # _________________________________________________________________________________________ static
 
@@ -144,8 +150,7 @@ class Console extends Window
         url = 'http://localhost:8888/'+file+':'+line
         tag = file.substr(9)             # remove 'coffee/' prefix
         tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
-        # tag = tag.replace(/[\/]/g, '_')  # replace slashes with _
-
+        
         @allConsoles().each (c) -> c.logFileTag tag, url, s
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))

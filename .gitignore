@@ -36,6 +36,6 @@ npm-debug.log
 js
 style/*.css
 bower_components
-.atom-build.json
+# .atom-build.json
 web
 .pepper
