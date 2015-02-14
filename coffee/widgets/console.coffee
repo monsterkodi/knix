@@ -15,15 +15,13 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            all: 'on'
-            # 'knix':                'off'
-            # 'widget':              'off'
-            # 'window':              'off'
-            # 'layout':              'off'
-            # 'tools/stage':         'off'
-            # 'todo':                'off'
-            # 'connections':         'off'
-            # 'widgets/connection':  'off'
+            'knix':           'off'
+            'Stage':          'off'
+            # 'Widget':         'off'
+            'Window':         'off'
+            'layout':         'off'
+            'todo':           'off'
+            # 'connections':    'off'
 
         @scopeTags = []
 
@@ -121,12 +119,13 @@ class Console extends Window
         onclick = "new Ajax.Request('"+url+"');"
         tags = [info.class].concat(Console.scopeTags)
         styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags when t?).join(' ')
-        @insert '<pre class="'+styles+'"><span class="log_class">'+info.class+'</span>'+
-            '<span class="log_method_type">'+info.type+'</span>'+
-            '<span class="log_method">'+info.method+'</span>'+
-            '<a onClick="'+onclick+
-            '" class="console-link" title="'+tags.join(' ')+' '+infoStr+
-            '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
+        @insert '<pre class="'+styles+'">'+
+            '<a onClick="'+onclick+'" class="console-link" title="'+infoStr+' '+tags.join(' ')+'">'+
+            '<span class="console-class">'+         info.class+'</span>'+
+            '<span class="console-method-type">'+   info.type+'</span>'+
+            '<span class="console-method">'+        info.method+' </span>'+
+            '<span class="octicon octicon-playback-play"></span>'+
+            '</a> '+Console.toHtml(s)+
             '</pre>'
         @updateTags()
 
