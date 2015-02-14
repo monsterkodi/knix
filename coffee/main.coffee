@@ -26,4 +26,6 @@ document.observe "dom:loaded", ->
 
     # StyleSwitch.toggle()
 
+    # $('show_about').click()
+
     return

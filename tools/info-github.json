@@ -1,0 +1,4 @@
+{
+    "home-url":   "http://monsterkodi.github.io/knix/",
+    "source-url": "window.open(\"https://github.com/monsterkodi/knix/blob/master/%s#L%d\");"
+}

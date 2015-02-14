@@ -113,14 +113,13 @@ class Console extends Window
         @scrollToBottom()
 
     logInfo: (info,url,s) =>
-        console.log info, url, s
+        # console.log info, url, s
         @addLogTag info.class
         infoStr = info.class + info.type + info.method
-        onclick = "new Ajax.Request('"+url+"');"
         tags = [info.class].concat(Console.scopeTags)
         styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags when t?).join(' ')
         @insert '<pre class="'+styles+'">'+
-            '<a onClick="'+onclick+'" class="console-link" title="'+infoStr+' '+tags.join(' ')+'">'+
+            '<a onClick=\''+url+'\' class="console-link" title="'+infoStr+' '+tags.join(' ')+'">'+
             '<span class="console-class">'+         info.class+'</span>'+
             '<span class="console-method-type">'+   info.type+'</span>'+
             '<span class="console-method">'+        info.method+' </span>'+
@@ -150,9 +149,8 @@ class Console extends Window
             @allConsoles().each (c) -> c.addLogTag(t)
 
     @logInfo: (info, s) =>
-
-        url = 'http://localhost:8888/'+info.file+':'+info.line
-        info.file = info.file.slice(9, -7)        # remove 'coffee/' prefix and '.coffee' suffix
+        url = '::.info.json:source-url::'.fmt(info.file,info.line)
+        info.file = info.file.slice(9, -7) # remove 'coffee/' prefix and '.coffee' suffix
         @allConsoles().each (c) -> c.logInfo info, url, s
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))

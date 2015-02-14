@@ -82,6 +82,10 @@ module.exports = (grunt) ->
                 command: 'tools/makedemo.sh'
             web:
                 command: 'cd web && bundle exec jekyll serve'
+            info_local:
+                command: 'cp tools/info-local.json .info.json'
+            info_github:
+                command: 'cp tools/info-github.json .info.json'
 
         open:
           browser:
@@ -110,5 +114,5 @@ module.exports = (grunt) ->
     grunt.registerTask 'node',      [ 'shell:node' ]
     grunt.registerTask 'kill',      [ 'shell:kill' ]
     grunt.registerTask 'sleep',     [ 'shell:sleep' ]
-    grunt.registerTask 'demo',      [ 'shell:demo' ]
+    grunt.registerTask 'demo',      [ 'shell:info_github', 'build', 'shell:demo', 'shell:info_local' ]
     grunt.registerTask 'web',       [ 'shell:web' ]
