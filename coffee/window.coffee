@@ -34,10 +34,10 @@ class Window extends Widget
             parent:   'stage_content'
             hasClose:  true
             hasShade:  true
-            resize:   true
+            resize:    true
             isMovable: true
             isShaded:  false
-            onDown:    (event,e) -> @raise
+            onDown:    @raise
 
         @initWindow()
         @config.children = children
@@ -190,8 +190,10 @@ class Window extends Widget
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
 
-    raise: =>
-        knix.closePopups()
+    raise: (event,e) =>
+        if e? and e.getWindow() not in knix.popups
+            log e.getWindow()
+            knix.closePopups()
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
         $(@content).scrollTop = scrolltop
