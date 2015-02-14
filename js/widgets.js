@@ -20,7 +20,7 @@ About = (function(_super) {
     if (cfg == null) {
       cfg = {};
     }
-    this.url = 'http://localhost:4000/';
+    this.url = 'http://monsterkodi.github.io/knix/';
     About.__super__.constructor.call(this, _.def(cfg, defs), {
       title: 'about',
       id: 'about',
