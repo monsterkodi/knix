@@ -93,12 +93,10 @@ class Widget
 
         if @config.noDown
             @elem.on 'mousedown', (event,e) ->
-                log 'noDown'
                 if e.getWindow() not in knix.popups
                     log 'noDown close popups'
                     knix.closePopups()
                 else
-                    log 'noDown in popups'
                 event.stopPropagation()
         @
 
@@ -120,7 +118,6 @@ class Widget
         slots = @config.slots
         return if not slots?
         for slot, func of slots
-            # log "@initSlots", @elem.id, slot
             @[slot] = func
         @
 
@@ -143,7 +140,7 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        tag '.connect', 'connections'
+        tag 'connections'
         log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
@@ -282,7 +279,6 @@ class Widget
         undefined
 
     close: =>
-        tag '.close'
         log 'close', @elem.id
         @emit 'close'
         @elem.remove()
@@ -365,7 +361,7 @@ class Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        tag '.stretchWidth', 'layout'
+        tag 'layout'
         log @
         @elem.style.width = '50%'
 

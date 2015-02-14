@@ -80,6 +80,8 @@ module.exports = (grunt) ->
                 command: 'tools/unwatch'
             demo:
                 command: 'tools/makedemo.sh'
+            web:
+                command: 'cd web && bundle exec jekyll serve'
 
         open:
           browser:
@@ -109,3 +111,4 @@ module.exports = (grunt) ->
     grunt.registerTask 'kill',      [ 'shell:kill' ]
     grunt.registerTask 'sleep',     [ 'shell:sleep' ]
     grunt.registerTask 'demo',      [ 'shell:demo' ]
+    grunt.registerTask 'web',       [ 'shell:web' ]

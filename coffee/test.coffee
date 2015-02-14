@@ -24,11 +24,8 @@ class Test
 
         knix.get
 
-            title:     'connector'
+            title:    'connector'
             resize:   'horizontal'
-            # minWidth:  260
-            # minHeight: 150
-            # maxHeight: 'content'
             x:         100
             y:         100
             children: \
@@ -271,14 +268,14 @@ class Test
             onClick: ->
                 knix.get
                     y:         30
+                    minWidth:  200
                     title:     'slider & value'
-                    resize:   'horizontal'
-                    children: \
+                    resize:    'horizontal'
+                    children:  \
                     [
                         id:         'slider_1'
                         type:       'slider'
                         value:      50.0
-                        # valueStep:  10
                     ,
                         id:         'slider_2'
                         type:       'slider'

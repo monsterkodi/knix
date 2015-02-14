@@ -15,13 +15,14 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
+            'knix':                'off'
             'widget':              'off'
-            # 'window':              'off'
+            'window':              'off'
             'layout':              'off'
             'tools/stage':         'off'
             'todo':                'off'
             'connections':         'off'
-            'widgets/connection':  'off'
+            # 'widgets/connection':  'off'
 
         @scopeTags = []
 
@@ -111,14 +112,26 @@ class Console extends Window
     insert: (s) =>
         @getChild('console').elem.insert s
         @scrollToBottom()
-
+        
     logFileTag: (fileTag,url,s) =>
         @addLogTag fileTag
         onclick = "new Ajax.Request('"+url+"');"
         tags = @fileScopeTags fileTag, Console.scopeTags
-        styles = ("log_"+t.replace(/[\/]/g, '_') for t in tags).join(' ')
+        styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags).join(' ')
         @insert '<pre class="'+styles+'"><a onClick="'+onclick+
             '" class="console-link" title="'+tags.join(' ')+
+            '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
+            '</pre>'
+        @updateTags()
+
+    logInfo: (info,url,s) =>
+        @addLogTag info.class
+        infoStr = info.class + info.type + info.method
+        onclick = "new Ajax.Request('"+url+"');"
+        tags = Console.scopeTags or []
+        styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags).join(' ')
+        @insert '<pre class="'+styles+'"><a onClick="'+onclick+
+            '" class="console-link" title="'+tags.join(' ')+' '+infoStr+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
             '</pre>'
         @updateTags()
@@ -132,7 +145,7 @@ class Console extends Window
             tagElem.style.display = 'none'
         for tag of @logTags
             if @logTags[tag]? and (@logTags[tag] == true or @logTags[tag] == 'on')
-                tclass = '.log_'+tag.replace(/[\/]/g, '_')  # replace slashes with _
+                tclass = '.log_'+tag.replace(/[\/@]/g, '_')  # replace / and @ with _
                 tagElems = @elem.select(tclass)
                 for tagElem in tagElems
                     tagElem.style.display = ''
@@ -153,6 +166,12 @@ class Console extends Window
         tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
 
         @allConsoles().each (c) -> c.logFileTag tag, url, s
+
+    @logInfo: (info, s) =>
+
+        url = 'http://localhost:8888/'+info.file+':'+info.line
+        info.file = info.file.slice(9, -7)        # remove 'coffee/' prefix and '.coffee' suffix
+        @allConsoles().each (c) -> c.logInfo info, url, s
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))
 

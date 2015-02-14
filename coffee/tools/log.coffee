@@ -21,18 +21,19 @@ log = ->
     #       s += " "
     s = (str(arg) for arg in arguments).join(" ")
 
-    # console.dir(console)
-    # console.trace()
     console.log "%c%s", 'color:white', s
 
     Console.log.apply(Console, Array.prototype.slice.call(arguments, 0))
 
-_log = ->
+_logFile = ->
 
     array = Array.prototype.slice.call(arguments, 2)
     s = (str(arg) for arg in array).join " "
-    # console.log "%c%s", 'color:white', s
     Console.logFileLine arguments[0], arguments[1], s
+
+_log = ->
+    array = Array.prototype.slice.call(arguments, 1)
+    Console.logInfo arguments[0], (str(arg) for arg in array).join " "
 
 error = ->
 
