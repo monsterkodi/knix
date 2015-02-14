@@ -15,13 +15,14 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            'knix':                'off'
-            'widget':              'off'
-            'window':              'off'
-            'layout':              'off'
-            'tools/stage':         'off'
-            'todo':                'off'
-            'connections':         'off'
+            all: 'on'
+            # 'knix':                'off'
+            # 'widget':              'off'
+            # 'window':              'off'
+            # 'layout':              'off'
+            # 'tools/stage':         'off'
+            # 'todo':                'off'
+            # 'connections':         'off'
             # 'widgets/connection':  'off'
 
         @scopeTags = []
@@ -112,32 +113,22 @@ class Console extends Window
     insert: (s) =>
         @getChild('console').elem.insert s
         @scrollToBottom()
-        
-    logFileTag: (fileTag,url,s) =>
-        @addLogTag fileTag
-        onclick = "new Ajax.Request('"+url+"');"
-        tags = @fileScopeTags fileTag, Console.scopeTags
-        styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags).join(' ')
-        @insert '<pre class="'+styles+'"><a onClick="'+onclick+
-            '" class="console-link" title="'+tags.join(' ')+
-            '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
-            '</pre>'
-        @updateTags()
 
     logInfo: (info,url,s) =>
+        console.log info, url, s
         @addLogTag info.class
         infoStr = info.class + info.type + info.method
         onclick = "new Ajax.Request('"+url+"');"
-        tags = Console.scopeTags or []
-        styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags).join(' ')
-        @insert '<pre class="'+styles+'"><a onClick="'+onclick+
+        tags = [info.class].concat(Console.scopeTags)
+        styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags when t?).join(' ')
+        @insert '<pre class="'+styles+'"><span class="log_class">'+info.class+'</span>'+
+            '<span class="log_method_type">'+info.type+'</span>'+
+            '<span class="log_method">'+info.method+'</span>'+
+            '<a onClick="'+onclick+
             '" class="console-link" title="'+tags.join(' ')+' '+infoStr+
             '"><span class="octicon octicon-primitive-dot"></span></a> '+Console.toHtml(s)+
             '</pre>'
         @updateTags()
-
-    fileScopeTags: (fileTag, scopeTags) =>
-        scopeTags? and [fileTag, (((s.startsWith('.') or s.startsWith('@')) and fileTag+s or s) for s in scopeTags) ].flatten() or [fileTag]
 
     updateTags: (tags) =>
         tagElems = @elem.select('pre')
@@ -158,14 +149,6 @@ class Console extends Window
         @scopeTags = Array.prototype.slice.call(arguments, 0)
         for t in @scopeTags
             @allConsoles().each (c) -> c.addLogTag(t)
-
-    @logFileLine: (file, line, s) =>
-
-        url = 'http://localhost:8888/'+file+':'+line
-        tag = file.substr(9)             # remove 'coffee/' prefix
-        tag = tag.substr(0,tag.length-7) # remove '.coffee' suffix
-
-        @allConsoles().each (c) -> c.logFileTag tag, url, s
 
     @logInfo: (info, s) =>
 
