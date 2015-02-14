@@ -12,12 +12,19 @@ var knix;
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.47';
+  knix.version = '0.1.126';
 
   knix.init = function(config) {
     var c, s;
     s = 'welcome to';
-    _log('./coffee/knix.coffee', 19, 'knix' + knix.version);
+    _log({
+      "file": "./coffee/knix.coffee",
+      "line": 19,
+      "class": "knix",
+      "args": ["config"],
+      "method": "init",
+      "type": "@"
+    }, 'knix' + knix.version);
     if (config.console != null) {
       c = new Console();
       if (config.console === 'shade') {
@@ -109,22 +116,41 @@ knix = (function() {
       knix.popups = [];
     }
     knix.popups.push(p);
-    _log('./coffee/knix.coffee', 97, 'install popup handler');
+    _log({
+      "file": "./coffee/knix.coffee",
+      "line": 97,
+      "class": "knix",
+      "args": ["p"],
+      "method": "addPopup",
+      "type": "@"
+    }, 'install popup handler');
     if (knix.popupHandler == null) {
       return knix.popupHandler = document.on('mousedown', knix.closePopups);
     }
   };
 
   knix.delPopup = function(p) {
-    tag('.delPopup');
-    _log('./coffee/knix.coffee', 103, 'delpopup');
+    _log({
+      "file": "./coffee/knix.coffee",
+      "line": 102,
+      "class": "knix",
+      "args": ["p"],
+      "method": "delPopup",
+      "type": "@"
+    }, 'delpopup');
     return knix.popups = knix.popups.without(p);
   };
 
   knix.closePopups = function() {
     var p, _i, _len, _ref;
-    tag('.closePopups');
-    _log('./coffee/knix.coffee', 108, 'closepopups');
+    _log({
+      "file": "./coffee/knix.coffee",
+      "line": 106,
+      "class": "knix",
+      "args": ["p"],
+      "method": "closePopups",
+      "type": "@"
+    }, 'closepopups');
     if (knix.popups != null) {
       _ref = knix.popups;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

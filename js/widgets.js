@@ -66,8 +66,14 @@ About = (function(_super) {
   }
 
   About.show = function() {
-    tag("@show");
-    _log('./coffee/widgets/about.coffee', 55, "about...");
+    _log({
+      "file": "./coffee/widgets/about.coffee",
+      "line": 54,
+      "class": "About",
+      "args": ["cfg={}", "defs"],
+      "method": "show",
+      "type": "@"
+    }, "about...");
     if ($('about')) {
       return $('about').raise();
     } else {
@@ -246,7 +252,14 @@ Connection = (function() {
     _ref = this.signalSlotConnector(), signalConnector = _ref[0], slotConnector = _ref[1];
     signal = signalConnector.config.signal;
     slot = slotConnector.config.slot;
-    _log('./coffee/widgets/connection.coffee', 88, this.path.path.id(), "connect", signal, slot);
+    _log({
+      "file": "./coffee/widgets/connection.coffee",
+      "line": 88,
+      "class": "Connection",
+      "args": ["event", "e"],
+      "method": "connect",
+      "type": "."
+    }, this.path.path.id(), "connect", signal, slot);
     _ref1 = signalConnector.resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
     slotFunction = slotConnector.resolveSlot(slot);
     return {
@@ -260,7 +273,14 @@ Connection = (function() {
   };
 
   Connection.prototype.disconnect = function() {
-    _log('./coffee/widgets/connection.coffee', 99, this.path.path.id(), "disconnect", this.connection.signal, this.connection.slot);
+    _log({
+      "file": "./coffee/widgets/connection.coffee",
+      "line": 99,
+      "class": "Connection",
+      "args": ["event", "e"],
+      "method": "disconnect",
+      "type": "."
+    }, this.path.path.id(), "disconnect", this.connection.signal, this.connection.slot);
     this.connection.handler.stop();
     return this.conncetion = null;
   };
@@ -481,20 +501,17 @@ Console = (function(_super) {
   function Console(cfg) {
     this.addLogTag = __bind(this.addLogTag, this);
     this.updateTags = __bind(this.updateTags, this);
-    this.fileScopeTags = __bind(this.fileScopeTags, this);
-    this.logFileTag = __bind(this.logFileTag, this);
+    this.logInfo = __bind(this.logInfo, this);
     this.insert = __bind(this.insert, this);
     this.onTagState = __bind(this.onTagState, this);
     this.onContextMenu = __bind(this.onContextMenu, this);
     var h, w;
     this.logTags = {
       'knix': 'off',
-      'widget': 'off',
-      'window': 'off',
+      'Stage': 'off',
+      'Window': 'off',
       'layout': 'off',
-      'tools/stage': 'off',
-      'todo': 'off',
-      'connections': 'off'
+      'todo': 'off'
     };
     this.scopeTags = [];
     w = Stage.size().width / 2;
@@ -617,37 +634,26 @@ Console = (function(_super) {
     return this.scrollToBottom();
   };
 
-  Console.prototype.logFileTag = function(fileTag, url, s) {
-    var onclick, styles, t, tags;
-    this.addLogTag(fileTag);
+  Console.prototype.logInfo = function(info, url, s) {
+    var infoStr, onclick, styles, t, tags;
+    console.log(info, url, s);
+    this.addLogTag(info["class"]);
+    infoStr = info["class"] + info.type + info.method;
     onclick = "new Ajax.Request('" + url + "');";
-    tags = this.fileScopeTags(fileTag, Console.scopeTags);
+    tags = [info["class"]].concat(Console.scopeTags);
     styles = ((function() {
       var _i, _len, _results;
       _results = [];
       for (_i = 0, _len = tags.length; _i < _len; _i++) {
         t = tags[_i];
-        _results.push("log_" + t.replace(/[\/]/g, '_'));
+        if (t != null) {
+          _results.push("log_" + t.replace(/[\/@]/g, '_'));
+        }
       }
       return _results;
     })()).join(' ');
-    this.insert('<pre class="' + styles + '"><a onClick="' + onclick + '" class="console-link" title="' + tags.join(' ') + '"><span class="octicon octicon-primitive-dot"></span></a> ' + Console.toHtml(s) + '</pre>');
+    this.insert('<pre class="' + styles + '">' + '<a onClick="' + onclick + '" class="console-link" title="' + infoStr + ' ' + tags.join(' ') + '">' + '<span class="console-class">' + info["class"] + '</span>' + '<span class="console-method-type">' + info.type + '</span>' + '<span class="console-method">' + info.method + ' </span>' + '<span class="octicon octicon-playback-play"></span>' + '</a> ' + Console.toHtml(s) + '</pre>');
     return this.updateTags();
-  };
-
-  Console.prototype.fileScopeTags = function(fileTag, scopeTags) {
-    var s;
-    return (scopeTags != null) && [
-      fileTag, (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = scopeTags.length; _i < _len; _i++) {
-          s = scopeTags[_i];
-          _results.push((s.startsWith('.') || s.startsWith('@')) && fileTag + s || s);
-        }
-        return _results;
-      })()
-    ].flatten() || [fileTag];
   };
 
   Console.prototype.updateTags = function(tags) {
@@ -660,7 +666,7 @@ Console = (function(_super) {
     _results = [];
     for (tag in this.logTags) {
       if ((this.logTags[tag] != null) && (this.logTags[tag] === true || this.logTags[tag] === 'on')) {
-        tclass = '.log_' + tag.replace(/[\/]/g, '_');
+        tclass = '.log_' + tag.replace(/[\/@]/g, '_');
         tagElems = this.elem.select(tclass);
         _results.push((function() {
           var _j, _len1, _results1;
@@ -698,13 +704,12 @@ Console = (function(_super) {
     return _results;
   };
 
-  Console.logFileLine = function(file, line, s) {
-    var tag, url;
-    url = 'http://localhost:8888/' + file + ':' + line;
-    tag = file.substr(9);
-    tag = tag.substr(0, tag.length - 7);
+  Console.logInfo = function(info, s) {
+    var url;
+    url = 'http://localhost:8888/' + info.file + ':' + info.line;
+    info.file = info.file.slice(9, -7);
     return Console.allConsoles().each(function(c) {
-      return c.logFileTag(tag, url, s);
+      return c.logInfo(info, url, s);
     });
   };
 

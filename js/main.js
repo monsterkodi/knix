@@ -303,6 +303,7 @@ Test = (function() {
       onClick: function() {
         return knix.get({
           y: 30,
+          minWidth: 200,
           title: 'slider & value',
           resize: 'horizontal',
           children: [

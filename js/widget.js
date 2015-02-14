@@ -161,12 +161,18 @@ Widget = (function() {
     if (this.config.noDown) {
       this.elem.on('mousedown', function(event, e) {
         var _ref5;
-        _log('./coffee/widget.coffee', 96, 'noDown');
         if (_ref5 = e.getWindow(), __indexOf.call(knix.popups, _ref5) < 0) {
-          _log('./coffee/widget.coffee', 98, 'noDown close popups');
+          _log({
+            "file": "./coffee/widget.coffee",
+            "line": 97,
+            "class": "Widget",
+            "args": ["config", "defaults"],
+            "method": "init",
+            "type": "."
+          }, 'noDown close popups');
           knix.closePopups();
         } else {
-          _log('./coffee/widget.coffee', 101, 'noDown in popups');
+
         }
         return event.stopPropagation();
       });
@@ -246,8 +252,15 @@ Widget = (function() {
 
   Widget.prototype.connect = function(signal, slot) {
     var signalEvent, signalSender, slotFunction, _ref;
-    tag('.connect', 'connections');
-    _log('./coffee/widget.coffee', 147, this.elem.id, signal, slot);
+    tag('connections');
+    _log({
+      "file": "./coffee/widget.coffee",
+      "line": 144,
+      "class": "Widget",
+      "args": ["signal", "slot"],
+      "method": "connect",
+      "type": "."
+    }, this.elem.id, signal, slot);
     _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
     slotFunction = this.resolveSlot(slot);
     if (signalSender == null) {
@@ -443,8 +456,14 @@ Widget = (function() {
   };
 
   Widget.prototype.close = function() {
-    tag('.close');
-    _log('./coffee/widget.coffee', 286, 'close', this.elem.id);
+    _log({
+      "file": "./coffee/widget.coffee",
+      "line": 282,
+      "class": "Widget",
+      "args": ["classOrID"],
+      "method": "close",
+      "type": "."
+    }, 'close', this.elem.id);
     this.emit('close');
     this.elem.remove();
     this.elem = null;
@@ -623,8 +642,15 @@ Widget = (function() {
   };
 
   Widget.prototype.stretchWidth = function() {
-    tag('.stretchWidth', 'layout');
-    _log('./coffee/widget.coffee', 369, this);
+    tag('layout');
+    _log({
+      "file": "./coffee/widget.coffee",
+      "line": 365,
+      "class": "Widget",
+      "args": ["s"],
+      "method": "stretchWidth",
+      "type": "."
+    }, this);
     return this.elem.style.width = '50%';
   };
 

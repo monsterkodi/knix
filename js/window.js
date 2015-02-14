@@ -177,8 +177,15 @@ Window = (function(_super) {
   };
 
   Window.prototype.stretchWidth = function() {
-    tag('.stretchWidth', 'layout', 'todo');
-    return _log('./coffee/window.coffee', 128, 'add horizontal stretching handles and get rid of addSize crap!');
+    tag('layout', 'todo');
+    return _log({
+      "file": "./coffee/window.coffee",
+      "line": 128,
+      "class": "Window",
+      "args": ["event", "e"],
+      "method": "stretchWidth",
+      "type": "."
+    }, 'add horizontal stretching handles and get rid of addSize crap!');
   };
 
   Window.prototype.addSizeButton = function() {
@@ -311,7 +318,14 @@ Window = (function(_super) {
   };
 
   Window.prototype.close = function() {
-    _log('./coffee/window.coffee', 233, 'close');
+    _log({
+      "file": "./coffee/window.coffee",
+      "line": 233,
+      "class": "Window",
+      "args": ["box=\"border-box-height\""],
+      "method": "close",
+      "type": "."
+    }, 'close');
     if (this.config.popup != null) {
       knix.delPopup(this);
     }

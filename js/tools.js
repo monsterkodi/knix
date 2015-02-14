@@ -192,9 +192,9 @@ log = function() {
 };
 
 _log = function() {
-  var arg, array, s;
-  array = Array.prototype.slice.call(arguments, 2);
-  s = ((function() {
+  var arg, array;
+  array = Array.prototype.slice.call(arguments, 1);
+  return Console.logInfo(arguments[0], ((function() {
     var _i, _len, _results;
     _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
@@ -202,8 +202,7 @@ _log = function() {
       _results.push(str(arg));
     }
     return _results;
-  })()).join(" ");
-  return Console.logFileLine(arguments[0], arguments[1], s);
+  })()).join(" "));
 };
 
 error = function() {
@@ -386,7 +385,13 @@ Stage = (function() {
   function Stage() {}
 
   Stage.initContextMenu = function() {
-    _log('./coffee/tools/stage.coffee', 15, 'initContextMenu');
+    _log({
+      "file": "./coffee/tools/stage.coffee",
+      "line": 15,
+      "class": "Stage",
+      "method": "initContextMenu",
+      "type": "@"
+    }, 'initContextMenu');
     $('stage_content').on('mousedown', Stage.showContextMenu);
     Stage.contextMenu = knix.get({
       id: 'context-menu',
@@ -401,7 +406,13 @@ Stage = (function() {
   };
 
   Stage.showContextMenu = function() {
-    _log('./coffee/tools/stage.coffee', 29, 'showContextMenu');
+    _log({
+      "file": "./coffee/tools/stage.coffee",
+      "line": 29,
+      "class": "Stage",
+      "method": "showContextMenu",
+      "type": "@"
+    }, 'showContextMenu');
     return Stage.contextMenu.elem.show();
   };
 
