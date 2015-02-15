@@ -40,6 +40,7 @@ Widget = (function() {
     this.moveBy = __bind(this.moveBy, this);
     this.moveTo = __bind(this.moveTo, this);
     this.setPos = __bind(this.setPos, this);
+    this.toggleDisplay = __bind(this.toggleDisplay, this);
     this.clear = __bind(this.clear, this);
     this.close = __bind(this.close, this);
     this.getChild = __bind(this.getChild, this);
@@ -79,9 +80,10 @@ Widget = (function() {
     this.elem = Widget.elem(cfg.elem, cfg.type);
     this.elem.widget = this;
     this.config = cfg;
-    this.elem.getWindow = this.getWindow.bind(this);
-    this.elem.getChild = this.getChild.bind(this);
-    this.elem.getParent = this.getParent.bind(this);
+    this.elem.getWindow = this.getWindow;
+    this.elem.getChild = this.getChild;
+    this.elem.getParent = this.getParent;
+    this.elem.toggleDisplay = this.toggleDisplay;
     this.elem.relPos = function() {
       var o;
       o = this.positionedOffset();
@@ -164,7 +166,7 @@ Widget = (function() {
         if (_ref5 = e.getWindow(), __indexOf.call(knix.popups, _ref5) < 0) {
           _log({
             "file": "./coffee/widget.coffee",
-            "line": 97,
+            "line": 98,
             "class": "Widget",
             "args": ["config", "defaults"],
             "method": "init",
@@ -181,25 +183,25 @@ Widget = (function() {
   };
 
   Widget.prototype.initEvents = function() {
-    if (this.config.onClick) {
+    if (this.config.onClick != null) {
       this.elem.on("click", this.config.onClick);
     }
-    if (this.config.onDown) {
+    if (this.config.onDown != null) {
       this.elem.on("mousedown", this.config.onDown);
     }
-    if (this.config.onUp) {
+    if (this.config.onUp != null) {
       this.elem.on("mouseup", this.config.onUp);
     }
-    if (this.config.onOver) {
+    if (this.config.onOver != null) {
       this.elem.on("mouseover", this.config.onOver);
     }
-    if (this.config.onMove) {
+    if (this.config.onMove != null) {
       this.elem.on("mousemove", this.config.onMove);
     }
-    if (this.config.onOut) {
+    if (this.config.onOut != null) {
       this.elem.on("mouseout", this.config.onOut);
     }
-    if (this.config.onDouble) {
+    if (this.config.onDouble != null) {
       this.elem.on("ondblclick", this.config.onDouble);
     }
     return this;
@@ -255,7 +257,7 @@ Widget = (function() {
     tag('connections');
     _log({
       "file": "./coffee/widget.coffee",
-      "line": 144,
+      "line": 145,
       "class": "Widget",
       "args": ["signal", "slot"],
       "method": "connect",
@@ -458,7 +460,7 @@ Widget = (function() {
   Widget.prototype.close = function() {
     _log({
       "file": "./coffee/widget.coffee",
-      "line": 282,
+      "line": 283,
       "class": "Widget",
       "args": ["classOrID"],
       "method": "close",
@@ -476,6 +478,14 @@ Widget = (function() {
       this.elem.removeChild(this.elem.lastChild);
     }
     return this;
+  };
+
+  Widget.prototype.toggleDisplay = function() {
+    if (this.elem.visible()) {
+      return this.elem.hide();
+    } else {
+      return this.elem.show();
+    }
   };
 
   Widget.prototype.setPos = function(p) {
@@ -645,7 +655,7 @@ Widget = (function() {
     tag('layout');
     _log({
       "file": "./coffee/widget.coffee",
-      "line": 365,
+      "line": 372,
       "class": "Widget",
       "args": ["s"],
       "method": "stretchWidth",

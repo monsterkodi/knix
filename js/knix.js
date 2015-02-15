@@ -12,7 +12,7 @@ var knix;
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.209';
+  knix.version = '0.1.337';
 
   knix.init = function(config) {
     var c, s;

@@ -10,7 +10,8 @@
 var Window,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Window = (function(_super) {
   __extends(Window, _super);
@@ -62,9 +63,7 @@ Window = (function(_super) {
       resize: true,
       isMovable: true,
       isShaded: false,
-      onDown: function(event, e) {
-        return this.raise;
-      }
+      onDown: this.raise
     });
     this.initWindow();
     this.config.children = children;
@@ -129,15 +128,21 @@ Window = (function(_super) {
   };
 
   Window.prototype.addTitleBar = function() {
-    return knix.create({
+    var t;
+    _log({
+      "file": "./coffee/window.coffee",
+      "line": 94,
+      "class": "Window",
+      "args": ["cfg", "defs"],
+      "method": "addTitleBar",
+      "type": "."
+    }, 'add title');
+    t = knix.create({
       type: 'title',
       text: this.config.title,
-      parent: this,
-      onDouble: function(event, e) {
-        console.log('maxi');
-        return e.getWindow().maximize();
-      }
+      parent: this
     });
+    return t.elem.ondblclick = this.maximize;
   };
 
   Window.prototype.addCloseButton = function() {
@@ -180,7 +185,7 @@ Window = (function(_super) {
     tag('layout', 'todo');
     return _log({
       "file": "./coffee/window.coffee",
-      "line": 128,
+      "line": 129,
       "class": "Window",
       "args": ["event", "e"],
       "method": "stretchWidth",
@@ -254,9 +259,11 @@ Window = (function(_super) {
     }
   };
 
-  Window.prototype.raise = function() {
-    var scrolltop;
-    knix.closePopups();
+  Window.prototype.raise = function(event, e) {
+    var scrolltop, _ref;
+    if ((e != null) && (_ref = e.getWindow(), __indexOf.call(knix.popups, _ref) < 0)) {
+      knix.closePopups();
+    }
     scrolltop = $(this.content).scrollTop;
     this.elem.parentElement.appendChild(this.elem);
     return $(this.content).scrollTop = scrolltop;
@@ -320,7 +327,7 @@ Window = (function(_super) {
   Window.prototype.close = function() {
     _log({
       "file": "./coffee/window.coffee",
-      "line": 233,
+      "line": 235,
       "class": "Window",
       "args": ["box=\"border-box-height\""],
       "method": "close",

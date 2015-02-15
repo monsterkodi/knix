@@ -430,9 +430,9 @@ document.observe("dom:loaded", function() {
   knix.init({
     console: true
   });
-  Test.connectors();
   Test.helloSlider();
   Test.sliderAndValue();
+  $('show_about').click();
 });
 
 //# sourceMappingURL=main.js.map
