@@ -163,20 +163,19 @@ Widget = (function() {
     if (this.config.noDown) {
       this.elem.on('mousedown', function(event, e) {
         var _ref5;
-        if (_ref5 = e.getWindow(), __indexOf.call(knix.popups, _ref5) < 0) {
-          _log({
+        if (((e != null ? e.getWindow : void 0) != null) && (_ref5 = e.getWindow(), __indexOf.call(knix.popups, _ref5) < 0)) {
+          log({
             "file": "./coffee/widget.coffee",
-            "line": 98,
+            "line": 99,
             "class": "Widget",
             "args": ["config", "defaults"],
             "method": "init",
             "type": "."
           }, 'noDown close popups');
-          knix.closePopups();
+          return knix.closePopups();
         } else {
-
+          return event.stopPropagation();
         }
-        return event.stopPropagation();
       });
     }
     return this;
@@ -235,7 +234,14 @@ Widget = (function() {
         }
       }
     }
-    error('connector not found!', name);
+    error({
+      "file": "./coffee/widget.coffee",
+      "line": 134,
+      "class": "Widget",
+      "args": ["name"],
+      "method": "connector",
+      "type": "."
+    }, 'connector not found!', name);
     return void 0;
   };
 
@@ -255,9 +261,9 @@ Widget = (function() {
   Widget.prototype.connect = function(signal, slot) {
     var signalEvent, signalSender, slotFunction, _ref;
     tag('connections');
-    _log({
+    log({
       "file": "./coffee/widget.coffee",
-      "line": 145,
+      "line": 146,
       "class": "Widget",
       "args": ["signal", "slot"],
       "method": "connect",
@@ -266,13 +272,34 @@ Widget = (function() {
     _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
     slotFunction = this.resolveSlot(slot);
     if (signalSender == null) {
-      error("sender not found!");
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 150,
+        "class": "Widget",
+        "args": ["signal", "slot"],
+        "method": "connect",
+        "type": "."
+      }, "sender not found!");
     }
     if (signalEvent == null) {
-      error("event not found!");
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 152,
+        "class": "Widget",
+        "args": ["signal", "slot"],
+        "method": "connect",
+        "type": "."
+      }, "event not found!");
     }
     if (slotFunction == null) {
-      error("slot not found!");
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 154,
+        "class": "Widget",
+        "args": ["signal", "slot"],
+        "method": "connect",
+        "type": "."
+      }, "slot not found!");
     }
     return {
       handler: signalSender.elem.on(signalEvent, slotFunction),
@@ -311,11 +338,25 @@ Widget = (function() {
         if (typeof receiver[func] === 'function') {
           return receiver[func].bind(receiver);
         } else {
-          error('not a function');
+          error({
+            "file": "./coffee/widget.coffee",
+            "line": 178,
+            "class": "Widget",
+            "args": ["slot"],
+            "method": "resolveSlot",
+            "type": "."
+          }, 'not a function');
         }
       }
     }
-    error('cant resolve slot:', slot, typeof slot);
+    error({
+      "file": "./coffee/widget.coffee",
+      "line": 179,
+      "class": "Widget",
+      "args": ["slot"],
+      "method": "resolveSlot",
+      "type": "."
+    }, 'cant resolve slot:', slot, typeof slot);
     return null;
   };
 
@@ -376,11 +417,25 @@ Widget = (function() {
   Widget.prototype.addToParent = function(p) {
     var parentElement;
     if (this.elem == null) {
-      error('no @elem?');
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 231,
+        "class": "Widget",
+        "args": ["p"],
+        "method": "addToParent",
+        "type": "."
+      }, 'no @elem?');
       return this;
     }
     if (p == null) {
-      error('no p?');
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 234,
+        "class": "Widget",
+        "args": ["p"],
+        "method": "addToParent",
+        "type": "."
+      }, 'no p?');
       return this;
     }
     if (p.content != null) {
@@ -393,7 +448,14 @@ Widget = (function() {
       parentElement = $(p);
     }
     if (parentElement == null) {
-      error('no element?', p);
+      error({
+        "file": "./coffee/widget.coffee",
+        "line": 240,
+        "class": "Widget",
+        "args": ["p"],
+        "method": "addToParent",
+        "type": "."
+      }, 'no element?', p);
       return this;
     }
     parentElement.insert(this.elem);
@@ -458,9 +520,9 @@ Widget = (function() {
   };
 
   Widget.prototype.close = function() {
-    _log({
+    log({
       "file": "./coffee/widget.coffee",
-      "line": 283,
+      "line": 284,
       "class": "Widget",
       "args": ["classOrID"],
       "method": "close",
@@ -653,9 +715,9 @@ Widget = (function() {
 
   Widget.prototype.stretchWidth = function() {
     tag('layout');
-    _log({
+    log({
       "file": "./coffee/widget.coffee",
-      "line": 372,
+      "line": 373,
       "class": "Widget",
       "args": ["s"],
       "method": "stretchWidth",

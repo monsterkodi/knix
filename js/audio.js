@@ -1,3 +1,12 @@
+
+/*
+
+     0000000   000   000  0000000    000   0000000
+    000   000  000   000  000   000  000  000   000
+    000000000  000   000  000   000  000  000   000
+    000   000  000   000  000   000  000  000   000
+    000   000   0000000   0000000    000   0000000
+ */
 var Analyser, Audio, Gain, Oscillator,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -11,7 +20,7 @@ Audio = (function() {
     return Gain.menu();
   };
 
-  Audio.oscillator = function() {
+  Audio.oscillator = function(cfg) {
     var oscillator;
     oscillator = Audio.context.createOscillator();
     oscillator.frequency.value = 50;
@@ -19,14 +28,17 @@ Audio = (function() {
     return oscillator;
   };
 
-  Audio.gain = function() {
+  Audio.gain = function(cfg) {
     var gain;
     gain = Audio.context.createGain();
     gain.gain.value = 0.0;
+    if (cfg.master) {
+      gain.connect(Audio.context.destination);
+    }
     return gain;
   };
 
-  Audio.analyser = function() {
+  Audio.analyser = function(cfg) {
     var analyser;
     analyser = Audio.context.createAnalyser();
     analyser.minDecibels = -90;
@@ -39,6 +51,16 @@ Audio = (function() {
   return Audio;
 
 })();
+
+
+/*
+
+     0000000   000   000   0000000   000      000   000  0000000   00000000  00000000
+    000   000  0000  000  000   000  000       000 000  000        000       000   000
+    000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000
+    000   000  000  0000  000   000  000         000          000  000       000   000
+    000   000  000   000  000   000  000000000   000     0000000   00000000  000   000
+ */
 
 Analyser = (function() {
   function Analyser(config) {
@@ -57,11 +79,13 @@ Analyser = (function() {
     return knix.create({
       type: 'button',
       id: 'new_analyser',
-      icon: 'octicon-graph',
+      icon: 'octicon-pulse',
       "class": 'tool-button',
       parent: 'menu',
       onClick: function() {
-        return new Analyser();
+        return new Analyser({
+          center: true
+        });
       }
     });
   };
@@ -105,36 +129,83 @@ Analyser = (function() {
 
 })();
 
+
+/*
+
+     0000000    0000000   000  000   000
+    000        000   000  000  0000  000
+    000  0000  000000000  000  000 0 000
+    000   000  000   000  000  000  0000
+     0000000   000   000  000  000   000
+ */
+
 Gain = (function() {
   function Gain(config) {
     if (config == null) {
       config = {};
     }
     this.initWindow = __bind(this.initWindow, this);
-    this.gain = Audio.gain();
+    this.gain = Audio.gain(config);
     this.initWindow(config);
   }
 
   Gain.menu = function() {
-    return knix.create({
+    knix.create({
       type: 'button',
       id: 'new_gain',
+      icon: 'octicon-dashboard',
+      "class": 'tool-button',
+      parent: 'menu',
+      onClick: function() {
+        return new Gain({
+          center: true
+        });
+      }
+    });
+    return knix.create({
+      type: 'button',
+      id: 'new_master',
       icon: 'octicon-unmute',
       "class": 'tool-button',
       parent: 'menu',
       onClick: function() {
-        return new Gain();
+        return new Gain({
+          center: true,
+          master: true
+        });
       }
     });
   };
 
   Gain.prototype.initWindow = function(cfg) {
+    var children;
+    children = [
+      {
+        type: 'connector',
+        slot: 'input'
+      }, {
+        type: 'label',
+        text: 'gain',
+        style: {
+          width: '100%'
+        }
+      }
+    ];
+    if (!cfg.master) {
+      children.push({
+        type: 'connector',
+        signal: 'output'
+      });
+    }
     return this.window = knix.get(cfg, {
-      title: 'gain',
+      title: cfg.master && 'master' || 'gain',
       minWidth: 150,
       minHeight: 60,
       children: [
         {
+          type: 'hbox',
+          children: children
+        }, {
           type: 'hbox',
           children: [
             {
@@ -151,7 +222,7 @@ Gain = (function() {
               }
             }, {
               type: 'connector',
-              signal: 'slider_frequency:onValue'
+              signal: 'slider_gain:onValue'
             }
           ]
         }
@@ -162,6 +233,16 @@ Gain = (function() {
   return Gain;
 
 })();
+
+
+/*
+
+     0000000    0000000    0000000  000  000       000        0000000  000000000   0000000   00000000
+    000   000  000        000       000  000       000       000   000    000     000   000  000   000
+    000   000   0000000   000       000  000       000       000000000    000     000   000  0000000
+    000   000        000  000       000  000       000       000   000    000     000   000  000   000
+     0000000    0000000    0000000  000  000000000 000000000 000   000    000      0000000   000   000
+ */
 
 Oscillator = (function() {
   function Oscillator(config) {
@@ -177,11 +258,13 @@ Oscillator = (function() {
     return knix.create({
       type: 'button',
       id: 'new_oscillator',
-      icon: 'octicon-megaphone',
+      icon: 'octicon-sync',
       "class": 'tool-button',
       parent: 'menu',
       onClick: function() {
-        return new Oscillator();
+        return new Oscillator({
+          center: true
+        });
       }
     });
   };
@@ -193,6 +276,20 @@ Oscillator = (function() {
       minHeight: 60,
       children: [
         {
+          type: 'hbox',
+          children: [
+            {
+              type: 'label',
+              text: 'oscillator',
+              style: {
+                width: '100%'
+              }
+            }, {
+              type: 'connector',
+              signal: 'slider_frequency:onValue'
+            }
+          ]
+        }, {
           type: 'hbox',
           children: [
             {

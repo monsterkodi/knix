@@ -70,7 +70,7 @@ About = (function(_super) {
   }
 
   About.show = function() {
-    _log({
+    log({
       "file": "./coffee/widgets/about.coffee",
       "line": 58,
       "class": "About",
@@ -256,7 +256,7 @@ Connection = (function() {
     _ref = this.signalSlotConnector(), signalConnector = _ref[0], slotConnector = _ref[1];
     signal = signalConnector.config.signal;
     slot = slotConnector.config.slot;
-    _log({
+    log({
       "file": "./coffee/widgets/connection.coffee",
       "line": 88,
       "class": "Connection",
@@ -277,7 +277,7 @@ Connection = (function() {
   };
 
   Connection.prototype.disconnect = function() {
-    _log({
+    log({
       "file": "./coffee/widgets/connection.coffee",
       "line": 99,
       "class": "Connection",
@@ -500,7 +500,7 @@ Connector = (function(_super) {
 Console = (function(_super) {
   __extends(Console, _super);
 
-  Console.seenTags = [];
+  Console.scopeTags = [];
 
   function Console(cfg) {
     this.toggleMethods = __bind(this.toggleMethods, this);
@@ -513,13 +513,8 @@ Console = (function(_super) {
     this.onContextMenu = __bind(this.onContextMenu, this);
     var h, w;
     this.logTags = {
-      'knix': 'off',
-      'Stage': 'off',
-      'layout': 'off',
-      'todo': 'off',
-      'connections': 'off'
+      'Stage': 'off'
     };
-    this.scopeTags = [];
     w = Stage.size().width / 2;
     h = Stage.size().height - $('menu').getHeight() - 2;
     Console.__super__.constructor.call(this, cfg, {
@@ -660,7 +655,11 @@ Console = (function(_super) {
   Console.prototype.logInfo = function(info, url, s) {
     var infoStr, styles, t, tags;
     this.addLogTag(info["class"]);
-    infoStr = info["class"] + info.type + info.method;
+    if ((info["class"] != null) && (info.type != null) && (info.method != null)) {
+      infoStr = info["class"] + info.type + info.method;
+    } else {
+      infoStr = '';
+    }
     tags = [info["class"]].concat(Console.scopeTags);
     styles = ((function() {
       var _i, _len, _results;
@@ -673,7 +672,7 @@ Console = (function(_super) {
       }
       return _results;
     })()).join(' ');
-    this.insert('<pre class="' + styles + '">' + '<a onClick=\'' + url + '\' class="console-link" title="' + infoStr + ' ' + tags.join(' ') + '">' + '<span class="console-class" ' + (!this.config.showClasses && 'style="display:none;"' || '') + '>' + info["class"] + '</span>' + '<span class="console-method-type" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + info.type + '</span>' + '<span class="console-method" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + info.method + ' </span>' + '<span class="octicon octicon-playback-play"></span>' + '</a> ' + Console.toHtml(s) + '</pre>');
+    this.insert('<pre class="' + styles + '">' + '<a onClick=\'' + url + '\' class="console-link" title="' + infoStr + ' ' + tags.join(' ') + '">' + '<span class="console-class" ' + (!this.config.showClasses && 'style="display:none;"' || '') + '>' + ((info["class"] != null) && info["class"] || '') + '</span>' + '<span class="console-method-type" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + ((info.type != null) && info.type || '') + '</span>' + '<span class="console-method" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + ((info.method != null) && info.method || '') + '</span>' + '<span class="octicon octicon-playback-play"></span>' + '</a> ' + s + '</pre>');
     return this.updateTags();
   };
 
@@ -757,13 +756,22 @@ Console = (function(_super) {
     return _results;
   };
 
-  Console.logInfo = function(info, s) {
-    var url;
-    url = 'window.open("https://github.com/monsterkodi/knix/blob/master/%s#L%d");'.fmt(info.file, info.line);
-    info.file = info.file.slice(9, -7);
-    return Console.allConsoles().each(function(c) {
+  Console.logInfo = function(info) {
+    var args, s, url;
+    args = Array.prototype.slice.call(arguments, 1);
+    if (__indexOf.call(Console.scopeTags, 'error') >= 0) {
+      s = '<span class="console-error">%s</span> '.fmt(str(args[0])) + Console.toHtml.apply(Console, args.slice(1));
+    } else {
+      s = Console.toHtml.apply(Console, args);
+    }
+    if ((info.file != null) && (info.line != null)) {
+      url = 'window.open("https://github.com/monsterkodi/knix/blob/master/%s#L%d");'.fmt(info.file, info.line);
+      info.file = info.file.slice(9, -7);
+    }
+    Console.allConsoles().each(function(c) {
       return c.logInfo(info, url, s);
     });
+    return Console.scopeTags = [];
   };
 
   Console.allConsoles = function() {
@@ -777,18 +785,10 @@ Console = (function(_super) {
     return _results;
   };
 
-  Console.insert = function(s) {
-    return Console.allConsoles().each(function(c) {
-      return c.insert(s);
-    });
-  };
-
   Console.log = function() {
-    return Console.insert(Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0)));
-  };
-
-  Console.code = function() {
-    return Console.insert("<pre>" + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0)) + "</pre>");
+    return Console.allConsoles().each(function(c) {
+      return c.insert(Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0)));
+    });
   };
 
   Console.toHtml = function() {
@@ -803,12 +803,6 @@ Console = (function(_super) {
       return _results;
     }).apply(Console, arguments)).join(" ");
     return html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>').replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>').replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>');
-  };
-
-  Console.error = function() {
-    var s;
-    s = '<span class="console-error">%s</span> '.fmt(str(arguments[0])) + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 1));
-    return Console.insert(s);
   };
 
   Console.menu = function() {

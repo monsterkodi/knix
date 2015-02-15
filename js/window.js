@@ -129,7 +129,7 @@ Window = (function(_super) {
 
   Window.prototype.addTitleBar = function() {
     var t;
-    _log({
+    log({
       "file": "./coffee/window.coffee",
       "line": 94,
       "class": "Window",
@@ -183,7 +183,7 @@ Window = (function(_super) {
 
   Window.prototype.stretchWidth = function() {
     tag('layout', 'todo');
-    return _log({
+    return log({
       "file": "./coffee/window.coffee",
       "line": 129,
       "class": "Window",
@@ -261,7 +261,7 @@ Window = (function(_super) {
 
   Window.prototype.raise = function(event, e) {
     var scrolltop, _ref;
-    if ((e != null) && (_ref = e.getWindow(), __indexOf.call(knix.popups, _ref) < 0)) {
+    if (((e != null ? e.getWindow : void 0) != null) && (_ref = e.getWindow(), __indexOf.call(knix.popups, _ref) < 0)) {
       knix.closePopups();
     }
     scrolltop = $(this.content).scrollTop;
@@ -325,7 +325,7 @@ Window = (function(_super) {
   };
 
   Window.prototype.close = function() {
-    _log({
+    log({
       "file": "./coffee/window.coffee",
       "line": 235,
       "class": "Window",

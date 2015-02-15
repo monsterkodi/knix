@@ -7,7 +7,7 @@
     000   000  000   000  000   000  000   000
     0000000    000   000  000   000   0000000
  */
-var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent, _log,
+var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -177,47 +177,12 @@ Drag = (function() {
  */
 
 log = function() {
-  var arg, s;
-  s = ((function() {
-    var _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-      arg = arguments[_i];
-      _results.push(str(arg));
-    }
-    return _results;
-  }).apply(this, arguments)).join(" ");
-  console.log("%c%s", 'color:white', s);
-  return Console.log.apply(Console, Array.prototype.slice.call(arguments, 0));
-};
-
-_log = function() {
-  var arg, array;
-  array = Array.prototype.slice.call(arguments, 1);
-  return Console.logInfo(arguments[0], ((function() {
-    var _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = array.length; _i < _len; _i++) {
-      arg = array[_i];
-      _results.push(str(arg));
-    }
-    return _results;
-  })()).join(" "));
+  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
 };
 
 error = function() {
-  var arg, s;
-  s = ((function() {
-    var _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-      arg = arguments[_i];
-      _results.push(str(arg));
-    }
-    return _results;
-  }).apply(this, arguments)).join(" ");
-  console.log("%c%s", 'color:yellow', s);
-  return Console.error.apply(Console, Array.prototype.slice.call(arguments, 0));
+  tag('error');
+  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
 };
 
 
@@ -385,7 +350,7 @@ Stage = (function() {
   function Stage() {}
 
   Stage.initContextMenu = function() {
-    _log({
+    log({
       "file": "./coffee/tools/stage.coffee",
       "line": 15,
       "class": "Stage",
@@ -406,7 +371,7 @@ Stage = (function() {
   };
 
   Stage.showContextMenu = function() {
-    _log({
+    log({
       "file": "./coffee/tools/stage.coffee",
       "line": 29,
       "class": "Stage",
@@ -616,21 +581,21 @@ StyleSwitch = (function() {
 
 /*
 
-     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000 
-    000   000  000   000  000       000   000  000       000       000        000   000   000 
+     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000
+    000   000  000   000  000       000   000  000       000       000        000   000   000
     000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000 
-    000   000  000   000  000       000   000  000       000       000   000  000   000   000 
-    000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000 
-    
-          000  000   000  000        00     00  000   000   0000000   00000000    0000000       
-          000  000  000   000        000   000  0000  000  000   000  000   000  000   000      
-          000  0000000    000        000000000  000 0 000  000   000  00000000   000 00 00      
-    000   000  000  000   000        000 0 000  000  0000  000   000  000        000 0000       
-     0000000   000   000  000000000  000   000  000   000   0000000   000         00000 00            
+    000   000  000   000  000       000   000  000       000       000   000  000   000   000
+    000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000
+
+          000  000   000  000        00     00  000   000   0000000   00000000    0000000
+          000  000  000   000        000   000  0000  000  000   000  000   000  000   000
+          000  0000000    000        000000000  000 0 000  000   000  00000000   000 00 00
+    000   000  000  000   000        000 0 000  000  0000  000   000  000        000 0000
+     0000000   000   000  000000000  000   000  000   000   0000000   000         00000 00
 
      00000000    0000000   000000000  000   000  000   000  000   000  000   000  000   000  0000000
-     000   000  000           000     000   000  000   000  000 0 000   000 000    000 000      000  
-     0000000     0000000      000     000   000   000 000   000000000    00000      00000      000    
+     000   000  000           000     000   000  000   000  000 0 000   000 000    000 000      000
+     0000000     0000000      000     000   000   000 000   000000000    00000      00000      000
      000   000        000     000     000   000     000     000   000   000 000      000      000
      000   000   0000000      000      0000000       0      00     00  000   000     000     0000000
  */

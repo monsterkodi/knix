@@ -12,25 +12,28 @@ var knix;
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.340';
+  knix.version = '0.1.447';
+
+  knix.popups = [];
 
   knix.init = function(config) {
     var c, s;
-    s = 'welcome to';
-    _log({
-      "file": "./coffee/knix.coffee",
-      "line": 19,
-      "class": "knix",
-      "args": ["config"],
-      "method": "init",
-      "type": "@"
-    }, 'knix' + knix.version);
     if (config.console != null) {
       c = new Console();
       if (config.console === 'shade') {
         c.shade();
       }
     }
+    s = 'welcome to';
+    log({
+      "file": "./coffee/knix.coffee",
+      "line": 24,
+      "class": "knix",
+      "args": ["config"],
+      "method": "init",
+      "type": "@"
+    }, s, 'knix', 'version:', knix.version);
+    console.log('test');
     Stage.initContextMenu();
     knix.initSVG();
     knix.initAnim();
@@ -116,7 +119,7 @@ knix = (function() {
       knix.popups = [];
     }
     knix.popups.push(p);
-    _log({
+    log({
       "file": "./coffee/knix.coffee",
       "line": 97,
       "class": "knix",
@@ -130,7 +133,7 @@ knix = (function() {
   };
 
   knix.delPopup = function(p) {
-    _log({
+    log({
       "file": "./coffee/knix.coffee",
       "line": 102,
       "class": "knix",
@@ -143,7 +146,7 @@ knix = (function() {
 
   knix.closePopups = function() {
     var p, _i, _len, _ref;
-    _log({
+    log({
       "file": "./coffee/knix.coffee",
       "line": 106,
       "class": "knix",
