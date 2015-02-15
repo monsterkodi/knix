@@ -117,7 +117,6 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         if conn = @connectorAtPos p
-            log 'new connection'
             new Connection
                 source: @
                 target: conn

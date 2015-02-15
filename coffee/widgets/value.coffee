@@ -74,7 +74,7 @@ class Value extends Widget
 
     setValue: (arg) =>
         oldValue = @config.value
-        v = @round(@clamp(@slotArg(arg, 'value')))
+        v = @round(@clamp(_.arg(arg)))
         @input.value = @strip0 @format(v)
         if v != oldValue
             @config.value = v

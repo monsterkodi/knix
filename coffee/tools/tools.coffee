@@ -2,7 +2,7 @@
 
      0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000
     000   000  000   000  000       000   000  000       000       000        000   000   000
-    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000 
+    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000
     000   000  000   000  000       000   000  000       000       000   000  000   000   000
     000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000
 
@@ -45,3 +45,13 @@ _.clamp = (r1, r2, v) ->
         v = Math.max(v, r1) if r1?
         v = Math.min(v, r2) if r2?
         v
+
+_.arg = (event, argname='value') ->
+        if typeof event == 'object'
+            if event.detail[argname]?
+                return event.detail[argname]
+            else
+                return event.detail
+        if argname == 'value'
+            return parseFloat event
+        event

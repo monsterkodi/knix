@@ -199,18 +199,6 @@ class Widget
             pos: @absPos()
         @
 
-    # ____________________________________________________________________________ slots
-
-    slotArg: (event, argname='value') =>
-        if typeof event == 'object'
-            if event.detail[argname]?
-                return event.detail[argname]
-            else
-                return event.detail
-        if argname == 'value'
-            return parseFloat event
-        event
-
     # ____________________________________________________________________________ elements
 
     @nextWidgetID  = 0

@@ -15,12 +15,12 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            # 'knix':           'off'
+            'knix':           'off'
             'Stage':          'off'
-            # 'Widget':         'off'
-            # 'Window':         'off'
-            # 'layout':         'off'
-            # 'todo':           'off'
+            'Widget':         'off'
+            'Window':         'off'
+            'layout':         'off'
+            'todo':           'off'
             # 'connections':    'off'
 
         w  = Stage.size().width/2

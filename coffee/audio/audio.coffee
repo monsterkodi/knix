@@ -31,7 +31,7 @@ class Audio
         gain.gain.value = cfg.gain or 0.5 # [0.0, 1.0]
 
         if cfg.master
-            gain.connect(@context.destination)
+            gain.connect @context.destination
 
         gain
 

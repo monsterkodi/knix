@@ -36,13 +36,14 @@ class Gain
                             center: true
                             master: true
 
+    setValue: (arg) => @audio.gain.value = _.arg(arg)
+
     initWindow: (cfg) =>
 
         children = [
             type:       'connector'
             in:         'audio'
             audio:      @audio
-            # onConnect:  (source, target) -> log 'onConnect', source.config, target.config
         ,
             type:       'label'
             text:       'gain'
@@ -55,12 +56,8 @@ class Gain
                 type:       'connector'
                 out:        'audio'
                 audio:      @audio
-                onConnect:  (source, target) ->
-                        log 'connect gain', source.config, target.config
-                        source.config.audio.connect(target.config.audio)
-                onDisconnect: (source, target) ->
-                    log 'disconnect gain', source.config, target.config
-                    source.config.audio.disconnect(target.config.audio)
+                onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
+                onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
 
         @window = knix.get cfg,
             title:     cfg.master and 'master' or 'gain'
@@ -82,6 +79,7 @@ class Gain
                     value:      0
                     minValue:   0.0
                     maxValue:   1.0
+                    onValue:    @setValue
                     style:
                         width:  '100%'
                 ,

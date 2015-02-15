@@ -43,6 +43,10 @@ class Slider extends Widget
             onMove:     sliderFunc
             onStart:    sliderFunc
 
+    initEvents: =>
+        @elem.on "onValue", @config.onValue  if @config.onValue?
+        super
+
     valueToPercentOfWidth: (value) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
         knobWidth = @getChild('slider-knob').getWidth()
@@ -58,9 +62,7 @@ class Slider extends Widget
 
     setValue: (arg) =>
         oldValue = @config.value
-        # v = @slotArg(arg, 'value')
-        # v = @clamp(v)
-        v = @round(@clamp(@slotArg(arg, 'value')))
+        v = @round(@clamp(_.arg(arg)))
         if v != oldValue
             @config.value = v
             @setBarValue(v)

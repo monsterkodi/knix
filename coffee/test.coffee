@@ -329,7 +329,7 @@ class Test
             [
                 signal: 'onValue'
                 slot:   (v) ->
-                    v = @slotArg(v)
+                    v = _.arg(v)
                     c = 'rgba(%d,0,0,0.2)'.fmt(v)
                     # sc = $('stage_canvas').fc
                     # sc.setBackgroundColor(c, sc.renderAll.bind(sc))

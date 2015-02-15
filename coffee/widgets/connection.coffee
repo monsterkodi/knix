@@ -85,7 +85,9 @@ class Connection
     connect: =>
         [outConnector, inConnector] = @outInConnector()
 
-        log 'connect', outConnector.config, inConnector.config
+        log 'connect',
+            outConnector.config.signal or outConnector.config.out,
+            inConnector.config.slot or inConnector.config.in
         if outConnector.config.onConnect?
             outConnector.config.onConnect outConnector, inConnector
         if inConnector.config.onConnect?
@@ -99,7 +101,6 @@ class Connection
         slot   = inConnector.config.slot
 
         if signal? and slot?
-            log @path.path.id(), "connect", signal, slot
             [signalSender, signalEvent] = outConnector.resolveSignal(signal)
             slotFunction = inConnector.resolveSlot(slot)
             connection.handler  = signalSender.elem.on signalEvent, slotFunction

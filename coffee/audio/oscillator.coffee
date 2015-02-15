@@ -45,12 +45,8 @@ class Oscillator
                     type:       'connector'
                     out:        'audio'
                     audio:      @audio
-                    onConnect:  (source, target) ->
-                        log 'connect oscillator', source.config, target.config
-                        source.config.audio.connect(target.config.audio)
-                    onDisconnect: (source, target) ->
-                        log 'disconnect oscillator', source.config, target.config
-                        source.config.audio.disconnect(target.config.audio)
+                    onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
+                    onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
                 ]
             ,
                 type: 'hbox'
