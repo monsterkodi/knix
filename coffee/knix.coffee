@@ -17,11 +17,13 @@ class knix
 
     @init: (config) =>
 
-        s = 'welcome to'; log 'knix'+@version
-
         if config.console?
             c = new Console()
             c.shade() if config.console == 'shade'
+
+        s = 'welcome to'; log s, 'knix', 'version:', @version
+
+        console.log 'test'
 
         Stage.initContextMenu()
         @initSVG()
@@ -67,13 +69,10 @@ class knix
         cfg = _.def(config,defaults)
 
         if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
-            # log 'create knix.' + cfg.type
             @[cfg.type] cfg
         else if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'
-            # log 'create class', _.capitalize(cfg.type)
             new window[_.capitalize(cfg.type)] cfg
         else
-            # console.log 'fallback to widget for type', cfg.type
             new Widget cfg, { type: 'widget' }
 
     # ________________________________________________________________________________ get

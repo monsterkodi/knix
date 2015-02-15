@@ -10,20 +10,18 @@
 
 class Console extends Window
 
-    @seenTags  = []
+    @scopeTags = []
 
     constructor: (cfg) ->
 
         @logTags =
-            'knix':           'off'
+            # 'knix':           'off'
             'Stage':          'off'
-            'Widget':         'off'
-            'Window':         'off'
-            'layout':         'off'
-            'todo':           'off'
+            # 'Widget':         'off'
+            # 'Window':         'off'
+            # 'layout':         'off'
+            # 'todo':           'off'
             # 'connections':    'off'
-
-        @scopeTags = []
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2
@@ -129,16 +127,19 @@ class Console extends Window
 
     logInfo: (info,url,s) =>
         @addLogTag info.class
-        infoStr = info.class + info.type + info.method
+        if info.class? and info.type? and info.method?
+            infoStr = info.class + info.type + info.method
+        else
+            infoStr = ''
         tags = [info.class].concat(Console.scopeTags)
         styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags when t?).join(' ')
         @insert '<pre class="'+styles+'">'+
             '<a onClick=\''+url+'\' class="console-link" title="'+infoStr+' '+tags.join(' ')+'">'+
-            '<span class="console-class" '+      (not @config.showClasses and 'style="display:none;"' or '')+'>'+ info.class+  '</span>'+
-            '<span class="console-method-type" '+(not @config.showMethods and 'style="display:none;"' or '')+'>'+ info.type+   '</span>'+
-            '<span class="console-method" '+     (not @config.showMethods and 'style="display:none;"' or '')+'>'+ info.method+' </span>'+
+            '<span class="console-class" '+      (not @config.showClasses and 'style="display:none;"' or '')+'>'+ (info.class? and info.class or '')+   '</span>'+
+            '<span class="console-method-type" '+(not @config.showMethods and 'style="display:none;"' or '')+'>'+ (info.type? and info.type or '')+     '</span>'+
+            '<span class="console-method" '+     (not @config.showMethods and 'style="display:none;"' or '')+'>'+ (info.method? and info.method or '')+ '</span>'+
             '<span class="octicon octicon-playback-play"></span>'+
-            '</a> '+Console.toHtml(s)+
+            '</a> '+s+
             '</pre>'
         @updateTags()
 
@@ -172,18 +173,26 @@ class Console extends Window
         for t in @scopeTags
             @allConsoles().each (c) -> c.addLogTag(t)
 
-    @logInfo: (info, s) =>
-        url = '::.info.json:source-url::'.fmt(info.file,info.line)
-        info.file = info.file.slice(9, -7) # remove 'coffee/' prefix and '.coffee' suffix
+    @logInfo: (info) =>
+        args = Array.prototype.slice.call(arguments, 1)
+
+        if 'error' in @scopeTags
+            s = '<span class="console-error">%s</span> '.fmt(str(args[0])) +
+                @toHtml.apply(Console, args.slice(1))
+        else
+            s = @toHtml.apply(Console, args)
+
+        if info.file? and info.line?
+            url = '::.info.json:source-url::'.fmt(info.file,info.line)
+            info.file = info.file.slice(9, -7) # remove 'coffee/' prefix and '.coffee' suffix
+
         @allConsoles().each (c) -> c.logInfo info, url, s
+        @scopeTags = []
 
     @allConsoles: => (e.getWindow() for e in $$(".console"))
 
-    @insert: (s) => @allConsoles().each (c) -> c.insert(s)
-
-    @log:  => @insert Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0))
-
-    @code: => @insert "<pre>" + Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0)) + "</pre>"
+    @log: => @allConsoles().each (c) ->
+        c.insert Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0))
 
     @toHtml: =>
 
@@ -191,12 +200,6 @@ class Console extends Window
         html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>')
             .replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>')
             .replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>')
-
-    @error: =>
-
-        s = '<span class="console-error">%s</span> '.fmt(str(arguments[0])) +
-            @toHtml.apply(Console, Array.prototype.slice.call(arguments, 1))
-        Console.insert s
 
     @menu: =>
 

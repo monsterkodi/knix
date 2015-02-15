@@ -33,7 +33,20 @@ class Oscillator
             title: 'oscillator'
             minWidth: 150
             minHeight: 60
-            child:
+            children: \
+            [
+                type: 'hbox'
+                children: \
+                [
+                    type:       'label'
+                    text:       'oscillator'
+                    style:
+                        width:      '100%'
+                ,
+                    type:       'connector'
+                    signal:     'slider_frequency:onValue'
+                ]
+            ,
                 type: 'hbox'
                 children: \
                 [
@@ -51,3 +64,4 @@ class Oscillator
                     type:       'connector'
                     signal:     'slider_frequency:onValue'
                 ]
+            ]

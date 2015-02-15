@@ -40,13 +40,10 @@ class Gain
 
         children = [
             type:       'connector'
-            slot:       'slider_gain:setValue'
+            slot:       'input'
         ,
-            id:         'slider_gain'
-            type:       'slider'
-            value:      0
-            minValue:   0.0
-            maxValue:   1.0
+            type:       'label'
+            text:       'gain'
             style:
                 width:  '100%'
         ]
@@ -54,12 +51,32 @@ class Gain
         if not cfg.master
             children.push
                 type:       'connector'
-                signal:     'slider_gain:onValue'
+                signal:     'output'
 
         @window = knix.get cfg,
             title:     cfg.master and 'master' or 'gain'
             minWidth:  150
             minHeight: 60
-            child:
+            children:  \
+            [
                 type: 'hbox'
                 children: children
+            ,
+                type: 'hbox'
+                children: \
+                [
+                    type:       'connector'
+                    slot:       'slider_gain:setValue'
+                ,
+                    id:         'slider_gain'
+                    type:       'slider'
+                    value:      0
+                    minValue:   0.0
+                    maxValue:   1.0
+                    style:
+                        width:  '100%'
+                ,
+                    type:       'connector'
+                    signal:     'slider_gain:onValue'
+                ]
+            ]

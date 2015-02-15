@@ -5,6 +5,8 @@ module.exports = (grunt) ->
         pkg: grunt.file.readJSON 'package.json'
 
         pepper:
+            options:
+                pepper:        ['log', 'warn', 'error']
             knix:
                 files:
                     'tools':   ['./coffee/tools/*.coffee']

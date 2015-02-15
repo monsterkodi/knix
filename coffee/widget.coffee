@@ -94,11 +94,12 @@ class Widget
 
         if @config.noDown
             @elem.on 'mousedown', (event,e) ->
-                if e.getWindow() not in knix.popups
+
+                if e?.getWindow? and e.getWindow() not in knix.popups
                     log 'noDown close popups'
                     knix.closePopups()
                 else
-                event.stopPropagation()
+                    event.stopPropagation()
         @
 
     # ________________________________________________________________________________ event handling
