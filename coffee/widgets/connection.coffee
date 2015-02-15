@@ -12,7 +12,7 @@ class Connection
 
     constructor: (config) ->
 
-        # log 'Connection', config.source.elem.id, config.target.elem.id
+        log config.source.elem.id, config.target.elem.id
 
         @config = config
 
@@ -27,8 +27,8 @@ class Connection
         @path = knix.get
             type:     'path'
             class:    'connection'
-            startDir: if @config.source.isOut() then pos(100,0) else pos(-100,0)
-            endDir:   if @config.target.isOut() then pos(100,0) else pos(-100,0)
+            startDir: if @config.source.isOut() then pos(100,1) else pos(-100,-1)
+            endDir:   if @config.target.isOut() then pos(100,1) else pos(-100,-1)
             onOver:   @onOver
             onOut:    @onOut
             onMove:   @onMove
@@ -84,10 +84,9 @@ class Connection
 
     connect: =>
         [outConnector, inConnector] = @outInConnector()
-
-        log 'connect',
-            outConnector.config.signal or outConnector.config.out,
-            inConnector.config.slot or inConnector.config.in
+        # log 'connect',
+        #     outConnector.config.signal or outConnector.config.out,
+        #     inConnector.config.slot or inConnector.config.in
         if outConnector.config.onConnect?
             outConnector.config.onConnect outConnector, inConnector
         if inConnector.config.onConnect?
@@ -113,9 +112,8 @@ class Connection
         connection
 
     disconnect: =>
-        log @path.path.id(), "disconnect"
-
         if @connection
+            log "disconnect", @connection.out.elem.id, @connection.in.elem.id #@path.path.id()
 
             if @connection.out.config.onDisconnect?
                 @connection.out.config.onDisconnect @connection.out, @connection.in
@@ -138,7 +136,6 @@ class Connection
         @path.setEnd   @config.target.absCenter()
 
     close: =>
-        log 'close connection', @connection
         @disconnect()
         @config.source.delConnection @
         @config.target.delConnection @

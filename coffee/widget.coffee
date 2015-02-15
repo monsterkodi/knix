@@ -126,12 +126,12 @@ class Widget
     # ____________________________________________________________________________ connections
 
     connector: (name) =>
-        tag 'connection'
+        tag 'Connection'
         log name
         for t in ['slot', 'signal', 'in', 'out']
             for e in @elem.select('.'+t)
                 if e.hasClassName 'connector'
-                    # tag 'connection'
+                    # tag 'Connection'
                     # log 'found connector element', t, e.widget.config[t]
                     if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
                         return e.widget
@@ -147,7 +147,7 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        tag 'connections'
+        tag 'Connection'
         log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)

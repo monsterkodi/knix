@@ -30,10 +30,9 @@ class Slider extends Value
                 child:
                     type: 'slider-knob'
 
-        # if not @config.hasKnob
-        @getChild('slider-knob').elem.hide()
+        if not @config.hasKnob
+            @getChild('slider-knob').elem.hide()
 
-        # @setValue @config.value
         @setBarValue @config.value
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:

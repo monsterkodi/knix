@@ -89,7 +89,7 @@ class Connector extends Widget
             class: 'connector'
             start:  @absCenter()
             end:    p
-            startDir: if @isOut() then pos(200,0) else pos(-200,0)
+            startDir: if @isOut() then pos(100,-10) else pos(-100,-10)
 
         @elem.style.cursor = 'grabbing'
 
@@ -99,14 +99,14 @@ class Connector extends Widget
 
         if conn = @connectorAtPos p
             @path.path.addClass 'connectable'
-            @path.setStartDir if @isOut() then pos(100,0) else pos(-100,0)
-            @path.setEndDir if conn.isOut() then pos(100,0) else pos(-100,0)
+            @path.setStartDir if @isOut() then pos(100,1) else pos(-100,-1)
+            @path.setEndDir if conn.isOut() then pos(100,1) else pos(-100,-1)
             @conn = conn
             @conn.elem.addClassName 'highlight'
             @handle.elem.addClassName 'highlight'
         else
             @path.path.removeClass 'connectable'
-            @path.setStartDir if @isOut() then pos(200,0) else pos(-200,0)
+            @path.setStartDir if @isOut() then pos(100,-10) else pos(-100,-10)
             @path.setEndDir pos(0,0)
             if @conn then @conn.elem.removeClassName 'highlight'; @conn = null
             @handle.elem.removeClassName 'highlight'
