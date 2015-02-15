@@ -177,8 +177,9 @@ class Console extends Window
         args = Array.prototype.slice.call(arguments, 1)
 
         if 'error' in @scopeTags
-            s = '<span class="console-error">%s</span> '.fmt(str(args[0])) +
-                @toHtml.apply(Console, args.slice(1))
+            s = '<span class="console-error">%s</span> '.fmt(str(args[0])) + @toHtml.apply(Console, args.slice(1))
+        else if 'warning' in @scopeTags
+            s = '<span class="console-warning">%s</span> '.fmt(str(args[0])) + @toHtml.apply(Console, args.slice(1))
         else
             s = @toHtml.apply(Console, args)
 

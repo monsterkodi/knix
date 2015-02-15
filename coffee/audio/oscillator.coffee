@@ -12,8 +12,7 @@ class Oscillator
 
     constructor: (config={}) ->
 
-        @gain = Audio.oscillator()
-
+        @audio = Audio.oscillator config
         @initWindow config
 
     @menu: =>
@@ -41,10 +40,17 @@ class Oscillator
                     type:       'label'
                     text:       'oscillator'
                     style:
-                        width:      '100%'
+                        width:  '100%'
                 ,
                     type:       'connector'
-                    signal:     'slider_frequency:onValue'
+                    out:        'audio'
+                    audio:      @audio
+                    onConnect:  (source, target) ->
+                        log 'connect oscillator', source.config, target.config
+                        source.config.audio.connect(target.config.audio)
+                    onDisconnect: (source, target) ->
+                        log 'disconnect oscillator', source.config, target.config
+                        source.config.audio.disconnect(target.config.audio)
                 ]
             ,
                 type: 'hbox'
@@ -55,9 +61,9 @@ class Oscillator
                 ,
                     id:         'slider_frequency'
                     type:       'slider'
-                    value:      50
+                    value:      500
                     minValue:   0
-                    maxValue:   18000
+                    maxValue:   12000
                     style:
                         width:  '100%'
                 ,

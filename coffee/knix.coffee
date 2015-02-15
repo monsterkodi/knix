@@ -23,8 +23,6 @@ class knix
 
         s = 'welcome to'; log s, 'knix', 'version:', @version
 
-        console.log 'test'
-
         Stage.initContextMenu()
         @initSVG()
         @initAnim()

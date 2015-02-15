@@ -172,7 +172,6 @@ class Widget
             receiver = @ unless receiver?
             if receiver[func]?
                 if typeof receiver[func] == 'function'
-                    # log 'resolved', slot
                     return receiver[func].bind(receiver)
                 else
                     error 'not a function'

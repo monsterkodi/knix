@@ -12,7 +12,7 @@ class Gain
 
     constructor: (config={}) ->
 
-        @gain = Audio.gain config
+        @audio = Audio.gain config
         @initWindow config
 
     @menu: =>
@@ -40,7 +40,9 @@ class Gain
 
         children = [
             type:       'connector'
-            slot:       'input'
+            in:         'audio'
+            audio:      @audio
+            # onConnect:  (source, target) -> log 'onConnect', source.config, target.config
         ,
             type:       'label'
             text:       'gain'
@@ -51,7 +53,14 @@ class Gain
         if not cfg.master
             children.push
                 type:       'connector'
-                signal:     'output'
+                out:        'audio'
+                audio:      @audio
+                onConnect:  (source, target) ->
+                        log 'connect gain', source.config, target.config
+                        source.config.audio.connect(target.config.audio)
+                onDisconnect: (source, target) ->
+                    log 'disconnect gain', source.config, target.config
+                    source.config.audio.disconnect(target.config.audio)
 
         @window = knix.get cfg,
             title:     cfg.master and 'master' or 'gain'

@@ -1,10 +1,10 @@
 ###
 
-     0000000  0000000   000   000  000   000  00000000  0000000 000000000  0000000   00000000   
-    000      000   000  0000  000  0000  000  000      000         000    000   000  000   000  
-    000      000   000  000 0 000  000 0 000  000000   000         000    000   000  0000000    
-    000      000   000  000  0000  000  0000  000      000         000    000   000  000   000  
-     0000000  0000000   000   000  000   000  00000000  0000000    000     0000000   000   000  
+     0000000  0000000   000   000  000   000  00000000  0000000 000000000  0000000   00000000
+    000      000   000  0000  000  0000  000  000      000         000    000   000  000   000
+    000      000   000  000 0 000  000 0 000  000000   000         000    000   000  0000000
+    000      000   000  000  0000  000  0000  000      000         000    000   000  000   000
+     0000000  0000000   000   000  000   000  00000000  0000000    000     0000000   000   000
 
 ###
 
@@ -38,6 +38,8 @@ class Connector extends Widget
 
     isSignal: => @elem.hasClassName('signal')
     isSlot:   => @elem.hasClassName('slot')
+    isIn:     => @isSlot() or @config.in
+    isOut:    => @isSignal() or @config.out
 
     addConnection: (c) =>
         @connections.add c
@@ -47,12 +49,16 @@ class Connector extends Widget
         @connections.delete c
         @elem.removeClassName('connected') if @connections.size == 0
 
+    canConnectTo: (other) =>
+        return true if @isSignal() and other.isSlot() or @isSlot() and other.isSignal()
+        return @config.in? and @config.in == other.config.out or @config.out? and @config.out == other.config.in
+
     connectorAtPos: (p) =>
         @handle.elem.style.pointerEvents = 'none'
         elem = document.elementFromPoint p.x, p.y
         @handle.elem.style.pointerEvents = 'auto'
         if elem?.widget?
-            if elem.widget.constructor == Connector and elem.widget.isSignal() != @isSignal()
+            if elem.widget.constructor == Connector and @canConnectTo(elem.widget)
                 return elem.widget
         undefined
 
@@ -71,7 +77,6 @@ class Connector extends Widget
         @handle = knix.get
             type:  'handle'
             style:
-                # pointerEvents: 'none'
                 cursor: 'grabbing'
 
         @handle.setPos p
@@ -82,7 +87,7 @@ class Connector extends Widget
             class: 'connector'
             start:  @absCenter()
             end:    p
-            startDir: if @isSignal() then pos(200,0) else pos(-200,0)
+            startDir: if @isOut() then pos(200,0) else pos(-200,0)
 
         @elem.style.cursor = 'grabbing'
 
@@ -92,14 +97,14 @@ class Connector extends Widget
 
         if conn = @connectorAtPos p
             @path.path.addClass 'connectable'
-            @path.setStartDir if @isSignal() then pos(100,0) else pos(-100,0)
-            @path.setEndDir if conn.isSignal() then pos(100,0) else pos(-100,0)
+            @path.setStartDir if @isOut() then pos(100,0) else pos(-100,0)
+            @path.setEndDir if conn.isOut() then pos(100,0) else pos(-100,0)
             @conn = conn
             @conn.elem.addClassName 'highlight'
             @handle.elem.addClassName 'highlight'
         else
             @path.path.removeClass 'connectable'
-            @path.setStartDir if @isSignal() then pos(200,0) else pos(-200,0)
+            @path.setStartDir if @isOut() then pos(200,0) else pos(-200,0)
             @path.setEndDir pos(0,0)
             if @conn then @conn.elem.removeClassName 'highlight'; @conn = null
             @handle.elem.removeClassName 'highlight'
@@ -112,6 +117,7 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         if conn = @connectorAtPos p
+            log 'new connection'
             new Connection
                 source: @
                 target: conn

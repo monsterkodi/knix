@@ -12,7 +12,7 @@ class Analyser
 
     constructor: (config={}) ->
 
-        @analyser  = Audio.analyser()
+        @analyser = @audio = Audio.analyser()
         @dataArray = new Uint8Array(@analyser.fftSize);
 
         @initWindow config
@@ -47,9 +47,6 @@ class Analyser
         ctx = @canvas.getContext("2d")
         cvw = @canvas.getWidth()
         cvh = @canvas.getHeight()
-
-        # ctx.fillStyle = 'rgb(30,30,30)'
-        # ctx.fillRect(0,0,cvw,cvh)
 
         ctx.lineWidth = 1
         ctx.strokeStyle = 'rgb(255,255,255)'

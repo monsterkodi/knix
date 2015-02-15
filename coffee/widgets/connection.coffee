@@ -1,10 +1,10 @@
 ###
 
-     0000000   0000000   000   000  000   000  00000000  0000000 000000000  000   0000000   000   000 
-    000       000   000  0000  000  0000  000  000      000         000     000  000   000  0000  000 
-    000       000   000  000 0 000  000 0 000  000000   000         000     000  000   000  000 0 000 
-    000       000   000  000  0000  000  0000  000      000         000     000  000   000  000  0000 
-     0000000   0000000   000   000  000   000  00000000  0000000    000     000   0000000   000   000 
+     0000000   0000000   000   000  000   000  00000000  0000000 000000000  000   0000000   000   000
+    000       000   000  0000  000  0000  000  000      000         000     000  000   000  0000  000
+    000       000   000  000 0 000  000 0 000  000000   000         000     000  000   000  000 0 000
+    000       000   000  000  0000  000  0000  000      000         000     000  000   000  000  0000
+     0000000   0000000   000   000  000   000  00000000  0000000    000     000   0000000   000   000
 
 ###
 
@@ -27,8 +27,8 @@ class Connection
         @path = knix.get
             type:     'path'
             class:    'connection'
-            startDir: if @config.source.isSignal() then pos(100,0) else pos(-100,0)
-            endDir:   if @config.target.isSignal() then pos(100,0) else pos(-100,0)
+            startDir: if @config.source.isOut() then pos(100,0) else pos(-100,0)
+            endDir:   if @config.target.isOut() then pos(100,0) else pos(-100,0)
             onOver:   @onOver
             onOut:    @onOut
             onMove:   @onMove
@@ -55,6 +55,7 @@ class Connection
         [target, drag.connector] = @closestConnectors drag.absPos(event)
         drag.connector.dragStart drag, event
         target.delConnection @
+        @disconnect()
         @path.path.hide()
 
     dragMove: (drag,event) =>
@@ -82,28 +83,53 @@ class Connection
         @path.path.removeClass 'highlight'
 
     connect: =>
-        [signalConnector, slotConnector] = @signalSlotConnector()
-        signal = signalConnector.config.signal
-        slot   = slotConnector.config.slot
-        log @path.path.id(), "connect", signal, slot
-        [signalSender, signalEvent] = signalConnector.resolveSignal(signal)
-        slotFunction = slotConnector.resolveSlot(slot)
-        handler:  signalSender.elem.on signalEvent, slotFunction
-        sender:   signalSender
-        event:    signalEvent
-        signal:   signal
-        slot:     slot
-        receiver: slotFunction
+        [outConnector, inConnector] = @outInConnector()
+
+        log 'connect', outConnector.config, inConnector.config
+        if outConnector.config.onConnect?
+            outConnector.config.onConnect outConnector, inConnector
+        if inConnector.config.onConnect?
+            inConnector.config.onConnect inConnector, outConnector
+
+        connection =
+            out: outConnector
+            in:  inConnector
+
+        signal = outConnector.config.signal
+        slot   = inConnector.config.slot
+
+        if signal? and slot?
+            log @path.path.id(), "connect", signal, slot
+            [signalSender, signalEvent] = outConnector.resolveSignal(signal)
+            slotFunction = inConnector.resolveSlot(slot)
+            connection.handler  = signalSender.elem.on signalEvent, slotFunction
+            connection.sender   = signalSender
+            connection.event    = signalEvent
+            connection.signal   = signal
+            connection.slot     = slot
+            connection.receiver = slotFunction
+
+        connection
 
     disconnect: =>
-        log @path.path.id(), "disconnect", @connection.signal, @connection.slot
-        @connection.handler.stop()
-        @conncetion = null
+        log @path.path.id(), "disconnect"
 
-    signalSlotConnector: =>
+        if @connection
+
+            if @connection.out.config.onDisconnect?
+                @connection.out.config.onDisconnect @connection.out, @connection.in
+            if @connection.in.config.onDisconnect?
+                @connection.in.config.onDisconnect @connection.in, @connection.out
+
+            if @connection?.handler?
+                @connection.handler.stop()
+
+            @connection = null
+
+    outInConnector: =>
         [
-            (@config.source if @config.source.config.signal?) or @config.target,
-            (@config.source if @config.source.config.slot?)   or @config.target
+            (@config.source if @config.source.isOut()?) or @config.target,
+            (@config.source if @config.source.isIn()?)  or @config.target
         ]
 
     update: (event,e) =>
@@ -111,6 +137,7 @@ class Connection
         @path.setEnd   @config.target.absCenter()
 
     close: =>
+        log 'close connection', @connection
         @disconnect()
         @config.source.delConnection @
         @config.target.delConnection @
