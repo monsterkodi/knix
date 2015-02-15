@@ -1,7 +1,4 @@
 
-execSync = require "exec-sync"
-mkpath   = require 'mkpath'
-
 module.exports = (grunt) ->
 
     grunt.initConfig

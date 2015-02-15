@@ -13,12 +13,12 @@ document.observe "dom:loaded", ->
     # _________________________________________________________________________ init
 
     knix.init
-        console: true
-        # console: 'shade'
+        # console: true
+        console: 'shade'
 
     # _________________________________________________________________________ widget test
 
-    # Test.connectors()
+    Test.connectors()
     # Test.stageButtons()
     Test.helloSlider()
     Test.sliderAndValue()
@@ -26,6 +26,6 @@ document.observe "dom:loaded", ->
 
     # StyleSwitch.toggle()
 
-    $('show_about').click()
+    # $('show_about').click()
 
     return
