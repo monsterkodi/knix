@@ -428,11 +428,11 @@ Test = (function() {
 
 document.observe("dom:loaded", function() {
   knix.init({
-    console: true
+    console: 'shade'
   });
+  Test.connectors();
   Test.helloSlider();
   Test.sliderAndValue();
-  $('show_about').click();
 });
 
 //# sourceMappingURL=main.js.map
