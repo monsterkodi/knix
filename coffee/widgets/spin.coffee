@@ -68,3 +68,10 @@ class Spin extends Value
 
         @input.value = @config.value
         @setValue @config.value
+
+    setValue: () =>
+        super
+        @input.value = @strip0 @format(@config.value)
+
+    format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
+    strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s.strip())

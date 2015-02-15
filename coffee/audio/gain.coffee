@@ -80,7 +80,7 @@ class Gain extends Window
 
 
     setValue: (arg) =>
-        log _.arg(arg)
+        # log _.arg(arg)
         @audio.gain.value = _.arg(arg)
 
     @menu: =>

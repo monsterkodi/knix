@@ -38,9 +38,9 @@ document.observe "dom:loaded", ->
         title: 'mid'
         x: 100
         y: 300
-        minFreq: 200
-        maxFreq: 2200
-        freq:    200
+        minFreq: 400
+        maxFreq: 2000
+        freq:    400
 
     o3= new Oscillator
         title: 'low'

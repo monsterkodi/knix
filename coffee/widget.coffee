@@ -130,9 +130,9 @@ class Widget
         log name
         for t in ['slot', 'signal', 'in', 'out']
             for e in @elem.select('.'+t)
-                tag 'connection'
                 if e.hasClassName 'connector'
-                    log 'found connector element', t, e.widget.config[t]
+                    # tag 'connection'
+                    # log 'found connector element', t, e.widget.config[t]
                     if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
                         return e.widget
             # warn 'no elem with class', name
@@ -210,7 +210,6 @@ class Widget
 
     @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
-        # e.id = "%s.%s.%d".fmt(type, clss, @nextWidgetID)
         e.id = "%s.%d".fmt(clss, @nextWidgetID)
         @nextWidgetID += 1
         e.addClassName clss
@@ -382,16 +381,3 @@ class Widget
                 e.style.maxHeight = "%dpx".fmt(e.getHeight()) if not @config.maxHeight?
             if @config.resize == 'vertical'
                 e.style.maxWidth = "%dpx".fmt(e.getWidth()) if not @config.maxWidth?
-
-    # ____________________________________________________________________________ tools
-
-    format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
-    strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s.strip())
-    round: (v) => # rounds v to multiples of valueStep
-        r = v
-        if @config.valueStep?
-            d = v - Math.round(v/@config.valueStep)*@config.valueStep
-            r -= d
-        r
-    clamp: (v) => # clamps v to the [minValue,maxValue] range
-        _.clamp @config.minValue, @config.maxValue, v

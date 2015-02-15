@@ -17,18 +17,22 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
 
+        if not @config.valueStep?
+            range = @config.maxValue - @config.minValue
+            @config.valueStep = range > 1 and 1 or range/100
+
     initEvents: =>
         @elem.on "onValue", @config.onValue  if @config.onValue?
         super
 
     setValue: (arg) =>
+        # tag 'value'
         oldValue = @config.value
         v = @round(@clamp(_.arg(arg)))
-        @input.value = @strip0 @format(v)
         if v != oldValue
+            # log v
             @config.value = v
-            @emit 'onValue',
-                value: v
+            @emit 'onValue', value: v
         @
 
     incr: (d) =>
@@ -36,3 +40,13 @@ class Value extends Widget
         else if d in ['-', '--'] then d = -1
         if @config.valueStep? then step = @config.valueStep else step = 1
         @setValue @input.getValue() + step*d
+
+    # ____________________________________________________________________________ tools
+
+    clamp: (v) => _.clamp @config.minValue, @config.maxValue, v # clamps v to the [minValue,maxValue] range
+    round: (v) => # rounds v to multiples of valueStep
+        r = v
+        if @config.valueStep?
+            d = v - Math.round(v/@config.valueStep)*@config.valueStep
+            r -= d
+        r
