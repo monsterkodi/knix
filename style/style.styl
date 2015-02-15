@@ -79,11 +79,11 @@ a
     &:hover
         color:       textColors.link-hover
 
-.kitty
-    fill:            textColors.link
-
-.kitty-widget
+.about-svg
     text-align:       center
+
+.about-svg-path
+    fill:            textColors.link
 
 #stage
     position:         relative
@@ -336,13 +336,18 @@ a
 .console-class
     display: inline-block
     min-width: 100px
+    color: darken(textColors.link, 20)
+    &:hover
+        color: textColors.link-hover
+
+.console-method-type
+    display: inline-block
+    min-width: 12px
+    color: darken(textColors.link, 50)
 
 .console-method
     display: inline-block
-    min-width: 100px
-
-.console-method-type
-    color: darken(textColors.link, 10)
+    min-width: 140px
 
 .console .octicon
     color: textColors.console-punct

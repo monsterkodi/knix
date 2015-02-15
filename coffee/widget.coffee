@@ -31,10 +31,11 @@ class Widget
         @elem.widget = @                                    # let this be the elements widget
         @config = cfg                                       # set config
 
-        @elem.getWindow = @getWindow.bind(@)
-        @elem.getChild  = @getChild.bind(@)
-        @elem.getParent = @getParent.bind(@)
-        @elem.relPos    = -> o = @positionedOffset(); pos o.left, o.top
+        @elem.getWindow     = @getWindow
+        @elem.getChild      = @getChild
+        @elem.getParent     = @getParent
+        @elem.toggleDisplay = @toggleDisplay
+        @elem.relPos = -> o = @positionedOffset(); pos o.left, o.top
 
         @elem.writeAttribute('id', @config.id) if @config.id? # set element id
 
@@ -103,13 +104,13 @@ class Widget
     # ________________________________________________________________________________ event handling
 
     initEvents: =>
-        @elem.on "click",      @config.onClick  if @config.onClick
-        @elem.on "mousedown",  @config.onDown   if @config.onDown
-        @elem.on "mouseup",    @config.onUp     if @config.onUp
-        @elem.on "mouseover",  @config.onOver   if @config.onOver
-        @elem.on "mousemove",  @config.onMove   if @config.onMove
-        @elem.on "mouseout",   @config.onOut    if @config.onOut
-        @elem.on "ondblclick", @config.onDouble if @config.onDouble
+        @elem.on "click",      @config.onClick  if @config.onClick?
+        @elem.on "mousedown",  @config.onDown   if @config.onDown?
+        @elem.on "mouseup",    @config.onUp     if @config.onUp?
+        @elem.on "mouseover",  @config.onOver   if @config.onOver?
+        @elem.on "mousemove",  @config.onMove   if @config.onMove?
+        @elem.on "mouseout",   @config.onOut    if @config.onOut?
+        @elem.on "ondblclick", @config.onDouble if @config.onDouble?
         @
 
     # ____________________________________________________________________________ slots
@@ -290,6 +291,12 @@ class Widget
         while @elem.hasChildNodes()
             @elem.removeChild @elem.lastChild
         @
+
+    toggleDisplay: =>
+        if @elem.visible()
+            @elem.hide()
+        else
+            @elem.show()
 
     # ____________________________________________________________________________ geometry
 

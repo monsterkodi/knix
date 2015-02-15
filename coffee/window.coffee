@@ -91,11 +91,12 @@ class Window extends Widget
     #__________________________________________________ header
 
     addTitleBar: =>
-        knix.create
-            type:    'title'
-            text:    @config.title
-            parent:  this
-            onDouble: (event,e) -> console.log 'maxi'; e.getWindow().maximize()
+        log 'add title'
+        t = knix.create
+            type:       'title'
+            text:       @config.title
+            parent:     this
+        t.elem.ondblclick = @maximize
 
     addCloseButton: =>
         knix.create
@@ -192,7 +193,6 @@ class Window extends Widget
 
     raise: (event,e) =>
         if e? and e.getWindow() not in knix.popups
-            log e.getWindow()
             knix.closePopups()
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem

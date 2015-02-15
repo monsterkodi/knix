@@ -29,13 +29,15 @@ class Console extends Window
         h  = Stage.size().height - $('menu').getHeight() - 2
 
         super cfg,
-            title:    'console'
-            class:    'console-window'
-            x:        w
-            y:        $('menu').getHeight()+2
-            width:    w
-            height:   h
-            content:  'scroll'
+            title:          'console'
+            class:          'console-window'
+            x:              w
+            y:              $('menu').getHeight()+2
+            width:          w
+            height:         h
+            content:        'scroll'
+            showMethods:    true
+            showClasses:    true
             buttons:  \
             [
                 class:   'window-button-right'
@@ -81,10 +83,11 @@ class Console extends Window
             hasShade: false
             popup:    true
             pos:      Stage.absPos(event)
+            console:  @
             children: children
             buttons:  \
             [
-                class:   'window-button-right'
+                class:   'window-button-left'
                 child:
                     type: 'icon'
                     icon: 'octicon-x'
@@ -99,6 +102,18 @@ class Console extends Window
                 onClick: (event,e) ->
                     for t in e.getWindow().elem.select('.toggle')
                         t.widget.setState('on')
+            ,
+                type:    "window-button-right"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-list-unordered'
+                onClick: @toggleMethods
+            ,
+                class:   'window-button-right'
+                child:
+                    type: 'icon'
+                    icon: 'octicon-three-bars'
+                onClick: @toggleClasses
             ]
 
         event.preventDefault()
@@ -113,16 +128,15 @@ class Console extends Window
         @scrollToBottom()
 
     logInfo: (info,url,s) =>
-        # console.log info, url, s
         @addLogTag info.class
         infoStr = info.class + info.type + info.method
         tags = [info.class].concat(Console.scopeTags)
         styles = ("log_"+t.replace(/[\/@]/g, '_') for t in tags when t?).join(' ')
         @insert '<pre class="'+styles+'">'+
             '<a onClick=\''+url+'\' class="console-link" title="'+infoStr+' '+tags.join(' ')+'">'+
-            '<span class="console-class">'+         info.class+'</span>'+
-            '<span class="console-method-type">'+   info.type+'</span>'+
-            '<span class="console-method">'+        info.method+' </span>'+
+            '<span class="console-class" '+      (not @config.showClasses and 'style="display:none;"' or '')+'>'+ info.class+  '</span>'+
+            '<span class="console-method-type" '+(not @config.showMethods and 'style="display:none;"' or '')+'>'+ info.type+   '</span>'+
+            '<span class="console-method" '+     (not @config.showMethods and 'style="display:none;"' or '')+'>'+ info.method+' </span>'+
             '<span class="octicon octicon-playback-play"></span>'+
             '</a> '+Console.toHtml(s)+
             '</pre>'
@@ -140,6 +154,16 @@ class Console extends Window
                     tagElem.style.display = ''
 
     addLogTag: (tag) => @logTags[tag] = true if not @logTags[tag]?
+
+    toggleClasses: =>
+        @config.showClasses = not @config.showClasses
+        for t in @elem.select('.console-class')
+            if @config.showClasses then t.show() else t.hide()
+
+    toggleMethods: =>
+        @config.showMethods = not @config.showMethods
+        for t in @elem.select('.console-method', '.console-method-type')
+            if @config.showMethods then t.show() else t.hide()
 
     # _________________________________________________________________________________________ static
 
