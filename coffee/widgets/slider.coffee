@@ -8,7 +8,7 @@
 
 ###
 
-class Slider extends Widget
+class Slider extends Value
 
     constructor: (cfg) ->
 
@@ -30,6 +30,7 @@ class Slider extends Widget
                 child:
                     type: 'slider-knob'
 
+        # @setValue @config.value
         @setBarValue @config.value
 
         # this is only to fix a minor glitch in the knob display, might cost too much performance:
@@ -42,10 +43,6 @@ class Slider extends Widget
             doMove:     false
             onMove:     sliderFunc
             onStart:    sliderFunc
-
-    initEvents: =>
-        @elem.on "onValue", @config.onValue  if @config.onValue?
-        super
 
     valueToPercentOfWidth: (value) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
@@ -61,9 +58,11 @@ class Slider extends Widget
         @getChild('slider-bar').elem.style.width = "%.2f%%".fmt(pct)
 
     setValue: (arg) =>
+        tag 'value'
         oldValue = @config.value
         v = @round(@clamp(_.arg(arg)))
         if v != oldValue
+            log v
             @config.value = v
             @setBarValue(v)
             @emit 'onValue', value:v

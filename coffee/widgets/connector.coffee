@@ -14,6 +14,8 @@ class Connector extends Widget
 
         config.class = 'slot'   if config.slot?
         config.class = 'signal' if config.signal?
+        config.class = 'in'     if config.in?
+        config.class = 'out'    if config.out?
 
         super config,
             type: 'connector'
@@ -36,8 +38,8 @@ class Connector extends Widget
         @connections = null
         super()
 
-    isSignal: => @elem.hasClassName('signal')
-    isSlot:   => @elem.hasClassName('slot')
+    isSignal: => @config.signal?
+    isSlot:   => @config.slot?
     isIn:     => @isSlot() or @config.in
     isOut:    => @isSignal() or @config.out
 

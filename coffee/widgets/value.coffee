@@ -10,67 +10,16 @@
 
 class Value extends Widget
 
-    constructor: (cfg) ->
+    constructor: (cfg,def) ->
 
-        super cfg,
-            type:       'value'
+        super _.def(cfg,def),
             value:      0
             minValue:   0
             maxValue:   100
-            horizontal: true
-            child:
-                elem:   'table'
-                type:   'value-table'
-                onDown: (event,e) -> event.stopPropagation()
-                child:
-                    elem:   'tr'
-                    type:   'value-row'
-                    children: \
-                    [
-                        elem: 'td'
-                        type: 'value-td'
-                        child:
-                            type: 'icon'
-                            icon: 'octicon-triangle-left'
-                            onClick: (event,e) ->
-                                value = e.getParent('value')
-                                value.incr '-'
-                    ,
-                        elem: 'td'
-                        type: 'value-content'
-                        child:
-                            type:   'input'
-                            class:  'value-input'
-                    ,
-                        elem: 'td'
-                        type: 'value-td'
-                        child:
-                            type: 'icon'
-                            icon: 'octicon-triangle-right'
-                        onClick: (event,e) -> e.getParent('value').incr '+'
-                    ]
 
-        @input = @getChild('value-input').elem
-
-        @elem.on 'keypress', (event,e) ->
-            if event.key in ['Up', 'Down']
-                @widget.incr event.key == 'Up' and '+' or '-'
-                event.stop()
-                return
-            if event.key not in '0123456789-.'
-                if event.key.length == 1
-                    event.stop()
-                    return
-            if event.key in '-.'
-                if @widget.input.value.indexOf(event.key) > -1
-                    event.stop()
-                    return
-
-        @input.on 'change', (event,e) ->
-            @getParent('value').setValue @getValue()
-
-        @input.value = @config.value
-        @setValue @config.value
+    initEvents: =>
+        @elem.on "onValue", @config.onValue  if @config.onValue?
+        super
 
     setValue: (arg) =>
         oldValue = @config.value

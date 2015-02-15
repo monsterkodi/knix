@@ -34,10 +34,10 @@ colors.toggle-text          = colors.button
 colors.toggle-on            = colors.button
 colors.toggle-on-text       = black
 colors.toggle-hover         = darken(colors.bg,6)
-colors.value                = colors.slider
-colors.value-border         = colors.grayMedium
-colors.value-active         = colors.button
-colors.value-input          = transparent
+colors.spin                 = colors.slider
+colors.spin-border          = colors.grayMedium
+colors.spin-active          = colors.button
+colors.spin-input           = transparent
 colors.console              = colors.bg
 
 colors.connector-signal                     = colors.slider
@@ -98,7 +98,7 @@ borders.menu            = widgetBorderWidth solid borderColors.menu
 borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid borderColors.widget
 borders.scroll          = borders.slider
-borders.value           = 0px solid colors.value-border
+borders.spin            = 0px solid colors.spin-border
 
 borders.connector                   = 0px solid white
 borders.connector-signal-connected  = 2px solid colors.connector-signal-border-connected
@@ -130,6 +130,6 @@ shadowInnerDef          = inset 1px 1px 2px rgba(0,0,0,0.05)
 
 .slider
 .toggle
-.value-table
+.spin-table
     -webkit-box-shadow: shadowInnerDef
     box-shadow:         shadowInnerDef

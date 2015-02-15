@@ -467,42 +467,42 @@ a
 .highlight
     stroke:           colors.connection-highlight
 
-// ____________________________________ value
+// ____________________________________ spin
 
-.value
+.spin
     height:           valueHeight
     overflow:         hidden
     handCursor()
     border-radius:    widgetTopRadius
-    border:           borders.value
-    background-color: colors.value
+    border:           borders.spin
+    background-color: colors.spin
 
-.value-table
-.value-row
-.value-td
+.spin-table
+.spin-row
+.spin-td
     border-collapse: collapse
     margin:   0
     padding:  0
     max-height:       valueHeight
 
-.value-content
+.spin-content
     position:         relative
     width:            100%
     max-height:       valueHeight
     margin:           0
     padding:          0
-    background-color:       colors.value-input
+    background-color:       colors.spin-input
     &:hover
-        background-color:   colors.value-input-hover
+        background-color:   colors.spin-input-hover
 
-.value-input
+.spin-input
     textCursor()
     padding:          0
     margin:           0
     border:           0
     text-align:       center
     background-color: transparent
-    color:            colors.value-active
+    color:            colors.spin-active
     box-sizing:       border-box
     font-weight:      bold
     font-size:        16px
@@ -511,7 +511,7 @@ a
     height:           valueHeight
     width:            100%
     &::-moz-selection
-      background:     colors.value-active
+      background:     colors.spin-active
       color:          black
 
 // ____________________________________ position

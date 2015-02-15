@@ -126,11 +126,16 @@ class Widget
     # ____________________________________________________________________________ connections
 
     connector: (name) =>
-        for t in ['slot', 'signal']
+        tag 'connection'
+        log name
+        for t in ['slot', 'signal', 'in', 'out']
             for e in @elem.select('.'+t)
+                tag 'connection'
                 if e.hasClassName 'connector'
-                    if e.widget.config[t] == name
+                    log 'found connector element', t, e.widget.config[t]
+                    if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
                         return e.widget
+            # warn 'no elem with class', name
         error 'connector not found!', name
         undefined
 

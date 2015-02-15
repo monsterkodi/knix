@@ -35,11 +35,11 @@ colors.slider-hover         = colors.grayDark
 colors.slider-bar           = colors.red
 colors.slider-knob          = colors.redBright
 colors.slider-knob-hover    = yellow
-colors.value                = colors.slider
-colors.value-border         = colors.grayMedium
-colors.value-active         = colors.green
-colors.value-input          = transparent
-colors.value-input-hover    = colors.slider-hover
+colors.spin                 = colors.slider
+colors.spin-border          = colors.grayMedium
+colors.spin-active          = colors.green
+colors.spin-input           = transparent
+colors.spin-input-hover     = colors.slider-hover
 colors.console              = black
 
 colors.connector-highlight               = yellow
@@ -102,7 +102,7 @@ borders.menu            = 0px solid borderColors.menu
 borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid colors.slider
 borders.scroll          = scrollBorderWidth solid colors.scroll
-borders.value           = 0px solid colors.value-border
+borders.spin            = 0px solid colors.spin-border
 
 borders.connector                  = 0px solid colors.slider
 borders.connector-signal-connected = 1px solid colors.connector-signal-border-connected
@@ -132,13 +132,13 @@ shadowInnerDef          = inset 1px 1px 6px rgba(0,0,0,0.4)
 .content .button
     box-shadow:         1px 1px 2px 0px rgba(0,0,0,0.4)
 
-.value-input
+.spin-input
     text-shadow:        rgba(0,0,0,0.5) 1px 1px 4px
 
 .slider-bar
     box-shadow:         1px 0px 6px 0px rgba(0,0,0,0.4)
 
 .slider
-.value-table
+.spin-table
     -webkit-box-shadow: shadowInnerDef
     box-shadow:         shadowInnerDef

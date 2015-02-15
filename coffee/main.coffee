@@ -28,21 +28,65 @@ document.observe "dom:loaded", ->
 
     # $('show_about').click()
 
-    new Oscillator
-            x: 100
-            y: 100
+    o1= new Oscillator
+        title: 'high'
+        minFreq: 2000
+        x: 100
+        y: 100
 
-    new Oscillator
-            x: 100
-            y: 300
-            freq: 2000
+    o2= new Oscillator
+        title: 'mid'
+        x: 100
+        y: 300
+        minFreq: 200
+        maxFreq: 2200
+        freq:    200
 
-    # new Gain
-    #         x: 300
-    #         y: 102
+    o3= new Oscillator
+        title: 'low'
+        x: 100
+        y: 500
+        maxFreq: 400
+        freq:    200
 
-    new Gain
-            master: true
-            x: 500
-            y: 104
+    g1= new Gain
+        gain: 0.1
+        x: 300
+        y: 102
+
+    g2= new Gain
+        gain: 0.2
+        x: 300
+        y: 302
+
+    g3= new Gain
+        gain: 0.3
+        x: 300
+        y: 502
+
+    gm= new Gain
+        master: true
+        gain: 0.01
+        x: 500
+        y: 104
+
+    new Connection
+        source: o1.connector 'audio:out'
+        target: g1.connector 'audio:in'
+    new Connection
+        source: o2.connector 'audio:out'
+        target: g2.connector 'audio:in'
+    new Connection
+        source: o3.connector 'audio:out'
+        target: g3.connector 'audio:in'
+    new Connection
+        source: g1.connector 'audio:out'
+        target: gm.connector 'audio:in'
+    new Connection
+        source: g2.connector 'audio:out'
+        target: gm.connector 'audio:in'
+    new Connection
+        source: g3.connector 'audio:out'
+        target: gm.connector 'audio:in'
+
     return

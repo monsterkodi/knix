@@ -8,14 +8,20 @@
 
 ###
 
-class Analyser
+class Analyser extends Window
 
     constructor: (config={}) ->
 
         @analyser = @audio = Audio.analyser()
         @dataArray = new Uint8Array(@analyser.fftSize);
 
-        @initWindow config
+        super config,
+            title: 'analyser'
+            child:
+                id:   'analyser_canvas'
+                type: 'canvas'
+
+        @canvas = @getChild('analyser_canvas').elem
 
         knix.animate @
 
@@ -29,16 +35,6 @@ class Analyser
             parent: 'menu'
             onClick: -> new Analyser
                             center: true
-
-    initWindow: (cfg) =>
-
-        @window = knix.get cfg,
-            title: 'analyser'
-            child:
-                id:   'analyser_canvas'
-                type: 'canvas'
-
-        @canvas = @window.getChild('analyser_canvas').elem
 
     anim: (timestamp) =>
 
