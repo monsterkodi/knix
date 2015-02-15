@@ -1,3 +1,12 @@
+###
+
+     0000000    0000000    0000000  000  000       000        0000000  000000000   0000000   00000000
+    000   000  000        000       000  000       000       000   000    000     000   000  000   000
+    000   000   0000000   000       000  000       000       000000000    000     000   000  0000000
+    000   000        000  000       000  000       000       000   000    000     000   000  000   000
+     0000000    0000000    0000000  000  000000000 000000000 000   000    000      0000000   000   000
+
+###
 
 class Oscillator
 
@@ -12,10 +21,11 @@ class Oscillator
         knix.create
             type:   'button'
             id:     'new_oscillator'
-            icon:   'octicon-megaphone'
+            icon:   'octicon-sync'
             class:  'tool-button'
             parent: 'menu'
-            onClick: -> new Oscillator()
+            onClick: -> new Oscillator
+                            center: true
 
     initWindow: (cfg) =>
 
@@ -23,8 +33,7 @@ class Oscillator
             title: 'oscillator'
             minWidth: 150
             minHeight: 60
-            children: \
-            [
+            child:
                 type: 'hbox'
                 children: \
                 [
@@ -42,4 +51,3 @@ class Oscillator
                     type:       'connector'
                     signal:     'slider_frequency:onValue'
                 ]
-            ]

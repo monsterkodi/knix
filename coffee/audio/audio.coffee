@@ -1,3 +1,12 @@
+###
+
+     0000000   000   000  0000000    000   0000000
+    000   000  000   000  000   000  000  000   000
+    000000000  000   000  000   000  000  000   000
+    000   000  000   000  000   000  000  000   000
+    000   000   0000000   0000000    000   0000000
+
+###
 
 class Audio
 
@@ -14,20 +23,24 @@ class Audio
         Analyser.menu()
         Gain.menu()
 
-    @oscillator: =>
+    @oscillator: (cfg) =>
 
         oscillator = @context.createOscillator()
         oscillator.frequency.value = 50 # Hz?
         oscillator.start 0
         oscillator
 
-    @gain: =>
+    @gain: (cfg) =>
 
         gain = @context.createGain()
         gain.gain.value = 0.0 # [0.0, 1.0]
+
+        if cfg.master
+            gain.connect(@context.destination)
+
         gain
 
-    @analyser: =>
+    @analyser: (cfg) =>
 
         analyser = @context.createAnalyser()
         analyser.minDecibels = -90

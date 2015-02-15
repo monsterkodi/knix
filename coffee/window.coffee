@@ -192,7 +192,7 @@ class Window extends Widget
             @config.isMaximized = true
 
     raise: (event,e) =>
-        if e? and e.getWindow() not in knix.popups
+        if e?.getWindow? and e.getWindow() not in knix.popups
             knix.closePopups()
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem

@@ -13,6 +13,7 @@ class knix
     # ________________________________________________________________________________ element creation
 
     @version = '::package.json:version::'
+    @popups = []
 
     @init: (config) =>
 

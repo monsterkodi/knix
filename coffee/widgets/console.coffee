@@ -17,11 +17,11 @@ class Console extends Window
         @logTags =
             'knix':           'off'
             'Stage':          'off'
-            # 'Widget':         'off'
-            # 'Window':         'off'
+            'Widget':         'off'
+            'Window':         'off'
             'layout':         'off'
             'todo':           'off'
-            'connections':    'off'
+            # 'connections':    'off'
 
         @scopeTags = []
 

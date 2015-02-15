@@ -13,15 +13,15 @@ document.observe "dom:loaded", ->
     # _________________________________________________________________________ init
 
     knix.init
-        # console: true
-        console: 'shade'
+        console: true
+        # console: 'shade'
 
     # _________________________________________________________________________ widget test
 
-    Test.connectors()
+    # Test.connectors()
     # Test.stageButtons()
-    Test.helloSlider()
-    Test.sliderAndValue()
+    # Test.helloSlider()
+    # Test.sliderAndValue()
     # Test.svgPath()
 
     # StyleSwitch.toggle()
