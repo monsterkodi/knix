@@ -28,7 +28,7 @@ class Audio
     @gain: (cfg) =>
 
         gain = @context.createGain()
-        gain.gain.value = cfg.gain or 1.0 # [0.0, 1.0]
+        gain.gain.value = cfg.gain? and cfg.gain or 0.0 # [0.0, 1.0]
 
         if cfg.master
             gain.connect @context.destination

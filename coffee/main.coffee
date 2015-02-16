@@ -43,19 +43,21 @@ document.observe "dom:loaded", ->
         y: 240
 
     o3= new Oscillator
-        title: 'low'
+        title:   'low'
+        minFreq: 1
         maxFreq: 400
         freq:    200
+        shape:   'square'
         x: 10
         y: 440
 
     g1= new Gain
-        gain: 0.1
+        gain: 0.0
         x: 100
         y: 142
 
     g2= new Gain
-        gain: 0.2
+        gain: 0.0
         x: 100
         y: 342
 
@@ -72,7 +74,7 @@ document.observe "dom:loaded", ->
 
     gm= new Gain
         master: true
-        gain: 0.01
+        gain: 0.0
         x: 400
         y: 544
 

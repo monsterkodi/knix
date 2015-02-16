@@ -47,6 +47,10 @@ class Spin extends Value
                             icon: 'octicon-triangle-right'
                     ]
 
+        if not @config.valueStep?
+            range = @config.maxValue - @config.minValue
+            @config.valueStep = range > 1 and 1 or range/100
+
         @input = @getChild('spin-input').elem
 
         @elem.on 'keypress', (event,e) ->
@@ -73,8 +77,8 @@ class Spin extends Value
         super
         @input.value = @strip0 @format(@config.value)
 
-    startIncr: => @timer = setInterval(@incr, 50)
-    startDecr: => @timer = setInterval(@decr, 50)
+    startIncr: => @incr(); @timer = setInterval(@incr, 80)
+    startDecr: => @decr(); @timer = setInterval(@decr, 80)
     stopTimer: => clearInterval @timer
 
     format: (s) => return @config.format.fmt(s) if @config.format?; String(s)

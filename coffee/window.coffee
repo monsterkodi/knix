@@ -74,19 +74,14 @@ class Window extends Widget
 
         if @config.content == 'scroll'
 
-            @elem.on 'size', (event,e) ->
-                win = e.getWindow()
-                content = $(win.content).widget
-                content.setWidth  win.contentWidth()
-                content.setHeight win.contentHeight()
-
             content.elem.setStyle
                 position:   'relative'
                 overflow:   'scroll'
                 width:      '100%'
                 height:     "%dpx".fmt(@contentHeight())
 
-        this
+        @elem.on 'size', @sizeWindow
+        @
 
     #__________________________________________________ header
 
@@ -127,6 +122,16 @@ class Window extends Widget
     stretchWidth: =>
         tag 'layout', 'todo'
         log 'add horizontal stretching handles and get rid of addSize crap!'
+
+    sizeWindow: =>
+
+        if @config.content == 'scroll'
+            content = $(@content).widget
+            content.setWidth  @contentWidth()
+            content.setHeight @contentHeight()
+
+        for e in @elem.descendants()
+            e.widget?.onWindowSize?()
 
     # ____________________________________________________________________________ size
 

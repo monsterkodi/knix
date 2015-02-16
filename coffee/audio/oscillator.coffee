@@ -10,6 +10,7 @@
 
 class Oscillator extends Window
 
+    @shapes = ['sine', 'triangle', 'sawtooth', 'square']
     constructor: (config={}) ->
 
         cfg = _.def config,
@@ -35,9 +36,21 @@ class Oscillator extends Window
                 minValue:   cfg.minFreq
                 maxValue:   cfg.maxFreq
                 onValue:    @setFreq
+            ,
+                type:       'sliderspin'
+                id:         'shape'
+                value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
+                minValue:   0
+                maxValue:   3
+                sliderStep: 1
+                sliderKnob: true
+                onValue:    @setShape
             ]
 
-    setFreq: (arg) => @audio.frequency.value = _.arg(arg)
+        @setShape(Oscillator.shapes.indexOf(cfg.shape)) if cfg.shape?
+
+    setFreq: (arg)  => @audio.frequency.value = _.arg(arg)
+    setShape: (arg) => @audio.type = Oscillator.shapes[_.arg(arg)]
 
     @menu: =>
 

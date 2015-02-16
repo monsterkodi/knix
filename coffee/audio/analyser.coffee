@@ -10,13 +10,18 @@
 
 class Analyser extends Window
 
-    constructor: (config={}) ->
+    constructor: (cfg, defs) ->
+
+        cfg = _.def cfg, defs
+        cfg = _.def cfg,
+            scaleX: 1.0
+            scaleY: 1.0
 
         @audio = \
         @analyser = Audio.analyser()
         @dataArray = new Uint8Array(@analyser.fftSize);
 
-        super config,
+        super cfg,
             title: 'analyser'
             children: \
             [
@@ -28,19 +33,30 @@ class Analyser extends Window
                 style:
                     width:  '100%'
                     height: '100%'
+            ,
+                type:       'sliderspin'
+                id:         'scaleX'
+                value:      cfg.scaleX
+                onValue:    @setScaleX
+                minValue:   1.0
+                maxValue:   20.0
+                valueStep:  1
             ]
 
         @canvas = @getChild('analyser_canvas')
-        @elem.on 'size', @resizeCanvas
 
         knix.animate @
+        @sizeWindow()
 
-    resizeCanvas: (event,e) =>
+    setScaleX: (a) => @config.scaleX = _.arg(a)
+    setScaleY: (a) => @config.scaleY = _.arg(a)
+
+    sizeWindow: =>
         hbox = @getChild('hbox')
         height = @contentHeight()
         content = @getChild('content')
         content.setHeight(height)
-        height = content.innerHeight() - hbox.getHeight() - 30
+        height = content.innerHeight() - 90
         @canvas.setHeight height
         width  = content.innerWidth() - 20
         @canvas.elem.width  = width
@@ -68,16 +84,15 @@ class Analyser extends Window
 
         ctx.lineWidth = 1
 
-
-        ctx.fillStyle = "rgb(200,0,0)"
-        ctx.fillRect(0, 0, cvw, cvh)
+        ctx.fillStyle   = "rgb(200,0,0)"
+        ctx.fillRect    0, 0, cvw, cvh
         ctx.strokeStyle = 'rgb(0,0,0)'
-        ctx.strokeRect(0, 0, cvw, cvh)
+        ctx.strokeRect  0, 0, cvw, cvh
         ctx.strokeStyle = 'rgb(255,205,0)'
 
         ctx.beginPath()
 
-        xd = cvw * 1.0 / @analyser.fftSize
+        xd = cvw * @config.scaleX / @analyser.fftSize
         x = 0
 
         for i in [0..@analyser.fftSize]

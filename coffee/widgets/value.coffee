@@ -17,10 +17,6 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
 
-        if not @config.valueStep?
-            range = @config.maxValue - @config.minValue
-            @config.valueStep = range > 1 and 1 or range/100
-
     initEvents: =>
         @elem.on "onValue", @config.onValue  if @config.onValue?
         super

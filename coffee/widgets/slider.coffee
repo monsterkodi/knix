@@ -35,10 +35,6 @@ class Slider extends Value
 
         @setBarValue @config.value
 
-        # this is only to fix a minor glitch in the knob display, might cost too much performance:
-        sizeCB = (event,e) -> @setValue(@config.value)
-        @getWindow().elem.on "size", sizeCB.bind(@) if @getWindow()
-
         Drag.create
             cursor:     'ew-resize'
             target:     @elem
@@ -46,11 +42,14 @@ class Slider extends Value
             onMove:     sliderFunc
             onStart:    sliderFunc
 
+    onWindowSize: => @setValue(@config.value)
+
     valueToPercentOfWidth: (value) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
         knobWidth = @config.hasKnob and @getChild('slider-knob').getWidth() or 0
         borderWidth = @getChild('slider-bar').getHeight() - @getChild('slider-bar').innerHeight()
         knobMinPercent = 100 * (knobWidth+borderWidth) / Math.max(1, @getWidth())
+        log @getWidth()
         barFactor = (value - cfg.minValue) / (cfg.maxValue - cfg.minValue)
         barPercent = knobMinPercent + ( (100-knobMinPercent) * barFactor )
         barPercent
@@ -61,4 +60,5 @@ class Slider extends Value
 
     setBarValue: (barValue) =>
         pct = @valueToPercentOfWidth(barValue)
+        log pct, barValue
         @getChild('slider-bar').elem.style.width = "%.2f%%".fmt(pct)

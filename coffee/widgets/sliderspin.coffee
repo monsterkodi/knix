@@ -24,6 +24,8 @@ class Sliderspin extends Hbox
                 id:         cfg.id+'_slider'
                 minValue:   cfg.minValue
                 maxValue:   cfg.maxValue
+                valueStep:  cfg.sliderStep
+                hasKnob:    cfg.sliderKnob
                 style:
                     width:  '90%'
             ,
@@ -33,6 +35,7 @@ class Sliderspin extends Hbox
                 minValue:   cfg.minValue
                 maxValue:   cfg.maxValue
                 onValue:    cfg.onValue
+                valueStep:  cfg.spinStep
                 minWidth:   80
                 format:     "%3.2f"
                 style:
