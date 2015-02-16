@@ -13,7 +13,7 @@ module.exports = (grunt) ->
                     'knix':    ['./coffee/knix.coffee']
                     'widget':  ['./coffee/widget.coffee']
                     'window':  ['./coffee/window.coffee']
-                    'widgets': ['./coffee/widgets/value.coffee', './coffee/widgets/*.coffee']
+                    'widgets': ['./coffee/widgets/value.coffee', './coffee/widgets/hbox.coffee', './coffee/widgets/*.coffee']
                     'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
                     'main':    ['./coffee/test.coffee', './coffee/main.coffee']
 

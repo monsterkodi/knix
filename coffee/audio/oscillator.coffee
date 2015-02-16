@@ -40,24 +40,12 @@ class Oscillator extends Window
                     onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
                 ]
             ,
-                type: 'hbox'
-                children: \
-                [
-                    type:       'connector'
-                    slot:       'frequency:setValue'
-                ,
-                    id:         'frequency'
-                    type:       'slider'
-                    value:      cfg.freq
-                    minValue:   cfg.minFreq
-                    maxValue:   cfg.maxFreq
-                    onValue:    @setFreq
-                    style:
-                        width:  '100%'
-                ,
-                    type:       'connector'
-                    signal:     'frequency:onValue'
-                ]
+                type:       'sliderspin'
+                id:         'frequency'
+                value:      cfg.freq
+                minValue:   cfg.minFreq
+                maxValue:   cfg.maxFreq
+                onValue:    @setFreq
             ]
 
     setFreq: (arg) => @audio.frequency.value = _.arg(arg)

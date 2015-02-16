@@ -164,7 +164,9 @@ class Widget
 
     resolveSignal: (signal) =>
         [event, sender] = signal.split(':').reverse()
-        sender = @getWindow().getChild(sender) if sender?
+        if sender?
+            sender = @getChild(sender)
+            sender = @getWindow()?.getChild(sender) unless sender?
         sender = @ unless sender?
         [sender, event]
 
@@ -173,7 +175,9 @@ class Widget
             return slot
         if typeof slot == 'string'
             [func, receiver] = slot.split(':').reverse()
-            receiver = @getWindow().getChild(receiver) if receiver?
+            if receiver?
+                receiver = @getChild(receiver)
+                receiver = @getWindow()?.getChild(receiver) unless receiver?
             receiver = @ unless receiver?
             if receiver[func]?
                 if typeof receiver[func] == 'function'
@@ -240,11 +244,11 @@ class Widget
         child
 
     insertChildren: =>
+        if @config.child
+            @insertChild(@config.child)
         if @config.children
             for cfg in @config.children
                 @insertChild(cfg)
-        else if @config.child
-            @insertChild(@config.child)
         @
 
     # returns first ancestor element that matches class or id of first argument

@@ -1,9 +1,9 @@
 ###
 
-    000   000  0000000     0000000   000   000 
-    000   000  000   000  000   000   000 000 
-    000000000  0000000    000   000    00000  
-    000   000  000   000  000   000   000 000 
+    000   000  0000000     0000000   000   000
+    000   000  000   000  000   000   000 000
+    000000000  0000000    000   000    00000
+    000   000  000   000  000   000   000 000
     000   000  0000000     0000000   000   000
 
 ###
@@ -28,9 +28,14 @@ class Hbox extends Widget
                     display: 'table-row'
                     width:   '100%'
 
-    insertChild: (cfg) ->
+    insertChild: (cfg) =>
 
         child = super cfg
-        child.elem.style.display = 'table-cell'
-        child.elem.style.marginLeft = '10px'
+
+        if cfg.type == 'content'
+            @content = child.id
+        else
+            child.elem.style.display = 'table-cell'
+            child.elem.style.marginLeft = '10px'
+
         child

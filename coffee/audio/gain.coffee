@@ -39,45 +39,16 @@ class Gain extends Window
             minHeight: 60
             children:  \
             [
-                type:     'hbox'
-                children: children
+                type:       'hbox'
+                children:   children
             ,
-                type:     'hbox'
-                children: \
-                [
-                    type:       'connector'
-                    slot:       'gain:setValue'
-                ,
-                    id:         'gain_slider'
-                    type:       'slider'
-                    minValue:   0.0
-                    maxValue:   1.0
-                    style:
-                        width:  '50%'
-                ,
-                    id:         'gain'
-                    type:       'spin'
-                    value:      @audio.gain.value
-                    minValue:   0.0
-                    maxValue:   1.0
-                    onValue:    @setValue
-                    format:     "%3.2f"
-                    style:
-                        width:  '50%'
-                ,
-                    type:       'connector'
-                    signal:     'gain:onValue'
-                ]
+                type:       'sliderspin'
+                id:         'gain'
+                value:      @audio.gain.value
+                onValue:    @setValue
+                minValue:   0.0
+                maxValue:   1.0
             ]
-            connect: \
-            [
-                signal: 'gain_slider:onValue'
-                slot:   'gain:setValue'
-            ,
-                signal: 'gain:onValue'
-                slot:   'gain_slider:setValue'
-            ]
-
 
     setValue: (arg) =>
         # log _.arg(arg)
