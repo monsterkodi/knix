@@ -29,9 +29,9 @@ class Spin extends Value
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-left'
-                            onClick: (event,e) ->
-                                spin = e.getParent('spin')
-                                spin.incr '-'
+                            # onClick: (event,e) -> e.getParent('spin').incr '-'
+                        onDown:  @startDecr
+                        onUp:    @stopTimer
                     ,
                         elem: 'td'
                         type: 'spin-content'
@@ -45,6 +45,8 @@ class Spin extends Value
                             type: 'icon'
                             icon: 'octicon-triangle-right'
                         onClick: (event,e) -> e.getParent('spin').incr '+'
+                        onDown:  @startIncr
+                        onUp:    @stopTimer
                     ]
 
         @input = @getChild('spin-input').elem
@@ -72,6 +74,10 @@ class Spin extends Value
     setValue: () =>
         super
         @input.value = @strip0 @format(@config.value)
+
+    startIncr: => @timer = setInterval(@incr, 50)
+    startDecr: => @timer = setInterval(@decr, 50)
+    stopTimer: => clearInterval @timer
 
     format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
     strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s.strip())

@@ -35,11 +35,13 @@ class Value extends Widget
             @emit 'onValue', value: v
         @
 
-    incr: (d) =>
+    incr: (d=1) =>
         if d in ['+', '++'] then d = 1
         else if d in ['-', '--'] then d = -1
         if @config.valueStep? then step = @config.valueStep else step = 1
         @setValue @input.getValue() + step*d
+
+    decr: => @incr -1
 
     # ____________________________________________________________________________ tools
 
