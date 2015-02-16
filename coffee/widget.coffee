@@ -240,7 +240,7 @@ class Widget
 
     insertChild: (config, defaults) =>
         child = knix.create config, defaults
-        child.addToParent this
+        child.addToParent @
         child
 
     insertChildren: =>

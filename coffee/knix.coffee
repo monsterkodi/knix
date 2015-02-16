@@ -144,10 +144,10 @@ class knix
     @canvas: (cfg) =>
         cvs = new Widget cfg,
             elem: 'canvas'
-        fbc = new fabric.StaticCanvas cvs.elem.id
-        fbc.setWidth(cfg.width) if cfg.width?
-        fbc.setHeight(cfg.height) if cfg.height?
-        cvs.fc = fbc
+        # fbc = new fabric.Canvas cvs.elem.id
+        # fbc.setWidth(cfg.width) if cfg.width?
+        # fbc.setHeight(cfg.height) if cfg.height?
+        # cvs.fc = fbc
         cvs
 
     # ________________________________________________________________________________ icon

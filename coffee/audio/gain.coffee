@@ -14,33 +14,15 @@ class Gain extends Window
 
         @audio = Audio.gain config
 
-        children = [
-            type:       'connector'
-            in:         'audio'
-            audio:      @audio
-        ,
-            type:       'label'
-            text:       'audio'
-            style:
-                width:  '100%'
-        ]
-
-        if not config.master
-            children.push
-                type:         'connector'
-                out:          'audio'
-                audio:        @audio
-                onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
-                onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
-
         super config,
             title:     config.master and 'master' or 'gain'
             minWidth:  240
             minHeight: 60
             children:  \
             [
-                type:       'hbox'
-                children:   children
+                type:       'jacks'
+                audio:      @audio
+                hasOutput:  not config.master?
             ,
                 type:       'sliderspin'
                 id:         'gain'
@@ -50,9 +32,7 @@ class Gain extends Window
                 maxValue:   1.0
             ]
 
-    setValue: (arg) =>
-        # log _.arg(arg)
-        @audio.gain.value = _.arg(arg)
+    setValue: (arg) => @audio.gain.value = _.arg(arg)
 
     @menu: =>
 

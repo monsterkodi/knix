@@ -24,29 +24,27 @@ class Spin extends Value
                     type:   'spin-row'
                     children: \
                     [
-                        elem: 'td'
-                        type: 'spin-td'
+                        elem:   'td'
+                        type:   'spin-td'
+                        onDown:  @startDecr
+                        onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-left'
-                            # onClick: (event,e) -> e.getParent('spin').incr '-'
-                        onDown:  @startDecr
-                        onUp:    @stopTimer
                     ,
-                        elem: 'td'
-                        type: 'spin-content'
+                        elem:   'td'
+                        type:   'spin-content'
                         child:
                             type:   'input'
                             class:  'spin-input'
                     ,
-                        elem: 'td'
-                        type: 'spin-td'
+                        elem:   'td'
+                        type:   'spin-td'
+                        onDown:  @startIncr
+                        onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-right'
-                        onClick: (event,e) -> e.getParent('spin').incr '+'
-                        onDown:  @startIncr
-                        onUp:    @stopTimer
                     ]
 
         @input = @getChild('spin-input').elem

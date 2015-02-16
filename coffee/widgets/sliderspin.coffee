@@ -12,36 +12,35 @@ class Sliderspin extends Hbox
 
     constructor: (cfg, defs) ->
 
-        super cfg, defs
+        cfg = _.def cfg, defs
 
-        @config.children =
+        super cfg,
+            children: \
             [
                 type:       'connector'
-                slot:       @config.id+':setValue'
+                slot:       cfg.id+':setValue'
             ,
                 type:       'slider'
-                id:         @config.id+'_slider'
-                minValue:   @config.minValue
-                maxValue:   @config.maxValue
+                id:         cfg.id+'_slider'
+                minValue:   cfg.minValue
+                maxValue:   cfg.maxValue
                 style:
                     width:  '90%'
             ,
                 type:       'spin'
-                id:         @config.id
-                value:      @config.value
-                minValue:   @config.minValue
-                maxValue:   @config.maxValue
-                onValue:    @config.onValue
+                id:         cfg.id
+                value:      cfg.value
+                minValue:   cfg.minValue
+                maxValue:   cfg.maxValue
+                onValue:    cfg.onValue
                 minWidth:   80
                 format:     "%3.2f"
                 style:
                     width:  '10%'
             ,
                 type:       'connector'
-                signal:     @config.id+':onValue'
+                signal:     cfg.id+':onValue'
             ]
 
-        @insertChildren()
-
-        @connect @config.id+'_slider:onValue', @config.id+':setValue'
-        @connect @config.id+':onValue', @config.id+'_slider:setValue'
+        @connect cfg.id+'_slider:onValue', cfg.id+':setValue'
+        @connect cfg.id+':onValue', cfg.id+'_slider:setValue'

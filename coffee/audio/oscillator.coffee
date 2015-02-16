@@ -25,20 +25,9 @@ class Oscillator extends Window
             minHeight: 60
             children: \
             [
-                type: 'hbox'
-                children: \
-                [
-                    type:       'label'
-                    text:       'audio'
-                    style:
-                        width:  '100%'
-                ,
-                    type:       'connector'
-                    out:        'audio'
-                    audio:      @audio
-                    onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
-                    onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
-                ]
+                type:       'jacks'
+                audio:      @audio
+                hasInput:   false
             ,
                 type:       'sliderspin'
                 id:         'frequency'

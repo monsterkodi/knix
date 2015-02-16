@@ -10,32 +10,29 @@
 
 class Hbox extends Widget
 
-    constructor: (config) ->
+    constructor: (cfg,defs) ->
 
-        cfg = _.def config,
-            spacing: 5
-
+        cfg = _.def cfg, defs
+        spacing = cfg.spacing? and cfg.spacing or 5
         super cfg,
+            spacing: 5
             type: 'hbox'
             style:
                 display: 'table'
-                borderSpacing: '%dpx 0px'.fmt cfg.spacing
-                marginRight:   '-%dpx'.fmt cfg.spacing
-                marginLeft:    '-%dpx'.fmt cfg.spacing
-            child:
-                type: 'content'
-                style:
-                    display: 'table-row'
-                    width:   '100%'
+                borderSpacing: '%dpx 0px'.fmt spacing
+                marginRight:   '-%dpx'.fmt spacing
+                marginLeft:    '-%dpx'.fmt spacing
 
     insertChild: (cfg) =>
 
         child = super cfg
 
-        if cfg.type == 'content'
-            @content = child.id
-        else
-            child.elem.style.display = 'table-cell'
-            child.elem.style.marginLeft = '10px'
+        # if cfg.type == 'content'
+        #     @content = child.elem.id
+        #     log 'set content child', child.elem.id
+        # else
+        #     log 'got child', @content
+        child.elem.style.display = 'table-cell'
+        child.elem.style.marginLeft = '10px'
 
         child
