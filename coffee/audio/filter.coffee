@@ -10,7 +10,7 @@
 
 class Filter extends Window
 
-    @filters = ['bandpass', 'lowpass', 'highpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
+    @filters = ['bandpass', 'lowpass', 'highpass', 'notch', 'allpass']
 
     constructor: (cfg) ->
 
@@ -55,13 +55,13 @@ class Filter extends Window
                 minValue:   cfg.minQ
                 maxValue:   cfg.maxQ
                 spinStep:   0.01
-            ,
-                type:       'sliderspin'
-                id:         'gain'
-                value:      cfg.gain
-                onValue:    @setGain
-                minValue:   0.0
-                maxValue:   1.0
+            # ,
+            #     type:       'sliderspin'
+            #     id:         'gain'
+            #     value:      cfg.gain
+            #     onValue:    @setGain
+            #     minValue:   0.0
+            #     maxValue:   1.0
             ]
 
         @setFilter Filter.filters.indexOf cfg.filter

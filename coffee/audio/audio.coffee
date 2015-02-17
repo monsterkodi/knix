@@ -26,8 +26,8 @@ class Audio
             minFreq:    100
             maxFreq:    12000
             detune:     0
-            minDetune:  -100
-            maxDetune:  100
+            minDetune:  -1000
+            maxDetune:  1000
             gain:       1
             minGain:    0
             maxGain:    1
@@ -41,7 +41,7 @@ class Audio
         filter.detune.value    = cfg.detune # in cnt
         filter.Q.value         = cfg.Q
         filter.type            = cfg.filter
-        filter.gain.value      = cfg.gain   # [0.0, 1.0]
+        # filter.gain.value      = cfg.gain   # [0.0, 1.0]
         [ filter, cfg ]
 
     @oscillator: (cfg) =>
