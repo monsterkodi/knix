@@ -23,10 +23,18 @@ class Audio
 
         cfg = _.def cfg,
             freq:       440
+            minFreq:    100
+            maxFreq:    12000
             detune:     0
+            minDetune:  -100
+            maxDetune:  100
             gain:       1
+            minGain:    0
+            maxGain:    1
             Q:          1
-            filter:     'lowpass'
+            minQ:       0.0
+            maxQ:       50
+            filter:     'bandpass'
 
         filter = @context.createBiquadFilter()
         filter.frequency.value = cfg.freq   # in Hz

@@ -17,6 +17,12 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
 
+        Tooltip.create
+            target: @
+            onTooltip: @onTooltip
+
+    onTooltip: => @elem.id
+
     initEvents: =>
         @elem.on "onValue", @config.onValue  if @config.onValue?
         super

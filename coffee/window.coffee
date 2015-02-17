@@ -10,8 +10,7 @@
 
 class Window extends Widget
 
-    constructor: (config={}, defaults) ->
-        super config, defaults
+    constructor: (cfg, defs) -> super cfg, defs
 
     #__________________________________________________ init
 
@@ -83,7 +82,6 @@ class Window extends Widget
     #__________________________________________________ header
 
     addTitleBar: =>
-        log 'add title'
         t = knix.create
             type:       'title'
             text:       @config.title
@@ -118,7 +116,7 @@ class Window extends Widget
 
     stretchWidth: =>
         tag 'layout', 'todo'
-        log 'add horizontal stretching handles and get rid of addSize crap!'
+        log 'what was this for?'
 
     sizeWindow: =>
 

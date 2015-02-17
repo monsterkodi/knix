@@ -72,6 +72,18 @@ document.observe "dom:loaded", ->
         x: 400
         y: 42
 
+    f4= new Filter
+        # width: 500
+        # height: 300
+        x: 600
+        y: 42
+
+    a4= new Analyser
+        width: 500
+        height: 200
+        x: 600
+        y: 300
+
     gm= new Gain
         master: true
         gain: 0.0
@@ -98,6 +110,12 @@ document.observe "dom:loaded", ->
         target: an.connector 'audio:in'
     new Connection
         source: an.connector 'audio:out'
+        target: f4.connector 'audio:in'
+    new Connection
+        source: f4.connector 'audio:out'
+        target: a4.connector 'audio:in'
+    new Connection
+        source: a4.connector 'audio:out'
         target: gm.connector 'audio:in'
 
     return

@@ -18,7 +18,7 @@ class Console extends Window
             'knix':           'off'
             'Stage':          'off'
             'Widget':         'off'
-            # 'Window':         'off'
+            'Window':         'off'
             'layout':         'off'
             'todo':           'off'
             'Connection':     'off'

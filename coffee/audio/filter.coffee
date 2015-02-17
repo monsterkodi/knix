@@ -10,7 +10,7 @@
 
 class Filter extends Window
 
-    @filters = ['lowpass', 'highpass', 'bandpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
+    @filters = ['bandpass', 'lowpass', 'highpass', 'lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
 
     constructor: (cfg) ->
 
@@ -29,7 +29,7 @@ class Filter extends Window
                 id:         'filter'
                 value:      Filter.filters.indexOf(cfg.filter)
                 minValue:   0
-                maxValue:   3
+                maxValue:   Filter.filters.length-1
                 sliderStep: 1
                 sliderKnob: true
                 onValue:    @setFilter
@@ -49,24 +49,28 @@ class Filter extends Window
                 onValue:    @setDetune
             ,
                 type:       'sliderspin'
-                id:         'gain'
+                id:         'Q'
                 value:      cfg.Q
                 onValue:    @setQ
                 minValue:   cfg.minQ
                 maxValue:   cfg.maxQ
+                spinStep:   0.01
             ,
                 type:       'sliderspin'
                 id:         'gain'
                 value:      cfg.gain
-                onValue:    @setValue
+                onValue:    @setGain
                 minValue:   0.0
                 maxValue:   1.0
             ]
+
+        @setFilter Filter.filters.indexOf cfg.filter
 
     setDetune: (arg) => @audio.detune.value       = _.arg(arg)
     setQ:      (arg) => @audio.Q.value            = _.arg(arg)
     setFreq:   (arg) => @audio.frequency.value    = _.arg(arg)
     setGain:   (arg) => @audio.gain.value         = _.arg(arg)
+    setFilter: (arg) => @audio.type = Filter.filters[_.arg(arg)]
 
     @menu: =>
 

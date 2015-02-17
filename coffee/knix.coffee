@@ -62,9 +62,9 @@ class knix
 
     # ________________________________________________________________________________ element creation
 
-    @create: (config, defaults) =>
+    @create: (cfg, defs) =>
 
-        cfg = _.def(config,defaults)
+        cfg = _.def cfg, defs
 
         if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
             @[cfg.type] cfg
@@ -77,7 +77,11 @@ class knix
 
     # shortcut to call @create with default type window and stage_content as parent
 
-    @get: (cfg={},def) => @create _.def(cfg,def), { type:'window', parent:'stage_content' }
+    @get: (cfg, def) =>
+        cfg = _.def cfg, def
+        @create _.def cfg,
+            type:   'window'
+            parent: 'stage_content'
 
     # ________________________________________________________________________________ widget handling
 
