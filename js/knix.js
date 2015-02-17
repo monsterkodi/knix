@@ -12,7 +12,7 @@ var knix;
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.447';
+  knix.version = '0.1.1050';
 
   knix.popups = [];
 
@@ -33,7 +33,6 @@ knix = (function() {
       "method": "init",
       "type": "@"
     }, s, 'knix', 'version:', knix.version);
-    console.log('test');
     Stage.initContextMenu();
     knix.initSVG();
     knix.initAnim();
@@ -121,7 +120,7 @@ knix = (function() {
     knix.popups.push(p);
     log({
       "file": "./coffee/knix.coffee",
-      "line": 97,
+      "line": 95,
       "class": "knix",
       "args": ["p"],
       "method": "addPopup",
@@ -135,7 +134,7 @@ knix = (function() {
   knix.delPopup = function(p) {
     log({
       "file": "./coffee/knix.coffee",
-      "line": 102,
+      "line": 100,
       "class": "knix",
       "args": ["p"],
       "method": "delPopup",
@@ -148,7 +147,7 @@ knix = (function() {
     var p, _i, _len, _ref;
     log({
       "file": "./coffee/knix.coffee",
-      "line": 106,
+      "line": 104,
       "class": "knix",
       "args": ["p"],
       "method": "closePopups",
@@ -211,18 +210,10 @@ knix = (function() {
   };
 
   knix.canvas = function(cfg) {
-    var cvs, fbc;
+    var cvs;
     cvs = new Widget(cfg, {
       elem: 'canvas'
     });
-    fbc = new fabric.StaticCanvas(cvs.elem.id);
-    if (cfg.width != null) {
-      fbc.setWidth(cfg.width);
-    }
-    if (cfg.height != null) {
-      fbc.setHeight(cfg.height);
-    }
-    cvs.fc = fbc;
     return cvs;
   };
 

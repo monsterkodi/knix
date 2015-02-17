@@ -31,6 +31,7 @@ Window = (function(_super) {
     this.sizeMove = __bind(this.sizeMove, this);
     this.sizeStart = __bind(this.sizeStart, this);
     this.addSizeButton = __bind(this.addSizeButton, this);
+    this.sizeWindow = __bind(this.sizeWindow, this);
     this.stretchWidth = __bind(this.stretchWidth, this);
     this.scrollToBottom = __bind(this.scrollToBottom, this);
     this.addShadeButton = __bind(this.addShadeButton, this);
@@ -110,13 +111,6 @@ Window = (function(_super) {
     }
     this.content = content.elem.id;
     if (this.config.content === 'scroll') {
-      this.elem.on('size', function(event, e) {
-        var win;
-        win = e.getWindow();
-        content = $(win.content).widget;
-        content.setWidth(win.contentWidth());
-        return content.setHeight(win.contentHeight());
-      });
       content.elem.setStyle({
         position: 'relative',
         overflow: 'scroll',
@@ -124,6 +118,7 @@ Window = (function(_super) {
         height: "%dpx".fmt(this.contentHeight())
       });
     }
+    this.elem.on('size', this.sizeWindow);
     return this;
   };
 
@@ -131,7 +126,7 @@ Window = (function(_super) {
     var t;
     log({
       "file": "./coffee/window.coffee",
-      "line": 94,
+      "line": 89,
       "class": "Window",
       "args": ["cfg", "defs"],
       "method": "addTitleBar",
@@ -185,12 +180,28 @@ Window = (function(_super) {
     tag('layout', 'todo');
     return log({
       "file": "./coffee/window.coffee",
-      "line": 129,
+      "line": 124,
       "class": "Window",
       "args": ["event", "e"],
       "method": "stretchWidth",
       "type": "."
     }, 'add horizontal stretching handles and get rid of addSize crap!');
+  };
+
+  Window.prototype.sizeWindow = function() {
+    var content, e, _i, _len, _ref, _ref1, _results;
+    if (this.config.content === 'scroll') {
+      content = $(this.content).widget;
+      content.setWidth(this.contentWidth());
+      content.setHeight(this.contentHeight());
+    }
+    _ref = this.elem.descendants();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      e = _ref[_i];
+      _results.push((_ref1 = e.widget) != null ? typeof _ref1.onWindowSize === "function" ? _ref1.onWindowSize() : void 0 : void 0);
+    }
+    return _results;
   };
 
   Window.prototype.addSizeButton = function() {
@@ -327,7 +338,7 @@ Window = (function(_super) {
   Window.prototype.close = function() {
     log({
       "file": "./coffee/window.coffee",
-      "line": 235,
+      "line": 240,
       "class": "Window",
       "args": ["box=\"border-box-height\""],
       "method": "close",

@@ -7,7 +7,7 @@
     000   000  000   000  000   000  000   000
     0000000    000   000  000   000   0000000
  */
-var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent,
+var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -177,12 +177,17 @@ Drag = (function() {
  */
 
 log = function() {
-  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
 error = function() {
   tag('error');
-  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
+};
+
+warn = function() {
+  tag('warning');
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
 
@@ -581,9 +586,9 @@ StyleSwitch = (function() {
 
 /*
 
-     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000
+     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000 
     000   000  000   000  000       000   000  000       000       000        000   000   000
-    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000 
+    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000
     000   000  000   000  000       000   000  000       000       000   000  000   000   000
     000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000
 
@@ -636,6 +641,23 @@ _.clamp = function(r1, r2, v) {
     v = Math.min(v, r2);
   }
   return v;
+};
+
+_.arg = function(event, argname) {
+  if (argname == null) {
+    argname = 'value';
+  }
+  if (typeof event === 'object') {
+    if (event.detail[argname] != null) {
+      return event.detail[argname];
+    } else {
+      return event.detail;
+    }
+  }
+  if (argname === 'value') {
+    return parseFloat(event);
+  }
+  return event;
 };
 
 //# sourceMappingURL=tools.js.map
