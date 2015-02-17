@@ -38,7 +38,7 @@ class Drag
         @handle = document.getElementById(@handle) if typeof (@handle) is "string"
         @handle = @target unless @handle?
         @handle.style.cursor = @cursor
-        @startListening() if @active
+        @activate() if @active
         return
 
     cancelEvent: (e) =>
@@ -95,13 +95,13 @@ class Drag
         @dragging = false
         return
 
-    startListening: =>
+    activate: =>
         return if @listening
         @listening = true
         @eventDown = @handle.on 'mousedown', @dragStart
         return
 
-    stopListening: (stopCurrentDragging) =>
+    deactivate: (stopCurrentDragging) =>
         return if not @listening
         @eventDown.stop()
         @listening = false

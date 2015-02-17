@@ -18,10 +18,10 @@ class Console extends Window
             'knix':           'off'
             'Stage':          'off'
             'Widget':         'off'
-            'Window':         'off'
+            # 'Window':         'off'
             'layout':         'off'
             'todo':           'off'
-            # 'connections':    'off'
+            'Connection':     'off'
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2

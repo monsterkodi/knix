@@ -33,9 +33,12 @@ str = (o,indent="",visited=[]) ->
             s += (indent+strIndent + str(v,indent+strIndent,visited) for v in o).join("\n")
             s += '\n'+indent+strIndent+']'
         else
-            s = "<" + protoname + ">\n"
-            visited.push o
-            s += (indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o)).join("\n")
+            if o._str?
+                s = o._str()
+            else
+                s = "<" + protoname + ">\n"
+                visited.push o
+                s += (indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o)).join("\n")
         return s+"\n"
     else if t == 'function'
         return "->"

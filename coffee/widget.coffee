@@ -79,14 +79,7 @@ class Widget
 
         #__________________________________________________ event setup
 
-        if @config.isMovable
-            Drag.create
-                target: @elem
-                minPos: pos(undefined,0)
-                onMove: @emitMove
-                onStart: StyleSwitch.togglePathFilter
-                onStop:  StyleSwitch.togglePathFilter
-                cursor: null
+        @addMovement()
 
         @initSlots()
         @initConnections()
@@ -360,6 +353,18 @@ class Widget
     relPos:      => o = @elem.positionedOffset(); pos o.left, o.top
     absPos:      => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
     absCenter:   => @absPos().add(pos(@elem.getWidth(),@elem.getHeight()).mul(0.5))
+
+    # ____________________________________________________________________________ movement
+
+    addMovement: =>
+        if @config.isMovable
+            Drag.create
+                target: @elem
+                minPos: pos(undefined,0)
+                onMove: @emitMove
+                onStart: StyleSwitch.togglePathFilter
+                onStop:  StyleSwitch.togglePathFilter
+                cursor: null
 
     # ____________________________________________________________________________ layout
 

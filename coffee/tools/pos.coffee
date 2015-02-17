@@ -69,5 +69,7 @@ class Pos
         element.style.left = @x + "px"  unless isNaN(@x)
         element.style.top = @y + "px"  unless isNaN(@y)
         return
+        
+    _str: => "<x:%2.0f y:%2.0f>".fmt(@x,@y)
 
 pos = (x,y) -> new Pos x,y

@@ -46,8 +46,7 @@ class Window extends Widget
         @initConnections()
         @layoutChildren()
 
-        if cfg.popup
-            knix.addPopup @
+        if cfg.popup then knix.addPopup @
 
         if cfg.center
             @moveTo Math.max(0,Stage.size().width/2 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
@@ -67,8 +66,6 @@ class Window extends Widget
             elem:  'div',
             type:  'content'
             parent: @elem.id
-
-        @addSizeButton() if @config.resize
 
         @content = content.elem.id
 
@@ -133,55 +130,95 @@ class Window extends Widget
         for e in @elem.descendants()
             e.widget?.onWindowSize?()
 
-    # ____________________________________________________________________________ size
+    # ____________________________________________________________________________ size and move
 
-    addSizeButton: =>
-        btn = knix.create
-            type:    'size'
-            parent:  this
+    addMovement: =>
+        if @config.resize
+            @elem.on 'mousemove', @onHover
+            @elem.on 'mouseleave', @onLeave
+        else
+            super
 
-        Drag.create
-            target:  btn.elem
-            onStart: @sizeStart
-            onMove:  @sizeMove
-            onStop:  @sizeStop
-            cursor:  'nwse-resize'
-        btn
+    onHover: (event) =>
+        eventPos = Stage.absPos(event)
+        d1 = eventPos.sub(@absPos())
+        d2 = @absPos().add(pos(@getWidth(), @getHeight())).sub(eventPos)
+
+        md = 10
+        action = 'move'
+        border = ''
+        if d1.y < md 
+            action = 'size'
+            border = 'top'
+        else if d2.y < md 
+            action = 'size'
+            border = 'bottom'
+        if d1.x < md
+            action = 'size'
+            border+= 'left'
+        if d2.x < md 
+            action = 'size'
+            border+= 'right'
+            
+        @sizeMoveDrag.deactivate() if @sizeMoveDrag
+        @sizeMoveDrag = null
+        
+        if action == 'size'
+            if border == 'left' or border == 'right'
+                cursor = 'ew-resize'
+            else if border == 'top' or border == 'bottom'
+                cursor = 'ns-resize'
+            else if border == 'topleft' or border == 'bottomright'
+                cursor = 'nwse-resize'
+            else
+                cursor = 'nesw-resize'
+                
+            @sizeMoveDrag = Drag.create
+                target:  @elem
+                onStart: @sizeStart
+                onMove:  @sizeMove
+                onStop:  @sizeStop
+                doMove:  false
+                cursor:  cursor
+                
+            @sizeMoveDrag.border = border
+        else
+            @sizeMoveDrag = Drag.create
+                target: @elem
+                minPos: pos(undefined,0)
+                onMove: @emitMove
+                onStart: StyleSwitch.togglePathFilter
+                onStop:  StyleSwitch.togglePathFilter
+                cursor: 'grab'
+        
+    onLeave: (event) =>
+        @sizeMoveDrag.deactivate() if @sizeMoveDrag
+        @sizeMoveDrag = null
 
     sizeStart: (drag, event) =>
         @config.isMaximized = false
-        drag.target.style.opacity = '0.0'
 
     sizeMove: (drag, event) =>
-        sizer = drag.target.widget
 
         wpos = @absPos()
-        spos = sizer.absPos()
+        spos = Stage.absPos(event)
 
         hdr = @headerSize()
 
-        wdt = spos.x-wpos.x+sizer.getWidth()
+        wdt = spos.x-wpos.x
         wdt = Math.max(hdr*2, wdt)
         wdt = Math.max(@minWidth(), wdt)
         wdt = Math.min(@maxWidth(), wdt)
 
-        hgt = spos.y-wpos.y+sizer.getHeight()
-        hgt = Math.max(hdr+sizer.getHeight(), hgt)
+        hgt = spos.y-wpos.y
+        hgt = Math.max(hdr, hgt)
         hgt = Math.max(@minHeight(), hgt)
         hgt = Math.min(@maxHeight(), hgt)
 
         @resize(wdt, hgt)
 
-        return
-
     sizeStop: (drag, event) =>
-        sizer = drag.target
-        sizer.setStyle
-            bottom: '0px'
-            right: '0px'
-            left: ''
-            top: ''
-            opacity: '1.0'
+        log 'size stop'
 
     maximize: =>
         if @config.isMaximized
