@@ -15,8 +15,26 @@ class Audio
         @context = new (window.AudioContext || window.webkitAudioContext)()
 
         Oscillator.menu()
-        Analyser.menu()
+        Filter.menu()
         Gain.menu()
+        Analyser.menu()
+
+    @filter: (cfg) =>
+
+        cfg = _.def cfg,
+            freq:       440
+            detune:     0
+            gain:       1
+            Q:          1
+            filter:     'lowpass'
+
+        filter = @context.createBiquadFilter()
+        filter.frequency.value = cfg.freq   # in Hz
+        filter.detune.value    = cfg.detune # in cnt
+        filter.Q.value         = cfg.Q
+        filter.type            = cfg.filter
+        filter.gain.value      = cfg.gain   # [0.0, 1.0]
+        [ filter, cfg ]
 
     @oscillator: (cfg) =>
 

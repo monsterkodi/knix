@@ -10,28 +10,29 @@
 
 class Gain extends Window
 
-    constructor: (config={}) ->
+    constructor: (cfg) ->
 
-        @audio = Audio.gain config
+        @audio = Audio.gain cfg
 
-        super config,
-            title:     config.master and 'master' or 'gain'
+        super cfg,
+            title:     cfg.master and 'master' or 'gain'
             minWidth:  240
             minHeight: 60
             children:  \
             [
                 type:       'jacks'
                 audio:      @audio
-                hasOutput:  not config.master?
+                hasOutput:  not cfg.master?
             ,
                 type:       'sliderspin'
                 id:         'gain'
-                value:      @audio.gain.value
-                onValue:    @setValue
+                value:      cfg.gain
+                onValue:    @setGain
                 minValue:   0.0
                 maxValue:   1.0
             ]
 
+    setGain:  (arg) => @audio.gain.value = _.arg(arg)
     setValue: (arg) => @audio.gain.value = _.arg(arg)
 
     @menu: =>
