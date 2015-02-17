@@ -14,8 +14,9 @@ class Analyser extends Window
 
         cfg = _.def cfg, defs
         cfg = _.def cfg,
-            scaleX: 1.0
-            scaleY: 1.0
+            scaleX:     1.0
+            scaleY:     1.0
+            triggerY:   0.0
 
         @audio = \
         @analyser = Audio.analyser()
@@ -41,6 +42,14 @@ class Analyser extends Window
                 minValue:   1.0
                 maxValue:   20.0
                 valueStep:  1
+            ,
+                type:       'sliderspin'
+                id:         'triggerY'
+                value:      cfg.triggerY
+                onValue:    @setTriggerY
+                minValue:   -1.0
+                maxValue:   1.0
+                spinStep:   0.01
             ]
 
         @canvas = @getChild('analyser_canvas')
@@ -48,8 +57,9 @@ class Analyser extends Window
         knix.animate @
         @sizeWindow()
 
-    setScaleX: (a) => @config.scaleX = _.arg(a)
-    setScaleY: (a) => @config.scaleY = _.arg(a)
+    setScaleX:   (a) => @config.scaleX   = _.arg(a)
+    setScaleY:   (a) => @config.scaleY   = _.arg(a)
+    setTriggerY: (a) => @config.triggerY = _.arg(a)
 
     sizeWindow: =>
         hbox = @getChild('hbox')
@@ -61,6 +71,7 @@ class Analyser extends Window
         width  = content.innerWidth() - 20
         @canvas.elem.width  = width
         @canvas.elem.height = height
+        @dataArray = new Uint8Array(2*width)
 
     @menu: =>
 
@@ -88,18 +99,31 @@ class Analyser extends Window
         ctx.fillRect    0, 0, cvw, cvh
         ctx.strokeStyle = 'rgb(0,0,0)'
         ctx.strokeRect  0, 0, cvw, cvh
-        ctx.strokeStyle = 'rgb(255,205,0)'
 
         ctx.beginPath()
+        ctx.strokeStyle = 'rgba(100,0,0,0.4)'
+        th = cvh*(0.5-@config.triggerY/2)
+        ctx.moveTo  0,   th
+        ctx.lineTo  cvw, th
+        ctx.stroke()
 
-        xd = cvw * @config.scaleX / @analyser.fftSize
+        ctx.strokeStyle = 'rgb(255,200,0)'
+        ctx.beginPath()
+
+        samples = @dataArray.length
+        xd = @config.scaleX
+
+        t  = 0
+        t += 1 while @dataArray[t] >= 128 + 128*@config.triggerY and t < samples
+        t += 1 while @dataArray[t]  < 128 + 128*@config.triggerY and t < samples
+        t = 0 if t >= samples
         x = 0
 
-        for i in [0..@analyser.fftSize]
-            v = @dataArray[i] / 128.0
-            y = v * cvh/2
+        for i in [t..samples]
+            v = 1 - @dataArray[i] / 256.0
+            y = v * cvh
 
-            if  i == 0
+            if  i == t
                 ctx.moveTo(x, y)
             else
                 ctx.lineTo(x, y)
