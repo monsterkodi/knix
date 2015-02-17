@@ -22,6 +22,7 @@ class Sliderspin extends Hbox
             ,
                 type:       'slider'
                 id:         cfg.id+'_slider'
+                value:      cfg.value
                 minValue:   cfg.minValue
                 maxValue:   cfg.maxValue
                 valueStep:  cfg.sliderStep

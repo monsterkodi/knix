@@ -11,9 +11,10 @@
 class Oscillator extends Window
 
     @shapes = ['sine', 'triangle', 'sawtooth', 'square']
-    constructor: (config={}) ->
 
-        cfg = _.def config,
+    constructor: (cfg) ->
+
+        cfg = _.def cfg,
             freq:    0
             minFreq: 0
             maxFreq: 14000
@@ -47,6 +48,7 @@ class Oscillator extends Window
                 onValue:    @setShape
             ]
 
+        @setFreq cfg.freq
         @setShape(Oscillator.shapes.indexOf(cfg.shape)) if cfg.shape?
 
     setFreq: (arg)  => @audio.frequency.value = _.arg(arg)

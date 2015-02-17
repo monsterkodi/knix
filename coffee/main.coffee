@@ -46,8 +46,8 @@ document.observe "dom:loaded", ->
         title:   'low'
         minFreq: 1
         maxFreq: 400
-        freq:    200
-        shape:   'triangle'
+        freq:    333
+        shape:   'square'
         x: 10
         y: 440
 

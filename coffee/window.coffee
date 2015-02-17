@@ -147,22 +147,22 @@ class Window extends Widget
         md = 10
         action = 'move'
         border = ''
-        if d1.y < md 
+        if d1.y < md
             action = 'size'
             border = 'top'
-        else if d2.y < md 
+        else if d2.y < md
             action = 'size'
             border = 'bottom'
         if d1.x < md
             action = 'size'
             border+= 'left'
-        if d2.x < md 
+        if d2.x < md
             action = 'size'
             border+= 'right'
-            
+
         @sizeMoveDrag.deactivate() if @sizeMoveDrag
         @sizeMoveDrag = null
-        
+
         if action == 'size'
             if border == 'left' or border == 'right'
                 cursor = 'ew-resize'
@@ -172,15 +172,14 @@ class Window extends Widget
                 cursor = 'nwse-resize'
             else
                 cursor = 'nesw-resize'
-                
+
             @sizeMoveDrag = Drag.create
                 target:  @elem
                 onStart: @sizeStart
                 onMove:  @sizeMove
-                onStop:  @sizeStop
                 doMove:  false
                 cursor:  cursor
-                
+
             @sizeMoveDrag.border = border
         else
             @sizeMoveDrag = Drag.create
@@ -190,7 +189,7 @@ class Window extends Widget
                 onStart: StyleSwitch.togglePathFilter
                 onStop:  StyleSwitch.togglePathFilter
                 cursor: 'grab'
-        
+
     onLeave: (event) =>
         @sizeMoveDrag.deactivate() if @sizeMoveDrag
         @sizeMoveDrag = null
@@ -205,20 +204,31 @@ class Window extends Widget
 
         hdr = @headerSize()
 
-        wdt = spos.x-wpos.x
+        if drag.border in ['left', 'topleft', 'top']
+            wdt = wpos.x - spos.x + @getWidth()
+            hgt = wpos.y - spos.y + @getHeight()
+            br  = wpos.add(pos(@getWidth(), @getHeight()))
+        else
+            wdt = spos.x - wpos.x
+            hgt = spos.y - wpos.y
+
         wdt = Math.max(hdr*2, wdt)
-        wdt = Math.max(@minWidth(), wdt)
         wdt = Math.min(@maxWidth(), wdt)
+        wdt = Math.max(@minWidth(), wdt)
 
-        hgt = spos.y-wpos.y
         hgt = Math.max(hdr, hgt)
-        hgt = Math.max(@minHeight(), hgt)
         hgt = Math.min(@maxHeight(), hgt)
+        hgt = Math.max(@minHeight(), hgt)
 
-        @resize(wdt, hgt)
+        hgt = null if drag.border == 'left' or drag.border == 'right'
+        wdt = null if drag.border == 'top' or drag.border == 'bottom'
 
-    sizeStop: (drag, event) =>
-        log 'size stop'
+        @resize wdt, hgt
+
+        if drag.border in ['left', 'topleft', 'top']
+            if not wdt? then dx = 0 else dx = br.x-@getWidth()-wpos.x
+            if not hgt? then dy = 0 else dy = br.y-@getHeight()-wpos.y
+            @moveBy dx, dy
 
     maximize: =>
         if @config.isMaximized
