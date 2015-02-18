@@ -19,6 +19,9 @@ Element.addMethods
             return
         element.parentElement.appendChild element
         return
+    getWidget: (element) ->
+        return element.widget if element?.widget?
+        return element?.parentElement?.getWidget()
 
 _.def = (c,d) ->
     if c?

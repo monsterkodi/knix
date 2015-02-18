@@ -15,13 +15,13 @@ class Console extends Window
     constructor: (cfg) ->
 
         @logTags =
-            'knix':           'off'
-            'Stage':          'off'
-            'Widget':         'off'
-            'Window':         'off'
-            'layout':         'off'
+            # 'knix':           'off'
+            # 'Stage':          'off'
+            # 'Widget':         'off'
+            # 'Window':         'off'
+            # 'layout':         'off'
             'todo':           'off'
-            'Connection':     'off'
+            # 'Connection':     'off'
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2
@@ -53,7 +53,7 @@ class Console extends Window
             child:
                 class:  'console'
                 text:   '<span class="tiny-text" style="vertical-align:top">console - knix version '+knix.version+'</span>'
-                noDown: true
+                noMove: true
 
         @elem.on 'contextmenu', @onContextMenu
 
@@ -74,9 +74,9 @@ class Console extends Window
             onClick: (event,e) -> e.getWindow().close()
 
         knix.get
-            hasClose: false
+            hasClose: true
             hasMaxi:  false
-            title:    'tags'
+            title:    ' '
             resize:   false
             hasShade: false
             popup:    true

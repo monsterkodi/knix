@@ -31,18 +31,18 @@ class Oscillator extends Window
                 audio:      @audio
                 hasInput:   false
             ,
+                type:       'spinner'
+                id:         'shape'
+                value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
+                values:     Oscillator.shapes
+                onValue:    @setShape
+            ,
                 type:       'sliderspin'
                 id:         'frequency'
                 value:      cfg.freq
                 minValue:   cfg.minFreq
                 maxValue:   cfg.maxFreq
                 onValue:    @setFreq
-            ,
-                type:       'spinner'
-                id:         'shape'
-                value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
-                values:     Oscillator.shapes
-                onValue:    @setShape
             ]
 
         @setFreq cfg.freq

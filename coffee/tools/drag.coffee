@@ -13,6 +13,7 @@ class Drag
     @create: (cfg) -> new Drag(cfg)
 
     constructor: (cfg) ->
+        
         _.extend @, _.def cfg,
                 target:  null
                 handle:  null
@@ -41,15 +42,6 @@ class Drag
         @activate() if @active
         return
 
-    cancelEvent: (e) =>
-        e = (if e then e else window.event)
-        e.stopPropagation() if e.stopPropagation
-        e.preventDefault() if e.preventDefault
-        e.cancelBubble = true
-        e.cancel = true
-        e.returnValue = false
-        false
-
     absPos: (event) =>
         event = (if event then event else window.event)
         if isNaN(window.scrollX)
@@ -61,6 +53,7 @@ class Drag
     dragStart: (event) =>
         return if @dragging or not @listening
         @dragging = true
+        log 'drag start', @onStart?
         @onStart @, event if @onStart?
         @cursorStartPos = @absPos(event)
         if @doMove
@@ -68,7 +61,6 @@ class Drag
             @targetStartPos = @targetStartPos.check()
         @eventMove = $(document).on 'mousemove', @dragMove
         @eventUp   = $(document).on 'mouseup',   @dragUp
-        @cancelEvent event
 
     dragMove: (event) =>
         return if not @dragging
@@ -79,11 +71,9 @@ class Drag
             newPos.apply @target
         if @onMove?
             @onMove this, event
-        @cancelEvent event
 
     dragUp: (event) =>
         @dragStop event
-        @cancelEvent event
 
     dragStop: (event) =>
         return if not @dragging

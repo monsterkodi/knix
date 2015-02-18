@@ -480,17 +480,20 @@ a
     max-height:       valueHeight
     margin:           0
     padding:          0
-    text-align:       center
     font-size:        12px
     background-color: colors.spin-input
     &:hover
         background-color:   colors.spin-input-hover
 
+.spinner .spin-content
+    text-align:       center
+    color:            colors.spin-active
+
 .spinner-knob
     position:         absolute
     top:              0
-    height:           2px
-    background-color:  colors.slider-bar
+    height:           spinnerKnobSize
+    background-color: colors.spinner-knob
 
 .spin-input
     textCursor()

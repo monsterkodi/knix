@@ -39,6 +39,7 @@ class Spin extends Value
                         child:
                             type:   'input'
                             class:  'spin-input'
+                            onDown: (event,e) -> event.stopPropagation()
                     ,
                         elem:   'td'
                         type:   'spin-td'

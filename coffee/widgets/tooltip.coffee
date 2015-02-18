@@ -13,10 +13,13 @@ class Tooltip
     @create: (cfg, defs) =>
 
         cfg = _.def cfg, defs
-        cfg = _.def cfg, delay: 700
+        cfg = _.def cfg, 
+                  delay: 700
+                  
         cfg.target.tooltip = cfg
         cfg.target.elem.on 'mousemove', @onHover
         cfg.target.elem.on 'mouseleave', @onLeave
+        cfg.target.elem.on 'mousedown', @onLeave
 
     @onHover: (event, d) =>
         for e in [d, d.ancestors()].flatten()
@@ -45,8 +48,9 @@ class Tooltip
         tooltip.window = new Window
             class:      'tooltip'
             parent:     'stage_content'
-            x:          pos.x
-            y:          pos.y
+            isMovable:  false
+            x:          pos.x + 12
+            y:          pos.y + 12
             text:       text
             hasClose:   false
             hasShade:   false

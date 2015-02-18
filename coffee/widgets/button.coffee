@@ -27,4 +27,4 @@ class Button extends Widget
 
         super cfg,
             type:     'button'
-            noDown:   true
+            noMove:   true

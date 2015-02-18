@@ -83,15 +83,6 @@ class Widget
         @initSlots()
         @initConnections()
         @initEvents()
-
-        if @config.noDown
-            @elem.on 'mousedown', (event,e) ->
-
-                if e?.getWindow? and e.getWindow() not in knix.popups
-                    log 'noDown close popups'
-                    knix.closePopups()
-                else
-                    event.stopPropagation()
         @
 
     # ________________________________________________________________________________ event handling
@@ -256,7 +247,10 @@ class Widget
             return
         return $(@config.parent).widget if @config.parent
         return $(@parentElement.id).wiget
-
+        
+    getAncestors: => [@getParent(), @getParent()?.getAncestors()].flatten()
+    matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?
+        
     getWindow: => # returns this or first ancestor element with class 'window'
         if @elem.hasClassName('window')
             return this
@@ -348,15 +342,28 @@ class Widget
 
     # ____________________________________________________________________________ movement
 
-    addMovement: =>
+    addMovement: =>        
         if @config.isMovable
+            log 'addMovement'
             Drag.create
-                target: @elem
-                minPos: pos(undefined,0)
-                onMove: @emitMove
-                onStart: StyleSwitch.togglePathFilter
-                onStop:  StyleSwitch.togglePathFilter
+                target:  @elem
+                minPos:  pos(undefined,0)
+                onMove:  @onMove
+                onStart: @moveStart
+                onStop:  @moveStop
                 cursor: null
+
+    onMove: (drag, event) =>
+        tag 'move', @elem?.id
+        @emitMove()
+        
+    moveStart: (drag, event) =>
+        log 'start', @elem?.id
+        StyleSwitch.togglePathFilter()
+
+    moveStop: (drag, event) =>
+        log 'stop', @elem?.id
+        StyleSwitch.togglePathFilter()
 
     # ____________________________________________________________________________ layout
 

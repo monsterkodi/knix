@@ -58,7 +58,7 @@ class Window extends Widget
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
         if @config.buttons?
-            @insertChild(b, { noDown:true }) for b in @config.buttons
+            @insertChild(b, { noMove:true }) for b in @config.buttons
         @addTitleBar()     if @config.hasTitle or @config.title
 
         content = knix.create
@@ -91,7 +91,7 @@ class Window extends Widget
     addCloseButton: =>
         knix.create
             type:    'close'
-            noDown:  true
+            noMove:  true
             parent:  this
             child:
                 type: 'icon'
@@ -101,7 +101,7 @@ class Window extends Widget
     addShadeButton: =>
         knix.create
             type:    "shade"
-            noDown:  true
+            noMove:  true
             parent:  this
             child:
                 type: 'icon'
@@ -137,7 +137,15 @@ class Window extends Widget
         else
             super
 
-    onHover: (event) =>
+    onHover: (event, e) =>
+        
+        @sizeMoveDrag.deactivate() if @sizeMoveDrag
+        @sizeMoveDrag = null
+
+        if e.getWidget()
+            m = @matchConfigValue 'noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten()
+            return if m.length
+        
         eventPos = Stage.absPos(event)
         d1 = eventPos.sub(@absPos())
         d2 = @absPos().add(pos(@getWidth(), @getHeight())).sub(eventPos)
@@ -157,9 +165,6 @@ class Window extends Widget
         if d2.x < md
             action = 'size'
             border+= 'right'
-
-        @sizeMoveDrag.deactivate() if @sizeMoveDrag
-        @sizeMoveDrag = null
 
         if action == 'size'
             if border == 'left' or border == 'right'
@@ -242,11 +247,10 @@ class Window extends Widget
             @config.isMaximized = true
 
     raise: (event,e) =>
-        if e?.getWindow? and e.getWindow() not in knix.popups
-            knix.closePopups()
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
         $(@content).scrollTop = scrolltop
+        event?.stopPropagation()
 
     headerSize: (box="border-box-height") =>
         children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])

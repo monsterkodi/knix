@@ -13,7 +13,6 @@ class knix
     # ________________________________________________________________________________ element creation
 
     @version = '::package.json:version::'
-    @popups = []
 
     @init: (config) =>
 
@@ -96,18 +95,16 @@ class knix
     @addPopup: (p) =>
         @popups = [] if not @popups?
         @popups.push p
-        log 'install popup handler'
         if not @popupHandler?
             @popupHandler = document.on 'mousedown', @closePopups
 
     @delPopup: (p) =>
-        log 'delpopup'
         @popups = @popups.without p
 
-    @closePopups: =>
-        log 'closepopups'
+    @closePopups: (event,e) =>
         if @popups?
-            p.close() for p in @popups
+            for p in @popups
+                p.close() for p in @popups when e not in p.elem.descendants()
         if @popupHandler?
             @popupHandler.stop()
             @popupHandler = null
@@ -148,6 +145,7 @@ class knix
     @canvas: (cfg) =>
         cvs = new Widget cfg,
             elem: 'canvas'
+            noMove: true
         # fbc = new fabric.Canvas cvs.elem.id
         # fbc.setWidth(cfg.width) if cfg.width?
         # fbc.setHeight(cfg.height) if cfg.height?

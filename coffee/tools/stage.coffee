@@ -25,9 +25,10 @@ class Stage
         @contextMenu.elem.hide()
         @contextMenu
 
-    @showContextMenu: =>
-        log 'showContextMenu'
-        @contextMenu.elem.show()
+    @showContextMenu: (event, e) =>
+        if $('stage_content') == e
+            log 'showContextMenu'
+            @contextMenu.elem.show()
 
     @width:  => @size().width
     @height: => @size().height

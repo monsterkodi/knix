@@ -21,6 +21,7 @@ class Connector extends Widget
             type: 'connector'
             onOver: @onOver
             onOut:  @onOut
+            noMove: true
 
         Drag.create
             target: @elem
