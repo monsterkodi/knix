@@ -17,6 +17,15 @@ module.exports = (grunt) ->
                     'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/*.coffee']
                     'main':    ['./coffee/test.coffee', './coffee/main.coffee']
 
+        salt:
+            options:
+                dryrun:        false
+                verbose:       true
+                refresh:       false
+            knix:
+                files:
+                    'asciiHeader': ['./coffee/**/*.coffee']
+
         coffee:
             options:
                 sourceMap: true
@@ -104,7 +113,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-shell'
     grunt.loadNpmTasks 'grunt-open'
 
-    grunt.registerTask 'build',     [ 'bumpup', 'pepper', 'coffee', 'bower_concat', 'stylus', 'shell:touch' ]
+    grunt.registerTask 'build',     [ 'bumpup', 'salt', 'pepper', 'coffee', 'bower_concat', 'stylus', 'shell:touch' ]
     grunt.registerTask 'default',   [ 'build', 'clean:tempfiles' ]
     grunt.registerTask 'test',      [ 'build', 'open', 'clean:tempfiles' ]
     grunt.registerTask 'c',         [ 'clean:tempfiles' ]

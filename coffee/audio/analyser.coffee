@@ -1,10 +1,10 @@
 ###
 
-     0000000   000   000   0000000   000      000   000  0000000   00000000  00000000
-    000   000  0000  000  000   000  000       000 000  000        000       000   000
-    000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000
-    000   000  000  0000  000   000  000         000          000  000       000   000
-    000   000  000   000  000   000  000000000   000     0000000   00000000  000   000
+ 0000000   000   000   0000000   000      000   000   0000000  00000000  00000000 
+000   000  0000  000  000   000  000       000 000   000       000       000   000
+000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000  
+000   000  000  0000  000   000  000         000          000  000       000   000
+000   000  000   000  000   000  0000000     000     0000000   00000000  000   000
 
 ###
 
@@ -31,6 +31,7 @@ class Analyser extends Window
             ,
                 id:   'analyser_canvas'
                 type: 'canvas'
+                
                 style:
                     width:  '100%'
                     height: '100%'
@@ -62,11 +63,12 @@ class Analyser extends Window
     setTriggerY: (a) => @config.triggerY = _.arg(a)
 
     sizeWindow: =>
+        log 'sizeWindow'
         hbox = @getChild('hbox')
         height = @contentHeight()
         content = @getChild('content')
         content.setHeight(height)
-        height = content.innerHeight() - 90
+        height = content.innerHeight() - 100
         @canvas.setHeight height
         width  = content.innerWidth() - 20
         @canvas.elem.width  = width
