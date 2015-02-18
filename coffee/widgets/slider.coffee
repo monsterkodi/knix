@@ -17,7 +17,7 @@ class Slider extends Value
             pos    = slider.absPos()
             width  = event.clientX-pos.x
             v      = slider.size2value width
-            slider.setValue(v)
+            slider.setValue v
 
         super cfg,
             type:      'slider'
@@ -42,7 +42,7 @@ class Slider extends Value
             onMove:     sliderFunc
             onStart:    sliderFunc
 
-    onWindowSize: => @setValue(@config.value)
+    onWindowSize: => @setValue @config.value
 
     valueToPercentOfWidth: (value) => # returns the percentage of value v in the [minValue,maxValue] range
         cfg = @config
@@ -59,4 +59,4 @@ class Slider extends Value
 
     setBarValue: (barValue) =>
         pct = @valueToPercentOfWidth(barValue)
-        @getChild('slider-bar').elem.style.width = "%.2f%%".fmt(pct)
+        @getChild('slider-bar').elem.style.width = "%.2f%%".fmt pct

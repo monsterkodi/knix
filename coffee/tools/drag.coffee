@@ -61,7 +61,6 @@ class Drag
     dragStart: (event) =>
         return if @dragging or not @listening
         @dragging = true
-        log 'dragStart', @onStart?
         @onStart @, event if @onStart?
         @cursorStartPos = @absPos(event)
         if @doMove

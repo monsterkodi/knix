@@ -458,6 +458,7 @@ a
 // ____________________________________ spin
 
 .spin
+.spinner
     height:           valueHeight
     overflow:         hidden
     handCursor()
@@ -468,7 +469,7 @@ a
 .spin-table
 .spin-row
 .spin-td
-    border-collapse: collapse
+    border-collapse:  collapse
     margin:   0
     padding:  0
     max-height:       valueHeight
@@ -479,9 +480,17 @@ a
     max-height:       valueHeight
     margin:           0
     padding:          0
-    background-color:       colors.spin-input
+    text-align:       center
+    font-size:        12px
+    background-color: colors.spin-input
     &:hover
         background-color:   colors.spin-input-hover
+
+.spinner-knob
+    position:         absolute
+    top:              0
+    height:           2px
+    background-color:  colors.slider-bar
 
 .spin-input
     textCursor()

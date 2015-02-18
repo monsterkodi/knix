@@ -28,10 +28,10 @@ class Value extends Widget
         @elem.on "onValue", @config.onValue  if @config.onValue?
         super
 
-    setValue: (arg) =>
+    setValue: (a) =>
         # tag 'value'
         oldValue = @config.value
-        v = @round(@clamp(_.arg(arg)))
+        v = @round(@clamp(_.arg(a)))
         if v != oldValue
             # log v
             @config.value = v
@@ -48,12 +48,20 @@ class Value extends Widget
 
     # ____________________________________________________________________________ tools
 
+    percentage: (v) => # returns the percentage of value v in the [minValue,maxValue] range
+        cfg = @config
+        pct = 100 * (v - cfg.minValue) / @range()
+        Math.max(0,Math.min(pct,100))
+
+    size2value: (s) => # returns the value in the [minValue,maxValue] range that lies at point s
+        @config.minValue + @range() * s / @innerWidth()
+
     range: => @config.maxValue - @config.minValue
-    steps: => @range() / @config.valueStep
+    steps: => 1 + @range() / @config.valueStep
     clamp: (v) => _.clamp @config.minValue, @config.maxValue, v # clamps v to the [minValue,maxValue] range
     round: (v) => # rounds v to multiples of valueStep
-        r = v
         if @config.valueStep?
-            d = v - Math.round(v/@config.valueStep)*@config.valueStep
-            r -= d
-        r
+            d = - v + Math.round(v/@config.valueStep)*@config.valueStep
+            # log 'd', d
+            v += d
+        v

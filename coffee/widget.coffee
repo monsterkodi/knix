@@ -206,7 +206,7 @@ class Widget
 
     @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
         e = new Element type
-        e.id = "%s.%d".fmt(clss, @nextWidgetID)
+        e.id = "%s.%d".fmt clss, @nextWidgetID
         @nextWidgetID += 1
         e.addClassName clss
         e
@@ -335,14 +335,6 @@ class Widget
     getSize: => return { width: @getWidth(), height: @getHeight() }
     getWidth: => @elem.getWidth()
     getHeight: => @elem.getHeight()
-
-    percentage: (v) => # returns the percentage of value v in the [minValue,maxValue] range
-        cfg = @config
-        pct = 100 * (v - cfg.minValue) / (cfg.maxValue - cfg.minValue)
-        Math.max(0,Math.min(pct,100))
-
-    size2value: (s) => # returns the value in the [minValue,maxValue] range that lies at point s
-        @config.minValue + (@config.maxValue - @config.minValue) * s / @innerWidth()
 
     innerWidth:  => @elem.getLayout().get("padding-box-width")
     innerHeight: => @elem.getLayout().get("padding-box-height")

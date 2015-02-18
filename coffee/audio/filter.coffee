@@ -25,13 +25,10 @@ class Filter extends Window
                 type:       'jacks'
                 audio:      @audio
             ,
-                type:       'sliderspin'
+                type:       'spinner'
                 id:         'filter'
                 value:      Filter.filters.indexOf(cfg.filter)
-                minValue:   0
-                maxValue:   Filter.filters.length-1
-                sliderStep: 1
-                sliderKnob: true
+                values:     Filter.filters
                 onValue:    @setFilter
             ,
                 type:       'sliderspin'

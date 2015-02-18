@@ -63,7 +63,7 @@ class Analyser extends Window
     setTriggerY: (a) => @config.triggerY = _.arg(a)
 
     sizeWindow: =>
-        log 'sizeWindow'
+        # log 'sizeWindow'
         hbox = @getChild('hbox')
         height = @contentHeight()
         content = @getChild('content')

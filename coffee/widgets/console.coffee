@@ -174,7 +174,7 @@ class Console extends Window
             @allConsoles().each (c) -> c.addLogTag(t)
 
     @logInfo: (info) =>
-        args = Array.prototype.slice.call(arguments, 1)
+        args = Array.prototype.slice.call arguments, 1
 
         if 'error' in @scopeTags
             s = '<span class="console-error">%s</span> '.fmt(str(args[0])) + @toHtml.apply(Console, args.slice(1))
@@ -184,8 +184,8 @@ class Console extends Window
             s = @toHtml.apply(Console, args)
 
         if info.file? and info.line?
-            url = '::.info.json:source-url::'.fmt(info.file,info.line)
-            info.file = info.file.slice(9, -7) # remove 'coffee/' prefix and '.coffee' suffix
+            url = '::.info.json:source-url::'.fmt info.file, info.line
+            info.file = info.file.slice 9, -7 # remove 'coffee/' prefix and '.coffee' suffix
 
         @allConsoles().each (c) -> c.logInfo info, url, s
         @scopeTags = []

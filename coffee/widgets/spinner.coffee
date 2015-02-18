@@ -28,17 +28,23 @@ class Spinner extends Spin
             onStart:    @sliderFunc
 
         @input = null
+
+    onWindowSize: => @setValue @config.value
         
+    size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()
+
     sliderFunc: (drag, event) =>
-        log 'sliderfunc'
-        pos    = @absPos()
+        pos    = @getChild('spin-content').absPos()
         width  = event.clientX-pos.x
         v      = @size2value width
         @setValue v
 
     setValue: (a) =>
-        super a
-        c = @getChild('spin-content')
+        d = _.arg(a) - @range()/2
+        v = @range()/2 + d * @config.valueStep  * @steps() / @range()
+        super v
+        c = @getChild 'spin-content'
         c.clear()
-        c.elem.insert(String(@config.values[@config.value]))
-        log @config.value
+        w = c.getWidth()/@steps()
+        c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, @config.value*w)
+        c.elem.insert String @config.values[@config.value]
