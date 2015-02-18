@@ -24,7 +24,6 @@ Drag = (function() {
     this.dragMove = __bind(this.dragMove, this);
     this.dragStart = __bind(this.dragStart, this);
     this.absPos = __bind(this.absPos, this);
-    this.cancelEvent = __bind(this.cancelEvent, this);
     var tempPos;
     _.extend(this, _.def(cfg, {
       target: null,
@@ -66,20 +65,6 @@ Drag = (function() {
     return;
   }
 
-  Drag.prototype.cancelEvent = function(e) {
-    e = (e ? e : window.event);
-    if (e.stopPropagation) {
-      e.stopPropagation();
-    }
-    if (e.preventDefault) {
-      e.preventDefault();
-    }
-    e.cancelBubble = true;
-    e.cancel = true;
-    e.returnValue = false;
-    return false;
-  };
-
   Drag.prototype.absPos = function(event) {
     event = (event ? event : window.event);
     if (isNaN(window.scrollX)) {
@@ -94,6 +79,14 @@ Drag = (function() {
       return;
     }
     this.dragging = true;
+    log({
+      "file": "./coffee/tools/drag.coffee",
+      "line": 56,
+      "class": "Drag",
+      "args": ["event"],
+      "method": "dragStart",
+      "type": "."
+    }, 'drag start', this.onStart != null);
     if (this.onStart != null) {
       this.onStart(this, event);
     }
@@ -103,8 +96,7 @@ Drag = (function() {
       this.targetStartPos = this.targetStartPos.check();
     }
     this.eventMove = $(document).on('mousemove', this.dragMove);
-    this.eventUp = $(document).on('mouseup', this.dragUp);
-    return this.cancelEvent(event);
+    return this.eventUp = $(document).on('mouseup', this.dragUp);
   };
 
   Drag.prototype.dragMove = function(event) {
@@ -119,14 +111,12 @@ Drag = (function() {
       newPos.apply(this.target);
     }
     if (this.onMove != null) {
-      this.onMove(this, event);
+      return this.onMove(this, event);
     }
-    return this.cancelEvent(event);
   };
 
   Drag.prototype.dragUp = function(event) {
-    this.dragStop(event);
-    return this.cancelEvent(event);
+    return this.dragStop(event);
   };
 
   Drag.prototype.dragStop = function(event) {
@@ -380,15 +370,18 @@ Stage = (function() {
     return Stage.contextMenu;
   };
 
-  Stage.showContextMenu = function() {
-    log({
-      "file": "./coffee/tools/stage.coffee",
-      "line": 29,
-      "class": "Stage",
-      "method": "showContextMenu",
-      "type": "@"
-    }, 'showContextMenu');
-    return Stage.contextMenu.elem.show();
+  Stage.showContextMenu = function(event, e) {
+    if ($('stage_content') === e) {
+      log({
+        "file": "./coffee/tools/stage.coffee",
+        "line": 30,
+        "class": "Stage",
+        "method": "showContextMenu",
+        "type": "@",
+        "args": ["event", "e"]
+      }, 'showContextMenu');
+      return Stage.contextMenu.elem.show();
+    }
   };
 
   Stage.width = function() {
@@ -615,6 +608,13 @@ Element.addMethods({
       return;
     }
     element.parentElement.appendChild(element);
+  },
+  getWidget: function(element) {
+    var _ref;
+    if ((element != null ? element.widget : void 0) != null) {
+      return element.widget;
+    }
+    return element != null ? (_ref = element.parentElement) != null ? _ref.getWidget() : void 0 : void 0;
   }
 });
 

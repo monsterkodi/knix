@@ -158,14 +158,6 @@ Analyser = (function(_super) {
 
   Analyser.prototype.sizeWindow = function() {
     var content, hbox, height, width;
-    log({
-      "file": "./coffee/audio/analyser.coffee",
-      "line": 66,
-      "class": "Analyser",
-      "args": ["a"],
-      "method": "sizeWindow",
-      "type": "."
-    }, 'sizeWindow');
     hbox = this.getChild('hbox');
     height = this.contentHeight();
     content = this.getChild('content');
@@ -275,13 +267,10 @@ Filter = (function(_super) {
           type: 'jacks',
           audio: this.audio
         }, {
-          type: 'sliderspin',
+          type: 'spinner',
           id: 'filter',
           value: Filter.filters.indexOf(cfg.filter),
-          minValue: 0,
-          maxValue: Filter.filters.length - 1,
-          sliderStep: 1,
-          sliderKnob: true,
+          values: Filter.filters,
           onValue: this.setFilter
         }, {
           type: 'sliderspin',
@@ -520,21 +509,18 @@ Oscillator = (function(_super) {
           audio: this.audio,
           hasInput: false
         }, {
+          type: 'spinner',
+          id: 'shape',
+          value: (cfg.shape != null) && Oscillator.shapes.indexOf(cfg.shape) || 0,
+          values: Oscillator.shapes,
+          onValue: this.setShape
+        }, {
           type: 'sliderspin',
           id: 'frequency',
           value: cfg.freq,
           minValue: cfg.minFreq,
           maxValue: cfg.maxFreq,
           onValue: this.setFreq
-        }, {
-          type: 'sliderspin',
-          id: 'shape',
-          value: (cfg.shape != null) && Oscillator.shapes.indexOf(cfg.shape) || 0,
-          minValue: 0,
-          maxValue: 3,
-          sliderStep: 1,
-          sliderKnob: true,
-          onValue: this.setShape
         }
       ]
     });

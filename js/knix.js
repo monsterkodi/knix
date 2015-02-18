@@ -7,14 +7,13 @@
 000  000   000  0000  000   000 000 
 000   000  000   000  000  000   000
  */
-var knix;
+var knix,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.1.1315';
-
-  knix.popups = [];
+  knix.version = '0.1.1563';
 
   knix.init = function(config) {
     var c, s;
@@ -27,7 +26,7 @@ knix = (function() {
     s = 'welcome to';
     log({
       "file": "./coffee/knix.coffee",
-      "line": 24,
+      "line": 23,
       "class": "knix",
       "args": ["config"],
       "method": "init",
@@ -115,46 +114,28 @@ knix = (function() {
       knix.popups = [];
     }
     knix.popups.push(p);
-    log({
-      "file": "./coffee/knix.coffee",
-      "line": 99,
-      "class": "knix",
-      "args": ["p"],
-      "method": "addPopup",
-      "type": "@"
-    }, 'install popup handler');
     if (knix.popupHandler == null) {
       return knix.popupHandler = document.on('mousedown', knix.closePopups);
     }
   };
 
   knix.delPopup = function(p) {
-    log({
-      "file": "./coffee/knix.coffee",
-      "line": 104,
-      "class": "knix",
-      "args": ["p"],
-      "method": "delPopup",
-      "type": "@"
-    }, 'delpopup');
     return knix.popups = knix.popups.without(p);
   };
 
-  knix.closePopups = function() {
-    var p, _i, _len, _ref;
-    log({
-      "file": "./coffee/knix.coffee",
-      "line": 108,
-      "class": "knix",
-      "args": ["p"],
-      "method": "closePopups",
-      "type": "@"
-    }, 'closepopups');
+  knix.closePopups = function(event, e) {
+    var p, _i, _j, _len, _len1, _ref, _ref1;
     if (knix.popups != null) {
       _ref = knix.popups;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         p = _ref[_i];
-        p.close();
+        _ref1 = knix.popups;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          p = _ref1[_j];
+          if (__indexOf.call(p.elem.descendants(), e) < 0) {
+            p.close();
+          }
+        }
       }
     }
     if (knix.popupHandler != null) {
@@ -209,7 +190,8 @@ knix = (function() {
   knix.canvas = function(cfg) {
     var cvs;
     cvs = new Widget(cfg, {
-      elem: 'canvas'
+      elem: 'canvas',
+      noMove: true
     });
     return cvs;
   };

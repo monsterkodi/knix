@@ -10,8 +10,7 @@
 var Window,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Window = (function(_super) {
   __extends(Window, _super);
@@ -92,7 +91,7 @@ Window = (function(_super) {
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         b = _ref[_i];
         this.insertChild(b, {
-          noDown: true
+          noMove: true
         });
       }
     }
@@ -130,7 +129,7 @@ Window = (function(_super) {
   Window.prototype.addCloseButton = function() {
     return knix.create({
       type: 'close',
-      noDown: true,
+      noMove: true,
       parent: this,
       child: {
         type: 'icon',
@@ -145,7 +144,7 @@ Window = (function(_super) {
   Window.prototype.addShadeButton = function() {
     return knix.create({
       type: "shade",
-      noDown: true,
+      noMove: true,
       parent: this,
       child: {
         type: 'icon',
@@ -200,8 +199,18 @@ Window = (function(_super) {
     }
   };
 
-  Window.prototype.onHover = function(event) {
-    var action, border, cursor, d1, d2, eventPos, md;
+  Window.prototype.onHover = function(event, e) {
+    var action, border, cursor, d1, d2, eventPos, m, md;
+    if (this.sizeMoveDrag) {
+      this.sizeMoveDrag.deactivate();
+    }
+    this.sizeMoveDrag = null;
+    if (e.getWidget()) {
+      m = this.matchConfigValue('noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten());
+      if (m.length) {
+        return;
+      }
+    }
     eventPos = Stage.absPos(event);
     d1 = eventPos.sub(this.absPos());
     d2 = this.absPos().add(pos(this.getWidth(), this.getHeight())).sub(eventPos);
@@ -223,10 +232,6 @@ Window = (function(_super) {
       action = 'size';
       border += 'right';
     }
-    if (this.sizeMoveDrag) {
-      this.sizeMoveDrag.deactivate();
-    }
-    this.sizeMoveDrag = null;
     if (action === 'size') {
       if (border === 'left' || border === 'right') {
         cursor = 'ew-resize';
@@ -326,13 +331,11 @@ Window = (function(_super) {
   };
 
   Window.prototype.raise = function(event, e) {
-    var scrolltop, _ref;
-    if (((e != null ? e.getWindow : void 0) != null) && (_ref = e.getWindow(), __indexOf.call(knix.popups, _ref) < 0)) {
-      knix.closePopups();
-    }
+    var scrolltop;
     scrolltop = $(this.content).scrollTop;
     this.elem.parentElement.appendChild(this.elem);
-    return $(this.content).scrollTop = scrolltop;
+    $(this.content).scrollTop = scrolltop;
+    return event != null ? event.stopPropagation() : void 0;
   };
 
   Window.prototype.headerSize = function(box) {
@@ -393,7 +396,7 @@ Window = (function(_super) {
   Window.prototype.close = function() {
     log({
       "file": "./coffee/window.coffee",
-      "line": 285,
+      "line": 289,
       "class": "Window",
       "args": ["box=\"border-box-height\""],
       "method": "close",

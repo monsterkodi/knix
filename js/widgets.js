@@ -7,7 +7,7 @@
    000     000   000  000      000   000  000     
     0      000   000  0000000   0000000   00000000
  */
-var About, Button, Connection, Connector, Console, Hbox, Path, Slider, Sliderspin, Spin, Toggle, Tooltip, Value, tag,
+var About, Button, Connection, Connector, Console, Hbox, Path, Slider, Sliderspin, Spin, Spinner, Toggle, Tooltip, Value, tag,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -19,20 +19,28 @@ Value = (function(_super) {
   function Value(cfg, def) {
     this.round = __bind(this.round, this);
     this.clamp = __bind(this.clamp, this);
+    this.steps = __bind(this.steps, this);
+    this.range = __bind(this.range, this);
+    this.size2value = __bind(this.size2value, this);
+    this.percentage = __bind(this.percentage, this);
     this.decr = __bind(this.decr, this);
     this.incr = __bind(this.incr, this);
     this.setValue = __bind(this.setValue, this);
     this.initEvents = __bind(this.initEvents, this);
     this.onTooltip = __bind(this.onTooltip, this);
-    Value.__super__.constructor.call(this, _.def(cfg, def), {
+    cfg = _.def(cfg, def);
+    Value.__super__.constructor.call(this, cfg, {
       value: 0,
+      noMove: true,
       minValue: 0,
       maxValue: 100
     });
-    Tooltip.create({
-      target: this,
-      onTooltip: this.onTooltip
-    });
+    if ((this.config.tooltip == null) || this.config.tooltip) {
+      Tooltip.create({
+        target: this,
+        onTooltip: this.onTooltip
+      });
+    }
   }
 
   Value.prototype.onTooltip = function() {
@@ -46,10 +54,10 @@ Value = (function(_super) {
     return Value.__super__.initEvents.apply(this, arguments);
   };
 
-  Value.prototype.setValue = function(arg) {
+  Value.prototype.setValue = function(a) {
     var oldValue, v;
     oldValue = this.config.value;
-    v = this.round(this.clamp(_.arg(arg)));
+    v = this.round(this.clamp(_.arg(a)));
     if (v !== oldValue) {
       this.config.value = v;
       this.emit('onValue', {
@@ -74,11 +82,30 @@ Value = (function(_super) {
     } else {
       step = 1;
     }
-    return this.setValue(this.input.getValue() + step * d);
+    return this.setValue(this.config.value + step * d);
   };
 
   Value.prototype.decr = function() {
     return this.incr(-1);
+  };
+
+  Value.prototype.percentage = function(v) {
+    var cfg, pct;
+    cfg = this.config;
+    pct = 100 * (v - cfg.minValue) / this.range();
+    return Math.max(0, Math.min(pct, 100));
+  };
+
+  Value.prototype.size2value = function(s) {
+    return this.config.minValue + this.range() * s / this.innerWidth();
+  };
+
+  Value.prototype.range = function() {
+    return this.config.maxValue - this.config.minValue;
+  };
+
+  Value.prototype.steps = function() {
+    return 1 + this.range() / this.config.valueStep;
   };
 
   Value.prototype.clamp = function(v) {
@@ -86,13 +113,12 @@ Value = (function(_super) {
   };
 
   Value.prototype.round = function(v) {
-    var d, r;
-    r = v;
+    var d;
     if (this.config.valueStep != null) {
-      d = v - Math.round(v / this.config.valueStep) * this.config.valueStep;
-      r -= d;
+      d = -v + Math.round(v / this.config.valueStep) * this.config.valueStep;
+      v += d;
     }
-    return r;
+    return v;
   };
 
   return Value;
@@ -271,7 +297,7 @@ Button = (function(_super) {
     }
     Button.__super__.constructor.call(this, cfg, {
       type: 'button',
-      noDown: true
+      noMove: true
     });
   }
 
@@ -525,7 +551,8 @@ Connector = (function(_super) {
     Connector.__super__.constructor.call(this, config, {
       type: 'connector',
       onOver: this.onOver,
-      onOut: this.onOut
+      onOut: this.onOut,
+      noMove: true
     });
     Drag.create({
       target: this.elem,
@@ -698,13 +725,7 @@ Console = (function(_super) {
     this.onContextMenu = __bind(this.onContextMenu, this);
     var h, w;
     this.logTags = {
-      'knix': 'off',
-      'Stage': 'off',
-      'Widget': 'off',
-      'Window': 'off',
-      'layout': 'off',
-      'todo': 'off',
-      'Connection': 'off'
+      'todo': 'off'
     };
     w = Stage.size().width / 2;
     h = Stage.size().height - $('menu').getHeight() - 2;
@@ -742,7 +763,7 @@ Console = (function(_super) {
       child: {
         "class": 'console',
         text: '<span class="tiny-text" style="vertical-align:top">console - knix version ' + knix.version + '</span>',
-        noDown: true
+        noMove: true
       }
     });
     this.elem.on('contextmenu', this.onContextMenu);
@@ -769,9 +790,9 @@ Console = (function(_super) {
       }
     });
     knix.get({
-      hasClose: false,
+      hasClose: true,
       hasMaxi: false,
-      title: 'tags',
+      title: ' ',
       resize: false,
       hasShade: false,
       popup: true,
@@ -1295,23 +1316,20 @@ Sliderspin = (function(_super) {
 Spin = (function(_super) {
   __extends(Spin, _super);
 
-  function Spin(cfg) {
+  function Spin(cfg, defs) {
     this.strip0 = __bind(this.strip0, this);
     this.format = __bind(this.format, this);
     this.stopTimer = __bind(this.stopTimer, this);
     this.startDecr = __bind(this.startDecr, this);
     this.startIncr = __bind(this.startIncr, this);
     this.setValue = __bind(this.setValue, this);
-    var range;
+    cfg = _.def(cfg, defs);
     Spin.__super__.constructor.call(this, cfg, {
       type: 'spin',
       horizontal: true,
       child: {
         elem: 'table',
         type: 'spin-table',
-        onDown: function(event, e) {
-          return event.stopPropagation();
-        },
         child: {
           elem: 'tr',
           type: 'spin-row',
@@ -1330,7 +1348,10 @@ Spin = (function(_super) {
               type: 'spin-content',
               child: {
                 type: 'input',
-                "class": 'spin-input'
+                "class": 'spin-input',
+                onDown: function(event, e) {
+                  return event.stopPropagation();
+                }
               }
             }, {
               elem: 'td',
@@ -1347,10 +1368,8 @@ Spin = (function(_super) {
       }
     });
     if (this.config.valueStep == null) {
-      range = this.config.maxValue - this.config.minValue;
-      this.config.valueStep = range > 1 && 1 || range / 100;
+      this.config.valueStep = this.range() > 1 && 1 || this.range() / 100;
     }
-    this.input = this.getChild('spin-input').elem;
     this.elem.on('keypress', function(event, e) {
       var _ref, _ref1, _ref2;
       if ((_ref = event.key) === 'Up' || _ref === 'Down') {
@@ -1370,26 +1389,29 @@ Spin = (function(_super) {
         }
       }
     });
+    this.input = this.getChild('spin-input').elem;
     this.input.on('change', function(event, e) {
-      return this.getParent('spin').setValue(this.getValue());
+      return this.getParent(this.config.type).setValue(this.getValue());
     });
     this.input.value = this.config.value;
     this.setValue(this.config.value);
   }
 
-  Spin.prototype.setValue = function() {
-    Spin.__super__.setValue.apply(this, arguments);
-    return this.input.value = this.strip0(this.format(this.config.value));
+  Spin.prototype.setValue = function(a) {
+    Spin.__super__.setValue.call(this, a);
+    if (this.input != null) {
+      return this.input.value = this.strip0(this.format(this.config.value));
+    }
   };
 
   Spin.prototype.startIncr = function() {
     this.incr();
-    return this.timer = setInterval(this.incr, 80);
+    return this.timer = setInterval(this.incr, Math.max(80, 2000 / this.steps()));
   };
 
   Spin.prototype.startDecr = function() {
     this.decr();
-    return this.timer = setInterval(this.decr, 80);
+    return this.timer = setInterval(this.decr, Math.max(80, 2000 / this.steps()));
   };
 
   Spin.prototype.stopTimer = function() {
@@ -1413,6 +1435,73 @@ Spin = (function(_super) {
   return Spin;
 
 })(Value);
+
+
+/*
+
+ 0000000  00000000   000  000   000  000   000  00000000  00000000 
+000       000   000  000  0000  000  0000  000  000       000   000
+0000000   00000000   000  000 0 000  000 0 000  0000000   0000000  
+     000  000        000  000  0000  000  0000  000       000   000
+0000000   000        000  000   000  000   000  00000000  000   000
+ */
+
+Spinner = (function(_super) {
+  __extends(Spinner, _super);
+
+  function Spinner(cfg, defs) {
+    this.setValue = __bind(this.setValue, this);
+    this.sliderFunc = __bind(this.sliderFunc, this);
+    this.size2value = __bind(this.size2value, this);
+    this.onWindowSize = __bind(this.onWindowSize, this);
+    cfg = _.def(cfg, defs);
+    Spinner.__super__.constructor.call(this, cfg, {
+      tooltip: false,
+      valueStep: 1,
+      minValue: 0,
+      maxValue: cfg.values.length - 1
+    });
+    Drag.create({
+      cursor: 'ew-resize',
+      target: this.getChild('spin-content').elem,
+      doMove: false,
+      onMove: this.sliderFunc,
+      onStart: this.sliderFunc
+    });
+    this.input = null;
+  }
+
+  Spinner.prototype.onWindowSize = function() {
+    return this.setValue(this.config.value);
+  };
+
+  Spinner.prototype.size2value = function(s) {
+    return this.config.minValue + this.range() * s / this.getChild('spin-content').getWidth();
+  };
+
+  Spinner.prototype.sliderFunc = function(drag, event) {
+    var pos, v, width;
+    pos = this.getChild('spin-content').absPos();
+    width = event.clientX - pos.x;
+    v = this.size2value(width);
+    return this.setValue(v);
+  };
+
+  Spinner.prototype.setValue = function(a) {
+    var c, d, v, w;
+    d = _.arg(a) - this.range() / 2;
+    v = this.range() / 2 + d * this.config.valueStep * this.steps() / this.range();
+    Spinner.__super__.setValue.call(this, v);
+    c = this.getChild('spin-content');
+    c.clear();
+    w = c.getWidth() / this.steps();
+    c.elem.insert('<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, this.config.value * w));
+    return c.elem.insert(String(this.config.values[this.config.value]));
+  };
+
+  return Spinner;
+
+})(Spin);
 
 
 /*
@@ -1500,7 +1589,8 @@ Tooltip = (function() {
     });
     cfg.target.tooltip = cfg;
     cfg.target.elem.on('mousemove', Tooltip.onHover);
-    return cfg.target.elem.on('mouseleave', Tooltip.onLeave);
+    cfg.target.elem.on('mouseleave', Tooltip.onLeave);
+    return cfg.target.elem.on('mousedown', Tooltip.onLeave);
   };
 
   Tooltip.onHover = function(event, d) {
@@ -1543,8 +1633,9 @@ Tooltip = (function() {
     return tooltip.window = new Window({
       "class": 'tooltip',
       parent: 'stage_content',
-      x: pos.x,
-      y: pos.y,
+      isMovable: false,
+      x: pos.x + 12,
+      y: pos.y + 12,
       text: text,
       hasClose: false,
       hasShade: false,
