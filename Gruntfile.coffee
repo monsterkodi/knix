@@ -58,7 +58,7 @@ module.exports = (grunt) ->
             tasks: ['build']
             options:
                 spawn:     true
-                interrupt: true
+                interrupt: false
           node:
             files: ['tools/node.js']
             tasks: ['kill', 'build', 'node']

@@ -10,15 +10,17 @@
 
 class Spin extends Value
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) ->
 
+        cfg = _.def cfg, defs
+        
         super cfg,
             type:       'spin'
             horizontal: true
             child:
                 elem:   'table'
                 type:   'spin-table'
-                onDown: (event,e) -> event.stopPropagation()
+                # onDown: (event,e) -> event.stopPropagation() ??? why ???
                 child:
                     elem:   'tr'
                     type:   'spin-row'
@@ -48,10 +50,7 @@ class Spin extends Value
                     ]
 
         if not @config.valueStep?
-            range = @config.maxValue - @config.minValue
-            @config.valueStep = range > 1 and 1 or range/100
-
-        @input = @getChild('spin-input').elem
+            @config.valueStep = @range() > 1 and 1 or @range()/100
 
         @elem.on 'keypress', (event,e) ->
             if event.key in ['Up', 'Down']
@@ -67,18 +66,20 @@ class Spin extends Value
                     event.stop()
                     return
 
+        @input = @getChild('spin-input').elem
+
         @input.on 'change', (event,e) ->
-            @getParent('spin').setValue @getValue()
+            @getParent(@config.type).setValue @getValue()
 
         @input.value = @config.value
         @setValue @config.value
 
-    setValue: () =>
-        super
-        @input.value = @strip0 @format(@config.value)
+    setValue: (a) =>
+        super a
+        @input.value = @strip0 @format(@config.value) if @input?
 
-    startIncr: => @incr(); @timer = setInterval(@incr, 80)
-    startDecr: => @decr(); @timer = setInterval(@decr, 80)
+    startIncr: => @incr(); @timer = setInterval(@incr, Math.max(80, 2000/@steps()))
+    startDecr: => @decr(); @timer = setInterval(@decr, Math.max(80, 2000/@steps()))
     stopTimer: => clearInterval @timer
 
     format: (s) => return @config.format.fmt(s) if @config.format?; String(s)

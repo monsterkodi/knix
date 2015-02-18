@@ -10,8 +10,7 @@
 
 class Widget
 
-    constructor: (config, defaults) ->
-        @init config, defaults
+    constructor: (config, defaults) -> @init config, defaults
 
     init: (config, defaults) =>
 
@@ -271,6 +270,7 @@ class Widget
     close: =>
         log 'close', @elem.id
         @emit 'close'
+        # @elem.purge()
         @elem.remove()
         @elem = null
         @config = null

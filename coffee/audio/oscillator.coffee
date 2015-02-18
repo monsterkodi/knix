@@ -38,13 +38,10 @@ class Oscillator extends Window
                 maxValue:   cfg.maxFreq
                 onValue:    @setFreq
             ,
-                type:       'sliderspin'
+                type:       'spinner'
                 id:         'shape'
                 value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
-                minValue:   0
-                maxValue:   3
-                sliderStep: 1
-                sliderKnob: true
+                values:     Oscillator.shapes
                 onValue:    @setShape
             ]
 

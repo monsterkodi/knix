@@ -17,9 +17,10 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
 
-        Tooltip.create
-            target: @
-            onTooltip: @onTooltip
+        if not @tooltip? or @tooltip
+           Tooltip.create
+               target: @
+               onTooltip: @onTooltip
 
     onTooltip: => @elem.id
 
@@ -41,12 +42,14 @@ class Value extends Widget
         if d in ['+', '++'] then d = 1
         else if d in ['-', '--'] then d = -1
         if @config.valueStep? then step = @config.valueStep else step = 1
-        @setValue @input.getValue() + step*d
+        @setValue @config.value + step*d
 
     decr: => @incr -1
 
     # ____________________________________________________________________________ tools
 
+    range: => @config.maxValue - @config.minValue
+    steps: => @range() / @config.valueStep
     clamp: (v) => _.clamp @config.minValue, @config.maxValue, v # clamps v to the [minValue,maxValue] range
     round: (v) => # rounds v to multiples of valueStep
         r = v
