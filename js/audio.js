@@ -1,14 +1,16 @@
 
 /*
 
-     0000000   000   000  0000000    000   0000000
-    000   000  000   000  000   000  000  000   000
-    000000000  000   000  000   000  000  000   000
-    000   000  000   000  000   000  000  000   000
-    000   000   0000000   0000000    000   0000000
+ 0000000   000   000  0000000    000   0000000 
+000   000  000   000  000   000  000  000   000
+000000000  000   000  000   000  000  000   000
+000   000  000   000  000   000  000  000   000
+000   000   0000000   0000000    000   0000000
  */
-var Analyser, Audio, Gain, Oscillator,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var Analyser, Audio, Filter, Gain, Jacks, Oscillator,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Audio = (function() {
   function Audio() {}
@@ -16,14 +18,40 @@ Audio = (function() {
   Audio.init = function() {
     Audio.context = new (window.AudioContext || window.webkitAudioContext)();
     Oscillator.menu();
-    Analyser.menu();
-    return Gain.menu();
+    Filter.menu();
+    Gain.menu();
+    return Analyser.menu();
+  };
+
+  Audio.filter = function(cfg) {
+    var filter;
+    cfg = _.def(cfg, {
+      freq: 440,
+      minFreq: 100,
+      maxFreq: 12000,
+      detune: 0,
+      minDetune: -1000,
+      maxDetune: 1000,
+      gain: 1,
+      minGain: 0,
+      maxGain: 1,
+      Q: 1,
+      minQ: 0.0,
+      maxQ: 50,
+      filter: 'bandpass'
+    });
+    filter = Audio.context.createBiquadFilter();
+    filter.frequency.value = cfg.freq;
+    filter.detune.value = cfg.detune;
+    filter.Q.value = cfg.Q;
+    filter.type = cfg.filter;
+    return [filter, cfg];
   };
 
   Audio.oscillator = function(cfg) {
     var oscillator;
     oscillator = Audio.context.createOscillator();
-    oscillator.frequency.value = 50;
+    oscillator.frequency.value = cfg.freq || 440;
     oscillator.start(0);
     return oscillator;
   };
@@ -31,7 +59,7 @@ Audio = (function() {
   Audio.gain = function(cfg) {
     var gain;
     gain = Audio.context.createGain();
-    gain.gain.value = 0.0;
+    gain.gain.value = (cfg.gain != null) && cfg.gain || 0.0;
     if (cfg.master) {
       gain.connect(Audio.context.destination);
     }
@@ -55,25 +83,100 @@ Audio = (function() {
 
 /*
 
-     0000000   000   000   0000000   000      000   000  0000000   00000000  00000000
-    000   000  0000  000  000   000  000       000 000  000        000       000   000
-    000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000
-    000   000  000  0000  000   000  000         000          000  000       000   000
-    000   000  000   000  000   000  000000000   000     0000000   00000000  000   000
+ 0000000   000   000   0000000   000      000   000   0000000  00000000  00000000 
+000   000  0000  000  000   000  000       000 000   000       000       000   000
+000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000  
+000   000  000  0000  000   000  000         000          000  000       000   000
+000   000  000   000  000   000  0000000     000     0000000   00000000  000   000
  */
 
-Analyser = (function() {
-  function Analyser(config) {
-    if (config == null) {
-      config = {};
-    }
+Analyser = (function(_super) {
+  __extends(Analyser, _super);
+
+  function Analyser(cfg, defs) {
     this.anim = __bind(this.anim, this);
-    this.initWindow = __bind(this.initWindow, this);
-    this.analyser = Audio.analyser();
+    this.sizeWindow = __bind(this.sizeWindow, this);
+    this.setTriggerY = __bind(this.setTriggerY, this);
+    this.setScaleY = __bind(this.setScaleY, this);
+    this.setScaleX = __bind(this.setScaleX, this);
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      scaleX: 1.0,
+      scaleY: 1.0,
+      triggerY: 0.0
+    });
+    this.audio = this.analyser = Audio.analyser();
     this.dataArray = new Uint8Array(this.analyser.fftSize);
-    this.initWindow(config);
+    Analyser.__super__.constructor.call(this, cfg, {
+      title: 'analyser',
+      children: [
+        {
+          type: 'jacks',
+          audio: this.audio
+        }, {
+          id: 'analyser_canvas',
+          type: 'canvas',
+          style: {
+            width: '100%',
+            height: '100%'
+          }
+        }, {
+          type: 'sliderspin',
+          id: 'scaleX',
+          value: cfg.scaleX,
+          onValue: this.setScaleX,
+          minValue: 1.0,
+          maxValue: 20.0,
+          valueStep: 1
+        }, {
+          type: 'sliderspin',
+          id: 'triggerY',
+          value: cfg.triggerY,
+          onValue: this.setTriggerY,
+          minValue: -1.0,
+          maxValue: 1.0,
+          spinStep: 0.01
+        }
+      ]
+    });
+    this.canvas = this.getChild('analyser_canvas');
     knix.animate(this);
+    this.sizeWindow();
   }
+
+  Analyser.prototype.setScaleX = function(a) {
+    return this.config.scaleX = _.arg(a);
+  };
+
+  Analyser.prototype.setScaleY = function(a) {
+    return this.config.scaleY = _.arg(a);
+  };
+
+  Analyser.prototype.setTriggerY = function(a) {
+    return this.config.triggerY = _.arg(a);
+  };
+
+  Analyser.prototype.sizeWindow = function() {
+    var content, hbox, height, width;
+    log({
+      "file": "./coffee/audio/analyser.coffee",
+      "line": 66,
+      "class": "Analyser",
+      "args": ["a"],
+      "method": "sizeWindow",
+      "type": "."
+    }, 'sizeWindow');
+    hbox = this.getChild('hbox');
+    height = this.contentHeight();
+    content = this.getChild('content');
+    content.setHeight(height);
+    height = content.innerHeight() - 100;
+    this.canvas.setHeight(height);
+    width = content.innerWidth() - 20;
+    this.canvas.elem.width = width;
+    this.canvas.elem.height = height;
+    return this.dataArray = new Uint8Array(2 * width);
+  };
 
   Analyser.menu = function() {
     return knix.create({
@@ -90,32 +193,43 @@ Analyser = (function() {
     });
   };
 
-  Analyser.prototype.initWindow = function(cfg) {
-    this.window = knix.get(cfg, {
-      title: 'analyser',
-      child: {
-        id: 'analyser_canvas',
-        type: 'canvas'
-      }
-    });
-    return this.canvas = this.window.getChild('analyser_canvas').elem;
-  };
-
   Analyser.prototype.anim = function(timestamp) {
-    var ctx, cvh, cvw, i, v, x, xd, y, _i, _ref;
+    var ctx, cvh, cvs, cvw, i, samples, t, th, v, x, xd, y, _i;
     this.analyser.getByteTimeDomainData(this.dataArray);
-    ctx = this.canvas.getContext("2d");
-    cvw = this.canvas.getWidth();
-    cvh = this.canvas.getHeight();
+    cvs = this.canvas.elem;
+    ctx = cvs.getContext("2d");
+    cvw = cvs.getWidth();
+    cvh = cvs.getHeight();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgb(255,255,255)';
+    ctx.fillStyle = "rgb(200,0,0)";
+    ctx.fillRect(0, 0, cvw, cvh);
+    ctx.strokeStyle = 'rgb(0,0,0)';
+    ctx.strokeRect(0, 0, cvw, cvh);
     ctx.beginPath();
-    xd = cvw * 1.0 / this.analyser.fftSize;
+    ctx.strokeStyle = 'rgba(100,0,0,0.4)';
+    th = cvh * (0.5 - this.config.triggerY / 2);
+    ctx.moveTo(0, th);
+    ctx.lineTo(cvw, th);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgb(255,200,0)';
+    ctx.beginPath();
+    samples = this.dataArray.length;
+    xd = this.config.scaleX;
+    t = 0;
+    while (this.dataArray[t] >= 128 + 128 * this.config.triggerY && t < samples) {
+      t += 1;
+    }
+    while (this.dataArray[t] < 128 + 128 * this.config.triggerY && t < samples) {
+      t += 1;
+    }
+    if (t >= samples) {
+      t = 0;
+    }
     x = 0;
-    for (i = _i = 0, _ref = this.analyser.fftSize; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      v = this.dataArray[i] / 128.0;
-      y = v * cvh / 2;
-      if (i === 0) {
+    for (i = _i = t; t <= samples ? _i <= samples : _i >= samples; i = t <= samples ? ++_i : --_i) {
+      v = 1 - this.dataArray[i] / 256.0;
+      y = v * cvh;
+      if (i === t) {
         ctx.moveTo(x, y);
       } else {
         ctx.lineTo(x, y);
@@ -127,27 +241,160 @@ Analyser = (function() {
 
   return Analyser;
 
-})();
+})(Window);
 
 
 /*
 
-     0000000    0000000   000  000   000
-    000        000   000  000  0000  000
-    000  0000  000000000  000  000 0 000
-    000   000  000   000  000  000  0000
-     0000000   000   000  000  000   000
+00000000  000  000      000000000  00000000  00000000 
+000       000  000         000     000       000   000
+000000    000  000         000     0000000   0000000  
+000       000  000         000     000       000   000
+000       000  0000000     000     00000000  000   000
  */
 
-Gain = (function() {
-  function Gain(config) {
-    if (config == null) {
-      config = {};
-    }
-    this.initWindow = __bind(this.initWindow, this);
-    this.gain = Audio.gain(config);
-    this.initWindow(config);
+Filter = (function(_super) {
+  __extends(Filter, _super);
+
+  Filter.filters = ['bandpass', 'lowpass', 'highpass', 'notch', 'allpass'];
+
+  function Filter(cfg) {
+    this.setFilter = __bind(this.setFilter, this);
+    this.setGain = __bind(this.setGain, this);
+    this.setFreq = __bind(this.setFreq, this);
+    this.setQ = __bind(this.setQ, this);
+    this.setDetune = __bind(this.setDetune, this);
+    var _ref;
+    _ref = Audio.filter(cfg), this.audio = _ref[0], cfg = _ref[1];
+    Filter.__super__.constructor.call(this, cfg, {
+      title: 'filter',
+      minWidth: 240,
+      minHeight: 60,
+      children: [
+        {
+          type: 'jacks',
+          audio: this.audio
+        }, {
+          type: 'sliderspin',
+          id: 'filter',
+          value: Filter.filters.indexOf(cfg.filter),
+          minValue: 0,
+          maxValue: Filter.filters.length - 1,
+          sliderStep: 1,
+          sliderKnob: true,
+          onValue: this.setFilter
+        }, {
+          type: 'sliderspin',
+          id: 'frequency',
+          value: cfg.freq,
+          minValue: cfg.minFreq,
+          maxValue: cfg.maxFreq,
+          onValue: this.setFreq
+        }, {
+          type: 'sliderspin',
+          id: 'detune',
+          value: cfg.detune,
+          minValue: cfg.minDetune,
+          maxValue: cfg.maxDetune,
+          onValue: this.setDetune
+        }, {
+          type: 'sliderspin',
+          id: 'Q',
+          value: cfg.Q,
+          onValue: this.setQ,
+          minValue: cfg.minQ,
+          maxValue: cfg.maxQ,
+          spinStep: 0.01
+        }
+      ]
+    });
+    this.setFilter(Filter.filters.indexOf(cfg.filter));
   }
+
+  Filter.prototype.setDetune = function(arg) {
+    return this.audio.detune.value = _.arg(arg);
+  };
+
+  Filter.prototype.setQ = function(arg) {
+    return this.audio.Q.value = _.arg(arg);
+  };
+
+  Filter.prototype.setFreq = function(arg) {
+    return this.audio.frequency.value = _.arg(arg);
+  };
+
+  Filter.prototype.setGain = function(arg) {
+    return this.audio.gain.value = _.arg(arg);
+  };
+
+  Filter.prototype.setFilter = function(arg) {
+    return this.audio.type = Filter.filters[_.arg(arg)];
+  };
+
+  Filter.menu = function() {
+    return knix.create({
+      type: 'button',
+      id: 'new_filter',
+      icon: 'octicon-gear',
+      "class": 'tool-button',
+      parent: 'menu',
+      onClick: function() {
+        return new Filter({
+          center: true
+        });
+      }
+    });
+  };
+
+  return Filter;
+
+})(Window);
+
+
+/*
+
+ 0000000    0000000   000  000   000
+000        000   000  000  0000  000
+000  0000  000000000  000  000 0 000
+000   000  000   000  000  000  0000
+ 0000000   000   000  000  000   000
+ */
+
+Gain = (function(_super) {
+  __extends(Gain, _super);
+
+  function Gain(cfg) {
+    this.setValue = __bind(this.setValue, this);
+    this.setGain = __bind(this.setGain, this);
+    this.audio = Audio.gain(cfg);
+    Gain.__super__.constructor.call(this, cfg, {
+      title: cfg.master && 'master' || 'gain',
+      minWidth: 240,
+      minHeight: 60,
+      children: [
+        {
+          type: 'jacks',
+          audio: this.audio,
+          hasOutput: cfg.master == null
+        }, {
+          type: 'sliderspin',
+          id: 'gain',
+          value: cfg.gain,
+          onValue: this.setGain,
+          minValue: 0.0,
+          maxValue: 1.0
+        }
+      ]
+    });
+  }
+
+  Gain.prototype.setGain = function(arg) {
+    return this.audio.gain.value = _.arg(arg);
+  };
+
+  Gain.prototype.setValue = function(arg) {
+    return this.audio.gain.value = _.arg(arg);
+  };
 
   Gain.menu = function() {
     knix.create({
@@ -177,82 +424,133 @@ Gain = (function() {
     });
   };
 
-  Gain.prototype.initWindow = function(cfg) {
-    var children;
-    children = [
-      {
-        type: 'connector',
-        slot: 'input'
-      }, {
-        type: 'label',
-        text: 'gain',
-        style: {
-          width: '100%'
-        }
-      }
-    ];
-    if (!cfg.master) {
-      children.push({
-        type: 'connector',
-        signal: 'output'
-      });
-    }
-    return this.window = knix.get(cfg, {
-      title: cfg.master && 'master' || 'gain',
-      minWidth: 150,
-      minHeight: 60,
-      children: [
-        {
-          type: 'hbox',
-          children: children
-        }, {
-          type: 'hbox',
-          children: [
-            {
-              type: 'connector',
-              slot: 'slider_gain:setValue'
-            }, {
-              id: 'slider_gain',
-              type: 'slider',
-              value: 0,
-              minValue: 0.0,
-              maxValue: 1.0,
-              style: {
-                width: '100%'
-              }
-            }, {
-              type: 'connector',
-              signal: 'slider_gain:onValue'
-            }
-          ]
-        }
-      ]
-    });
-  };
-
   return Gain;
 
-})();
+})(Window);
 
 
 /*
 
-     0000000    0000000    0000000  000  000       000        0000000  000000000   0000000   00000000
-    000   000  000        000       000  000       000       000   000    000     000   000  000   000
-    000   000   0000000   000       000  000       000       000000000    000     000   000  0000000
-    000   000        000  000       000  000       000       000   000    000     000   000  000   000
-     0000000    0000000    0000000  000  000000000 000000000 000   000    000      0000000   000   000
+      000   0000000    0000000  000   000   0000000
+      000  000   000  000       000  000   000     
+      000  000000000  000       0000000    0000000 
+000   000  000   000  000       000  000        000
+ 0000000   000   000   0000000  000   000  0000000
  */
 
-Oscillator = (function() {
-  function Oscillator(config) {
-    if (config == null) {
-      config = {};
+Jacks = (function(_super) {
+  __extends(Jacks, _super);
+
+  function Jacks(cfg, defs) {
+    var children;
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      onConnect: function(source, target) {
+        return source.config.audio.connect(target.config.audio);
+      },
+      onDisconnect: function(source, target) {
+        return source.config.audio.disconnect(target.config.audio);
+      }
+    });
+    children = [];
+    if (!(cfg.hasInput === false)) {
+      children.push({
+        type: 'connector',
+        "in": 'audio',
+        audio: cfg.audio
+      });
     }
-    this.initWindow = __bind(this.initWindow, this);
-    this.gain = Audio.oscillator();
-    this.initWindow(config);
+    children.push({
+      type: 'jack_content',
+      style: {
+        width: '100%',
+        height: '20px'
+      },
+      children: cfg.children
+    });
+    if (!(cfg.hasOutput === false)) {
+      children.push({
+        type: 'connector',
+        out: 'audio',
+        audio: cfg.audio,
+        onConnect: cfg.onConnect,
+        onDisconnect: cfg.onDisconnect
+      });
+    }
+    Jacks.__super__.constructor.call(this, cfg, {
+      children: children
+    });
   }
+
+  return Jacks;
+
+})(Hbox);
+
+
+/*
+
+ 0000000    0000000   0000000  000  000      000       0000000   000000000   0000000   00000000 
+000   000  000       000       000  000      000      000   000     000     000   000  000   000
+000   000  0000000   000       000  000      000      000000000     000     000   000  0000000  
+000   000       000  000       000  000      000      000   000     000     000   000  000   000
+ 0000000   0000000    0000000  000  0000000  0000000  000   000     000      0000000   000   000
+ */
+
+Oscillator = (function(_super) {
+  __extends(Oscillator, _super);
+
+  Oscillator.shapes = ['sine', 'triangle', 'sawtooth', 'square'];
+
+  function Oscillator(cfg) {
+    this.setShape = __bind(this.setShape, this);
+    this.setFreq = __bind(this.setFreq, this);
+    cfg = _.def(cfg, {
+      freq: 0,
+      minFreq: 0,
+      maxFreq: 14000
+    });
+    this.audio = Audio.oscillator(cfg);
+    Oscillator.__super__.constructor.call(this, cfg, {
+      title: 'oscillator',
+      minWidth: 150,
+      minHeight: 60,
+      children: [
+        {
+          type: 'jacks',
+          audio: this.audio,
+          hasInput: false
+        }, {
+          type: 'sliderspin',
+          id: 'frequency',
+          value: cfg.freq,
+          minValue: cfg.minFreq,
+          maxValue: cfg.maxFreq,
+          onValue: this.setFreq
+        }, {
+          type: 'sliderspin',
+          id: 'shape',
+          value: (cfg.shape != null) && Oscillator.shapes.indexOf(cfg.shape) || 0,
+          minValue: 0,
+          maxValue: 3,
+          sliderStep: 1,
+          sliderKnob: true,
+          onValue: this.setShape
+        }
+      ]
+    });
+    this.setFreq(cfg.freq);
+    if (cfg.shape != null) {
+      this.setShape(Oscillator.shapes.indexOf(cfg.shape));
+    }
+  }
+
+  Oscillator.prototype.setFreq = function(arg) {
+    return this.audio.frequency.value = _.arg(arg);
+  };
+
+  Oscillator.prototype.setShape = function(arg) {
+    return this.audio.type = Oscillator.shapes[_.arg(arg)];
+  };
 
   Oscillator.menu = function() {
     return knix.create({
@@ -269,53 +567,8 @@ Oscillator = (function() {
     });
   };
 
-  Oscillator.prototype.initWindow = function(cfg) {
-    return this.window = knix.get(cfg, {
-      title: 'oscillator',
-      minWidth: 150,
-      minHeight: 60,
-      children: [
-        {
-          type: 'hbox',
-          children: [
-            {
-              type: 'label',
-              text: 'oscillator',
-              style: {
-                width: '100%'
-              }
-            }, {
-              type: 'connector',
-              signal: 'slider_frequency:onValue'
-            }
-          ]
-        }, {
-          type: 'hbox',
-          children: [
-            {
-              type: 'connector',
-              slot: 'slider_frequency:setValue'
-            }, {
-              id: 'slider_frequency',
-              type: 'slider',
-              value: 50,
-              minValue: 0,
-              maxValue: 18000,
-              style: {
-                width: '100%'
-              }
-            }, {
-              type: 'connector',
-              signal: 'slider_frequency:onValue'
-            }
-          ]
-        }
-      ]
-    });
-  };
-
   return Oscillator;
 
-})();
+})(Window);
 
 //# sourceMappingURL=audio.js.map

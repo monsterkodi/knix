@@ -1,13 +1,13 @@
 
 /*
 
-    0000000    00000000    0000000    0000000 
-    000   000  000   000  000   000  000      
-    000   000  0000000    000000000  000  0000
-    000   000  000   000  000   000  000   000
-    0000000    000   000  000   000   0000000
+0000000    00000000    0000000    0000000 
+000   000  000   000  000   000  000      
+000   000  0000000    000000000  000  0000
+000   000  000   000  000   000  000   000
+0000000    000   000  000   000   0000000
  */
-var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent,
+var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -17,8 +17,8 @@ Drag = (function() {
   };
 
   function Drag(cfg) {
-    this.stopListening = __bind(this.stopListening, this);
-    this.startListening = __bind(this.startListening, this);
+    this.deactivate = __bind(this.deactivate, this);
+    this.activate = __bind(this.activate, this);
     this.dragStop = __bind(this.dragStop, this);
     this.dragUp = __bind(this.dragUp, this);
     this.dragMove = __bind(this.dragMove, this);
@@ -61,7 +61,7 @@ Drag = (function() {
     }
     this.handle.style.cursor = this.cursor;
     if (this.active) {
-      this.startListening();
+      this.activate();
     }
     return;
   }
@@ -143,7 +143,7 @@ Drag = (function() {
     this.dragging = false;
   };
 
-  Drag.prototype.startListening = function() {
+  Drag.prototype.activate = function() {
     if (this.listening) {
       return;
     }
@@ -151,7 +151,7 @@ Drag = (function() {
     this.eventDown = this.handle.on('mousedown', this.dragStart);
   };
 
-  Drag.prototype.stopListening = function(stopCurrentDragging) {
+  Drag.prototype.deactivate = function(stopCurrentDragging) {
     if (!this.listening) {
       return;
     }
@@ -169,36 +169,42 @@ Drag = (function() {
 
 /*
 
-    000        0000000    0000000
-    000       000   000  000
-    000       000   000  000  0000
-    000       000   000  000   000
-    000000000  0000000    0000000
+000       0000000    0000000 
+000      000   000  000      
+000      000   000  000  0000
+000      000   000  000   000
+0000000   0000000    0000000
  */
 
 log = function() {
-  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
 error = function() {
   tag('error');
-  return Console.logInfo.apply(Console, [arguments[0], Array.prototype.slice.call(arguments, 1)].flatten());
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
+};
+
+warn = function() {
+  tag('warning');
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
 
 /*
 
-    00000000    0000000    0000000  
-    000   000  000   000  000       
-    00000000   000   000   0000000  
-    000        000   000        000 
-    000         0000000    0000000
+00000000    0000000    0000000
+000   000  000   000  000     
+00000000   000   000  0000000 
+000        000   000       000
+000         0000000   0000000
  */
 
 Pos = (function() {
   function Pos(x, y) {
     this.x = x;
     this.y = y;
+    this._str = __bind(this._str, this);
     this.apply = __bind(this.apply, this);
     this.check = __bind(this.check, this);
     this.dist = __bind(this.dist, this);
@@ -328,6 +334,10 @@ Pos = (function() {
     }
   };
 
+  Pos.prototype._str = function() {
+    return "<x:%2.0f y:%2.0f>".fmt(this.x, this.y);
+  };
+
   return Pos;
 
 })();
@@ -339,11 +349,11 @@ pos = function(x, y) {
 
 /*
 
-     0000000  000000000  0000000    0000000   00000000
-    000          000    000   000  000        000
-     0000000     000    000000000  000  0000  0000000
-          000    000    000   000  000   000  000
-     0000000     000    000   000   0000000   00000000
+ 0000000  000000000   0000000    0000000   00000000
+000          000     000   000  000        000     
+0000000      000     000000000  000  0000  0000000 
+     000     000     000   000  000   000  000     
+0000000      000     000   000   0000000   00000000
  */
 
 Stage = (function() {
@@ -440,11 +450,11 @@ Stage = (function() {
 
 /*
 
-     0000000  000000000 00000000
-    000          000    000   000
-     0000000     000    0000000
-          000    000    000   000
-     0000000     000    000   000
+ 0000000  000000000  00000000 
+000          000     000   000
+0000000      000     0000000  
+     000     000     000   000
+0000000      000     000   000
  */
 
 strIndent = "    ";
@@ -492,18 +502,22 @@ str = function(o, indent, visited) {
       })()).join("\n");
       s += '\n' + indent + strIndent + ']';
     } else {
-      s = "<" + protoname + ">\n";
-      visited.push(o);
-      s += ((function() {
-        var _i, _len, _ref, _results;
-        _ref = Object.getOwnPropertyNames(o);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          k = _ref[_i];
-          _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
-        }
-        return _results;
-      })()).join("\n");
+      if (o._str != null) {
+        s = o._str();
+      } else {
+        s = "<" + protoname + ">\n";
+        visited.push(o);
+        s += ((function() {
+          var _i, _len, _ref, _results;
+          _ref = Object.getOwnPropertyNames(o);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            k = _ref[_i];
+            _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+          }
+          return _results;
+        })()).join("\n");
+      }
     }
     return s + "\n";
   } else if (t === 'function') {
@@ -521,11 +535,11 @@ String.prototype.fmt = function() {
 
 /*
 
-     0000000  000000000  000   000  000       00000000
-    000          000      000 000   000       000
-     0000000     000       00000    000       0000000
-          000    000        000     000       000
-     0000000     000        000     00000000  00000000
+ 0000000  000000000  000   000  000      00000000   0000000  000   000  000  000000000   0000000  000   000
+000          000      000 000   000      000       000       000 0 000  000     000     000       000   000
+0000000      000       00000    000      0000000   0000000   000000000  000     000     000       000000000
+     000     000        000     000      000            000  000   000  000     000     000       000   000
+0000000      000        000     0000000  00000000  0000000   00     00  000     000      0000000  000   000
  */
 
 StyleSwitch = (function() {
@@ -581,23 +595,11 @@ StyleSwitch = (function() {
 
 /*
 
-     0000000   0000000     0000000  0000000    00000000  00000000   0000000   000   000   000
-    000   000  000   000  000       000   000  000       000       000        000   000   000
-    000000000  0000000    000       000   000  0000000   000000    000  0000  000000000   000 
-    000   000  000   000  000       000   000  000       000       000   000  000   000   000
-    000   000  0000000     0000000  0000000    00000000  000        0000000   000   000   000
-
-          000  000   000  000        00     00  000   000   0000000   00000000    0000000
-          000  000  000   000        000   000  0000  000  000   000  000   000  000   000
-          000  0000000    000        000000000  000 0 000  000   000  00000000   000 00 00
-    000   000  000  000   000        000 0 000  000  0000  000   000  000        000 0000
-     0000000   000   000  000000000  000   000  000   000   0000000   000         00000 00
-
-     00000000    0000000   000000000  000   000  000   000  000   000  000   000  000   000  0000000
-     000   000  000           000     000   000  000   000  000 0 000   000 000    000 000      000
-     0000000     0000000      000     000   000   000 000   000000000    00000      00000      000
-     000   000        000     000     000   000     000     000   000   000 000      000      000
-     000   000   0000000      000      0000000       0      00     00  000   000     000     0000000
+000000000   0000000    0000000   000       0000000
+   000     000   000  000   000  000      000     
+   000     000   000  000   000  000      0000000 
+   000     000   000  000   000  000           000
+   000      0000000    0000000   0000000  0000000
  */
 
 this.newElement = function(type) {
@@ -636,6 +638,23 @@ _.clamp = function(r1, r2, v) {
     v = Math.min(v, r2);
   }
   return v;
+};
+
+_.arg = function(event, argname) {
+  if (argname == null) {
+    argname = 'value';
+  }
+  if (typeof event === 'object') {
+    if (event.detail[argname] != null) {
+      return event.detail[argname];
+    } else {
+      return event.detail;
+    }
+  }
+  if (argname === 'value') {
+    return parseFloat(event);
+  }
+  return event;
 };
 
 //# sourceMappingURL=tools.js.map

@@ -1,11 +1,11 @@
 
 /*
 
-    000   000  000  000   000  0000000     0000000   000   000
-    000 0 000  000  0000  000  000   000  000   000  000 0 000
-    000000000  000  000 0 000  000   000  000   000  000000000
-    000   000  000  000  0000  000   000  000   000  000   000
-    00     00  000  000   000  0000000     0000000   00     00
+000   000  000  000   000  0000000     0000000   000   000
+000 0 000  000  0000  000  000   000  000   000  000 0 000
+000000000  000  000 0 000  000   000  000   000  000000000
+000   000  000  000  0000  000   000  000   000  000   000
+00     00  000  000   000  0000000     0000000   00     00
  */
 var Window,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -16,10 +16,7 @@ var Window,
 Window = (function(_super) {
   __extends(Window, _super);
 
-  function Window(config, defaults) {
-    if (config == null) {
-      config = {};
-    }
+  function Window(cfg, defs) {
     this.close = __bind(this.close, this);
     this.shade = __bind(this.shade, this);
     this.contentHeight = __bind(this.contentHeight, this);
@@ -27,10 +24,12 @@ Window = (function(_super) {
     this.headerSize = __bind(this.headerSize, this);
     this.raise = __bind(this.raise, this);
     this.maximize = __bind(this.maximize, this);
-    this.sizeStop = __bind(this.sizeStop, this);
     this.sizeMove = __bind(this.sizeMove, this);
     this.sizeStart = __bind(this.sizeStart, this);
-    this.addSizeButton = __bind(this.addSizeButton, this);
+    this.onLeave = __bind(this.onLeave, this);
+    this.onHover = __bind(this.onHover, this);
+    this.addMovement = __bind(this.addMovement, this);
+    this.sizeWindow = __bind(this.sizeWindow, this);
     this.stretchWidth = __bind(this.stretchWidth, this);
     this.scrollToBottom = __bind(this.scrollToBottom, this);
     this.addShadeButton = __bind(this.addShadeButton, this);
@@ -38,7 +37,7 @@ Window = (function(_super) {
     this.addTitleBar = __bind(this.addTitleBar, this);
     this.initWindow = __bind(this.initWindow, this);
     this.init = __bind(this.init, this);
-    Window.__super__.constructor.call(this, config, defaults);
+    Window.__super__.constructor.call(this, cfg, defs);
   }
 
   Window.prototype.init = function(cfg, defs) {
@@ -105,18 +104,8 @@ Window = (function(_super) {
       type: 'content',
       parent: this.elem.id
     });
-    if (this.config.resize) {
-      this.addSizeButton();
-    }
     this.content = content.elem.id;
     if (this.config.content === 'scroll') {
-      this.elem.on('size', function(event, e) {
-        var win;
-        win = e.getWindow();
-        content = $(win.content).widget;
-        content.setWidth(win.contentWidth());
-        return content.setHeight(win.contentHeight());
-      });
       content.elem.setStyle({
         position: 'relative',
         overflow: 'scroll',
@@ -124,19 +113,12 @@ Window = (function(_super) {
         height: "%dpx".fmt(this.contentHeight())
       });
     }
+    this.elem.on('size', this.sizeWindow);
     return this;
   };
 
   Window.prototype.addTitleBar = function() {
     var t;
-    log({
-      "file": "./coffee/window.coffee",
-      "line": 94,
-      "class": "Window",
-      "args": ["cfg", "defs"],
-      "method": "addTitleBar",
-      "type": "."
-    }, 'add title');
     t = knix.create({
       type: 'title',
       text: this.config.title,
@@ -185,62 +167,146 @@ Window = (function(_super) {
     tag('layout', 'todo');
     return log({
       "file": "./coffee/window.coffee",
-      "line": 129,
+      "line": 119,
       "class": "Window",
       "args": ["event", "e"],
       "method": "stretchWidth",
       "type": "."
-    }, 'add horizontal stretching handles and get rid of addSize crap!');
+    }, 'what was this for?');
   };
 
-  Window.prototype.addSizeButton = function() {
-    var btn;
-    btn = knix.create({
-      type: 'size',
-      parent: this
-    });
-    Drag.create({
-      target: btn.elem,
-      onStart: this.sizeStart,
-      onMove: this.sizeMove,
-      onStop: this.sizeStop,
-      cursor: 'nwse-resize'
-    });
-    return btn;
+  Window.prototype.sizeWindow = function() {
+    var content, e, _i, _len, _ref, _ref1, _results;
+    if (this.config.content === 'scroll') {
+      content = $(this.content).widget;
+      content.setWidth(this.contentWidth());
+      content.setHeight(this.contentHeight());
+    }
+    _ref = this.elem.descendants();
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      e = _ref[_i];
+      _results.push((_ref1 = e.widget) != null ? typeof _ref1.onWindowSize === "function" ? _ref1.onWindowSize() : void 0 : void 0);
+    }
+    return _results;
+  };
+
+  Window.prototype.addMovement = function() {
+    if (this.config.resize) {
+      this.elem.on('mousemove', this.onHover);
+      return this.elem.on('mouseleave', this.onLeave);
+    } else {
+      return Window.__super__.addMovement.apply(this, arguments);
+    }
+  };
+
+  Window.prototype.onHover = function(event) {
+    var action, border, cursor, d1, d2, eventPos, md;
+    eventPos = Stage.absPos(event);
+    d1 = eventPos.sub(this.absPos());
+    d2 = this.absPos().add(pos(this.getWidth(), this.getHeight())).sub(eventPos);
+    md = 10;
+    action = 'move';
+    border = '';
+    if (d1.y < md) {
+      action = 'size';
+      border = 'top';
+    } else if (d2.y < md) {
+      action = 'size';
+      border = 'bottom';
+    }
+    if (d1.x < md) {
+      action = 'size';
+      border += 'left';
+    }
+    if (d2.x < md) {
+      action = 'size';
+      border += 'right';
+    }
+    if (this.sizeMoveDrag) {
+      this.sizeMoveDrag.deactivate();
+    }
+    this.sizeMoveDrag = null;
+    if (action === 'size') {
+      if (border === 'left' || border === 'right') {
+        cursor = 'ew-resize';
+      } else if (border === 'top' || border === 'bottom') {
+        cursor = 'ns-resize';
+      } else if (border === 'topleft' || border === 'bottomright') {
+        cursor = 'nwse-resize';
+      } else {
+        cursor = 'nesw-resize';
+      }
+      this.sizeMoveDrag = Drag.create({
+        target: this.elem,
+        onStart: this.sizeStart,
+        onMove: this.sizeMove,
+        doMove: false,
+        cursor: cursor
+      });
+      return this.sizeMoveDrag.border = border;
+    } else {
+      return this.sizeMoveDrag = Drag.create({
+        target: this.elem,
+        minPos: pos(void 0, 0),
+        onMove: this.emitMove,
+        onStart: StyleSwitch.togglePathFilter,
+        onStop: StyleSwitch.togglePathFilter,
+        cursor: 'grab'
+      });
+    }
+  };
+
+  Window.prototype.onLeave = function(event) {
+    if (this.sizeMoveDrag) {
+      this.sizeMoveDrag.deactivate();
+    }
+    return this.sizeMoveDrag = null;
   };
 
   Window.prototype.sizeStart = function(drag, event) {
-    this.config.isMaximized = false;
-    return drag.target.style.opacity = '0.0';
+    return this.config.isMaximized = false;
   };
 
   Window.prototype.sizeMove = function(drag, event) {
-    var hdr, hgt, sizer, spos, wdt, wpos;
-    sizer = drag.target.widget;
+    var br, dx, dy, hdr, hgt, spos, wdt, wpos, _ref, _ref1;
     wpos = this.absPos();
-    spos = sizer.absPos();
+    spos = Stage.absPos(event);
     hdr = this.headerSize();
-    wdt = spos.x - wpos.x + sizer.getWidth();
+    if ((_ref = drag.border) === 'left' || _ref === 'topleft' || _ref === 'top') {
+      wdt = wpos.x - spos.x + this.getWidth();
+      hgt = wpos.y - spos.y + this.getHeight();
+      br = wpos.add(pos(this.getWidth(), this.getHeight()));
+    } else {
+      wdt = spos.x - wpos.x;
+      hgt = spos.y - wpos.y;
+    }
     wdt = Math.max(hdr * 2, wdt);
-    wdt = Math.max(this.minWidth(), wdt);
     wdt = Math.min(this.maxWidth(), wdt);
-    hgt = spos.y - wpos.y + sizer.getHeight();
-    hgt = Math.max(hdr + sizer.getHeight(), hgt);
-    hgt = Math.max(this.minHeight(), hgt);
+    wdt = Math.max(this.minWidth(), wdt);
+    hgt = Math.max(hdr, hgt);
     hgt = Math.min(this.maxHeight(), hgt);
+    hgt = Math.max(this.minHeight(), hgt);
+    if (drag.border === 'left' || drag.border === 'right') {
+      hgt = null;
+    }
+    if (drag.border === 'top' || drag.border === 'bottom') {
+      wdt = null;
+    }
     this.resize(wdt, hgt);
-  };
-
-  Window.prototype.sizeStop = function(drag, event) {
-    var sizer;
-    sizer = drag.target;
-    return sizer.setStyle({
-      bottom: '0px',
-      right: '0px',
-      left: '',
-      top: '',
-      opacity: '1.0'
-    });
+    if ((_ref1 = drag.border) === 'left' || _ref1 === 'topleft' || _ref1 === 'top') {
+      if (wdt == null) {
+        dx = 0;
+      } else {
+        dx = br.x - this.getWidth() - wpos.x;
+      }
+      if (hgt == null) {
+        dy = 0;
+      } else {
+        dy = br.y - this.getHeight() - wpos.y;
+      }
+      return this.moveBy(dx, dy);
+    }
   };
 
   Window.prototype.maximize = function() {
@@ -327,7 +393,7 @@ Window = (function(_super) {
   Window.prototype.close = function() {
     log({
       "file": "./coffee/window.coffee",
-      "line": 235,
+      "line": 285,
       "class": "Window",
       "args": ["box=\"border-box-height\""],
       "method": "close",

@@ -1,17 +1,155 @@
 
 /*
 
-     0000000   0000000     0000000   000   000  000000000
-    000   000  000   000  000   000  000   000     000
-    000000000  0000000    000   000  000   000     000
-    000   000  000   000  000   000  000   000     000
-    000   000  0000000     0000000    0000000      000
+000   000   0000000   000      000   000  00000000
+000   000  000   000  000      000   000  000     
+ 000 000   000000000  000      000   000  0000000 
+   000     000   000  000      000   000  000     
+    0      000   000  0000000   0000000   00000000
  */
-var About, Button, Connection, Connector, Console, Hbox, Path, Slider, Toggle, Value, tag,
+var About, Button, Connection, Connector, Console, Hbox, Path, Slider, Sliderspin, Spin, Toggle, Tooltip, Value, tag,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+Value = (function(_super) {
+  __extends(Value, _super);
+
+  function Value(cfg, def) {
+    this.round = __bind(this.round, this);
+    this.clamp = __bind(this.clamp, this);
+    this.decr = __bind(this.decr, this);
+    this.incr = __bind(this.incr, this);
+    this.setValue = __bind(this.setValue, this);
+    this.initEvents = __bind(this.initEvents, this);
+    this.onTooltip = __bind(this.onTooltip, this);
+    Value.__super__.constructor.call(this, _.def(cfg, def), {
+      value: 0,
+      minValue: 0,
+      maxValue: 100
+    });
+    Tooltip.create({
+      target: this,
+      onTooltip: this.onTooltip
+    });
+  }
+
+  Value.prototype.onTooltip = function() {
+    return this.elem.id;
+  };
+
+  Value.prototype.initEvents = function() {
+    if (this.config.onValue != null) {
+      this.elem.on("onValue", this.config.onValue);
+    }
+    return Value.__super__.initEvents.apply(this, arguments);
+  };
+
+  Value.prototype.setValue = function(arg) {
+    var oldValue, v;
+    oldValue = this.config.value;
+    v = this.round(this.clamp(_.arg(arg)));
+    if (v !== oldValue) {
+      this.config.value = v;
+      this.emit('onValue', {
+        value: v
+      });
+    }
+    return this;
+  };
+
+  Value.prototype.incr = function(d) {
+    var step;
+    if (d == null) {
+      d = 1;
+    }
+    if (d === '+' || d === '++') {
+      d = 1;
+    } else if (d === '-' || d === '--') {
+      d = -1;
+    }
+    if (this.config.valueStep != null) {
+      step = this.config.valueStep;
+    } else {
+      step = 1;
+    }
+    return this.setValue(this.input.getValue() + step * d);
+  };
+
+  Value.prototype.decr = function() {
+    return this.incr(-1);
+  };
+
+  Value.prototype.clamp = function(v) {
+    return _.clamp(this.config.minValue, this.config.maxValue, v);
+  };
+
+  Value.prototype.round = function(v) {
+    var d, r;
+    r = v;
+    if (this.config.valueStep != null) {
+      d = v - Math.round(v / this.config.valueStep) * this.config.valueStep;
+      r -= d;
+    }
+    return r;
+  };
+
+  return Value;
+
+})(Widget);
+
+
+/*
+
+000   000  0000000     0000000   000   000
+000   000  000   000  000   000   000 000 
+000000000  0000000    000   000    00000  
+000   000  000   000  000   000   000 000 
+000   000  0000000     0000000   000   000
+ */
+
+Hbox = (function(_super) {
+  __extends(Hbox, _super);
+
+  function Hbox(cfg, defs) {
+    this.insertChild = __bind(this.insertChild, this);
+    var spacing;
+    cfg = _.def(cfg, defs);
+    spacing = (cfg.spacing != null) && cfg.spacing || 5;
+    Hbox.__super__.constructor.call(this, cfg, {
+      spacing: 5,
+      type: 'hbox',
+      style: {
+        display: 'table',
+        borderSpacing: '%dpx 0px'.fmt(spacing),
+        marginRight: '-%dpx'.fmt(spacing),
+        marginLeft: '-%dpx'.fmt(spacing)
+      }
+    });
+  }
+
+  Hbox.prototype.insertChild = function(cfg) {
+    var child;
+    child = Hbox.__super__.insertChild.call(this, cfg);
+    child.elem.style.display = 'table-cell';
+    child.elem.style.marginLeft = '10px';
+    return child;
+  };
+
+  return Hbox;
+
+})(Widget);
+
+
+/*
+
+ 0000000   0000000     0000000   000   000  000000000
+000   000  000   000  000   000  000   000     000   
+000000000  0000000    000   000  000   000     000   
+000   000  000   000  000   000  000   000     000   
+000   000  0000000     0000000    0000000      000
+ */
 
 About = (function(_super) {
   __extends(About, _super);
@@ -105,11 +243,11 @@ About = (function(_super) {
 
 /*
 
-    0000000    000   000  000000000  000000000   0000000   000   000
-    000   000  000   000     000        000     000   000  0000  000
-    0000000    000   000     000        000     000   000  000 0 000
-    000   000  000   000     000        000     000   000  000  0000
-    0000000     0000000      000        000      0000000   000   000
+0000000    000   000  000000000  000000000   0000000   000   000
+000   000  000   000     000        000     000   000  0000  000
+0000000    000   000     000        000     000   000  000 0 000
+000   000  000   000     000        000     000   000  000  0000
+0000000     0000000      000        000      0000000   000   000
  */
 
 Button = (function(_super) {
@@ -144,11 +282,11 @@ Button = (function(_super) {
 
 /*
 
-     0000000   0000000   000   000  000   000  00000000  0000000 000000000  000   0000000   000   000 
-    000       000   000  0000  000  0000  000  000      000         000     000  000   000  0000  000 
-    000       000   000  000 0 000  000 0 000  000000   000         000     000  000   000  000 0 000 
-    000       000   000  000  0000  000  0000  000      000         000     000  000   000  000  0000 
-     0000000   0000000   000   000  000   000  00000000  0000000    000     000   0000000   000   000
+ 0000000   0000000   000   000  000   000  00000000   0000000  000000000  000   0000000   000   000
+000       000   000  0000  000  0000  000  000       000          000     000  000   000  0000  000
+000       000   000  000 0 000  000 0 000  0000000   000          000     000  000   000  000 0 000
+000       000   000  000  0000  000  0000  000       000          000     000  000   000  000  0000
+ 0000000   0000000   000   000  000   000  00000000   0000000     000     000   0000000   000   000
  */
 
 Connection = (function() {
@@ -156,7 +294,7 @@ Connection = (function() {
     this.shaded = __bind(this.shaded, this);
     this.close = __bind(this.close, this);
     this.update = __bind(this.update, this);
-    this.signalSlotConnector = __bind(this.signalSlotConnector, this);
+    this.outInConnector = __bind(this.outInConnector, this);
     this.disconnect = __bind(this.disconnect, this);
     this.connect = __bind(this.connect, this);
     this.onOut = __bind(this.onOut, this);
@@ -167,6 +305,14 @@ Connection = (function() {
     this.dragStart = __bind(this.dragStart, this);
     this.closestConnectors = __bind(this.closestConnectors, this);
     var c, e, _i, _len, _ref;
+    log({
+      "file": "./coffee/widgets/connection.coffee",
+      "line": 15,
+      "class": "Connection",
+      "args": ["config"],
+      "method": "constructor",
+      "type": "."
+    }, config.source.elem.id, config.target.elem.id);
     this.config = config;
     _ref = [this.config.source, this.config.target];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -181,8 +327,8 @@ Connection = (function() {
     this.path = knix.get({
       type: 'path',
       "class": 'connection',
-      startDir: this.config.source.isSignal() ? pos(100, 0) : pos(-100, 0),
-      endDir: this.config.target.isSignal() ? pos(100, 0) : pos(-100, 0),
+      startDir: this.config.source.isOut() ? pos(100, 1) : pos(-100, -1),
+      endDir: this.config.target.isOut() ? pos(100, 1) : pos(-100, -1),
       onOver: this.onOver,
       onOut: this.onOut,
       onMove: this.onMove
@@ -216,6 +362,7 @@ Connection = (function() {
     _ref = this.closestConnectors(drag.absPos(event)), target = _ref[0], drag.connector = _ref[1];
     drag.connector.dragStart(drag, event);
     target.delConnection(this);
+    this.disconnect();
     return this.path.path.hide();
   };
 
@@ -252,45 +399,59 @@ Connection = (function() {
   };
 
   Connection.prototype.connect = function() {
-    var signal, signalConnector, signalEvent, signalSender, slot, slotConnector, slotFunction, _ref, _ref1;
-    _ref = this.signalSlotConnector(), signalConnector = _ref[0], slotConnector = _ref[1];
-    signal = signalConnector.config.signal;
-    slot = slotConnector.config.slot;
-    log({
-      "file": "./coffee/widgets/connection.coffee",
-      "line": 88,
-      "class": "Connection",
-      "args": ["event", "e"],
-      "method": "connect",
-      "type": "."
-    }, this.path.path.id(), "connect", signal, slot);
-    _ref1 = signalConnector.resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
-    slotFunction = slotConnector.resolveSlot(slot);
-    return {
-      handler: signalSender.elem.on(signalEvent, slotFunction),
-      sender: signalSender,
-      event: signalEvent,
-      signal: signal,
-      slot: slot,
-      receiver: slotFunction
+    var connection, inConnector, outConnector, signal, signalEvent, signalSender, slot, slotFunction, _ref, _ref1;
+    _ref = this.outInConnector(), outConnector = _ref[0], inConnector = _ref[1];
+    if (outConnector.config.onConnect != null) {
+      outConnector.config.onConnect(outConnector, inConnector);
+    }
+    if (inConnector.config.onConnect != null) {
+      inConnector.config.onConnect(inConnector, outConnector);
+    }
+    connection = {
+      out: outConnector,
+      "in": inConnector
     };
+    signal = outConnector.config.signal;
+    slot = inConnector.config.slot;
+    if ((signal != null) && (slot != null)) {
+      _ref1 = outConnector.resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
+      slotFunction = inConnector.resolveSlot(slot);
+      connection.handler = signalSender.elem.on(signalEvent, slotFunction);
+      connection.sender = signalSender;
+      connection.event = signalEvent;
+      connection.signal = signal;
+      connection.slot = slot;
+      connection.receiver = slotFunction;
+    }
+    return connection;
   };
 
   Connection.prototype.disconnect = function() {
-    log({
-      "file": "./coffee/widgets/connection.coffee",
-      "line": 99,
-      "class": "Connection",
-      "args": ["event", "e"],
-      "method": "disconnect",
-      "type": "."
-    }, this.path.path.id(), "disconnect", this.connection.signal, this.connection.slot);
-    this.connection.handler.stop();
-    return this.conncetion = null;
+    var _ref;
+    if (this.connection) {
+      log({
+        "file": "./coffee/widgets/connection.coffee",
+        "line": 116,
+        "class": "Connection",
+        "args": ["event", "e"],
+        "method": "disconnect",
+        "type": "."
+      }, "disconnect", this.connection.out.elem.id, this.connection["in"].elem.id);
+      if (this.connection.out.config.onDisconnect != null) {
+        this.connection.out.config.onDisconnect(this.connection.out, this.connection["in"]);
+      }
+      if (this.connection["in"].config.onDisconnect != null) {
+        this.connection["in"].config.onDisconnect(this.connection["in"], this.connection.out);
+      }
+      if (((_ref = this.connection) != null ? _ref.handler : void 0) != null) {
+        this.connection.handler.stop();
+      }
+      return this.connection = null;
+    }
   };
 
-  Connection.prototype.signalSlotConnector = function() {
-    return [(this.config.source.config.signal != null ? this.config.source : void 0) || this.config.target, (this.config.source.config.slot != null ? this.config.source : void 0) || this.config.target];
+  Connection.prototype.outInConnector = function() {
+    return [(this.config.source.isOut() != null ? this.config.source : void 0) || this.config.target, (this.config.source.isIn() != null ? this.config.source : void 0) || this.config.target];
   };
 
   Connection.prototype.update = function(event, e) {
@@ -324,11 +485,11 @@ Connection = (function() {
 
 /*
 
-     0000000  0000000   000   000  000   000  00000000  0000000 000000000  0000000   00000000   
-    000      000   000  0000  000  0000  000  000      000         000    000   000  000   000  
-    000      000   000  000 0 000  000 0 000  000000   000         000    000   000  0000000    
-    000      000   000  000  0000  000  0000  000      000         000    000   000  000   000  
-     0000000  0000000   000   000  000   000  00000000  0000000    000     0000000   000   000
+ 0000000   0000000   000   000  000   000  00000000   0000000  000000000   0000000   00000000 
+000       000   000  0000  000  0000  000  000       000          000     000   000  000   000
+000       000   000  000 0 000  000 0 000  0000000   000          000     000   000  0000000  
+000       000   000  000  0000  000  0000  000       000          000     000   000  000   000
+ 0000000   0000000   000   000  000   000  00000000   0000000     000      0000000   000   000
  */
 
 Connector = (function(_super) {
@@ -341,8 +502,11 @@ Connector = (function(_super) {
     this.onOut = __bind(this.onOut, this);
     this.onOver = __bind(this.onOver, this);
     this.connectorAtPos = __bind(this.connectorAtPos, this);
+    this.canConnectTo = __bind(this.canConnectTo, this);
     this.delConnection = __bind(this.delConnection, this);
     this.addConnection = __bind(this.addConnection, this);
+    this.isOut = __bind(this.isOut, this);
+    this.isIn = __bind(this.isIn, this);
     this.isSlot = __bind(this.isSlot, this);
     this.isSignal = __bind(this.isSignal, this);
     this.close = __bind(this.close, this);
@@ -351,6 +515,12 @@ Connector = (function(_super) {
     }
     if (config.signal != null) {
       config["class"] = 'signal';
+    }
+    if (config["in"] != null) {
+      config["class"] = 'in';
+    }
+    if (config.out != null) {
+      config["class"] = 'out';
     }
     Connector.__super__.constructor.call(this, config, {
       type: 'connector',
@@ -376,11 +546,19 @@ Connector = (function(_super) {
   };
 
   Connector.prototype.isSignal = function() {
-    return this.elem.hasClassName('signal');
+    return this.config.signal != null;
   };
 
   Connector.prototype.isSlot = function() {
-    return this.elem.hasClassName('slot');
+    return this.config.slot != null;
+  };
+
+  Connector.prototype.isIn = function() {
+    return this.isSlot() || this.config["in"];
+  };
+
+  Connector.prototype.isOut = function() {
+    return this.isSignal() || this.config.out;
   };
 
   Connector.prototype.addConnection = function(c) {
@@ -395,13 +573,20 @@ Connector = (function(_super) {
     }
   };
 
+  Connector.prototype.canConnectTo = function(other) {
+    if (this.isSignal() && other.isSlot() || this.isSlot() && other.isSignal()) {
+      return true;
+    }
+    return (this.config["in"] != null) && this.config["in"] === other.config.out || (this.config.out != null) && this.config.out === other.config["in"];
+  };
+
   Connector.prototype.connectorAtPos = function(p) {
     var elem;
     this.handle.elem.style.pointerEvents = 'none';
     elem = document.elementFromPoint(p.x, p.y);
     this.handle.elem.style.pointerEvents = 'auto';
     if ((elem != null ? elem.widget : void 0) != null) {
-      if (elem.widget.constructor === Connector && elem.widget.isSignal() !== this.isSignal()) {
+      if (elem.widget.constructor === Connector && this.canConnectTo(elem.widget)) {
         return elem.widget;
       }
     }
@@ -436,7 +621,7 @@ Connector = (function(_super) {
       "class": 'connector',
       start: this.absCenter(),
       end: p,
-      startDir: this.isSignal() ? pos(200, 0) : pos(-200, 0)
+      startDir: this.isOut() ? pos(100, -10) : pos(-100, -10)
     });
     return this.elem.style.cursor = 'grabbing';
   };
@@ -446,14 +631,14 @@ Connector = (function(_super) {
     p = drag.absPos(event);
     if (conn = this.connectorAtPos(p)) {
       this.path.path.addClass('connectable');
-      this.path.setStartDir(this.isSignal() ? pos(100, 0) : pos(-100, 0));
-      this.path.setEndDir(conn.isSignal() ? pos(100, 0) : pos(-100, 0));
+      this.path.setStartDir(this.isOut() ? pos(100, 1) : pos(-100, -1));
+      this.path.setEndDir(conn.isOut() ? pos(100, 1) : pos(-100, -1));
       this.conn = conn;
       this.conn.elem.addClassName('highlight');
       this.handle.elem.addClassName('highlight');
     } else {
       this.path.path.removeClass('connectable');
-      this.path.setStartDir(this.isSignal() ? pos(200, 0) : pos(-200, 0));
+      this.path.setStartDir(this.isOut() ? pos(100, -10) : pos(-100, -10));
       this.path.setEndDir(pos(0, 0));
       if (this.conn) {
         this.conn.elem.removeClassName('highlight');
@@ -490,11 +675,11 @@ Connector = (function(_super) {
 
 /*
 
-     0000000  0000000   000   000    000000    0000000   000      00000000
-    000      000   000  0000  000  000        000   000  000      000
-    000      000   000  000 0 000   0000000   000   000  000      0000000
-    000      000   000  000  0000        000  000   000  000      000
-     0000000  0000000   000   000   0000000    0000000   0000000  00000000
+ 0000000   0000000   000   000   0000000   0000000   000      00000000
+000       000   000  0000  000  000       000   000  000      000     
+000       000   000  000 0 000  0000000   000   000  000      0000000 
+000       000   000  000  0000       000  000   000  000      000     
+ 0000000   0000000   000   000  0000000    0000000   0000000  00000000
  */
 
 Console = (function(_super) {
@@ -513,7 +698,13 @@ Console = (function(_super) {
     this.onContextMenu = __bind(this.onContextMenu, this);
     var h, w;
     this.logTags = {
-      'Stage': 'off'
+      'knix': 'off',
+      'Stage': 'off',
+      'Widget': 'off',
+      'Window': 'off',
+      'layout': 'off',
+      'todo': 'off',
+      'Connection': 'off'
     };
     w = Stage.size().width / 2;
     h = Stage.size().height - $('menu').getHeight() - 2;
@@ -761,6 +952,8 @@ Console = (function(_super) {
     args = Array.prototype.slice.call(arguments, 1);
     if (__indexOf.call(Console.scopeTags, 'error') >= 0) {
       s = '<span class="console-error">%s</span> '.fmt(str(args[0])) + Console.toHtml.apply(Console, args.slice(1));
+    } else if (__indexOf.call(Console.scopeTags, 'warning') >= 0) {
+      s = '<span class="console-warning">%s</span> '.fmt(str(args[0])) + Console.toHtml.apply(Console, args.slice(1));
     } else {
       s = Console.toHtml.apply(Console, args);
     }
@@ -827,59 +1020,11 @@ tag = Console.setScopeTags;
 
 /*
 
-    000   000  0000000     0000000   000   000 
-    000   000  000   000  000   000   000 000 
-    000000000  0000000    000   000    00000  
-    000   000  000   000  000   000   000 000 
-    000   000  0000000     0000000   000   000
- */
-
-Hbox = (function(_super) {
-  __extends(Hbox, _super);
-
-  function Hbox(config) {
-    var cfg;
-    cfg = _.def(config, {
-      spacing: 5
-    });
-    Hbox.__super__.constructor.call(this, cfg, {
-      type: 'hbox',
-      style: {
-        display: 'table',
-        borderSpacing: '%dpx 0px'.fmt(cfg.spacing),
-        marginRight: '-%dpx'.fmt(cfg.spacing),
-        marginLeft: '-%dpx'.fmt(cfg.spacing)
-      },
-      child: {
-        type: 'content',
-        style: {
-          display: 'table-row',
-          width: '100%'
-        }
-      }
-    });
-  }
-
-  Hbox.prototype.insertChild = function(cfg) {
-    var child;
-    child = Hbox.__super__.insertChild.call(this, cfg);
-    child.elem.style.display = 'table-cell';
-    child.elem.style.marginLeft = '10px';
-    return child;
-  };
-
-  return Hbox;
-
-})(Widget);
-
-
-/*
-
-    00000000    0000000   000000000  000   000
-    000   000  000   000     000     000   000
-    00000000   000000000     000     000000000
-    000        000   000     000     000   000
-    000        000   000     000     000   000
+00000000    0000000   000000000  000   000
+000   000  000   000     000     000   000
+00000000   000000000     000     000000000
+000        000   000     000     000   000
+000        000   000     000     000   000
  */
 
 Path = (function(_super) {
@@ -999,21 +1144,22 @@ Path = (function(_super) {
 
 /*
 
-      0000000   000      000  0000000    00000000  00000000
-     000        000      000  000   000  000       000   000
-      0000000   000      000  000   000  0000000   0000000
-           000  000      000  000   000  000       000   000
-      0000000   0000000  000  0000000    00000000  000   000
+ 0000000  000      000  0000000    00000000  00000000 
+000       000      000  000   000  000       000   000
+0000000   000      000  000   000  0000000   0000000  
+     000  000      000  000   000  000       000   000
+0000000   0000000  000  0000000    00000000  000   000
  */
 
 Slider = (function(_super) {
   __extends(Slider, _super);
 
   function Slider(cfg) {
-    this.setValue = __bind(this.setValue, this);
     this.setBarValue = __bind(this.setBarValue, this);
+    this.setValue = __bind(this.setValue, this);
     this.valueToPercentOfWidth = __bind(this.valueToPercentOfWidth, this);
-    var sizeCB, sliderFunc;
+    this.onWindowSize = __bind(this.onWindowSize, this);
+    var sliderFunc;
     sliderFunc = function(drag, event) {
       var pos, slider, v, width;
       slider = drag.target.widget;
@@ -1035,13 +1181,10 @@ Slider = (function(_super) {
         }
       }
     });
-    this.setBarValue(this.config.value);
-    sizeCB = function(event, e) {
-      return this.setValue(this.config.value);
-    };
-    if (this.getWindow()) {
-      this.getWindow().elem.on("size", sizeCB.bind(this));
+    if (!this.config.hasKnob) {
+      this.getChild('slider-knob').elem.hide();
     }
+    this.setBarValue(this.config.value);
     Drag.create({
       cursor: 'ew-resize',
       target: this.elem,
@@ -1051,15 +1194,24 @@ Slider = (function(_super) {
     });
   }
 
+  Slider.prototype.onWindowSize = function() {
+    return this.setValue(this.config.value);
+  };
+
   Slider.prototype.valueToPercentOfWidth = function(value) {
     var barFactor, barPercent, borderWidth, cfg, knobMinPercent, knobWidth;
     cfg = this.config;
-    knobWidth = this.getChild('slider-knob').getWidth();
+    knobWidth = this.config.hasKnob && this.getChild('slider-knob').getWidth() || 0;
     borderWidth = this.getChild('slider-bar').getHeight() - this.getChild('slider-bar').innerHeight();
     knobMinPercent = 100 * (knobWidth + borderWidth) / Math.max(1, this.getWidth());
     barFactor = (value - cfg.minValue) / (cfg.maxValue - cfg.minValue);
     barPercent = knobMinPercent + ((100 - knobMinPercent) * barFactor);
     return barPercent;
+  };
+
+  Slider.prototype.setValue = function(v) {
+    Slider.__super__.setValue.apply(this, arguments);
+    return this.setBarValue(this.config.value);
   };
 
   Slider.prototype.setBarValue = function(barValue) {
@@ -1068,32 +1220,208 @@ Slider = (function(_super) {
     return this.getChild('slider-bar').elem.style.width = "%.2f%%".fmt(pct);
   };
 
-  Slider.prototype.setValue = function(arg) {
-    var oldValue, v;
-    oldValue = this.config.value;
-    v = this.round(this.clamp(this.slotArg(arg, 'value')));
-    if (v !== oldValue) {
-      this.config.value = v;
-      this.setBarValue(v);
-      this.emit('onValue', {
-        value: v
-      });
-    }
-    return this;
-  };
-
   return Slider;
 
-})(Widget);
+})(Value);
 
 
 /*
 
-    000000000   0000000    0000000    0000000   000        00000000
-       000     000   000  000        000        000        000
-       000     000   000  000  0000  000  0000  000        0000000
-       000     000   000  000   000  000   000  000        000
-       000      0000000    0000000    0000000   000000000  00000000
+ 0000000  000      000  0000000    00000000  00000000    0000000  00000000   000  000   000
+000       000      000  000   000  000       000   000  000       000   000  000  0000  000
+0000000   000      000  000   000  0000000   0000000    0000000   00000000   000  000 0 000
+     000  000      000  000   000  000       000   000       000  000        000  000  0000
+0000000   0000000  000  0000000    00000000  000   000  0000000   000        000  000   000
+ */
+
+Sliderspin = (function(_super) {
+  __extends(Sliderspin, _super);
+
+  function Sliderspin(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    Sliderspin.__super__.constructor.call(this, cfg, {
+      children: [
+        {
+          type: 'connector',
+          slot: cfg.id + ':setValue'
+        }, {
+          type: 'slider',
+          id: cfg.id + '_slider',
+          value: cfg.value,
+          minValue: cfg.minValue,
+          maxValue: cfg.maxValue,
+          valueStep: cfg.sliderStep,
+          hasKnob: cfg.sliderKnob,
+          style: {
+            width: '90%'
+          }
+        }, {
+          type: 'spin',
+          id: cfg.id,
+          value: cfg.value,
+          minValue: cfg.minValue,
+          maxValue: cfg.maxValue,
+          onValue: cfg.onValue,
+          valueStep: cfg.spinStep,
+          minWidth: 80,
+          format: "%3.2f",
+          style: {
+            width: '10%'
+          }
+        }, {
+          type: 'connector',
+          signal: cfg.id + ':onValue'
+        }
+      ]
+    });
+    this.connect(cfg.id + '_slider:onValue', cfg.id + ':setValue');
+    this.connect(cfg.id + ':onValue', cfg.id + '_slider:setValue');
+  }
+
+  return Sliderspin;
+
+})(Hbox);
+
+
+/*
+
+ 0000000  00000000   000  000   000
+000       000   000  000  0000  000
+0000000   00000000   000  000 0 000
+     000  000        000  000  0000
+0000000   000        000  000   000
+ */
+
+Spin = (function(_super) {
+  __extends(Spin, _super);
+
+  function Spin(cfg) {
+    this.strip0 = __bind(this.strip0, this);
+    this.format = __bind(this.format, this);
+    this.stopTimer = __bind(this.stopTimer, this);
+    this.startDecr = __bind(this.startDecr, this);
+    this.startIncr = __bind(this.startIncr, this);
+    this.setValue = __bind(this.setValue, this);
+    var range;
+    Spin.__super__.constructor.call(this, cfg, {
+      type: 'spin',
+      horizontal: true,
+      child: {
+        elem: 'table',
+        type: 'spin-table',
+        onDown: function(event, e) {
+          return event.stopPropagation();
+        },
+        child: {
+          elem: 'tr',
+          type: 'spin-row',
+          children: [
+            {
+              elem: 'td',
+              type: 'spin-td',
+              onDown: this.startDecr,
+              onUp: this.stopTimer,
+              child: {
+                type: 'icon',
+                icon: 'octicon-triangle-left'
+              }
+            }, {
+              elem: 'td',
+              type: 'spin-content',
+              child: {
+                type: 'input',
+                "class": 'spin-input'
+              }
+            }, {
+              elem: 'td',
+              type: 'spin-td',
+              onDown: this.startIncr,
+              onUp: this.stopTimer,
+              child: {
+                type: 'icon',
+                icon: 'octicon-triangle-right'
+              }
+            }
+          ]
+        }
+      }
+    });
+    if (this.config.valueStep == null) {
+      range = this.config.maxValue - this.config.minValue;
+      this.config.valueStep = range > 1 && 1 || range / 100;
+    }
+    this.input = this.getChild('spin-input').elem;
+    this.elem.on('keypress', function(event, e) {
+      var _ref, _ref1, _ref2;
+      if ((_ref = event.key) === 'Up' || _ref === 'Down') {
+        this.widget.incr(event.key === 'Up' && '+' || '-');
+        event.stop();
+        return;
+      }
+      if (_ref1 = event.key, __indexOf.call('0123456789-.', _ref1) < 0) {
+        if (event.key.length === 1) {
+          event.stop();
+          return;
+        }
+      }
+      if (_ref2 = event.key, __indexOf.call('-.', _ref2) >= 0) {
+        if (this.widget.input.value.indexOf(event.key) > -1) {
+          event.stop();
+        }
+      }
+    });
+    this.input.on('change', function(event, e) {
+      return this.getParent('spin').setValue(this.getValue());
+    });
+    this.input.value = this.config.value;
+    this.setValue(this.config.value);
+  }
+
+  Spin.prototype.setValue = function() {
+    Spin.__super__.setValue.apply(this, arguments);
+    return this.input.value = this.strip0(this.format(this.config.value));
+  };
+
+  Spin.prototype.startIncr = function() {
+    this.incr();
+    return this.timer = setInterval(this.incr, 80);
+  };
+
+  Spin.prototype.startDecr = function() {
+    this.decr();
+    return this.timer = setInterval(this.decr, 80);
+  };
+
+  Spin.prototype.stopTimer = function() {
+    return clearInterval(this.timer);
+  };
+
+  Spin.prototype.format = function(s) {
+    if (this.config.format != null) {
+      return this.config.format.fmt(s);
+    }
+    return String(s);
+  };
+
+  Spin.prototype.strip0 = function(s) {
+    if (s.indexOf('.') > -1) {
+      return s.replace(/(0+)$/, '').replace(/([\.]+)$/, '');
+    }
+    return String(s.strip());
+  };
+
+  return Spin;
+
+})(Value);
+
+
+/*
+
+000000000   0000000    0000000    0000000   000      00000000
+   000     000   000  000        000        000      000     
+   000     000   000  000  0000  000  0000  000      0000000 
+   000     000   000  000   000  000   000  000      000     
+   000      0000000    0000000    0000000   0000000  00000000
  */
 
 Toggle = (function(_super) {
@@ -1155,127 +1483,91 @@ Toggle = (function(_super) {
 
 /*
 
-    000   000   0000000   000     000   000  00000000
-    000   000  000   000  000     000   000  000
-     000 000   000000000  000     000   000  0000000
-       000     000   000  000     000   000  000
-        0      000   000  0000000  0000000   00000000
+000000000   0000000    0000000   000      000000000  000  00000000 
+   000     000   000  000   000  000         000     000  000   000
+   000     000   000  000   000  000         000     000  00000000 
+   000     000   000  000   000  000         000     000  000      
+   000      0000000    0000000   0000000     000     000  000
  */
 
-Value = (function(_super) {
-  __extends(Value, _super);
+Tooltip = (function() {
+  function Tooltip() {}
 
-  function Value(cfg) {
-    this.incr = __bind(this.incr, this);
-    this.setValue = __bind(this.setValue, this);
-    Value.__super__.constructor.call(this, cfg, {
-      type: 'value',
-      value: 0,
-      minValue: 0,
-      maxValue: 100,
-      horizontal: true,
-      child: {
-        elem: 'table',
-        type: 'value-table',
-        onDown: function(event, e) {
-          return event.stopPropagation();
-        },
-        child: {
-          elem: 'tr',
-          type: 'value-row',
-          children: [
-            {
-              elem: 'td',
-              type: 'value-td',
-              child: {
-                type: 'icon',
-                icon: 'octicon-triangle-left',
-                onClick: function(event, e) {
-                  var value;
-                  value = e.getParent('value');
-                  return value.incr('-');
-                }
-              }
-            }, {
-              elem: 'td',
-              type: 'value-content',
-              child: {
-                type: 'input',
-                "class": 'value-input'
-              }
-            }, {
-              elem: 'td',
-              type: 'value-td',
-              child: {
-                type: 'icon',
-                icon: 'octicon-triangle-right'
-              },
-              onClick: function(event, e) {
-                return e.getParent('value').incr('+');
-              }
-            }
-          ]
-        }
-      }
+  Tooltip.create = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      delay: 700
     });
-    this.input = this.getChild('value-input').elem;
-    this.elem.on('keypress', function(event, e) {
-      var _ref, _ref1, _ref2;
-      if ((_ref = event.key) === 'Up' || _ref === 'Down') {
-        this.widget.incr(event.key === 'Up' && '+' || '-');
-        event.stop();
+    cfg.target.tooltip = cfg;
+    cfg.target.elem.on('mousemove', Tooltip.onHover);
+    return cfg.target.elem.on('mouseleave', Tooltip.onLeave);
+  };
+
+  Tooltip.onHover = function(event, d) {
+    var e, popup, tooltip, _i, _len, _ref, _ref1;
+    _ref = [d, d.ancestors()].flatten();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      e = _ref[_i];
+      if ((e != null ? (_ref1 = e.widget) != null ? _ref1.tooltip : void 0 : void 0) != null) {
+        tooltip = e.widget.tooltip;
+        if (tooltip.window != null) {
+          tooltip.window.close();
+          tooltip.window = null;
+        }
+        if (tooltip.timer != null) {
+          clearInterval(tooltip.timer);
+        }
+        popup = function() {
+          return Tooltip.popup(e, Stage.absPos(event));
+        };
+        tooltip.timer = setInterval(popup, tooltip.delay);
         return;
       }
-      if (_ref1 = event.key, __indexOf.call('0123456789-.', _ref1) < 0) {
-        if (event.key.length === 1) {
-          event.stop();
-          return;
-        }
-      }
-      if (_ref2 = event.key, __indexOf.call('-.', _ref2) >= 0) {
-        if (this.widget.input.value.indexOf(event.key) > -1) {
-          event.stop();
-        }
-      }
-    });
-    this.input.on('change', function(event, e) {
-      return this.getParent('value').setValue(this.getValue());
-    });
-    this.input.value = this.config.value;
-    this.setValue(this.config.value);
-  }
-
-  Value.prototype.setValue = function(arg) {
-    var oldValue, v;
-    oldValue = this.config.value;
-    v = this.round(this.clamp(this.slotArg(arg, 'value')));
-    this.input.value = this.strip0(this.format(v));
-    if (v !== oldValue) {
-      this.config.value = v;
-      this.emit('onValue', {
-        value: v
-      });
     }
-    return this;
   };
 
-  Value.prototype.incr = function(d) {
-    var step;
-    if (d === '+' || d === '++') {
-      d = 1;
-    } else if (d === '-' || d === '--') {
-      d = -1;
+  Tooltip.popup = function(e, pos) {
+    var text, tooltip;
+    tooltip = e.widget.tooltip;
+    if (tooltip.timer != null) {
+      clearInterval(tooltip.timer);
+      tooltip.timer = null;
     }
-    if (this.config.valueStep != null) {
-      step = this.config.valueStep;
+    if (tooltip.onTooltip != null) {
+      text = tooltip.onTooltip();
+    } else if (tooltip.text != null) {
+      text = tooltip.text;
     } else {
-      step = 1;
+      text = e.id;
     }
-    return this.setValue(this.input.getValue() + step * d);
+    return tooltip.window = new Window({
+      "class": 'tooltip',
+      parent: 'stage_content',
+      x: pos.x,
+      y: pos.y,
+      text: text,
+      hasClose: false,
+      hasShade: false,
+      hasTitle: false
+    });
   };
 
-  return Value;
+  Tooltip.onLeave = function(event, e) {
+    var tooltip, w, _ref;
+    if (tooltip = e != null ? (_ref = e.widget) != null ? _ref.tooltip : void 0 : void 0) {
+      if (tooltip.timer != null) {
+        clearInterval(tooltip.timer);
+        tooltip.timer = null;
+      }
+      if (w = tooltip.window) {
+        w.close();
+        return e.widget.tooltip.window = null;
+      }
+    }
+  };
 
-})(Widget);
+  return Tooltip;
+
+})();
 
 //# sourceMappingURL=widgets.js.map
