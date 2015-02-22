@@ -32,6 +32,8 @@ class Connection
             onOver:   @onOver
             onOut:    @onOut
             onMove:   @onMove
+            
+        @path.connection = @
 
         @drag = Drag.create
             target:  @path.path

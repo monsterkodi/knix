@@ -18,9 +18,8 @@ class Analyser extends Window
             scaleY:     1.0
             triggerY:   0.0
 
-        @audio = \
-        @analyser = Audio.analyser()
-        @dataArray = new Uint8Array(@analyser.fftSize);
+        [ @audio, cfg ] = Audio.analyser cfg
+        @dataArray = new Uint8Array(cfg.fftSize);
 
         super cfg,
             title: 'analyser'
@@ -88,7 +87,7 @@ class Analyser extends Window
 
     anim: (timestamp) =>
 
-        @analyser.getByteTimeDomainData(@dataArray)
+        @audio.getByteTimeDomainData(@dataArray)
 
         cvs = @canvas.elem
         ctx = cvs.getContext("2d")

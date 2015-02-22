@@ -85,6 +85,10 @@ class Widget
         @initEvents()
         @
 
+    # ________________________________________________________________________________ dump
+    
+    dump: => @config
+
     # ________________________________________________________________________________ event handling
 
     initEvents: =>
@@ -354,15 +358,15 @@ class Widget
                 cursor: null
 
     onMove: (drag, event) =>
-        tag 'move', @elem?.id
+        # log 'move', @elem?.id
         @emitMove()
         
     moveStart: (drag, event) =>
-        log 'start', @elem?.id
+        log 'start', event.target?.id
         StyleSwitch.togglePathFilter()
 
     moveStop: (drag, event) =>
-        log 'stop', @elem?.id
+        log 'stop', @event.target?.id
         StyleSwitch.togglePathFilter()
 
     # ____________________________________________________________________________ layout

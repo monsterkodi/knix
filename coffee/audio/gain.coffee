@@ -12,12 +12,12 @@ class Gain extends Window
 
     constructor: (cfg) ->
 
-        @audio = Audio.gain cfg
+        [ @audio, cfg ]  = Audio.gain cfg
 
         super cfg,
             title:     cfg.master and 'master' or 'gain'
             minWidth:  240
-            minHeight: 60
+            resize:    'horizontal'
             children:  \
             [
                 type:       'jacks'

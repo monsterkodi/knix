@@ -14,17 +14,12 @@ class Oscillator extends Window
 
     constructor: (cfg) ->
 
-        cfg = _.def cfg,
-            freq:    0
-            minFreq: 0
-            maxFreq: 14000
-
-        @audio = Audio.oscillator cfg
+        [ @audio, cfg ] = Audio.oscillator cfg
 
         super cfg,
-            title: 'oscillator'
-            minWidth: 150
-            minHeight: 60
+            title:      'oscillator'
+            minWidth:   150
+            resize:     'horizontal'
             children: \
             [
                 type:       'jacks'

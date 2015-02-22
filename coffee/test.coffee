@@ -12,6 +12,183 @@ class Test
 
     ###
 
+     0000000   000   000  0000000    000   0000000 
+    000   000  000   000  000   000  000  000   000
+    000000000  000   000  000   000  000  000   000
+    000   000  000   000  000   000  000  000   000
+    000   000   0000000   0000000    000   0000000 
+
+    ###
+
+    @delayNodes: ->
+        
+        o1= new Oscillator
+            title:   'low'
+            minFreq: 1
+            maxFreq: 1000
+            freq:    333
+            shape:   'sine'
+            x: 10
+            y: 440
+
+        g1= new Gain
+            gain: 0.0
+            x: 100
+            y: 142
+
+        a1= new Analyser
+            x: 400
+            y: 42
+
+        d1= new Delay
+            x: 600
+            y: 42
+
+        g2= new Gain
+            gain: 0.0
+            x: 100
+            y: 142
+
+        a2= new Analyser
+            x: 600
+            y: 300
+
+        gm= new Gain
+            master: true
+            gain: 0.0
+            x: 400
+            y: 544
+
+        new Connection
+            source: o1.connector 'audio:out'
+            target: g1.connector 'audio:in'
+        new Connection
+            source: g1.connector 'audio:out'
+            target: a1.connector 'audio:in'
+        new Connection
+            source: a1.connector 'audio:out'
+            target: d1.connector 'audio:in'
+        new Connection
+            source: a1.connector 'audio:out'
+            target: g2.connector 'audio:in'
+        new Connection
+            source: d1.connector 'audio:out'
+            target: g2.connector 'audio:in'
+        new Connection
+            source: g2.connector 'audio:out'
+            target: a2.connector 'audio:in'
+        new Connection
+            source: a2.connector 'audio:out'
+            target: gm.connector 'audio:in'
+
+        return
+        
+    @audioNodes: ->
+        
+        o1= new Oscillator
+            title: 'high'
+            minFreq: 2000
+            x: 10
+            y: 40
+
+        o2= new Oscillator
+            title: 'mid'
+            minFreq: 400
+            maxFreq: 2000
+            freq:    400
+            x: 10
+            y: 240
+
+        o3= new Oscillator
+            title:   'low'
+            minFreq: 1
+            maxFreq: 400
+            freq:    333
+            shape:   'square'
+            x: 10
+            y: 440
+
+        g1= new Gain
+            gain: 0.0
+            x: 100
+            y: 142
+
+        g2= new Gain
+            gain: 0.0
+            x: 100
+            y: 342
+
+        g3= new Gain
+            gain: 0.3
+            x: 100
+            y: 542
+
+        an= new Analyser
+            x: 400
+            y: 42
+
+        f4= new Filter
+            x: 600
+            y: 42
+
+        a4= new Analyser
+            x: 600
+            y: 300
+
+        gm= new Gain
+            master: true
+            gain: 0.0
+            x: 400
+            y: 544
+
+        new Connection
+            source: o1.connector 'audio:out'
+            target: g1.connector 'audio:in'
+        new Connection
+            source: o2.connector 'audio:out'
+            target: g2.connector 'audio:in'
+        new Connection
+            source: o3.connector 'audio:out'
+            target: g3.connector 'audio:in'
+        new Connection
+            source: g1.connector 'audio:out'
+            target: an.connector 'audio:in'
+        new Connection
+            source: g2.connector 'audio:out'
+            target: an.connector 'audio:in'
+        new Connection
+            source: g3.connector 'audio:out'
+            target: an.connector 'audio:in'
+        new Connection
+            source: an.connector 'audio:out'
+            target: f4.connector 'audio:in'
+        new Connection
+            source: f4.connector 'audio:out'
+            target: a4.connector 'audio:in'
+        new Connection
+            source: a4.connector 'audio:out'
+            target: gm.connector 'audio:in'
+
+        return
+        
+    @audio: ->
+
+        b = knix.get
+            type:   'button'
+            text:   'audio'
+            parent: 'menu'
+            onClick: -> Test.audioNodes()
+
+        b = knix.get
+            type:   'button'
+            text:   'delay'
+            parent: 'menu'
+            onClick: -> Test.delayNodes()
+
+        # b.elem.click()
+
+    ###
+
          0000000  0000000   000   000  000   000  00000000  0000000 000000000  0000000   00000000
         000      000   000  0000  000  0000  000  000      000         000    000   000  000   000
         000      000   000  000 0 000  000 0 000  000000   000         000    000   000  0000000
@@ -369,24 +546,24 @@ class Test
             y:          150
             onClick:    knix.closeAll
 
-    # _________________________________________________________________________ canvas test
-    #
-    # sc = knix.get
-    #     id:      'stage_canvas'
-    #     type:    'canvas'
-    #     width:   parseInt window.innerWidth
-    #     height:  parseInt window.innerHeight
-    #
-    # p = new fabric.Path('M 0 0 L 200 100 L 170 200')
-    # p.set
-    #     left: 20, top: 120, fill: '',
-    #     stroke: 'black', strokeWidth: 20, strokeLineCap: 'round', strokeLineJoin: 'round'
-    #     opacity: 0.5
-    # sc.fc.add(p)
-    #
-    # resizeStageCanvas = (x,y) -> sc.fc.setWidth x; sc.fc.setHeight y
-    #
-    # window.onresize = (event) ->
-    #     resizeStageCanvas parseInt(window.innerWidth), parseInt(window.innerHeight)
+        # _________________________________________________________________________ canvas test
+        #
+        # sc = knix.get
+        #     id:      'stage_canvas'
+        #     type:    'canvas'
+        #     width:   parseInt window.innerWidth
+        #     height:  parseInt window.innerHeight
+        #
+        # p = new fabric.Path('M 0 0 L 200 100 L 170 200')
+        # p.set
+        #     left: 20, top: 120, fill: '',
+        #     stroke: 'black', strokeWidth: 20, strokeLineCap: 'round', strokeLineJoin: 'round'
+        #     opacity: 0.5
+        # sc.fc.add(p)
+        #
+        # resizeStageCanvas = (x,y) -> sc.fc.setWidth x; sc.fc.setHeight y
+        #
+        # window.onresize = (event) ->
+        #     resizeStageCanvas parseInt(window.innerWidth), parseInt(window.innerHeight)
 
-    # Console.create()
+        # Console.create()

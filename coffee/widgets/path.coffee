@@ -10,9 +10,9 @@
 
 class Path extends Widget
 
-    constructor: (config, defaults) ->
+    constructor: (cfg, defs) ->
 
-        @config = _.def config, _.def defaults,
+        @config = _.def cfg, _.def defs,
             start:    pos(0,0)
             startDir: pos(0,0)
             end:      pos(0,0)
@@ -30,6 +30,7 @@ class Path extends Widget
         @path.addClass('path')
         @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
         @path.fill('none')
+        @path.widget = @
         @elem = @path
 
         @config.endHead   = @config.end.add(@config.endDir)

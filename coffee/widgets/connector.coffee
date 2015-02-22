@@ -32,11 +32,10 @@ class Connector extends Widget
             onMove:  @dragMove
             onStop:  @dragStop
 
-        @connections = new Set()
+        @connections = []
 
     close: =>
-        @connections.clear()
-        @connections = null
+        @connections = []
         super()
 
     isSignal: => @config.signal?
@@ -45,12 +44,12 @@ class Connector extends Widget
     isOut:    => @isSignal() or @config.out
 
     addConnection: (c) =>
-        @connections.add c
+        @connections.push c if c not in @connections
         @elem.addClassName 'connected'
 
     delConnection: (c) =>
-        @connections.delete c
-        @elem.removeClassName('connected') if @connections.size == 0
+        _.remove @connections, (n) -> n == c
+        @elem.removeClassName('connected') if @connections.length == 0
 
     canConnectTo: (other) =>
         return true if @isSignal() and other.isSlot() or @isSlot() and other.isSignal()
@@ -124,7 +123,7 @@ class Connector extends Widget
                 source: @
                 target: conn
             conn.elem.removeClassName 'highlight'
-        else if @connections.size == 0
+        else if @connections.length == 0
             @elem.removeClassName 'connected'
 
         if 1

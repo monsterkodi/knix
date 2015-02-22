@@ -15,6 +15,8 @@ class Sliderspin extends Hbox
         cfg = _.def cfg, defs
 
         super cfg,
+            # style:
+            #     height:     '20px'
             children: \
             [
                 type:       'connector'
@@ -38,7 +40,7 @@ class Sliderspin extends Hbox
                 onValue:    cfg.onValue
                 valueStep:  cfg.spinStep
                 minWidth:   80
-                format:     "%3.2f"
+                format:     cfg.spinFormat or "%3.2f"
                 style:
                     width:  '10%'
             ,

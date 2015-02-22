@@ -52,12 +52,16 @@ class knix
             onClick: -> StyleSwitch.toggle()
 
         @get btn,
+            icon:   'octicon-file-binary'
+            onClick: @dumpWindows
+
+        @get btn,
             icon:   'octicon-dash'
-            onClick: -> knix.shadeAll()
+            onClick: -> knix.shadeWindows()
 
         @get btn,
             icon:   'octicon-x'
-            onClick: -> knix.closeAll()
+            onClick: -> knix.closeWindows()
 
     # ________________________________________________________________________________ element creation
 
@@ -82,22 +86,25 @@ class knix
             type:   'window'
             parent: 'stage_content'
 
-    # ________________________________________________________________________________ widget handling
+    # ________________________________________________________________________________ windows
 
-    @closeAll: => # close all windows
-        $$('.window').each (windowElement) ->
-            windowElement.widget.close()
+    @allWindows:     => w.widget for w in $$('.window')
+    @allConnections: => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
 
-    @shadeAll: -> # shade all windows
-        $$('.window').each (windowElement) ->
-            windowElement.widget.shade()
+    @closeWindows: => @allWindows().each (w) -> w.close()
+    @shadeWindows: => @allWindows().each (w) -> w.shade()
+    @dumpWindows:  => 
+        log JSON.stringify (w.config for w in @allWindows())
+        log JSON.stringify (c.config for c in @allConnections())
+
+    # ________________________________________________________________________________ tooltips
 
     @addPopup: (p) =>
         @popups = [] if not @popups?
         @popups.push p
         if not @popupHandler?
             @popupHandler = document.on 'mousedown', @closePopups
-
+            
     @delPopup: (p) =>
         @popups = @popups.without p
 
@@ -108,7 +115,7 @@ class knix
         if @popupHandler?
             @popupHandler.stop()
             @popupHandler = null
-
+                        
     # ________________________________________________________________________________ animation
 
     @initAnim: => window.requestAnimationFrame @anim

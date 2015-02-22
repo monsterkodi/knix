@@ -19,7 +19,7 @@ class Filter extends Window
         super cfg,
             title:     'filter'
             minWidth:  240
-            minHeight: 60
+            resize:    'horizontal'
             children:  \
             [
                 type:       'jacks'
