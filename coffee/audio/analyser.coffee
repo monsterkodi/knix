@@ -62,7 +62,7 @@ class Analyser extends Window
     setTriggerY: (a) => @config.triggerY = _.arg(a)
 
     sizeWindow: =>
-        # log 'sizeWindow'
+        
         hbox = @getChild('hbox')
         height = @contentHeight()
         content = @getChild('content')
@@ -96,19 +96,22 @@ class Analyser extends Window
 
         ctx.lineWidth = 1
 
-        ctx.fillStyle   = "rgb(200,0,0)"
+        # ctx.fillStyle   = "rgb(200,0,0)"
+        ctx.fillStyle   = StyleSwitch.colors.analyser
         ctx.fillRect    0, 0, cvw, cvh
         ctx.strokeStyle = 'rgb(0,0,0)'
         ctx.strokeRect  0, 0, cvw, cvh
 
         ctx.beginPath()
-        ctx.strokeStyle = 'rgba(100,0,0,0.4)'
+        # ctx.strokeStyle = 'rgba(100,0,0,0.4)'
+        ctx.strokeStyle = StyleSwitch.colors.analyser_trigger
         th = cvh*(0.5-@config.triggerY/2)
         ctx.moveTo  0,   th
         ctx.lineTo  cvw, th
         ctx.stroke()
 
-        ctx.strokeStyle = 'rgb(255,200,0)'
+        # ctx.strokeStyle = 'rgb(255,200,0)'
+        ctx.strokeStyle = StyleSwitch.colors.analyser_trace
         ctx.beginPath()
 
         samples = @dataArray.length

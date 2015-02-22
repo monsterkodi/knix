@@ -60,6 +60,10 @@ colors.button-active-text       = yellow
 colors.toggle-hover-text        = colors.button-hover-text
 colors.toggle-active-text       = colors.button-active-text
 
+colors.analyser                 = colors.red
+colors.analyser-trace           = yellow
+colors.analyser-trigger         = rgba(0,0,0,0.25)
+
 textColors = {}
 textColors.global           = white
 textColors.title            = #999
@@ -121,13 +125,9 @@ spinnerKnobSize         = 4px
 shadowDef               = 2px 2px 10px rgba(0,0,0,0.4)
 shadowInnerDef          = inset 1px 1px 6px rgba(0,0,0,0.4)
 
-::selection
-    background: colors.blue
-    color: black
-
 ::-moz-selection
-    background: colors.blue
-    color: black
+    background:     colors.spin-active
+    color:          black
 
 .content .button
     box-shadow:         1px 1px 2px 0px rgba(0,0,0,0.4)

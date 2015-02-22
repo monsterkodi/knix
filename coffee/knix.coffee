@@ -22,6 +22,7 @@ class knix
 
         s = 'welcome to'; log s, 'knix', 'version:', @version
 
+        StyleSwitch.init()
         Stage.initContextMenu()
         @initSVG()
         @initAnim()

@@ -15,10 +15,6 @@ defaultCursor()
 handCursor()
     cursor:             pointer
 
-textCursor()
-    cursor:             text
-    -moz-user-select:   text
-
 bgColorHover(c)
     background-color:   c
     &:hover
@@ -29,6 +25,14 @@ bgColorHover(c)
 noSelection()
     user-select:        none
     -moz-user-select:   none
+
+*
+    noSelection()
+
+textCursor()
+    cursor:             text
+    -moz-user-select:   text
+    -user-select:       text
 
 // ____________________________________ icons
 
@@ -91,7 +95,7 @@ a
     height:           100%
     overflow:         hidden
     color:            textColors.global
-    user-select:      none
+    // user-select:      none
 
 #stage_content
     position:         relative
@@ -116,11 +120,18 @@ a
     font-size:        10px
     color:            textColors.discreet
 
+.analyser 
+    color: colors.analyser
+.analyser_trace 
+    color: colors.analyser-trace
+.analyser_trigger
+    color: colors.analyser-trigger
+
 // ____________________________________ button
 
 .button
     handCursor()
-    noSelection()
+    // noSelection()
     overflow:             hidden
     box-sizing:           border-box
     padding-left:         6px
@@ -194,7 +205,7 @@ a
     height:           menuHeight
     overflow:         hidden
     & > *
-        noSelection()
+        // noSelection()
         color:        textColors.menu
 
 #menu
@@ -246,7 +257,7 @@ a
     font-size:        widgetTitleFontSize
     border-bottom:    borders.title
     bgColorHover(colors.title)
-    noSelection()
+    // noSelection()
     defaultCursor()
 
 .window .close
@@ -282,7 +293,7 @@ a
     height:           widgetHeaderSize
     width:            widgetHeaderSize
     margin-bottom:  - widgetBorderWidth
-    noSelection()
+    // noSelection()
     handCursor()
     &:hover *
         color: colors.button-hover-text
@@ -305,6 +316,8 @@ a
     padding-bottom: 6px
     padding-left:   8px
     padding-top:    6px
+    > *
+      textCursor()
 
 .console-error
     color:          textColors.console-error
@@ -349,7 +362,7 @@ a
 
 .scroll
     overflow:         hidden
-    noSelection()
+    // noSelection()
     border-radius:    widgetTopRadius
     border:           borders.scroll
     background-color: colors.scroll

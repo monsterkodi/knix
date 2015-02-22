@@ -11,7 +11,12 @@
 class StyleSwitch
 
     @schemes = ['dark.css', 'bright.css']
-    @filter = null
+    @filter  = null
+    @colors  = {}
+
+    @init: =>
+        @toggle()
+        @toggle()
 
     @toggle: =>
 
@@ -25,6 +30,16 @@ class StyleSwitch
         newlink.setAttribute 'id',   'style-link'
 
         link.parentNode.replaceChild(newlink, link)
+        
+        @initColors()
+        
+    @initColors: =>
+        
+        colors = document.createElement "div"
+        for cn in ['analyser', 'analyser_trace', 'analyser_trigger']
+            colors.setAttribute 'class', cn
+            @colors[cn] = window.getComputedStyle(colors).color
+        log @colors
 
     @togglePathFilter: =>
 
