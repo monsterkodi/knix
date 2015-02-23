@@ -53,6 +53,6 @@ layout: default
 
 # demo
 
-I am currently only supporting firefox. But it might work with some layout glitches on non-IE browsers as well:
+I am currently only supporting firefox. But it might work with some layout glitches on other browsers as well:
 
 [demo](demo.html)
