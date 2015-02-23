@@ -47,6 +47,15 @@ class Connection
         @path.setEnd   @config.target.absCenter()
 
         @connection = @connect()
+        
+    toJSON: () => 
+        if @config.source?.elem?.id? and @config.target?.elem?.id?
+            # [%s,%s]".fmt @config.source.elem.id, @config.target.elem.id
+            # [ @config.source.elem.id, @config.target.elem.id ]
+            # [ @config.source.config.class, @config.target.config.class ]
+            [ @config.source.name(), @config.target.name() ]
+        else
+            []
 
     closestConnectors: (p) =>
         ds = p.distSquare(@config.source.absPos())

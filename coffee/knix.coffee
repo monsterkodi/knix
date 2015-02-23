@@ -95,8 +95,8 @@ class knix
     @closeWindows: => @allWindows().each (w) -> w.close()
     @shadeWindows: => @allWindows().each (w) -> w.shade()
     @dumpWindows:  => 
-        log JSON.stringify (w.config for w in @allWindows())
-        log JSON.stringify (c.config for c in @allConnections())
+        log JSON.stringify (w.config for w in @allWindows()), null, '  '
+        log JSON.stringify @allConnections(), null, '  '
 
     # ________________________________________________________________________________ tooltips
 

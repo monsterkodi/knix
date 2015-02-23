@@ -43,6 +43,12 @@ class Connector extends Widget
     isIn:     => @isSlot() or @config.in
     isOut:    => @isSignal() or @config.out
 
+    name:     => 
+        n = @config[@config.class]
+        if @config.class in ['in', 'out']
+            n += ":" + @config.class
+        n
+
     addConnection: (c) =>
         @connections.push c if c not in @connections
         @elem.addClassName 'connected'

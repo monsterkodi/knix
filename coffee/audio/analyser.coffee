@@ -52,7 +52,7 @@ class Analyser extends Window
                 spinStep:   0.01
             ]
 
-        @canvas = @getChild('analyser_canvas')
+        @canvas = @getChild 'analyser_canvas'
 
         knix.animate @
         @sizeWindow()
@@ -68,10 +68,10 @@ class Analyser extends Window
         content = @getChild('content')
         content.setHeight(height)
         height = content.innerHeight() - 100
-        @canvas.setHeight height
+        @canvas?.setHeight height
         width  = content.innerWidth() - 20
-        @canvas.elem.width  = width
-        @canvas.elem.height = height
+        @canvas?.elem.width  = width
+        @canvas?.elem.height = height
         @dataArray = new Uint8Array(2*width)
 
     @menu: =>

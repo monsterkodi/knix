@@ -115,8 +115,9 @@ class Window extends Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        tag 'layout', 'todo'
-        log 'what was this for?'
+        # tag 'layout', 'todo'
+        # log 'what was this for?'
+        @
 
     sizeWindow: =>
 

@@ -163,14 +163,20 @@ class Widget
         if typeof slot == 'string'
             [func, receiver] = slot.split(':').reverse()
             if receiver?
-                receiver = @getChild(receiver)
-                receiver = @getWindow()?.getChild(receiver) unless receiver?
+                # log 'receiver', receiver
+                rec = @getChild(receiver)
+                # log 'receiver', rec, 'child', @getWindow()
+                rec = @getWindow()?.getChild(receiver) unless rec?
+                # log 'receiver', rec, 'window child'
+                receiver = rec
             receiver = @ unless receiver?
+            # log 'receiver', receiver, 'this'
             if receiver[func]?
                 if typeof receiver[func] == 'function'
-                    return receiver[func].bind(receiver)
+                    return receiver[func] #.bind(receiver)
                 else
                     error 'not a function'
+            # log 'no func', func, 'in receiver', receiver
         error 'cant resolve slot:', slot, typeof slot
         null
 
@@ -372,8 +378,8 @@ class Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        tag 'layout'
-        log @
+        # tag 'layout'
+        # log @
         @elem.style.width = '50%'
 
     layoutChildren: =>
