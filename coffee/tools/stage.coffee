@@ -12,7 +12,7 @@ class Stage
 
     @initContextMenu: =>
 
-        log 'initContextMenu'
+        # log 'initContextMenu'
         $('stage_content').on 'mousedown', @showContextMenu
 
         @contextMenu = knix.get

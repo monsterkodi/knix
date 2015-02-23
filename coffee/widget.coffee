@@ -12,9 +12,9 @@ class Widget
 
     constructor: (config, defaults) -> @init config, defaults
 
-    init: (config, defaults) =>
+    init: (cfg, defs) =>
 
-        cfg = _.def(config, defaults)
+        cfg = _.def cfg, defs
 
         #__________________________________________________ initialization
 
@@ -27,6 +27,9 @@ class Widget
             cfg.elem ?= 'div'                               # div is default element
 
         @elem = Widget.elem cfg.elem, cfg.type              # create element
+        if cfg.id?
+            @elem.id = cfg.id
+            log cfg.id
         @elem.widget = @                                    # let this be the elements widget
         @config = cfg                                       # set config
         @config.id = @elem.id                               # store id in config
@@ -61,9 +64,9 @@ class Widget
 
         #__________________________________________________ DOM setup
 
+        @addToParent(@config.parent) if @config.parent?
         @insertChildren()
         @elem.insert(@config.text) if @config.text?
-        @addToParent(@config.parent) if @config.parent?
 
         #__________________________________________________ position and size
 
@@ -115,7 +118,7 @@ class Widget
 
     connector: (name) =>
         tag 'Connection'
-        log name
+        # log name
         for t in ['slot', 'signal', 'in', 'out']
             for e in @elem.select('.'+t)
                 if e.hasClassName 'connector'
@@ -136,7 +139,7 @@ class Widget
 
     connect: (signal, slot) =>
         tag 'Connection'
-        log @elem.id, signal, slot
+        # log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
         if not signalSender?
@@ -226,7 +229,7 @@ class Widget
             error 'no element?', p
             return this
         parentElement.insert @elem
-        @config.parent = parentElement.id
+        @config.parentId = parentElement.id
         @
 
     insertChild: (config, defaults) =>
@@ -236,14 +239,17 @@ class Widget
 
     insertChildren: =>
         if @config.child
-            @insertChild(@config.child)
+            c = @insertChild(@config.child)
+            @config.child = c.config
         if @config.children
+            c = []
             for cfg in @config.children
-                @insertChild(cfg)
+                c.push @insertChild(cfg).config
+            @config.children = c
         @
 
     # returns first ancestor element that matches class or id of first argument
-    # with no arument: the element with config.parent id or the parent element
+    # with no arument: the element with config.parentId or the parent element
 
     getParent: =>
         args = $A(arguments)
@@ -253,7 +259,7 @@ class Widget
                 if a.match("#"+args[0]) or a.match("."+args[0])
                     return a.widget
             return
-        return $(@config.parent).widget if @config.parent
+        return $(@config.parentId).widget if @config.parentId
         return $(@parentElement.id).wiget
         
     getAncestors: => [@getParent(), @getParent()?.getAncestors()].flatten()

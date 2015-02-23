@@ -29,472 +29,756 @@ document.observe "dom:loaded", ->
     # $('show_about').click()
 
     windows = \
-        [
-            {
-                "title": "high",
-                "minFreq": 2000,
-                "x": 10,
-                "y": 40,
-                "freq": 0,
-                "maxFreq": 14000,
-                "minWidth": 150,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasInput": false
-                    },
-                    {
-                        "type": "spinner",
-                        "id": "shape",
-                        "value": 0,
-                        "values": [
-                            "sine",
-                            "triangle",
-                            "sawtooth",
-                            "square"
-                        ]
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "frequency",
-                        "value": 0,
-                        "minValue": 2000,
-                        "maxValue": 14000
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
+    [
+      {
+        "gain": 0,
+        "x": 100,
+        "y": 142,
+        "title": "gain",
+        "minWidth": 240,
+        "resize": "horizontal",
+        "children": [
+          {
+            "type": "jacks",
+            "audio": {},
+            "hasOutput": true,
+            "children": [
+              {
+                "type": "connector",
+                "in": "audio",
+                "audio": {},
+                "class": "in",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.cddfcf1f-b13b-4089-83b8-99c67d2337a4",
+                "parentId": "jacks.72ecb47b-b1ca-42c5-9801-fcba06735c7a"
+              },
+              {
+                "type": "jack_content",
+                "style": {
+                  "width": "100%",
+                  "height": "20px"
+                },
+                "elem": "div",
+                "id": "jack_content.4585dbd0-e3cf-435b-827d-fedffc94a0f4",
+                "parentId": "jacks.72ecb47b-b1ca-42c5-9801-fcba06735c7a"
+              },
+              {
+                "type": "connector",
+                "out": "audio",
+                "audio": {},
+                "class": "out",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.b593feeb-fd45-44f2-ba80-92a17e775bac",
+                "parentId": "jacks.72ecb47b-b1ca-42c5-9801-fcba06735c7a"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
             },
-            {
-                "title": "mid",
-                "minFreq": 400,
-                "maxFreq": 2000,
-                "freq": 400,
-                "x": 10,
-                "y": 240,
-                "minWidth": 150,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasInput": false
-                    },
-                    {
-                        "type": "spinner",
-                        "id": "shape",
-                        "value": 0,
-                        "values": [
-                            "sine",
-                            "triangle",
-                            "sawtooth",
-                            "square"
-                        ]
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "frequency",
-                        "value": 400,
-                        "minValue": 400,
-                        "maxValue": 2000
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "title": "low",
-                "minFreq": 1,
-                "maxFreq": 400,
-                "freq": 333,
-                "shape": "square",
-                "x": 10,
-                "y": 440,
-                "minWidth": 150,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasInput": false
-                    },
-                    {
-                        "type": "spinner",
-                        "id": "shape",
-                        "value": 3,
-                        "values": [
-                            "sine",
-                            "triangle",
-                            "sawtooth",
-                            "square"
-                        ]
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "frequency",
-                        "value": 333,
-                        "minValue": 1,
-                        "maxValue": 400
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "gain": 0,
-                "x": 100,
-                "y": 142,
-                "title": "gain",
-                "minWidth": 240,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasOutput": true
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "gain",
-                        "value": 0,
-                        "minValue": 0,
-                        "maxValue": 1
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "gain": 0,
-                "x": 100,
-                "y": 342,
-                "title": "gain",
-                "minWidth": 240,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasOutput": true
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "gain",
-                        "value": 0,
-                        "minValue": 0,
-                        "maxValue": 1
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "gain": 0.3,
-                "x": 100,
-                "y": 542,
-                "title": "gain",
-                "minWidth": 240,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasOutput": true
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "gain",
-                        "value": 0.3,
-                        "minValue": 0,
-                        "maxValue": 1
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "x": 400,
-                "y": 42,
-                "scaleX": 1,
-                "scaleY": 1,
-                "triggerY": 0,
-                "title": "analyser",
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {}
-                    },
-                    {
-                        "id": "analyser_canvas",
-                        "type": "canvas",
-                        "style": {
-                            "width": "100%",
-                            "height": "100%"
-                        }
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "scaleX",
-                        "value": 1,
-                        "minValue": 1,
-                        "maxValue": 20,
-                        "valueStep": 1
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "triggerY",
-                        "value": 0,
-                        "minValue": -1,
-                        "maxValue": 1,
-                        "spinStep": 0.01
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "x": 600,
-                "y": 42,
-                "freq": 440,
-                "minFreq": 100,
-                "maxFreq": 12000,
-                "detune": 0,
-                "minDetune": -1000,
-                "maxDetune": 1000,
-                "gain": 1,
-                "minGain": 0,
-                "maxGain": 1,
-                "Q": 1,
-                "minQ": 0,
-                "maxQ": 50,
-                "filter": "bandpass",
-                "title": "filter",
-                "minWidth": 240,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {}
-                    },
-                    {
-                        "type": "spinner",
-                        "id": "filter",
-                        "value": 0,
-                        "values": [
-                            "bandpass",
-                            "lowpass",
-                            "highpass",
-                            "notch",
-                            "allpass"
-                        ]
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "frequency",
-                        "value": 440,
-                        "minValue": 100,
-                        "maxValue": 12000
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "detune",
-                        "value": 0,
-                        "minValue": -1000,
-                        "maxValue": 1000
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "Q",
-                        "value": 1,
-                        "minValue": 0,
-                        "maxValue": 50,
-                        "spinStep": 0.01
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "x": 600,
-                "y": 300,
-                "scaleX": 1,
-                "scaleY": 1,
-                "triggerY": 0,
-                "title": "analyser",
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {}
-                    },
-                    {
-                        "id": "analyser_canvas",
-                        "type": "canvas",
-                        "style": {
-                            "width": "100%",
-                            "height": "100%"
-                        }
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "scaleX",
-                        "value": 1,
-                        "minValue": 1,
-                        "maxValue": 20,
-                        "valueStep": 1
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "triggerY",
-                        "value": 0,
-                        "minValue": -1,
-                        "maxValue": 1,
-                        "spinStep": 0.01
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "master": true,
-                "gain": 0,
-                "x": 400,
-                "y": 544,
-                "title": "master",
-                "minWidth": 240,
-                "minHeight": 60,
-                "children": [
-                    {
-                        "type": "jacks",
-                        "audio": {},
-                        "hasOutput": false
-                    },
-                    {
-                        "type": "sliderspin",
-                        "id": "gain",
-                        "value": 0,
-                        "minValue": 0,
-                        "maxValue": 1
-                    }
-                ],
-                "child": null,
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            },
-            {
-                "title": "console",
-                "class": "console-window",
-                "x": 720,
-                "y": 26,
-                "width": 720,
-                "height": 768,
-                "content": "scroll",
-                "showMethods": true,
-                "showClasses": true,
-                "buttons": [
-                    {
-                        "class": "window-button-right",
+            "elem": "div",
+            "id": "jacks.72ecb47b-b1ca-42c5-9801-fcba06735c7a",
+            "parentId": "content.492c2b58-3925-4a68-bbef-e3ebbffb442b"
+          },
+          {
+            "type": "sliderspin",
+            "id": "gain",
+            "value": 0,
+            "minValue": 0,
+            "maxValue": 1,
+            "children": [
+              {
+                "type": "connector",
+                "slot": "gain:setValue",
+                "class": "slot",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.ff1b42d7-26af-4324-9e1d-e7423f157c79",
+                "parentId": "gain"
+              },
+              {
+                "type": "slider",
+                "id": "gain_slider",
+                "value": 0,
+                "minValue": 0,
+                "maxValue": 1,
+                "style": {
+                  "width": "90%"
+                },
+                "minWidth": 50,
+                "child": {
+                  "type": "slider-bar",
+                  "child": {
+                    "type": "slider-knob",
+                    "elem": "div",
+                    "id": "slider-knob.7208098f-ff1d-411e-9004-2d16b7cebaf7",
+                    "parentId": "slider-bar.3efa9e1f-b063-4b4a-a514-38db71f05330"
+                  },
+                  "elem": "div",
+                  "id": "slider-bar.3efa9e1f-b063-4b4a-a514-38db71f05330",
+                  "parentId": "gain_slider"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "gain"
+              },
+              {
+                "type": "spin",
+                "id": "gain",
+                "value": 0,
+                "minValue": 0,
+                "maxValue": 1,
+                "valueStep": 0.01,
+                "minWidth": 100,
+                "format": "%3.2f",
+                "style": {
+                  "width": "10%"
+                },
+                "horizontal": true,
+                "child": {
+                  "elem": "table",
+                  "type": "spin-table",
+                  "child": {
+                    "elem": "tr",
+                    "type": "spin-row",
+                    "children": [
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
                         "child": {
-                            "type": "icon",
-                            "icon": "octicon-trashcan"
-                        }
-                    },
-                    {
-                        "type": "window-button-left",
+                          "type": "icon",
+                          "icon": "octicon-triangle-left",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-left",
+                            "id": "octicon.a03d53b6-3d16-4be3-83d8-a0c6d3833897",
+                            "parentId": "icon.e806e807-251e-4404-a378-df33c05b70ff"
+                          },
+                          "elem": "div",
+                          "id": "icon.e806e807-251e-4404-a378-df33c05b70ff",
+                          "parentId": "spin-td.3a6dd626-15b8-4522-8a59-e46fc39740ec"
+                        },
+                        "id": "spin-td.3a6dd626-15b8-4522-8a59-e46fc39740ec",
+                        "parentId": "spin-row.301e9928-76ed-412b-a7bc-7e868b7ee4bc"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-content",
                         "child": {
-                            "type": "icon",
-                            "icon": "octicon-diff-added"
-                        }
-                    }
-                ],
-                "child": null,
+                          "type": "input",
+                          "class": "spin-input",
+                          "elem": "input",
+                          "id": "input.384e5897-b88f-484f-8ec3-fe152fc12913",
+                          "parentId": "spin-content.5b27a5e4-f9e8-4771-8a07-76694688128d"
+                        },
+                        "id": "spin-content.5b27a5e4-f9e8-4771-8a07-76694688128d",
+                        "parentId": "spin-row.301e9928-76ed-412b-a7bc-7e868b7ee4bc"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
+                        "child": {
+                          "type": "icon",
+                          "icon": "octicon-triangle-right",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-right",
+                            "id": "octicon.2f5ab0e0-6933-43f3-b998-f4b08459bf6d",
+                            "parentId": "icon.7ee540a0-f1a3-459e-bbd3-00ec236a526f"
+                          },
+                          "elem": "div",
+                          "id": "icon.7ee540a0-f1a3-459e-bbd3-00ec236a526f",
+                          "parentId": "spin-td.e51332d9-16c1-4838-8c93-74a658d3f13d"
+                        },
+                        "id": "spin-td.e51332d9-16c1-4838-8c93-74a658d3f13d",
+                        "parentId": "spin-row.301e9928-76ed-412b-a7bc-7e868b7ee4bc"
+                      }
+                    ],
+                    "id": "spin-row.301e9928-76ed-412b-a7bc-7e868b7ee4bc",
+                    "parentId": "spin-table.acb38a0c-b9c0-429d-b7c3-dd078ef61524"
+                  },
+                  "id": "spin-table.acb38a0c-b9c0-429d-b7c3-dd078ef61524",
+                  "parentId": "gain"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "gain"
+              },
+              {
+                "type": "connector",
+                "signal": "gain:onValue",
+                "class": "signal",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.a3fa311e-8972-4ed4-80c6-c5d6ac059fb7",
+                "parentId": "gain"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
+            },
+            "elem": "div",
+            "parentId": "content.492c2b58-3925-4a68-bbef-e3ebbffb442b"
+          }
+        ],
+        "child": null,
+        "type": "window",
+        "parent": "stage_content",
+        "hasClose": true,
+        "hasShade": true,
+        "isMovable": true,
+        "isShaded": false,
+        "elem": "div",
+        "id": "window.eaeca209-7b8b-4395-9973-b1a9cb9d4934",
+        "parentId": "stage_content"
+      },
+      {
+        "x": 600,
+        "y": 42,
+        "delay": 0.005,
+        "maxDelay": 5,
+        "minDelay": 0,
+        "title": "delay",
+        "minWidth": 240,
+        "resize": "horizontal",
+        "children": [
+          {
+            "type": "jacks",
+            "audio": {},
+            "children": [
+              {
+                "type": "connector",
+                "in": "audio",
+                "audio": {},
+                "class": "in",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.b2bb8680-8093-4015-92e5-c61e65750740",
+                "parentId": "jacks.85328b61-f6b2-414d-b8a0-bc3aa0443404"
+              },
+              {
+                "type": "jack_content",
+                "style": {
+                  "width": "100%",
+                  "height": "20px"
+                },
+                "elem": "div",
+                "id": "jack_content.22aa641d-d642-402d-9a86-892923ef0adc",
+                "parentId": "jacks.85328b61-f6b2-414d-b8a0-bc3aa0443404"
+              },
+              {
+                "type": "connector",
+                "out": "audio",
+                "audio": {},
+                "class": "out",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.10a1bde2-353a-40e8-a8b9-498dbe98bf79",
+                "parentId": "jacks.85328b61-f6b2-414d-b8a0-bc3aa0443404"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
+            },
+            "elem": "div",
+            "id": "jacks.85328b61-f6b2-414d-b8a0-bc3aa0443404",
+            "parentId": "content.f6b8c361-26c0-48e0-a1b5-ed9644d09b33"
+          },
+          {
+            "type": "sliderspin",
+            "id": "delay",
+            "value": 0.8153846153846154,
+            "minValue": 0,
+            "maxValue": 5,
+            "spinStep": 0.00001,
+            "spinFormat": "%3.5f",
+            "children": [
+              {
+                "type": "connector",
+                "slot": "delay:setValue",
+                "class": "slot",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.4860cbdb-9019-4e8c-b80c-4094dc3316db",
+                "parentId": "delay"
+              },
+              {
+                "type": "slider",
+                "id": "delay_slider",
+                "value": 0.8153800000000001,
+                "minValue": 0,
+                "maxValue": 5,
+                "style": {
+                  "width": "90%"
+                },
+                "minWidth": 50,
+                "child": {
+                  "type": "slider-bar",
+                  "child": {
+                    "type": "slider-knob",
+                    "elem": "div",
+                    "id": "slider-knob.07f30356-7a2f-4d66-a5fd-cad99bb60621",
+                    "parentId": "slider-bar.f3e0bdc1-ac87-41fa-bc70-37d6fcd26e7f"
+                  },
+                  "elem": "div",
+                  "id": "slider-bar.f3e0bdc1-ac87-41fa-bc70-37d6fcd26e7f",
+                  "parentId": "delay_slider"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "delay"
+              },
+              {
+                "type": "spin",
+                "id": "delay",
+                "value": 0.8153800000000001,
+                "minValue": 0,
+                "maxValue": 5,
+                "valueStep": 0.00001,
+                "minWidth": 100,
+                "format": "%3.5f",
+                "style": {
+                  "width": "10%"
+                },
+                "horizontal": true,
+                "child": {
+                  "elem": "table",
+                  "type": "spin-table",
+                  "child": {
+                    "elem": "tr",
+                    "type": "spin-row",
+                    "children": [
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
+                        "child": {
+                          "type": "icon",
+                          "icon": "octicon-triangle-left",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-left",
+                            "id": "octicon.2cad265e-c402-46df-b703-927b78dd5eac",
+                            "parentId": "icon.aa690f81-e709-465f-a2b1-4ba4a8f1acb4"
+                          },
+                          "elem": "div",
+                          "id": "icon.aa690f81-e709-465f-a2b1-4ba4a8f1acb4",
+                          "parentId": "spin-td.0b9f8007-08f3-4b27-bb05-5ab2b6bb4d32"
+                        },
+                        "id": "spin-td.0b9f8007-08f3-4b27-bb05-5ab2b6bb4d32",
+                        "parentId": "spin-row.d9c86e18-3cea-4ff4-aff3-44af3dcf4c6f"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-content",
+                        "child": {
+                          "type": "input",
+                          "class": "spin-input",
+                          "elem": "input",
+                          "id": "input.ba09bbb9-da8f-43c6-824b-7d0ecdfeddd1",
+                          "parentId": "spin-content.d5247dc0-d6cd-45ec-ac91-80f62a4d1dae"
+                        },
+                        "id": "spin-content.d5247dc0-d6cd-45ec-ac91-80f62a4d1dae",
+                        "parentId": "spin-row.d9c86e18-3cea-4ff4-aff3-44af3dcf4c6f"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
+                        "child": {
+                          "type": "icon",
+                          "icon": "octicon-triangle-right",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-right",
+                            "id": "octicon.c46091fd-008c-4502-8a02-4e91f936b0f0",
+                            "parentId": "icon.b86e3619-6230-4d73-8c21-160f28d19f92"
+                          },
+                          "elem": "div",
+                          "id": "icon.b86e3619-6230-4d73-8c21-160f28d19f92",
+                          "parentId": "spin-td.625bad26-7221-4325-98fe-5f282d6a03fe"
+                        },
+                        "id": "spin-td.625bad26-7221-4325-98fe-5f282d6a03fe",
+                        "parentId": "spin-row.d9c86e18-3cea-4ff4-aff3-44af3dcf4c6f"
+                      }
+                    ],
+                    "id": "spin-row.d9c86e18-3cea-4ff4-aff3-44af3dcf4c6f",
+                    "parentId": "spin-table.bc4b924a-da9f-407e-bffb-8c788b1ee16b"
+                  },
+                  "id": "spin-table.bc4b924a-da9f-407e-bffb-8c788b1ee16b",
+                  "parentId": "delay"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "delay"
+              },
+              {
+                "type": "connector",
+                "signal": "delay:onValue",
+                "class": "signal",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.a2aed23b-7be6-453f-9b67-dd692eb19a3b",
+                "parentId": "delay"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
+            },
+            "elem": "div",
+            "parentId": "content.f6b8c361-26c0-48e0-a1b5-ed9644d09b33"
+          }
+        ],
+        "child": null,
+        "type": "window",
+        "parent": "stage_content",
+        "hasClose": true,
+        "hasShade": true,
+        "isMovable": true,
+        "isShaded": false,
+        "elem": "div",
+        "id": "window.4a908d7a-22a4-4cb0-bff3-ad4c3eaab33f",
+        "parentId": "stage_content"
+      },
+      {
+        "title": "low",
+        "minFreq": 1,
+        "maxFreq": 1000,
+        "freq": 333,
+        "shape": "sine",
+        "x": 10,
+        "y": 440,
+        "minWidth": 150,
+        "resize": "horizontal",
+        "children": [
+          {
+            "type": "jacks",
+            "audio": {},
+            "hasInput": false,
+            "children": [
+              {
+                "type": "jack_content",
+                "style": {
+                  "width": "100%",
+                  "height": "20px"
+                },
+                "elem": "div",
+                "id": "jack_content.187ff704-0759-40e1-b9a3-b4129c7a27f6",
+                "parentId": "jacks.4ab060d6-fd89-4667-a6c5-685a1feb7ee0"
+              },
+              {
+                "type": "connector",
+                "out": "audio",
+                "audio": {},
+                "class": "out",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.267fbcb8-bb64-46da-b5de-912cd140993f",
+                "parentId": "jacks.4ab060d6-fd89-4667-a6c5-685a1feb7ee0"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
+            },
+            "elem": "div",
+            "id": "jacks.4ab060d6-fd89-4667-a6c5-685a1feb7ee0",
+            "parentId": "content.7fb4ee4e-e60e-47b2-ac47-5e5895c819c6"
+          },
+          {
+            "type": "spinner",
+            "id": "shape",
+            "value": 0,
+            "values": [
+              "sine",
+              "triangle",
+              "sawtooth",
+              "square"
+            ],
+            "tooltip": false,
+            "valueStep": 1,
+            "minValue": 0,
+            "maxValue": 3,
+            "horizontal": true,
+            "child": {
+              "elem": "table",
+              "type": "spin-table",
+              "child": {
+                "elem": "tr",
+                "type": "spin-row",
                 "children": [
-                    {
-                        "class": "console",
-                        "text": "<span class=\"tiny-text\" style=\"vertical-align:top\">console - knix version 0.2.6</span>",
-                        "noMove": true
-                    }
+                  {
+                    "elem": "td",
+                    "type": "spin-td",
+                    "child": {
+                      "type": "icon",
+                      "icon": "octicon-triangle-left",
+                      "child": {
+                        "elem": "span",
+                        "type": "octicon",
+                        "class": "octicon-triangle-left",
+                        "id": "octicon.e2d13741-25a6-46db-9315-acbeb4529619",
+                        "parentId": "icon.811a6bdd-4fd0-45ca-a70d-830656d3cf08"
+                      },
+                      "elem": "div",
+                      "id": "icon.811a6bdd-4fd0-45ca-a70d-830656d3cf08",
+                      "parentId": "spin-td.1e2f721a-0bea-44c0-b658-a52f0a5c5f8d"
+                    },
+                    "id": "spin-td.1e2f721a-0bea-44c0-b658-a52f0a5c5f8d",
+                    "parentId": "spin-row.60e287a0-d083-4969-b250-b2b5528b1d8b"
+                  },
+                  {
+                    "elem": "td",
+                    "type": "spin-content",
+                    "child": {
+                      "type": "input",
+                      "class": "spin-input",
+                      "elem": "input",
+                      "id": "input.f58f73d0-97de-41d1-b35a-067969d45f47",
+                      "parentId": "spin-content.8fa6ec1b-ff54-465f-a320-f5f2afabd547"
+                    },
+                    "id": "spin-content.8fa6ec1b-ff54-465f-a320-f5f2afabd547",
+                    "parentId": "spin-row.60e287a0-d083-4969-b250-b2b5528b1d8b"
+                  },
+                  {
+                    "elem": "td",
+                    "type": "spin-td",
+                    "child": {
+                      "type": "icon",
+                      "icon": "octicon-triangle-right",
+                      "child": {
+                        "elem": "span",
+                        "type": "octicon",
+                        "class": "octicon-triangle-right",
+                        "id": "octicon.d37ed984-ff51-4c00-9e90-5f792e6ff873",
+                        "parentId": "icon.2f4124ec-2b8b-4092-9a13-e76ff5144d76"
+                      },
+                      "elem": "div",
+                      "id": "icon.2f4124ec-2b8b-4092-9a13-e76ff5144d76",
+                      "parentId": "spin-td.78f32e70-e77a-4457-8b7e-a8bfcb6c61c8"
+                    },
+                    "id": "spin-td.78f32e70-e77a-4457-8b7e-a8bfcb6c61c8",
+                    "parentId": "spin-row.60e287a0-d083-4969-b250-b2b5528b1d8b"
+                  }
                 ],
-                "type": "window",
-                "parent": "stage_content",
-                "hasClose": true,
-                "hasShade": true,
-                "resize": true,
-                "isMovable": true,
-                "isShaded": false,
-                "elem": "div"
-            }
-        ]
-        
-    # for w in windows
-    #     knix.get w
+                "id": "spin-row.60e287a0-d083-4969-b250-b2b5528b1d8b",
+                "parentId": "spin-table.bfc68c92-052d-4ca8-a054-458dee75c893"
+              },
+              "id": "spin-table.bfc68c92-052d-4ca8-a054-458dee75c893",
+              "parentId": "shape"
+            },
+            "noMove": true,
+            "elem": "div",
+            "parentId": "content.7fb4ee4e-e60e-47b2-ac47-5e5895c819c6"
+          },
+          {
+            "type": "sliderspin",
+            "id": "frequency",
+            "value": 333,
+            "minValue": 1,
+            "maxValue": 1000,
+            "children": [
+              {
+                "type": "connector",
+                "slot": "frequency:setValue",
+                "class": "slot",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.9d98d81a-3d2e-4111-8993-11279f62cd97",
+                "parentId": "frequency"
+              },
+              {
+                "type": "slider",
+                "id": "frequency_slider",
+                "value": 333,
+                "minValue": 1,
+                "maxValue": 1000,
+                "style": {
+                  "width": "90%"
+                },
+                "minWidth": 50,
+                "child": {
+                  "type": "slider-bar",
+                  "child": {
+                    "type": "slider-knob",
+                    "elem": "div",
+                    "id": "slider-knob.45b1d89e-2875-437c-b0ee-141c1718b2ef",
+                    "parentId": "slider-bar.230b4a36-a2d0-4c16-9b0b-b31ea6843b81"
+                  },
+                  "elem": "div",
+                  "id": "slider-bar.230b4a36-a2d0-4c16-9b0b-b31ea6843b81",
+                  "parentId": "frequency_slider"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "frequency"
+              },
+              {
+                "type": "spin",
+                "id": "frequency",
+                "value": 333,
+                "minValue": 1,
+                "maxValue": 1000,
+                "valueStep": 1,
+                "minWidth": 100,
+                "format": "%3.2f",
+                "style": {
+                  "width": "10%"
+                },
+                "horizontal": true,
+                "child": {
+                  "elem": "table",
+                  "type": "spin-table",
+                  "child": {
+                    "elem": "tr",
+                    "type": "spin-row",
+                    "children": [
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
+                        "child": {
+                          "type": "icon",
+                          "icon": "octicon-triangle-left",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-left",
+                            "id": "octicon.b4708b7f-ee39-4426-a6d4-9754fd744577",
+                            "parentId": "icon.f7ba08bd-7029-4c64-b244-6eeff5841c9b"
+                          },
+                          "elem": "div",
+                          "id": "icon.f7ba08bd-7029-4c64-b244-6eeff5841c9b",
+                          "parentId": "spin-td.a578066b-5c0c-4f4f-87ac-3529b5d8ba5c"
+                        },
+                        "id": "spin-td.a578066b-5c0c-4f4f-87ac-3529b5d8ba5c",
+                        "parentId": "spin-row.2ea2a607-a51d-4d35-9aa9-505f09a7f59f"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-content",
+                        "child": {
+                          "type": "input",
+                          "class": "spin-input",
+                          "elem": "input",
+                          "id": "input.270bb054-f6d9-4b82-9d45-bac041b8013f",
+                          "parentId": "spin-content.b99417e4-5006-4b1e-90bc-defebf2f0446"
+                        },
+                        "id": "spin-content.b99417e4-5006-4b1e-90bc-defebf2f0446",
+                        "parentId": "spin-row.2ea2a607-a51d-4d35-9aa9-505f09a7f59f"
+                      },
+                      {
+                        "elem": "td",
+                        "type": "spin-td",
+                        "child": {
+                          "type": "icon",
+                          "icon": "octicon-triangle-right",
+                          "child": {
+                            "elem": "span",
+                            "type": "octicon",
+                            "class": "octicon-triangle-right",
+                            "id": "octicon.b9b6fd3e-dcec-4c3a-8cc3-1f5b4079a486",
+                            "parentId": "icon.39fb731e-4e01-4553-a5b0-537f79e7fcec"
+                          },
+                          "elem": "div",
+                          "id": "icon.39fb731e-4e01-4553-a5b0-537f79e7fcec",
+                          "parentId": "spin-td.37a68b48-d1d4-430c-a1be-57be4e73a004"
+                        },
+                        "id": "spin-td.37a68b48-d1d4-430c-a1be-57be4e73a004",
+                        "parentId": "spin-row.2ea2a607-a51d-4d35-9aa9-505f09a7f59f"
+                      }
+                    ],
+                    "id": "spin-row.2ea2a607-a51d-4d35-9aa9-505f09a7f59f",
+                    "parentId": "spin-table.9ed1e2b3-3f3f-46cb-a958-7b70372684c9"
+                  },
+                  "id": "spin-table.9ed1e2b3-3f3f-46cb-a958-7b70372684c9",
+                  "parentId": "frequency"
+                },
+                "noMove": true,
+                "elem": "div",
+                "parentId": "frequency"
+              },
+              {
+                "type": "connector",
+                "signal": "frequency:onValue",
+                "class": "signal",
+                "noMove": true,
+                "elem": "div",
+                "id": "connector.1ea4af33-9b7e-481c-bb23-675e0f8c9ee3",
+                "parentId": "frequency"
+              }
+            ],
+            "spacing": 5,
+            "style": {
+              "display": "table",
+              "borderSpacing": "5px 0px",
+              "marginRight": "-5px",
+              "marginLeft": "-5px"
+            },
+            "elem": "div",
+            "parentId": "content.7fb4ee4e-e60e-47b2-ac47-5e5895c819c6"
+          }
+        ],
+        "child": null,
+        "type": "window",
+        "parent": "stage_content",
+        "hasClose": true,
+        "hasShade": true,
+        "isMovable": true,
+        "isShaded": false,
+        "elem": "div",
+        "id": "window.5eda8e8f-142c-4769-8d6f-666766c3b6a3",
+        "parentId": "stage_content"
+      }
+    ]
+
+    for w in windows
+        knix.get w
+
+    connections = \
+    [
+      [
+        "connector.b593feeb-fd45-44f2-ba80-92a17e775bac",
+        "connector.b2bb8680-8093-4015-92e5-c61e65750740"
+      ],
+      [
+        "connector.a3fa311e-8972-4ed4-80c6-c5d6ac059fb7",
+        "connector.4860cbdb-9019-4e8c-b80c-4094dc3316db"
+      ],
+      [
+        "connector.a2aed23b-7be6-453f-9b67-dd692eb19a3b",
+        "connector.9d98d81a-3d2e-4111-8993-11279f62cd97"
+      ],
+      [
+        "connector.267fbcb8-bb64-46da-b5de-912cd140993f",
+        "connector.cddfcf1f-b13b-4089-83b8-99c67d2337a4"
+      ],
+      [
+        "connector.1ea4af33-9b7e-481c-bb23-675e0f8c9ee3",
+        "connector.ff1b42d7-26af-4324-9e1d-e7423f157c79"
+      ]
+    ]
+    for c in connections
+        new Connection c
+    

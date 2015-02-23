@@ -89,7 +89,7 @@ class knix
 
     # ________________________________________________________________________________ windows
 
-    @allWindows:     => w.widget for w in $$('.window')
+    @allWindows:     => w.widget for w in $$('.window') when not w.hasClassName 'console-window'
     @allConnections: => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
 
     @closeWindows: => @allWindows().each (w) -> w.close()

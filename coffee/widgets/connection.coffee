@@ -12,10 +12,16 @@ class Connection
 
     constructor: (config) ->
 
-        log config.source.elem.id, config.target.elem.id
+        # log config.source.elem.id, config.target.elem.id
+        
+        if _.isArray config
+            config =
+                source: $(config[0]).widget
+                target: $(config[1]).widget
+            log config
 
         @config = config
-
+        
         for c in [@config.source, @config.target]
             c.addConnection @
             e = c.elem
@@ -50,10 +56,7 @@ class Connection
         
     toJSON: () => 
         if @config.source? and @config.target?
-            # [%s,%s]".fmt @config.source.elem.id, @config.target.elem.id
-            # [ @config.source.elem.id, @config.target.elem.id ]
-            # [ @config.source.config.class, @config.target.config.class ]
-            [ @config.source.elem.id, @config.source.name(), @config.target.elem.id, @config.target.name() ]
+            [ @config.source.elem.id, @config.target.elem.id ]
         else
             []
 
