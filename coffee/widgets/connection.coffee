@@ -49,11 +49,11 @@ class Connection
         @connection = @connect()
         
     toJSON: () => 
-        if @config.source?.elem?.id? and @config.target?.elem?.id?
+        if @config.source? and @config.target?
             # [%s,%s]".fmt @config.source.elem.id, @config.target.elem.id
             # [ @config.source.elem.id, @config.target.elem.id ]
             # [ @config.source.config.class, @config.target.config.class ]
-            [ @config.source.name(), @config.target.name() ]
+            [ @config.source.elem.id, @config.source.name(), @config.target.elem.id, @config.target.name() ]
         else
             []
 

@@ -26,9 +26,10 @@ class Widget
             cfg.elem = (cfg.attr?.href? or cfg.href? or null) and 'a'
             cfg.elem ?= 'div'                               # div is default element
 
-        @elem = Widget.elem(cfg.elem, cfg.type)             # create element
+        @elem = Widget.elem cfg.elem, cfg.type              # create element
         @elem.widget = @                                    # let this be the elements widget
         @config = cfg                                       # set config
+        @config.id = @elem.id                               # store id in config
 
         @elem.getWindow     = @getWindow
         @elem.getChild      = @getChild
@@ -204,15 +205,11 @@ class Widget
 
     # ____________________________________________________________________________ elements
 
-    @nextWidgetID  = 0
-
-    @elem: (type, clss) => # create element of <type>, add class <clss> and assign 'unique' id
+    @elem: (type, clss) => # create element of <type> add class <clss> and assign a unique id
         e = new Element type
-        e.id = "%s.%d".fmt clss, @nextWidgetID
-        @nextWidgetID += 1
+        e.id = "%s.%s".fmt clss, uuid.v4()
         e.addClassName clss
         e
-
     # ____________________________________________________________________________ hierarchy
 
     addToParent: (p) =>
