@@ -152,8 +152,9 @@ class Widget
     resolveSignal: (signal) =>
         [event, sender] = signal.split(':').reverse()
         if sender?
-            sender = @getChild(sender)
-            sender = @getWindow()?.getChild(sender) unless sender?
+            sdr = @getChild sender
+            sdr = @getWindow()?.getChild(sender) unless sdr?
+            sender = sdr
         sender = @ unless sender?
         [sender, event]
 
