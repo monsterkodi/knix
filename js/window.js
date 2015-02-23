@@ -163,15 +163,7 @@ Window = (function(_super) {
   };
 
   Window.prototype.stretchWidth = function() {
-    tag('layout', 'todo');
-    return log({
-      "file": "./coffee/window.coffee",
-      "line": 119,
-      "class": "Window",
-      "args": ["event", "e"],
-      "method": "stretchWidth",
-      "type": "."
-    }, 'what was this for?');
+    return this;
   };
 
   Window.prototype.sizeWindow = function() {
@@ -394,14 +386,6 @@ Window = (function(_super) {
   };
 
   Window.prototype.close = function() {
-    log({
-      "file": "./coffee/window.coffee",
-      "line": 289,
-      "class": "Window",
-      "args": ["box=\"border-box-height\""],
-      "method": "close",
-      "type": "."
-    }, 'close');
     if (this.config.popup != null) {
       knix.delPopup(this);
     }

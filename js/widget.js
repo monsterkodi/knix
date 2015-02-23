@@ -58,13 +58,15 @@ Widget = (function() {
     this.connector = __bind(this.connector, this);
     this.initSlots = __bind(this.initSlots, this);
     this.initEvents = __bind(this.initEvents, this);
+    this.dump = __bind(this.dump, this);
+    this.onTooltip = __bind(this.onTooltip, this);
     this.init = __bind(this.init, this);
     this.init(config, defaults);
   }
 
-  Widget.prototype.init = function(config, defaults) {
-    var a, cfg, clss, k, s, style, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
-    cfg = _.def(config, defaults);
+  Widget.prototype.init = function(cfg, defs) {
+    var a, clss, k, s, style, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+    cfg = _.def(cfg, defs);
     if (cfg.type == null) {
       console.warn("NO TYPE?");
       cfg.type = 'unknown';
@@ -76,8 +78,12 @@ Widget = (function() {
       }
     }
     this.elem = Widget.elem(cfg.elem, cfg.type);
+    if (cfg.id != null) {
+      this.elem.id = cfg.id;
+    }
     this.elem.widget = this;
     this.config = cfg;
+    this.config.id = this.elem.id;
     this.elem.getWindow = this.getWindow;
     this.elem.getChild = this.getChild;
     this.elem.getParent = this.getParent;
@@ -123,12 +129,12 @@ Widget = (function() {
     if (style.keys().length) {
       this.elem.setStyle(style.toObject());
     }
+    if (this.config.parent != null) {
+      this.addToParent(this.config.parent);
+    }
     this.insertChildren();
     if (this.config.text != null) {
       this.elem.insert(this.config.text);
-    }
-    if (this.config.parent != null) {
-      this.addToParent(this.config.parent);
     }
     if (this.config.pos != null) {
       if (this.config.pos.x != null) {
@@ -145,11 +151,25 @@ Widget = (function() {
     if ((this.config.width != null) || (this.config.height != null)) {
       this.resize(this.config.width, this.config.height);
     }
+    if (this.config.tooltip) {
+      Tooltip.create({
+        target: this,
+        onTooltip: this.onTooltip
+      });
+    }
     this.addMovement();
     this.initSlots();
     this.initConnections();
     this.initEvents();
     return this;
+  };
+
+  Widget.prototype.onTooltip = function() {
+    return this.config.tooltip;
+  };
+
+  Widget.prototype.dump = function() {
+    return this.config;
   };
 
   Widget.prototype.initEvents = function() {
@@ -193,14 +213,6 @@ Widget = (function() {
   Widget.prototype.connector = function(name) {
     var e, t, _i, _j, _len, _len1, _ref, _ref1;
     tag('Connection');
-    log({
-      "file": "./coffee/widget.coffee",
-      "line": 113,
-      "class": "Widget",
-      "args": ["name"],
-      "method": "connector",
-      "type": "."
-    }, name);
     _ref = ['slot', 'signal', 'in', 'out'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       t = _ref[_i];
@@ -216,7 +228,7 @@ Widget = (function() {
     }
     error({
       "file": "./coffee/widget.coffee",
-      "line": 122,
+      "line": 137,
       "class": "Widget",
       "args": ["name"],
       "method": "connector",
@@ -241,20 +253,12 @@ Widget = (function() {
   Widget.prototype.connect = function(signal, slot) {
     var signalEvent, signalSender, slotFunction, _ref;
     tag('Connection');
-    log({
-      "file": "./coffee/widget.coffee",
-      "line": 134,
-      "class": "Widget",
-      "args": ["signal", "slot"],
-      "method": "connect",
-      "type": "."
-    }, this.elem.id, signal, slot);
     _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
     slotFunction = this.resolveSlot(slot);
     if (signalSender == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 138,
+        "line": 153,
         "class": "Widget",
         "args": ["signal", "slot"],
         "method": "connect",
@@ -264,7 +268,7 @@ Widget = (function() {
     if (signalEvent == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 140,
+        "line": 155,
         "class": "Widget",
         "args": ["signal", "slot"],
         "method": "connect",
@@ -274,7 +278,7 @@ Widget = (function() {
     if (slotFunction == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 142,
+        "line": 157,
         "class": "Widget",
         "args": ["signal", "slot"],
         "method": "connect",
@@ -290,13 +294,14 @@ Widget = (function() {
   };
 
   Widget.prototype.resolveSignal = function(signal) {
-    var event, sender, _ref, _ref1;
+    var event, sdr, sender, _ref, _ref1;
     _ref = signal.split(':').reverse(), event = _ref[0], sender = _ref[1];
     if (sender != null) {
-      sender = this.getChild(sender);
-      if (sender == null) {
-        sender = (_ref1 = this.getWindow()) != null ? _ref1.getChild(sender) : void 0;
+      sdr = this.getChild(sender);
+      if (sdr == null) {
+        sdr = (_ref1 = this.getWindow()) != null ? _ref1.getChild(sender) : void 0;
       }
+      sender = sdr;
     }
     if (sender == null) {
       sender = this;
@@ -305,28 +310,29 @@ Widget = (function() {
   };
 
   Widget.prototype.resolveSlot = function(slot) {
-    var func, receiver, _ref, _ref1;
+    var func, rec, receiver, _ref, _ref1;
     if (typeof slot === 'function') {
       return slot;
     }
     if (typeof slot === 'string') {
       _ref = slot.split(':').reverse(), func = _ref[0], receiver = _ref[1];
       if (receiver != null) {
-        receiver = this.getChild(receiver);
-        if (receiver == null) {
-          receiver = (_ref1 = this.getWindow()) != null ? _ref1.getChild(receiver) : void 0;
+        rec = this.getChild(receiver);
+        if (rec == null) {
+          rec = (_ref1 = this.getWindow()) != null ? _ref1.getChild(receiver) : void 0;
         }
+        receiver = rec;
       }
       if (receiver == null) {
         receiver = this;
       }
       if (receiver[func] != null) {
         if (typeof receiver[func] === 'function') {
-          return receiver[func].bind(receiver);
+          return receiver[func];
         } else {
           error({
             "file": "./coffee/widget.coffee",
-            "line": 169,
+            "line": 190,
             "class": "Widget",
             "args": ["slot"],
             "method": "resolveSlot",
@@ -337,7 +343,7 @@ Widget = (function() {
     }
     error({
       "file": "./coffee/widget.coffee",
-      "line": 170,
+      "line": 192,
       "class": "Widget",
       "args": ["slot"],
       "method": "resolveSlot",
@@ -372,13 +378,10 @@ Widget = (function() {
     return this;
   };
 
-  Widget.nextWidgetID = 0;
-
   Widget.elem = function(type, clss) {
     var e;
     e = new Element(type);
-    e.id = "%s.%d".fmt(clss, Widget.nextWidgetID);
-    Widget.nextWidgetID += 1;
+    e.id = "%s.%s".fmt(clss, uuid.v4());
     e.addClassName(clss);
     return e;
   };
@@ -388,7 +391,7 @@ Widget = (function() {
     if (this.elem == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 209,
+        "line": 227,
         "class": "Widget",
         "args": ["p"],
         "method": "addToParent",
@@ -399,7 +402,7 @@ Widget = (function() {
     if (p == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 212,
+        "line": 230,
         "class": "Widget",
         "args": ["p"],
         "method": "addToParent",
@@ -419,7 +422,7 @@ Widget = (function() {
     if (parentElement == null) {
       error({
         "file": "./coffee/widget.coffee",
-        "line": 218,
+        "line": 236,
         "class": "Widget",
         "args": ["p"],
         "method": "addToParent",
@@ -428,7 +431,7 @@ Widget = (function() {
       return this;
     }
     parentElement.insert(this.elem);
-    this.config.parent = parentElement.id;
+    this.config.parentId = parentElement.id;
     return this;
   };
 
@@ -440,16 +443,19 @@ Widget = (function() {
   };
 
   Widget.prototype.insertChildren = function() {
-    var cfg, _i, _len, _ref;
+    var c, cfg, _i, _len, _ref;
     if (this.config.child) {
-      this.insertChild(this.config.child);
+      c = this.insertChild(this.config.child);
+      this.config.child = c.config;
     }
     if (this.config.children) {
+      c = [];
       _ref = this.config.children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cfg = _ref[_i];
-        this.insertChild(cfg);
+        c.push(this.insertChild(cfg).config);
       }
+      this.config.children = c;
     }
     return this;
   };
@@ -467,8 +473,8 @@ Widget = (function() {
       }
       return;
     }
-    if (this.config.parent) {
-      return $(this.config.parent).widget;
+    if (this.config.parentId) {
+      return $(this.config.parentId).widget;
     }
     return $(this.parentElement.id).wiget;
   };
@@ -514,7 +520,7 @@ Widget = (function() {
   Widget.prototype.close = function() {
     log({
       "file": "./coffee/widget.coffee",
-      "line": 265,
+      "line": 286,
       "class": "Widget",
       "args": ["classOrID"],
       "method": "close",
@@ -698,7 +704,7 @@ Widget = (function() {
     if (this.config.isMovable) {
       log({
         "file": "./coffee/widget.coffee",
-        "line": 347,
+        "line": 368,
         "class": "Widget",
         "args": ["s"],
         "method": "addMovement",
@@ -716,8 +722,6 @@ Widget = (function() {
   };
 
   Widget.prototype.onMove = function(drag, event) {
-    var _ref;
-    tag('move', (_ref = this.elem) != null ? _ref.id : void 0);
     return this.emitMove();
   };
 
@@ -725,12 +729,12 @@ Widget = (function() {
     var _ref;
     log({
       "file": "./coffee/widget.coffee",
-      "line": 361,
+      "line": 382,
       "class": "Widget",
       "args": ["drag", "event"],
       "method": "moveStart",
       "type": "."
-    }, 'start', (_ref = this.elem) != null ? _ref.id : void 0);
+    }, 'start', (_ref = event.target) != null ? _ref.id : void 0);
     return StyleSwitch.togglePathFilter();
   };
 
@@ -738,25 +742,16 @@ Widget = (function() {
     var _ref;
     log({
       "file": "./coffee/widget.coffee",
-      "line": 365,
+      "line": 386,
       "class": "Widget",
       "args": ["drag", "event"],
       "method": "moveStop",
       "type": "."
-    }, 'stop', (_ref = this.elem) != null ? _ref.id : void 0);
+    }, 'stop', (_ref = this.event.target) != null ? _ref.id : void 0);
     return StyleSwitch.togglePathFilter();
   };
 
   Widget.prototype.stretchWidth = function() {
-    tag('layout');
-    log({
-      "file": "./coffee/widget.coffee",
-      "line": 372,
-      "class": "Widget",
-      "args": ["drag", "event"],
-      "method": "stretchWidth",
-      "type": "."
-    }, this);
     return this.elem.style.width = '50%';
   };
 

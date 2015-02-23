@@ -79,14 +79,6 @@ Drag = (function() {
       return;
     }
     this.dragging = true;
-    log({
-      "file": "./coffee/tools/drag.coffee",
-      "line": 56,
-      "class": "Drag",
-      "args": ["event"],
-      "method": "dragStart",
-      "type": "."
-    }, 'drag start', this.onStart != null);
     if (this.onStart != null) {
       this.onStart(this, event);
     }
@@ -350,13 +342,6 @@ Stage = (function() {
   function Stage() {}
 
   Stage.initContextMenu = function() {
-    log({
-      "file": "./coffee/tools/stage.coffee",
-      "line": 15,
-      "class": "Stage",
-      "method": "initContextMenu",
-      "type": "@"
-    }, 'initContextMenu');
     $('stage_content').on('mousedown', Stage.showContextMenu);
     Stage.contextMenu = knix.get({
       id: 'context-menu',
@@ -542,30 +527,49 @@ StyleSwitch = (function() {
 
   StyleSwitch.filter = null;
 
+  StyleSwitch.colors = {};
+
+  StyleSwitch.init = function() {
+    StyleSwitch.toggle();
+    return StyleSwitch.toggle();
+  };
+
   StyleSwitch.toggle = function() {
     var currentScheme, link, newlink, nextSchemeIndex;
     link = document.getElementById('style-link');
     currentScheme = link.href.split('/').last();
-    nextSchemeIndex = (this.schemes.indexOf(currentScheme) + 1) % this.schemes.length;
+    nextSchemeIndex = (StyleSwitch.schemes.indexOf(currentScheme) + 1) % StyleSwitch.schemes.length;
     newlink = document.createElement("link");
     newlink.setAttribute('rel', 'stylesheet');
     newlink.setAttribute('type', 'text/css');
-    newlink.setAttribute('href', 'style/' + this.schemes[nextSchemeIndex]);
+    newlink.setAttribute('href', 'style/' + StyleSwitch.schemes[nextSchemeIndex]);
     newlink.setAttribute('id', 'style-link');
-    return link.parentNode.replaceChild(newlink, link);
+    link.parentNode.replaceChild(newlink, link);
+    return StyleSwitch.initColors();
+  };
+
+  StyleSwitch.initColors = function() {
+    var cn, colors, _i, _len, _ref, _results;
+    colors = document.createElement("div");
+    _ref = ['analyser', 'analyser_trace', 'analyser_trigger'];
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cn = _ref[_i];
+      colors.setAttribute('class', cn);
+      _results.push(StyleSwitch.colors[cn] = window.getComputedStyle(colors).color);
+    }
+    return _results;
   };
 
   StyleSwitch.togglePathFilter = function() {
     var p, s, _i, _j, _len, _len1, _ref, _ref1, _results;
-    if (this.filter == null) {
+    if (StyleSwitch.filter == null) {
       _ref = $$('.path');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         p = _ref[_i];
-        if (typeof filter === "undefined" || filter === null) {
-          s = window.getComputedStyle(p);
-          this.filter = p.instance.style('filter');
-        }
+        s = window.getComputedStyle(p);
+        StyleSwitch.filter = p.instance.style('filter');
         _results.push(p.instance.style('filter: none'));
       }
       return _results;
@@ -574,10 +578,10 @@ StyleSwitch = (function() {
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         p = _ref1[_j];
         p.instance.style({
-          filter: this.filter
+          filter: StyleSwitch.filter
         });
       }
-      return this.filter = null;
+      return StyleSwitch.filter = null;
     }
   };
 
@@ -617,6 +621,12 @@ Element.addMethods({
     return element != null ? (_ref = element.parentElement) != null ? _ref.getWidget() : void 0 : void 0;
   }
 });
+
+_.del = function(l, e) {
+  return _.remove(l, function(n) {
+    return n === e;
+  });
+};
 
 _.def = function(c, d) {
   if (c != null) {

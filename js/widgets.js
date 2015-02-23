@@ -33,14 +33,9 @@ Value = (function(_super) {
       value: 0,
       noMove: true,
       minValue: 0,
-      maxValue: 100
+      maxValue: 100,
+      tooltip: true
     });
-    if ((this.config.tooltip == null) || this.config.tooltip) {
-      Tooltip.create({
-        target: this,
-        onTooltip: this.onTooltip
-      });
-    }
   }
 
   Value.prototype.onTooltip = function() {
@@ -330,15 +325,14 @@ Connection = (function() {
     this.dragMove = __bind(this.dragMove, this);
     this.dragStart = __bind(this.dragStart, this);
     this.closestConnectors = __bind(this.closestConnectors, this);
+    this.toJSON = __bind(this.toJSON, this);
     var c, e, _i, _len, _ref;
-    log({
-      "file": "./coffee/widgets/connection.coffee",
-      "line": 15,
-      "class": "Connection",
-      "args": ["config"],
-      "method": "constructor",
-      "type": "."
-    }, config.source.elem.id, config.target.elem.id);
+    if (_.isArray(config)) {
+      config = {
+        source: $(config[0]).widget,
+        target: $(config[1]).widget
+      };
+    }
     this.config = config;
     _ref = [this.config.source, this.config.target];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -359,6 +353,7 @@ Connection = (function() {
       onOut: this.onOut,
       onMove: this.onMove
     });
+    this.path.connection = this;
     this.drag = Drag.create({
       target: this.path.path,
       cursor: 'grab',
@@ -371,6 +366,14 @@ Connection = (function() {
     this.path.setEnd(this.config.target.absCenter());
     this.connection = this.connect();
   }
+
+  Connection.prototype.toJSON = function() {
+    if ((this.config.source != null) && (this.config.target != null)) {
+      return [this.config.source.elem.id, this.config.target.elem.id];
+    } else {
+      return [];
+    }
+  };
 
   Connection.prototype.closestConnectors = function(p) {
     var ds, dt;
@@ -457,7 +460,7 @@ Connection = (function() {
     if (this.connection) {
       log({
         "file": "./coffee/widgets/connection.coffee",
-        "line": 116,
+        "line": 129,
         "class": "Connection",
         "args": ["event", "e"],
         "method": "disconnect",
@@ -531,6 +534,7 @@ Connector = (function(_super) {
     this.canConnectTo = __bind(this.canConnectTo, this);
     this.delConnection = __bind(this.delConnection, this);
     this.addConnection = __bind(this.addConnection, this);
+    this.name = __bind(this.name, this);
     this.isOut = __bind(this.isOut, this);
     this.isIn = __bind(this.isIn, this);
     this.isSlot = __bind(this.isSlot, this);
@@ -563,12 +567,11 @@ Connector = (function(_super) {
       onMove: this.dragMove,
       onStop: this.dragStop
     });
-    this.connections = new Set();
+    this.connections = [];
   }
 
   Connector.prototype.close = function() {
-    this.connections.clear();
-    this.connections = null;
+    this.connections = [];
     return Connector.__super__.close.call(this);
   };
 
@@ -588,14 +591,25 @@ Connector = (function(_super) {
     return this.isSignal() || this.config.out;
   };
 
+  Connector.prototype.name = function() {
+    var n, _ref;
+    n = this.config[this.config["class"]];
+    if ((_ref = this.config["class"]) === 'in' || _ref === 'out') {
+      n += ":" + this.config["class"];
+    }
+    return n;
+  };
+
   Connector.prototype.addConnection = function(c) {
-    this.connections.add(c);
+    if (__indexOf.call(this.connections, c) < 0) {
+      this.connections.push(c);
+    }
     return this.elem.addClassName('connected');
   };
 
   Connector.prototype.delConnection = function(c) {
-    this.connections["delete"](c);
-    if (this.connections.size === 0) {
+    _.del(this.connections, c);
+    if (this.connections.length === 0) {
       return this.elem.removeClassName('connected');
     }
   };
@@ -686,7 +700,7 @@ Connector = (function(_super) {
         target: conn
       });
       conn.elem.removeClassName('highlight');
-    } else if (this.connections.size === 0) {
+    } else if (this.connections.length === 0) {
       this.elem.removeClassName('connected');
     }
     if (1) {
@@ -1051,7 +1065,7 @@ tag = Console.setScopeTags;
 Path = (function(_super) {
   __extends(Path, _super);
 
-  function Path(config, defaults) {
+  function Path(cfg, defs) {
     this.setCtrl = __bind(this.setCtrl, this);
     this.setEnd = __bind(this.setEnd, this);
     this.setStart = __bind(this.setStart, this);
@@ -1062,7 +1076,7 @@ Path = (function(_super) {
     this.setVisible = __bind(this.setVisible, this);
     this.close = __bind(this.close, this);
     var clss, _i, _len, _ref;
-    this.config = _.def(config, _.def(defaults, {
+    this.config = _.def(cfg, _.def(defs, {
       start: pos(0, 0),
       startDir: pos(0, 0),
       end: pos(0, 0),
@@ -1090,6 +1104,7 @@ Path = (function(_super) {
       }
     }
     this.path.fill('none');
+    this.path.widget = this;
     this.elem = this.path;
     this.config.endHead = this.config.end.add(this.config.endDir);
     this.config.startHead = this.config.start.add(this.config.startDir);
@@ -1099,7 +1114,10 @@ Path = (function(_super) {
   }
 
   Path.prototype.close = function() {
-    this.path.remove();
+    var _ref;
+    if ((_ref = this.path) != null) {
+      _ref.remove();
+    }
     this.path = null;
     return Path.__super__.close.call(this);
   };
@@ -1259,6 +1277,7 @@ Sliderspin = (function(_super) {
   __extends(Sliderspin, _super);
 
   function Sliderspin(cfg, defs) {
+    this.setValue = __bind(this.setValue, this);
     cfg = _.def(cfg, defs);
     Sliderspin.__super__.constructor.call(this, cfg, {
       children: [
@@ -1284,8 +1303,8 @@ Sliderspin = (function(_super) {
           maxValue: cfg.maxValue,
           onValue: cfg.onValue,
           valueStep: cfg.spinStep,
-          minWidth: 80,
-          format: "%3.2f",
+          minWidth: 100,
+          format: cfg.spinFormat || "%3.2f",
           style: {
             width: '10%'
           }
@@ -1298,6 +1317,11 @@ Sliderspin = (function(_super) {
     this.connect(cfg.id + '_slider:onValue', cfg.id + ':setValue');
     this.connect(cfg.id + ':onValue', cfg.id + '_slider:setValue');
   }
+
+  Sliderspin.prototype.setValue = function(a) {
+    this.config.value = _.arg(a);
+    return this.getChild(this.config.id + '_slider').setValue(this.config.value);
+  };
 
   return Sliderspin;
 

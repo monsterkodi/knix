@@ -3,7 +3,7 @@ title:  knix
 layout: default
 ---
 
-![screenshot](http://monsterkodi.github.io/knix/images/knix02.png)
+![screenshot](http://monsterkodi.github.io/knix/images/knix03.png)
 
 # example code
 

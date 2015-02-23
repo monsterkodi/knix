@@ -14,6 +14,7 @@ layout: default
 [node](http://nodejs.org/)
 [npm](https://www.npmjs.com/)
 [ansi](https://www.npmjs.com/package/ansi)
+[node-uuid](https://www.npmjs.com/package/node-uuid)
 
 [prototypejs](http://prototypejs.org/)
 [lodash](https://lodash.com/)

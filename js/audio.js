@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000  000   000
 000   000   0000000   0000000    000   0000000
  */
-var Analyser, Audio, Filter, Gain, Jacks, Oscillator,
+var Analyser, Audio, Delay, Filter, Gain, Jacks, Oscillator,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -20,6 +20,7 @@ Audio = (function() {
     Oscillator.menu();
     Filter.menu();
     Gain.menu();
+    Delay.menu();
     return Analyser.menu();
   };
 
@@ -48,32 +49,58 @@ Audio = (function() {
     return [filter, cfg];
   };
 
+  Audio.delay = function(cfg) {
+    var delay;
+    cfg = _.def(cfg, {
+      delay: 0.005,
+      maxDelay: 5.0,
+      minDelay: 0.0
+    });
+    delay = Audio.context.createDelay(cfg.maxDelay);
+    delay.delayTime.value = cfg.delay;
+    return [delay, cfg];
+  };
+
   Audio.oscillator = function(cfg) {
     var oscillator;
+    cfg = _.def(cfg, {
+      freq: 0,
+      minFreq: 0,
+      maxFreq: 14000
+    });
     oscillator = Audio.context.createOscillator();
-    oscillator.frequency.value = cfg.freq || 440;
+    oscillator.frequency.value = cfg.freq;
     oscillator.start(0);
-    return oscillator;
+    return [oscillator, cfg];
   };
 
   Audio.gain = function(cfg) {
     var gain;
+    cfg = _.def(cfg, {
+      gain: 0
+    });
     gain = Audio.context.createGain();
-    gain.gain.value = (cfg.gain != null) && cfg.gain || 0.0;
+    gain.gain.value = cfg.gain;
     if (cfg.master) {
       gain.connect(Audio.context.destination);
     }
-    return gain;
+    return [gain, cfg];
   };
 
   Audio.analyser = function(cfg) {
     var analyser;
+    cfg = _.def(cfg, {
+      minDecibels: -90,
+      maxDecibels: -10,
+      smoothingTime: 0.85,
+      fftSize: 2048
+    });
     analyser = Audio.context.createAnalyser();
-    analyser.minDecibels = -90;
-    analyser.maxDecibels = -10;
-    analyser.smoothingTimeConstant = 0.85;
-    analyser.fftSize = 2048;
-    return analyser;
+    analyser.minDecibels = cfg.minDecibels;
+    analyser.maxDecibels = cfg.maxDecibels;
+    analyser.smoothingTimeConstant = cfg.smoothingTime;
+    analyser.fftSize = cfg.fftSize;
+    return [analyser, cfg];
   };
 
   return Audio;
@@ -99,14 +126,16 @@ Analyser = (function(_super) {
     this.setTriggerY = __bind(this.setTriggerY, this);
     this.setScaleY = __bind(this.setScaleY, this);
     this.setScaleX = __bind(this.setScaleX, this);
+    this.close = __bind(this.close, this);
+    var _ref;
     cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
       scaleX: 1.0,
       scaleY: 1.0,
       triggerY: 0.0
     });
-    this.audio = this.analyser = Audio.analyser();
-    this.dataArray = new Uint8Array(this.analyser.fftSize);
+    _ref = Audio.analyser(cfg), this.audio = _ref[0], cfg = _ref[1];
+    this.dataArray = new Uint8Array(cfg.fftSize);
     Analyser.__super__.constructor.call(this, cfg, {
       title: 'analyser',
       children: [
@@ -144,6 +173,11 @@ Analyser = (function(_super) {
     this.sizeWindow();
   }
 
+  Analyser.prototype.close = function() {
+    knix.deanimate(this);
+    return Analyser.__super__.close.apply(this, arguments);
+  };
+
   Analyser.prototype.setScaleX = function(a) {
     return this.config.scaleX = _.arg(a);
   };
@@ -157,16 +191,22 @@ Analyser = (function(_super) {
   };
 
   Analyser.prototype.sizeWindow = function() {
-    var content, hbox, height, width;
+    var content, hbox, height, width, _ref, _ref1, _ref2;
     hbox = this.getChild('hbox');
     height = this.contentHeight();
     content = this.getChild('content');
     content.setHeight(height);
     height = content.innerHeight() - 100;
-    this.canvas.setHeight(height);
+    if ((_ref = this.canvas) != null) {
+      _ref.setHeight(height);
+    }
     width = content.innerWidth() - 20;
-    this.canvas.elem.width = width;
-    this.canvas.elem.height = height;
+    if ((_ref1 = this.canvas) != null) {
+      _ref1.elem.width = width;
+    }
+    if ((_ref2 = this.canvas) != null) {
+      _ref2.elem.height = height;
+    }
     return this.dataArray = new Uint8Array(2 * width);
   };
 
@@ -187,23 +227,23 @@ Analyser = (function(_super) {
 
   Analyser.prototype.anim = function(timestamp) {
     var ctx, cvh, cvs, cvw, i, samples, t, th, v, x, xd, y, _i;
-    this.analyser.getByteTimeDomainData(this.dataArray);
+    this.audio.getByteTimeDomainData(this.dataArray);
     cvs = this.canvas.elem;
     ctx = cvs.getContext("2d");
     cvw = cvs.getWidth();
     cvh = cvs.getHeight();
     ctx.lineWidth = 1;
-    ctx.fillStyle = "rgb(200,0,0)";
+    ctx.fillStyle = StyleSwitch.colors.analyser;
     ctx.fillRect(0, 0, cvw, cvh);
     ctx.strokeStyle = 'rgb(0,0,0)';
     ctx.strokeRect(0, 0, cvw, cvh);
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(100,0,0,0.4)';
+    ctx.strokeStyle = StyleSwitch.colors.analyser_trigger;
     th = cvh * (0.5 - this.config.triggerY / 2);
     ctx.moveTo(0, th);
     ctx.lineTo(cvw, th);
     ctx.stroke();
-    ctx.strokeStyle = 'rgb(255,200,0)';
+    ctx.strokeStyle = StyleSwitch.colors.analyser_trace;
     ctx.beginPath();
     samples = this.dataArray.length;
     xd = this.config.scaleX;
@@ -238,6 +278,68 @@ Analyser = (function(_super) {
 
 /*
 
+0000000    00000000  000       0000000   000   000
+000   000  000       000      000   000   000 000 
+000   000  0000000   000      000000000    00000  
+000   000  000       000      000   000     000   
+0000000    00000000  0000000  000   000     000
+ */
+
+Delay = (function(_super) {
+  __extends(Delay, _super);
+
+  function Delay(cfg) {
+    this.setDelay = __bind(this.setDelay, this);
+    var _ref;
+    _ref = Audio.delay(cfg), this.audio = _ref[0], cfg = _ref[1];
+    Delay.__super__.constructor.call(this, cfg, {
+      title: 'delay',
+      minWidth: 240,
+      resize: 'horizontal',
+      children: [
+        {
+          type: 'jacks',
+          audio: this.audio
+        }, {
+          type: 'sliderspin',
+          id: 'delay',
+          value: cfg.delay,
+          minValue: cfg.minDelay,
+          maxValue: cfg.maxDelay,
+          spinStep: 0.00001,
+          spinFormat: "%3.5f",
+          onValue: this.setDelay
+        }
+      ]
+    });
+  }
+
+  Delay.prototype.setDelay = function(arg) {
+    return this.audio.delayTime.value = _.arg(arg);
+  };
+
+  Delay.menu = function() {
+    return knix.create({
+      type: 'button',
+      id: 'new_delay',
+      icon: 'octicon-dashboard',
+      "class": 'tool-button',
+      parent: 'menu',
+      onClick: function() {
+        return new Delay({
+          center: true
+        });
+      }
+    });
+  };
+
+  return Delay;
+
+})(Window);
+
+
+/*
+
 00000000  000  000      000000000  00000000  00000000 
 000       000  000         000     000       000   000
 000000    000  000         000     0000000   0000000  
@@ -261,7 +363,7 @@ Filter = (function(_super) {
     Filter.__super__.constructor.call(this, cfg, {
       title: 'filter',
       minWidth: 240,
-      minHeight: 60,
+      resize: 'horizontal',
       children: [
         {
           type: 'jacks',
@@ -355,11 +457,12 @@ Gain = (function(_super) {
   function Gain(cfg) {
     this.setValue = __bind(this.setValue, this);
     this.setGain = __bind(this.setGain, this);
-    this.audio = Audio.gain(cfg);
+    var _ref;
+    _ref = Audio.gain(cfg), this.audio = _ref[0], cfg = _ref[1];
     Gain.__super__.constructor.call(this, cfg, {
       title: cfg.master && 'master' || 'gain',
       minWidth: 240,
-      minHeight: 60,
+      resize: 'horizontal',
       children: [
         {
           type: 'jacks',
@@ -493,16 +596,12 @@ Oscillator = (function(_super) {
   function Oscillator(cfg) {
     this.setShape = __bind(this.setShape, this);
     this.setFreq = __bind(this.setFreq, this);
-    cfg = _.def(cfg, {
-      freq: 0,
-      minFreq: 0,
-      maxFreq: 14000
-    });
-    this.audio = Audio.oscillator(cfg);
+    var _ref;
+    _ref = Audio.oscillator(cfg), this.audio = _ref[0], cfg = _ref[1];
     Oscillator.__super__.constructor.call(this, cfg, {
       title: 'oscillator',
       minWidth: 150,
-      minHeight: 60,
+      resize: 'horizontal',
       children: [
         {
           type: 'jacks',
