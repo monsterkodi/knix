@@ -9,34 +9,46 @@ layout: default
 
 {% highlight coffee %}
 
-w = knix.get
-    title:     'hello'
-    hasSize:   true
-    minWidth:  130
-    center:    true
-    children: \
-    [
-        type:       'slider'
-        hasBar:     true
-        hasKnob:    true
-        valueStep:  5
-    ,
-        type:       'value'
-        format:     "%3.2f"
-        valueStep:  21
-    ,
-        type:       'button'
-        text:       'ok'
-        onClick:    -> @getWindow().close()
-    ]
-    connect: \
-    [
-        signal: 'slider:onValue'
-        slot:   'value:setValue'
-    ]
+@audioNodes: ->
+    
+    o1= new Oscillator
+        title: 'high'
+        minFreq: 2000
+        x: 10
+        y: 40
 
-w.resolveSlot('slider:setValue') 33.3
+    g1= new Gain
+        gain: 0.0
+        x: 250
+        y: 40
 
+    an= new Analyser
+        x: 500
+        y: 42
+
+    f4= new Filter
+        x: 1050
+        y: 42
+
+    gm= new Gain
+        master: true
+        gain: 0.0
+        x: 1050
+        y: 400
+
+    new Connection
+        source: o1.connector 'audio:out'
+        target: g1.connector 'audio:in'
+    new Connection
+        source: g1.connector 'audio:out'
+        target: an.connector 'audio:in'
+    new Connection
+        source: an.connector 'audio:out'
+        target: f4.connector 'audio:in'
+    new Connection
+        source: f4.connector 'audio:out'
+        target: gm.connector 'audio:in'
+        
 {% endhighlight %}
 
 # demo
