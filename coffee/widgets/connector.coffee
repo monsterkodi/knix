@@ -54,7 +54,7 @@ class Connector extends Widget
         @elem.addClassName 'connected'
 
     delConnection: (c) =>
-        _.remove @connections, (n) -> n == c
+        _.del @connections, c
         @elem.removeClassName('connected') if @connections.length == 0
 
     canConnectTo: (other) =>

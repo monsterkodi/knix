@@ -23,6 +23,9 @@ Element.addMethods
         return element.widget if element?.widget?
         return element?.parentElement?.getWidget()
 
+_.del = (l,e) ->
+   _.remove l, (n) -> n == e
+
 _.def = (c,d) ->
     if c?
         _.defaults(_.clone(c), d)

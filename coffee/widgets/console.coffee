@@ -56,6 +56,10 @@ class Console extends Window
                 noMove: true
 
         @elem.on 'contextmenu', @onContextMenu
+        # log localStorage.length
+        # for i in [0...localStorage.length]
+        #     log 'storage', i, localStorage.key(i)
+        #     log localStorage.getItem(localStorage.key(i))
 
     onContextMenu: (event,e) =>
 

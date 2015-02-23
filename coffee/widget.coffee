@@ -29,7 +29,7 @@ class Widget
         @elem = Widget.elem cfg.elem, cfg.type              # create element
         if cfg.id?
             @elem.id = cfg.id
-            log cfg.id
+            # log cfg.id
         @elem.widget = @                                    # let this be the elements widget
         @config = cfg                                       # set config
         @config.id = @elem.id                               # store id in config
@@ -80,6 +80,11 @@ class Widget
 
         @resize @config.width, @config.height if @config.width? or @config.height?
 
+        if @config.tooltip
+           Tooltip.create
+               target: @
+               onTooltip: @onTooltip 
+
         #__________________________________________________ event setup
 
         @addMovement()
@@ -89,6 +94,8 @@ class Widget
         @initEvents()
         @
 
+    onTooltip: => @config.tooltip
+    
     # ________________________________________________________________________________ dump
     
     dump: => @config

@@ -29,8 +29,9 @@ class knix
         @initTools()
         @initAudio()
         c.raise()
+        
         @
-
+        
     # ________________________________________________________________________________ tools menu
 
     @initTools: =>
@@ -53,8 +54,14 @@ class knix
             onClick: -> StyleSwitch.toggle()
 
         @get btn,
-            icon:   'octicon-file-binary'
+            tooltip: 'save'
+            icon:    'octicon-file-binary'
             onClick: @dumpWindows
+
+        @get btn,
+            tooltip: 'restore'
+            icon:    'octicon-file-directory'
+            onClick:  @restoreMenu
 
         @get btn,
             icon:   'octicon-dash'
@@ -95,9 +102,30 @@ class knix
     @closeWindows: => @allWindows().each (w) -> w.close()
     @shadeWindows: => @allWindows().each (w) -> w.shade()
     @dumpWindows:  => 
-        log JSON.stringify (w.config for w in @allWindows()), null, '  '
-        log JSON.stringify @allConnections(), null, '  '
+        dump = '\n    knix.restore '
+        dump += JSON.stringify { 'windows': (w.config for w in @allWindows()), 'connections': @allConnections() }, null, '    '
+        dump = dump.slice(0,-1)
+        dump += "    }"
+        log dump
+        localStorage.setItem uuid.v4(), dump
 
+    @restoreMenu: =>
+        log localStorage.length
+        for i in [0...localStorage.length]
+            log 'storage', i, localStorage.key(i)
+            # log localStorage.getItem(localStorage.key(i))
+
+    @restore: (state) =>
+        @restoreWindows state.windows
+        @restoreConnections state.connections
+
+    @restoreWindows: (windows) => 
+        for w in windows
+            @get w
+            
+    @restoreConnections: (connections) =>
+        for c in connections
+            new Connection c
     # ________________________________________________________________________________ tooltips
 
     @addPopup: (p) =>
@@ -122,6 +150,7 @@ class knix
     @initAnim: => window.requestAnimationFrame @anim
 
     @animObjects = []
+    @deanimate: (o) => _.del @animObjects, o
     @animate: (o) => @animObjects.push(o)
     @anim: (timestamp) =>
         for animObject in @animObjects

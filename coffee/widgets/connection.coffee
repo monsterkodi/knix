@@ -18,7 +18,6 @@ class Connection
             config =
                 source: $(config[0]).widget
                 target: $(config[1]).widget
-            log config
 
         @config = config
         

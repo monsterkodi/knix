@@ -287,7 +287,7 @@ class Window extends Widget
         return
 
     close: =>
-        log 'close'
+        # log 'close'
         if @config.popup?
             knix.delPopup @
         super

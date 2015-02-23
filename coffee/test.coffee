@@ -28,36 +28,38 @@ class Test
             maxFreq: 1000
             freq:    333
             shape:   'sine'
-            x: 10
-            y: 440
+            x: 20
+            y: 50
 
         g1= new Gain
-            gain: 0.0
-            x: 100
-            y: 142
+            gain: 0.5
+            x: 20
+            y: 200
 
         a1= new Analyser
-            x: 400
+            x: 300
             y: 42
-
-        d1= new Delay
-            x: 600
-            y: 42
-
-        g2= new Gain
-            gain: 0.0
-            x: 100
-            y: 142
 
         a2= new Analyser
-            x: 600
-            y: 300
+            x: 300
+            y: 350
+
+        d1= new Delay
+            x: 830
+            y: 42
+            delay:    5
+            maxDelay: 10
+
+        g2= new Gain
+            gain: 0.5
+            x: 830
+            y: 200
 
         gm= new Gain
             master: true
             gain: 0.0
-            x: 400
-            y: 544
+            x: 300
+            y: 650
 
         new Connection
             source: o1.connector 'audio:out'
@@ -110,36 +112,36 @@ class Test
 
         g1= new Gain
             gain: 0.0
-            x: 100
-            y: 142
+            x: 250
+            y: 40
 
         g2= new Gain
             gain: 0.0
-            x: 100
-            y: 342
+            x: 250
+            y: 240
 
         g3= new Gain
             gain: 0.3
-            x: 100
-            y: 542
+            x: 250
+            y: 440
 
         an= new Analyser
-            x: 400
+            x: 500
             y: 42
 
         f4= new Filter
-            x: 600
+            x: 1050
             y: 42
 
         a4= new Analyser
-            x: 600
-            y: 300
+            x: 500
+            y: 400
 
         gm= new Gain
             master: true
             gain: 0.0
-            x: 400
-            y: 544
+            x: 1050
+            y: 400
 
         new Connection
             source: o1.connector 'audio:out'
@@ -173,7 +175,7 @@ class Test
         
     @audio: ->
 
-        b = knix.get
+        a = knix.get
             type:   'button'
             text:   'audio'
             parent: 'menu'
@@ -185,7 +187,7 @@ class Test
             parent: 'menu'
             onClick: -> Test.delayNodes()
 
-        # b.elem.click()
+        a.elem.click()
 
     ###
 

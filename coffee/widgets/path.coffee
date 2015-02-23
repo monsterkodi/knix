@@ -40,7 +40,7 @@ class Path extends Widget
         @initEvents()
 
     close: =>
-        @path.remove()
+        @path?.remove()
         @path = null
         super()
 
