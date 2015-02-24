@@ -187,7 +187,7 @@ class Test
             parent: 'menu'
             onClick: -> Test.delayNodes()
 
-        a.elem.click()
+        #a.elem.click()
 
     ###
 

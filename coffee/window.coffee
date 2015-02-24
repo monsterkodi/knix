@@ -143,7 +143,7 @@ class Window extends Widget
         @sizeMoveDrag.deactivate() if @sizeMoveDrag
         @sizeMoveDrag = null
 
-        if e.getWidget()
+        if e?.getWidget?()
             m = @matchConfigValue 'noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten()
             return if m.length
         

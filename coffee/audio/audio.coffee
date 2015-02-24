@@ -19,6 +19,7 @@ class Audio
         Gain.menu()
         Delay.menu()
         Analyser.menu()
+        Envelope.menu()
 
     @filter: (cfg) =>
 

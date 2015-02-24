@@ -165,17 +165,11 @@ class knix
     @initSVG: =>
 
         svg = @get
-            id:    'stage_svg'
-            type:  'svg'
+            type:   'svg'
+            id:     'stage_svg'
+            parent: 'stage_content'
 
         @svg = svg.svg
-
-    @svg: (cfg) =>
-        svg = new Widget cfg,
-            elem: 'svg'
-            parent: 'stage_content'
-        svg.svg = SVG(svg.elem.id)
-        svg
 
     # ________________________________________________________________________________ canvas
 
