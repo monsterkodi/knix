@@ -57,6 +57,9 @@ class Pos
     distSquare: (o) => @sub(o).square()
     dist:       (o) => Math.sqrt @distSquare(o)
 
+    same:    (o) => @x == o.x and @y == o.y
+    notSame: (o) => @x != o.x or  @y != o.y
+
     check: =>
         newPos = new Pos(@x, @y)
         newPos.x = 0  if isNaN(newPos.x)

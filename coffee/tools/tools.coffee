@@ -13,7 +13,7 @@
     e.identify()
     e
 
-Element.addMethods
+Element.addMethods 
     raise: (element) ->
         if not (element = $(element))
             return
@@ -24,7 +24,7 @@ Element.addMethods
         return element?.parentElement?.getWidget()
 
 _.del = (l,e) ->
-   _.remove l, (n) -> n == e
+    _.remove l, (n) -> n == e
 
 _.def = (c,d) ->
     if c?
@@ -34,18 +34,25 @@ _.def = (c,d) ->
         d
 
 _.clamp = (r1, r2, v) ->
-        if r1 > r2
-            [r1,r2] = [r2,r1]
-        v = Math.max(v, r1) if r1?
-        v = Math.min(v, r2) if r2?
-        v
+    if r1 > r2
+        [r1,r2] = [r2,r1]
+    v = Math.max(v, r1) if r1?
+    v = Math.min(v, r2) if r2?
+    v
 
-_.arg = (event, argname='value') ->
-        if typeof event == 'object'
+_.arg = (event, argname='') ->
+    
+    if typeof event == 'object'
+        if event.detail?
             if event.detail[argname]?
+                #log 'event detail arg'
                 return event.detail[argname]
-            else
-                return event.detail
-        if argname == 'value'
-            return parseFloat event
-        event
+            #log 'event detail'
+            return event.detail
+            
+    if argname == 'value'
+        #log 'float value'
+        return parseFloat event
+        
+    #log 'just value', event
+    event

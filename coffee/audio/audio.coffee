@@ -7,7 +7,7 @@
 000   000   0000000   0000000    000   0000000 
 
 ###
-
+ 
 class Audio
 
     @init: =>
@@ -19,7 +19,7 @@ class Audio
         Gain.menu()
         Delay.menu()
         Analyser.menu()
-        Envelope.menu()
+        Envelope.menu() 
 
     @filter: (cfg) =>
 

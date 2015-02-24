@@ -32,6 +32,11 @@ class Path extends Widget
         @path.fill('none')
         @path.widget = @
         @elem = @path
+        
+        if @config.startHandle?
+            @config.startHandle.elem.addEventListener 'onMove', @setStart
+        if @config.endHandle?
+            @config.endHandle.elem.addEventListener 'onMove', @setEnd
 
         @config.endHead   = @config.end.add(@config.endDir)
         @config.startHead = @config.start.add(@config.startDir)
@@ -52,21 +57,28 @@ class Path extends Widget
     setStartHead: (p) => @setStartDir p.sub(@config.start)
 
     setStart: (p) =>
-
-        @config.start = p
+        p = _.arg(p)
+        @config.start = pos(p.x, p.y)
+        log '@config.start', @config.start
         @config.startHead = @config.start.add(@config.startDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 0, @config.start
         @setCtrl 1, @config.startHead
         @setCtrl 2, @config.mid
+        if @config.startHandle?
+            @config.startHandle.setPos @config.start
 
     setEnd: (p) =>
-        @config.end = p
+        p = _.arg(p)
+        @config.end = pos(p.x, p.y)
+        log '@config.end', @config.end
         @config.endHead = @config.end.add(@config.endDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 2, @config.mid
         @setCtrl 3, @config.endHead
         @setCtrl 4, @config.end
+        if @config.endHandle?
+            @config.endHandle.setPos @config.end
 
     setCtrl: (c, p) =>
         si = [0,1,1,2,2][c]

@@ -6,6 +6,7 @@ module.exports = (grunt) ->
 
         pepper:
             options:
+                verbose:       false
                 pepper:        ['log', 'warn', 'error']
             knix:
                 files:

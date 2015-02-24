@@ -124,7 +124,7 @@ class Widget
     # ____________________________________________________________________________ connections
 
     connector: (name) =>
-        tag 'Connection'
+        # tag 'Connection'
         # log name
         for t in ['slot', 'signal', 'in', 'out']
             for e in @elem.select('.'+t)
@@ -145,7 +145,7 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        tag 'Connection'
+        # tag 'Connection'
         # log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal(signal)
         slotFunction = @resolveSlot(slot)
