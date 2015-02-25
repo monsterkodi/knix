@@ -59,6 +59,7 @@ class Drag
 
     dragStart: (event) =>
         return if @dragging or not @listening
+        log 'start', @target.id
         @dragging = true
         @onStart @, event if @onStart?
         @cursorStartPos = @absPos(event)
@@ -66,10 +67,12 @@ class Drag
             @targetStartPos = @target.relPos()
             @targetStartPos = @targetStartPos.check()
 
+        log document?
         document.addEventListener 'mousemove', @dragMove
         document.addEventListener 'mouseup',   @dragUp
 
     dragMove: (event) =>
+        log 'move', @target.id
         return if not @dragging
         if @doMove
             newPos = @absPos(event)
@@ -83,6 +86,7 @@ class Drag
         @dragStop event
 
     dragStop: (event) =>
+        log 'stop', @target.id
         return if not @dragging
         document.removeEventListener 'mousemove', @dragMove
         document.removeEventListener 'mouseup',   @dragUp
@@ -98,9 +102,10 @@ class Drag
         @handle.addEventListener 'mousedown', @dragStart
         return
 
-    deactivate: (stopCurrentDragging) =>
+    deactivate: =>
+        log 'deactivate', @target.id
         return if not @listening
         @handle.removeEventListener 'mousedown', @dragStart
         @listening = false
-        @dragStop() if stopCurrentDragging and @dragging
+        @dragStop() if @dragging
         return

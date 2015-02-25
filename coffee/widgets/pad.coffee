@@ -16,7 +16,7 @@ class Pad extends Widget
         cfg = _.def cfg,
             minWidth:   '100px'
             minHeight:  '100px'
-            numHandles:  2
+            numHandles:  1
             hasPaths:    true
         
         super cfg,
@@ -31,26 +31,38 @@ class Pad extends Widget
         
         @svg = @getChild 'svg'
         
+        if @config.handles?
+            @config.numHandles = @config.handles.length
+        
         @handles = []
-        for i in [0...cfg.numHandles]
+        for i in [0...@config.numHandles]
             @handles.push new Handle
                     svg:   @svg.svg
                     class: 'pad_handle'
             
         if @config.hasPaths
-            for i in [1...cfg.numHandles]
+            for i in [1...@config.numHandles]
                 p = new Path
                     svg:         @svg.svg
                     class:       'pad_path'
                     startHandle: @handles[i-1]
                     endHandle:   @handles[i]
                 p.elem.back()    
-                    
-        for i in [0...cfg.numHandles]
-            @handles[i].setPos { x: i*150; y: i*150}
+            
+        if not @config.handles?      
+            @config.handles = []
+            for i in [0...@config.numHandles]
+                hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
+                @config.handles.push hp
+            
+        @setSize 100, 100
                 
     setSize: (width, height) =>
         @svg.setWidth width
         @svg.setHeight height
         @svg.elem.width = width
         @svg.elem.height = height
+        
+        for i in [0...@config.handles.length]
+            hp = pos @config.handles[i].x * width, height - @config.handles[i].y * height
+            @handles[i].setPos hp

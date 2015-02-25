@@ -31,6 +31,11 @@ class Pos
         @y *= val
         @
 
+    scale: (other) =>
+        @x *= other.x
+        @y *= other.y
+        @
+
     mid: (other) => @add(other).mul(0.5)
 
     min: (val) =>

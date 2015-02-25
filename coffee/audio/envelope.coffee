@@ -31,8 +31,9 @@ class Envelope extends Window
             title: 'envelope'
             children: \
             [
-                type: 'pad'
-                id:   'envelope_pad'
+                type:       'pad'
+                id:         'envelope_pad'
+                numHandles:  5
             ,
                 type:       'sliderspin'
                 id:         'duration'

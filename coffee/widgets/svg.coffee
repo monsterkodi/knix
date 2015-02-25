@@ -17,5 +17,5 @@ class Svg extends Widget
             type:   'svg'
             
         @svg = SVG @elem
-        @svg.node.getWidget = @returnThis
+        @svg.node.widget = @
         @svg.widget = @

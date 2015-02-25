@@ -12,15 +12,15 @@ class Handle extends Widget
 
     constructor: (cfg, defs) ->
 
-        @config = _.def cfg, _.def defs,
-            radius: 30
+        cfg = _.def cfg, defs
+        @config = _.def cfg,
+            radius: 20
             noMove: true
                         
         @circle      = @config.svg.circle @config.radius
         @elem        = @circle.node
         @elem.widget = @
         @initElem()
-        @elem.getWidget = @returnThis
         @elem.relPos = @relPos
         
         new Drag

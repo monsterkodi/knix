@@ -20,7 +20,7 @@ class Console extends Window
             # 'Widget':         'off'
             # 'Window':         'off'
             # 'layout':         'off'
-            'todo':           'off'
+            'Drag':           'off'
             # 'Connection':     'off'
 
         w  = Stage.size().width/2
@@ -147,17 +147,17 @@ class Console extends Window
             '</pre>'
         @updateTags()
 
-    updateTags: (tags) =>
+    updateTags: () =>
         tagElems = @elem.select('pre')
+        enabledTags = ( t for t,v of @logTags when v == true or v == 'on' )
         for tagElem in tagElems
-            tagElem.style.display = 'none'
-        for tag of @logTags
-            if @logTags[tag]? and (@logTags[tag] == true or @logTags[tag] == 'on')
-                tclass = '.log_'+tag.replace(/[\/@]/g, '_')  # replace / and @ with _
-                tagElems = @elem.select(tclass)
-                for tagElem in tagElems
-                    tagElem.style.display = ''
-
+            show = false
+            for tag in enabledTags
+                tclass = 'log_'+tag.replace(/[\/@]/g, '_')  # replace / and @ with _
+                if tclass in tagElem.classList
+                    show = true
+            tagElem.style.display = not show and 'none' or ''
+            
     addLogTag: (tag) => @logTags[tag] = true if not @logTags[tag]?
 
     toggleClasses: =>

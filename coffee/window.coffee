@@ -115,8 +115,6 @@ class Window extends Widget
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
-        # tag 'layout', 'todo'
-        # log 'what was this for?'
         @
 
     sizeWindow: =>
@@ -139,16 +137,19 @@ class Window extends Widget
             super
 
     onHover: (event, e) =>
-        
-        @sizeMoveDrag.deactivate() if @sizeMoveDrag
-        @sizeMoveDrag = null
+        tag 'Drag'
+        if @sizeMoveDrag? 
+            if @sizeMoveDrag.dragging then return
+            log 'deactivate sizeMoveDrag'
+            @sizeMoveDrag.deactivate() 
+            @sizeMoveDrag = null
 
-        if e?.getWidget?()
-            m = @matchConfigValue 'noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten()
+        if e?.getWidget?()?.getAncestors?
+            a = e.getWidget().getAncestors()
+            
+            m = @matchConfigValue 'noMove', true, [e.getWidget(), a].flatten()
             if m.length
                 return
-            # else
-            #     log 'no noMove'
         
         # log 'hover', e.id
         
@@ -182,6 +183,7 @@ class Window extends Widget
             else
                 cursor = 'nesw-resize'
 
+            log 'new resize drag'
             @sizeMoveDrag = Drag.create
                 target:  @elem
                 onStart: @sizeStart
@@ -191,6 +193,8 @@ class Window extends Widget
 
             @sizeMoveDrag.border = border
         else
+            tag 'Drag'
+            log 'new move drag'
             @sizeMoveDrag = Drag.create
                 target: @elem
                 minPos: pos(undefined,0)
@@ -200,8 +204,9 @@ class Window extends Widget
                 cursor: 'grab'
 
     onLeave: (event) =>
-        @sizeMoveDrag.deactivate() if @sizeMoveDrag
-        @sizeMoveDrag = null
+        if @sizeMoveDrag? and not @sizeMoveDrag.dragging
+            @sizeMoveDrag.deactivate() if @sizeMoveDrag
+            @sizeMoveDrag = null
 
     sizeStart: (drag, event) =>
         @config.isMaximized = false

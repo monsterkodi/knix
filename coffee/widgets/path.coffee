@@ -32,7 +32,7 @@ class Path extends Widget
         @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
         @path.fill('none')
         @path.widget = @
-        @path.node.getWidget = @returnThis
+        @path.node.widget = @
         @elem = @path
         
         if @config.startHandle?
@@ -61,7 +61,7 @@ class Path extends Widget
     setStart: (p) =>
         p = _.arg(p)
         @config.start = pos(p.x, p.y)
-        log '@config.start', @config.start
+        # log '@config.start', @config.start
         @config.startHead = @config.start.add(@config.startDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 0, @config.start
@@ -73,7 +73,7 @@ class Path extends Widget
     setEnd: (p) =>
         p = _.arg(p)
         @config.end = pos(p.x, p.y)
-        log '@config.end', @config.end
+        # log '@config.end', @config.end
         @config.endHead = @config.end.add(@config.endDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 2, @config.mid

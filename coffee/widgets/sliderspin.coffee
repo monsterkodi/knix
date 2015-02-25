@@ -51,6 +51,6 @@ class Sliderspin extends Hbox
 
     setValue: (v) =>
         @config.value = _.value v
-        log 'sliderspin value', @config.value
+        # log 'sliderspin value', @config.value
         @getChild(@config.id+'_slider').setValue @config.value
         
