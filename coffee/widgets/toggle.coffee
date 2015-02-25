@@ -14,35 +14,26 @@ class Toggle extends Button
 
         super cfg, _.def defs,
             class:      'button'
-            icon:       'octicon-x'
-            iconon:     'octicon-check'
             onClick:    @onClick
             state:      'off'
+            states:     ['on', 'off']
+            icon:       'octicon-check'
+            icons:      ['octicon-check', 'octicon-x']
 
         @elem.on 'onState', @config.onState if @config.onState?
-        @setState cfg.state
-
-    getState: => ((not @config.state) or @config.state == 'off') and 'off' or 'on'
+        @setState @config.state
 
     setState: (state) =>
-
-        @elem.removeClassName @getState()
-
         e = @getChild('octicon').elem
-        if not state? or not state or state == 'off'
-            e.removeClassName @config.iconon
-            e.addClassName @config.icon
-            @config.state = 'off'
-        else
-            e.removeClassName @config.icon
-            e.addClassName @config.iconon
-            @config.state = 'on'
-
+        e.removeClassName @config.icons[@getIndex()]
+        @elem.removeClassName @config.state
+        @config.state = state
+        e.addClassName @config.icons[@getIndex()]
         @elem.addClassName @config.state
-
         @emit 'onState',
             state: @config.state
 
-    toggle: => @setState(@getState() == 'on' and 'off' or 'on')
+    getIndex: => @config.states.indexOf @config.state
+    toggle: => @setState @config.states[(@getIndex()+1)%@config.states.length]
 
     onClick: => @toggle()

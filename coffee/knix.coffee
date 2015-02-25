@@ -106,14 +106,16 @@ class knix
         dump += JSON.stringify { 'windows': (w.config for w in @allWindows()), 'connections': @allConnections() }, null, '    '
         dump = dump.slice(0,-1)
         dump += "    }"
-        log dump
-        localStorage.setItem uuid.v4(), dump
+        # log dump
+        files = {} 
+        if localStorage.getItem('files')?
+            files = JSON.parse localStorage.getItem('files')
+        files[uuid.v4()] = dump
+        localStorage.setItem 'files', JSON.stringify(files)
 
     @restoreMenu: =>
-        log localStorage.length
-        for i in [0...localStorage.length]
-            log 'storage', i, localStorage.key(i)
-            # log localStorage.getItem(localStorage.key(i))
+        for file, data of JSON.parse(localStorage.getItem('files'))
+            log 'file', file, data.length
 
     @restore: (state) =>
         @restoreWindows state.windows

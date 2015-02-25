@@ -69,6 +69,8 @@ class Console extends Window
                 children.push
                     type:       'toggle'
                     text:       tag
+                    states:     ['on', 'unset', 'off']
+                    icons:      ['octicon-check', 'octicon-dash', 'octicon-x']
                     state:      @logTags[tag]
                     onState:    @onTagState
 
@@ -89,14 +91,6 @@ class Console extends Window
             children: children
             buttons:  \
             [
-                class:   'window-button-left'
-                child:
-                    type: 'icon'
-                    icon: 'octicon-x'
-                onClick: (event,e) ->
-                    for t in e.getWindow().elem.select('.toggle')
-                        t.widget.setState('off')
-            ,
                 type:    "window-button-left"
                 child:
                     type: 'icon'
@@ -104,6 +98,22 @@ class Console extends Window
                 onClick: (event,e) ->
                     for t in e.getWindow().elem.select('.toggle')
                         t.widget.setState('on')
+            ,
+                type:    "window-button-left"
+                child:
+                    type: 'icon'
+                    icon: 'octicon-dash'
+                onClick: (event,e) ->
+                    for t in e.getWindow().elem.select('.toggle')
+                        t.widget.setState('unset')
+            ,
+                class:   'window-button-left'
+                child:
+                    type: 'icon'
+                    icon: 'octicon-x'
+                onClick: (event,e) ->
+                    for t in e.getWindow().elem.select('.toggle')
+                        t.widget.setState('off')
             ,
                 type:    "window-button-right"
                 child:
@@ -149,16 +159,20 @@ class Console extends Window
 
     updateTags: () =>
         tagElems = @elem.select('pre')
-        enabledTags = ( t for t,v of @logTags when v == true or v == 'on' )
+        # enabledTags = ( t for t,v of @logTags when v == true or v == 'on' )
         for tagElem in tagElems
-            show = false
-            for tag in enabledTags
+            show = -1
+            for tag, v of @logTags
                 tclass = 'log_'+tag.replace(/[\/@]/g, '_')  # replace / and @ with _
                 if tclass in tagElem.classList
-                    show = true
-            tagElem.style.display = not show and 'none' or ''
+                    if v == 'off'
+                        show = 0
+                    else if v == 'on' and show != 0
+                        show = 1
             
-    addLogTag: (tag) => @logTags[tag] = true if not @logTags[tag]?
+            tagElem.style.display = (show == 0 and 'none' or '')
+            
+    addLogTag: (tag) => @logTags[tag] = 'unset' if not @logTags[tag]?
 
     toggleClasses: =>
         @config.showClasses = not @config.showClasses

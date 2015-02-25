@@ -96,7 +96,7 @@ class Window extends Widget
             child:
                 type: 'icon'
                 icon: 'octicon-x'
-            onClick: (event,e) -> e.getWindow().close()
+            onClick: @close
 
     addShadeButton: =>
         knix.create
@@ -183,6 +183,7 @@ class Window extends Widget
             else
                 cursor = 'nesw-resize'
 
+            tag 'Drag'
             log 'new resize drag'
             @sizeMoveDrag = Drag.create
                 target:  @elem
@@ -297,7 +298,7 @@ class Window extends Widget
         return
 
     close: =>
-        # log 'close'
+        log 'close'
         if @config.popup?
             knix.delPopup @
         super

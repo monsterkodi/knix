@@ -33,6 +33,7 @@ class Handle extends Widget
     absPos:      => pos(@circle.cx(), @circle.cy())
         
     onDragStart: (drag, event) =>
+        tag 'Drag'
         log 'startmove'
     
     onDragMove: (drag, event) =>

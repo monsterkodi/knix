@@ -67,7 +67,6 @@ class Drag
             @targetStartPos = @target.relPos()
             @targetStartPos = @targetStartPos.check()
 
-        log document?
         document.addEventListener 'mousemove', @dragMove
         document.addEventListener 'mouseup',   @dragUp
 

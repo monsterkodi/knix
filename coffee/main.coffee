@@ -15,6 +15,9 @@ document.observe "dom:loaded", ->
     knix.init
         console: true
         # console: 'shade'
+
+    localStorage.clear()
+
     # _________________________________________________________________________ widget test
 
     # Test.connectors()
