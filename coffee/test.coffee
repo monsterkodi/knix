@@ -507,8 +507,8 @@ class Test
             connect: \
             [
                 signal: 'onValue'
-                slot:   (v) ->
-                    v = _.arg(v)
+                slot: ->
+                    v = _.value()
                     c = 'rgba(%d,0,0,0.2)'.fmt(v)
                     # sc = $('stage_canvas').fc
                     # sc.setBackgroundColor(c, sc.renderAll.bind(sc))

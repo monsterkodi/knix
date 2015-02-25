@@ -40,21 +40,21 @@ _.clamp = (r1, r2, v) ->
     v = Math.min(v, r2) if r2?
     v
 
-_.arg = (event, argname='') ->
-    
-    if typeof event == 'object'
-        if event.detail?
-            if event.detail[argname]?
+_.arg = (arg, argname='') ->
+    arg = _.arg.caller.arguments[0] if not arg?
+    if typeof arg == 'object'
+        if arg.detail?
+            if arg.detail[argname]?
                 #log 'event detail arg'
-                return event.detail[argname]
+                return arg.detail[argname]
             #log 'event detail'
-            return event.detail
+            return arg.detail
             
     if argname == 'value'
         #log 'float value'
-        return parseFloat event
+        return parseFloat arg
         
     #log 'just value', event
-    event
+    arg
 
-_.value = (event) -> _.arg event, 'value'
+_.value = (arg) -> _.arg arg, 'value'

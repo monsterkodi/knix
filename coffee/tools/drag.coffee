@@ -71,7 +71,7 @@ class Drag
         document.addEventListener 'mouseup',   @dragUp
 
     dragMove: (event) =>
-        log 'move', @target.id
+        log 'move', @target.id, @onMove?
         return if not @dragging
         if @doMove
             newPos = @absPos(event)

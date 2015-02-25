@@ -10,25 +10,31 @@
 
 class Handle extends Widget
 
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
+        
+    init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
         @config = _.def cfg,
             radius: 20
             noMove: true
                         
-        @circle      = @config.svg.circle @config.radius
-        @elem        = @circle.node
-        @elem.widget = @
+        @circle         = @config.svg.circle @config.radius
+        @elem           = @circle.node
+        @elem.getWidget = @returnThis
         @initElem()
-        @elem.relPos = @relPos
+        @initEvents()
+        @elem.relPos    = @relPos
         
         new Drag
             target:  @elem
             doMove:  false
             onMove:  @onDragMove
             onStart: @onDragStart
-        
+    
+    initEvents: =>
+        @elem.addEventListener "onpos", @config.onPos if @config.onPos?
+    
     relPos:      => pos(@circle.cx(), @circle.cy())
     absPos:      => pos(@circle.cx(), @circle.cy())
         
@@ -37,13 +43,14 @@ class Handle extends Widget
         log 'startmove'
     
     onDragMove: (drag, event) =>
-        # log 'r', drag.absPos(event).sub @config.svg.widget.absPos()
-        @setPos drag.absPos(event).sub @config.svg.widget.absPos()
+        tag 'Drag'
+        log 'relPos', drag.absPos(event).sub @config.svg.node.getWidget().absPos()
+        @setPos drag.absPos(event).sub @config.svg.node.getWidget().absPos()
     
-    setPos: (p) =>
+    setPos: =>
         # log p
-        p = _.arg p
+        p = _.arg()
         o = @absPos()
         if o.notSame p
             @circle.center p.x, p.y
-            @elem.dispatchEvent new CustomEvent 'onMove', { 'detail': p }
+            @elem.dispatchEvent new CustomEvent 'onpos', { 'detail': p }

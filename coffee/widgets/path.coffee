@@ -10,8 +10,9 @@
 
 class Path extends Widget
 
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
 
+    init: (cfg, defs) =>
         @config = _.def cfg, _.def defs,
             start:    pos(0,0)
             startDir: pos(0,0)
@@ -31,14 +32,13 @@ class Path extends Widget
         @path.addClass('path')
         @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
         @path.fill('none')
-        @path.widget = @
-        @path.node.widget = @
-        @elem = @path
+        @elem = @path.node
+        @elem.getWidget = @returnThis
         
         if @config.startHandle?
-            @config.startHandle.elem.addEventListener 'onMove', @setStart
+            @config.startHandle.elem.addEventListener 'onpos', @setStart
         if @config.endHandle?
-            @config.endHandle.elem.addEventListener 'onMove', @setEnd
+            @config.endHandle.elem.addEventListener 'onpos', @setEnd
 
         @config.endHead   = @config.end.add(@config.endDir)
         @config.startHead = @config.start.add(@config.startDir)
@@ -58,8 +58,8 @@ class Path extends Widget
     setEndHead:   (p) => @setEndDir p.sub(@config.end)
     setStartHead: (p) => @setStartDir p.sub(@config.start)
 
-    setStart: (p) =>
-        p = _.arg(p)
+    setStart: =>
+        p = _.arg()
         @config.start = pos(p.x, p.y)
         # log '@config.start', @config.start
         @config.startHead = @config.start.add(@config.startDir)
@@ -70,8 +70,8 @@ class Path extends Widget
         if @config.startHandle?
             @config.startHandle.setPos @config.start
 
-    setEnd: (p) =>
-        p = _.arg(p)
+    setEnd: =>
+        p = _.arg()
         @config.end = pos(p.x, p.y)
         # log '@config.end', @config.end
         @config.endHead = @config.end.add(@config.endDir)

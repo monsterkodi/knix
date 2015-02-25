@@ -14,14 +14,7 @@ class Console extends Window
 
     constructor: (cfg) ->
 
-        @logTags =
-            # 'knix':           'off'
-            # 'Stage':          'off'
-            # 'Widget':         'off'
-            # 'Window':         'off'
-            # 'layout':         'off'
-            'Drag':           'off'
-            # 'Connection':     'off'
+        @logTags = Settings.get 'logTags', {}
 
         w  = Stage.size().width/2
         h  = Stage.size().height - $('menu').getHeight() - 2
@@ -56,10 +49,6 @@ class Console extends Window
                 noMove: true
 
         @elem.on 'contextmenu', @onContextMenu
-        # log localStorage.length
-        # for i in [0...localStorage.length]
-        #     log 'storage', i, localStorage.key(i)
-        #     log localStorage.getItem(localStorage.key(i))
 
     onContextMenu: (event,e) =>
 
@@ -133,6 +122,7 @@ class Console extends Window
     onTagState: (event,e) =>
         tag = e.widget.config.text
         @logTags[tag] = event.detail.state
+        Settings.set 'logTags', @logTags
         @updateTags()
 
     insert: (s) =>

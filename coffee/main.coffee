@@ -16,8 +16,6 @@ document.observe "dom:loaded", ->
         console: true
         # console: 'shade'
 
-    localStorage.clear()
-
     # _________________________________________________________________________ widget test
 
     # Test.connectors()

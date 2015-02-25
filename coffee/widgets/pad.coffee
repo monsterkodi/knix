@@ -39,6 +39,7 @@ class Pad extends Widget
             @handles.push new Handle
                     svg:   @svg.svg
                     class: 'pad_handle'
+                    onPos: @onHandlePos
             
         if @config.hasPaths
             for i in [1...@config.numHandles]
@@ -47,7 +48,7 @@ class Pad extends Widget
                     class:       'pad_path'
                     startHandle: @handles[i-1]
                     endHandle:   @handles[i]
-                p.elem.back()    
+                p.path.back()    
             
         if not @config.handles?      
             @config.handles = []
@@ -56,6 +57,10 @@ class Pad extends Widget
                 @config.handles.push hp
             
         @setSize 100, 100
+        
+    onHandlePos: => 
+        p = _.arg()
+        log p
                 
     setSize: (width, height) =>
         @svg.setWidth width

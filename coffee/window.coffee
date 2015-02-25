@@ -137,16 +137,18 @@ class Window extends Widget
             super
 
     onHover: (event, e) =>
-        tag 'Drag'
+
         if @sizeMoveDrag? 
             if @sizeMoveDrag.dragging then return
+            tag 'Drag'
             log 'deactivate sizeMoveDrag'
             @sizeMoveDrag.deactivate() 
             @sizeMoveDrag = null
 
+        # tag 'Drag'
+        # log e?, e?.getWidget?, e?.getWidget?()?, e?.getWidget?()?.getAncestors?
         if e?.getWidget?()?.getAncestors?
             a = e.getWidget().getAncestors()
-            
             m = @matchConfigValue 'noMove', true, [e.getWidget(), a].flatten()
             if m.length
                 return

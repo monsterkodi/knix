@@ -101,13 +101,13 @@ class Widget
     # ________________________________________________________________________________ event handling
 
     initEvents: =>
-        @elem.on "click",      @config.onClick  if @config.onClick?
-        @elem.on "mousedown",  @config.onDown   if @config.onDown?
-        @elem.on "mouseup",    @config.onUp     if @config.onUp?
-        @elem.on "mouseover",  @config.onOver   if @config.onOver?
-        @elem.on "mousemove",  @config.onMove   if @config.onMove?
-        @elem.on "mouseout",   @config.onOut    if @config.onOut?
-        @elem.on "ondblclick", @config.onDouble if @config.onDouble?
+        @elem.addEventListener "click",      @config.onClick  if @config.onClick?
+        @elem.addEventListener "mousedown",  @config.onDown   if @config.onDown?
+        @elem.addEventListener "mouseup",    @config.onUp     if @config.onUp?
+        @elem.addEventListener "mouseover",  @config.onOver   if @config.onOver?
+        @elem.addEventListener "mousemove",  @config.onMove   if @config.onMove?
+        @elem.addEventListener "mouseout",   @config.onOut    if @config.onOut?
+        @elem.addEventListener "ondblclick", @config.onDouble if @config.onDouble?
         @
 
     # ____________________________________________________________________________ slots
@@ -226,6 +226,8 @@ class Widget
         @elem.toggleDisplay = @toggleDisplay        
         
     # ____________________________________________________________________________ hierarchy
+
+    returnThis: => @
 
     addToParent: (p) =>
         if not @elem?
