@@ -24,10 +24,11 @@ class Connection
         for c in [@config.source, @config.target]
             c.addConnection @
             e = c.elem
-            c.getWindow().elem.on 'size',  @update
-            c.getWindow().elem.on 'move',  @update
-            c.getWindow().elem.on 'shade', @shaded
-            c.getWindow().elem.on 'close', @close
+            w = c.getWindow().elem
+            w.addEventListener 'size',  @update
+            w.addEventListener 'move',  @update
+            w.addEventListener 'shade', @shaded
+            w.addEventListener 'close', @close
 
         @path = knix.get
             type:     'path'
@@ -78,18 +79,18 @@ class Connection
         drag.connector.dragStop drag, event
         @close()
 
-    onOver: (event,e) =>
+    onOver: (event) =>
         [closer, farther] = @closestConnectors Stage.absPos(event)
         closer.elem.addClassName 'highlight'
         farther.elem.removeClassName 'highlight'
         @path.path.addClass 'highlight'
 
-    onMove: (event,e) =>
+    onMove: (event) =>
         [closer, farther] = @closestConnectors Stage.absPos(event)
         closer.elem.addClassName 'highlight'
         farther.elem.removeClassName 'highlight'
 
-    onOut: (event,e)  =>
+    onOut: (event)  =>
         [closer, farther] = @closestConnectors Stage.absPos(event)
         closer.elem.removeClassName 'highlight'
         farther.elem.removeClassName 'highlight'
@@ -144,7 +145,7 @@ class Connection
             (@config.source if @config.source.isIn()?)  or @config.target
         ]
 
-    update: (event,e) =>
+    update: =>
         @path.setStart @config.source.absCenter()
         @path.setEnd   @config.target.absCenter()
 
@@ -156,7 +157,7 @@ class Connection
         @path = null
         @config = null
 
-    shaded: (event,e) =>
+    shaded: (event) =>
         visible = not event.detail.shaded and
             @config.source.elem.visible() and
             @config.target.elem.visible() and

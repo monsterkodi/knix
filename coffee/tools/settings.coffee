@@ -11,21 +11,17 @@
 class Settings
 
     @set: (key, value) =>
-        log key, value
         settings = {}
         if localStorage.getItem('settings')?
             settings = JSON.parse localStorage.getItem('settings')
         settings[key] = value
         localStorage.setItem 'settings', JSON.stringify(settings)
-        log settings
         @
 
     @get: (key, def) =>
-        log key, def
         s = localStorage.getItem('settings')
         settings = JSON.parse(s)
         if settings?[key]?
-            log settings
             return settings[key]
         def
         

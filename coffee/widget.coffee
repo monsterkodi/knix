@@ -392,7 +392,7 @@ class Widget
         StyleSwitch.togglePathFilter()
 
     moveStop: (drag, event) =>
-        log 'stop', @event.target?.id
+        log 'stop', event.target?.id
         StyleSwitch.togglePathFilter()
 
     # ____________________________________________________________________________ layout

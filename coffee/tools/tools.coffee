@@ -58,3 +58,6 @@ _.arg = (arg, argname='') ->
     arg
 
 _.value = (arg) -> _.arg arg, 'value'
+
+_.win = -> _.win.caller.arguments[0].target.getWidget().getWindow()
+_.wid = -> _.wid.caller.arguments[0].target.getWidget()

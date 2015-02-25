@@ -20,7 +20,6 @@ class Spin extends Value
             child:
                 elem:   'table'
                 type:   'spin-table'
-                # onDown: (event,e) -> event.stopPropagation() ??? why ???
                 child:
                     elem:   'tr'
                     type:   'spin-row'
@@ -39,7 +38,7 @@ class Spin extends Value
                         child:
                             type:   'input'
                             class:  'spin-input'
-                            onDown: (event,e) -> event.stopPropagation()
+                            onDown: (event) -> event.stopPropagation()
                     ,
                         elem:   'td'
                         type:   'spin-td'
@@ -57,7 +56,7 @@ class Spin extends Value
 
         @input = @getChild('spin-input').elem
 
-        @input.on 'change', (event,e) ->
+        @input.addEventListener 'change', ->
             @getParent(@config.type).setValue @getValue()
 
         @input.value = @config.value

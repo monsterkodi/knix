@@ -48,7 +48,6 @@ class Handle extends Widget
         @setPos drag.absPos(event).sub @config.svg.node.getWidget().absPos()
     
     setPos: =>
-        # log p
         p = _.arg()
         o = @absPos()
         if o.notSame p

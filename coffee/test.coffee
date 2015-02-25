@@ -278,7 +278,7 @@ class Test
                 text:       '<i class="fa fa-cog fa-spin"></i> ok'
                 style:
                     clear:  'both'
-                onClick:    -> @getWindow().close()
+                onClick: (event, e) -> e.getWidget().getWindow().close()
             ]
             connect: \
             [
@@ -416,7 +416,7 @@ class Test
                     ,
                         type:       'button'
                         text:       'ok'
-                        onClick:    -> @getWindow().close()
+                        onClick:    (event, e) -> e.getWidget().getWindow().close()
                     ]
                     connect: \
                     [
@@ -469,7 +469,7 @@ class Test
                     ,
                         type:       'button'
                         text:       'ok'
-                        onClick:    -> @getWindow().close()
+                        onClick: (event, e) -> e.getWidget().getWindow().close()
                     ]
                     connect: \
                     [
@@ -510,8 +510,6 @@ class Test
                 slot: ->
                     v = _.value()
                     c = 'rgba(%d,0,0,0.2)'.fmt(v)
-                    # sc = $('stage_canvas').fc
-                    # sc.setBackgroundColor(c, sc.renderAll.bind(sc))
             ]
 
         knix.get
@@ -547,25 +545,3 @@ class Test
             x:          150
             y:          150
             onClick:    knix.closeAll
-
-        # _________________________________________________________________________ canvas test
-        #
-        # sc = knix.get
-        #     id:      'stage_canvas'
-        #     type:    'canvas'
-        #     width:   parseInt window.innerWidth
-        #     height:  parseInt window.innerHeight
-        #
-        # p = new fabric.Path('M 0 0 L 200 100 L 170 200')
-        # p.set
-        #     left: 20, top: 120, fill: '',
-        #     stroke: 'black', strokeWidth: 20, strokeLineCap: 'round', strokeLineJoin: 'round'
-        #     opacity: 0.5
-        # sc.fc.add(p)
-        #
-        # resizeStageCanvas = (x,y) -> sc.fc.setWidth x; sc.fc.setHeight y
-        #
-        # window.onresize = (event) ->
-        #     resizeStageCanvas parseInt(window.innerWidth), parseInt(window.innerHeight)
-
-        # Console.create()

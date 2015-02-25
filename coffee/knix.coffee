@@ -134,12 +134,13 @@ class knix
         @popups = [] if not @popups?
         @popups.push p
         if not @popupHandler?
-            @popupHandler = document.on 'mousedown', @closePopups
+            @popupHandler = document.addEventListener 'mousedown', @closePopups
             
     @delPopup: (p) =>
         @popups = @popups.without p
 
-    @closePopups: (event,e) =>
+    @closePopups: (event) =>
+        e = event.target
         if @popups?
             for p in @popups
                 p.close() for p in @popups when e not in p.elem.descendants()

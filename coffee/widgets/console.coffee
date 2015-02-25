@@ -12,7 +12,9 @@ class Console extends Window
 
     @scopeTags = []
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) -> super cfg, defs
+        
+    init: (cfg, defs) =>
 
         @logTags = Settings.get 'logTags', {}
 
@@ -35,22 +37,22 @@ class Console extends Window
                 child:
                     type: 'icon'
                     icon: 'octicon-trashcan'
-                onClick: (event,e) -> e.getWindow().getChild('console').clear()
+                onClick: @clear
             ,
                 type:    "window-button-left"
                 child:
                     type: 'icon'
                     icon: 'octicon-diff-added'
-                onClick: (event,e) -> e.getWindow().maximize()
+                onClick: @maximize
             ]
             child:
                 class:  'console'
                 text:   '<span class="tiny-text" style="vertical-align:top">console - knix version '+knix.version+'</span>'
                 noMove: true
 
-        @elem.on 'contextmenu', @onContextMenu
+        @elem.addEventListener 'contextmenu', @onContextMenu
 
-    onContextMenu: (event,e) =>
+    onContextMenu: (event) =>
 
         children = []
         for tag of @logTags
@@ -66,7 +68,7 @@ class Console extends Window
         children.push
             type: 'button'
             text: 'ok'
-            onClick: (event,e) -> e.getWindow().close()
+            onClick: -> _.win().close()
 
         knix.get
             hasClose: true
@@ -84,24 +86,24 @@ class Console extends Window
                 child:
                     type: 'icon'
                     icon: 'octicon-check'
-                onClick: (event,e) ->
-                    for t in e.getWindow().elem.select('.toggle')
+                onClick: ->
+                    for t in _.win().elem.select('.toggle')
                         t.widget.setState('on')
             ,
                 type:    "window-button-left"
                 child:
                     type: 'icon'
                     icon: 'octicon-dash'
-                onClick: (event,e) ->
-                    for t in e.getWindow().elem.select('.toggle')
+                onClick: ->
+                    for t in _.win().elem.select('.toggle')
                         t.widget.setState('unset')
             ,
                 class:   'window-button-left'
                 child:
                     type: 'icon'
                     icon: 'octicon-x'
-                onClick: (event,e) ->
-                    for t in e.getWindow().elem.select('.toggle')
+                onClick: ->
+                    for t in _.win().elem.select('.toggle')
                         t.widget.setState('off')
             ,
                 type:    "window-button-right"
@@ -119,8 +121,8 @@ class Console extends Window
 
         event.preventDefault()
 
-    onTagState: (event,e) =>
-        tag = e.widget.config.text
+    onTagState: (event) =>
+        tag = _.wid().config.text
         @logTags[tag] = event.detail.state
         Settings.set 'logTags', @logTags
         @updateTags()
@@ -174,6 +176,8 @@ class Console extends Window
         for t in @elem.select('.console-method', '.console-method-type')
             if @config.showMethods then t.show() else t.hide()
 
+    clear: => @getChild('console').clear()
+    
     # _________________________________________________________________________________________ static
 
     @setScopeTags: =>

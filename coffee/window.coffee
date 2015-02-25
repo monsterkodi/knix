@@ -106,7 +106,7 @@ class Window extends Widget
             child:
                 type: 'icon'
                 icon: 'octicon-dash'
-            onClick: (event,e) -> e.getWindow().shade()
+            onClick: @shade
 
     scrollToBottom: =>
         content = $(@content)
@@ -260,7 +260,7 @@ class Window extends Widget
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
 
-    raise: (event,e) =>
+    raise: (event) =>
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
         $(@content).scrollTop = scrolltop
