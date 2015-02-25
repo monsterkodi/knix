@@ -53,19 +53,7 @@ class Spin extends Value
         if not @config.valueStep?
             @config.valueStep = @range() > 1 and 1 or @range()/100
 
-        @elem.on 'keypress', (event,e) ->
-            if event.key in ['Up', 'Down']
-                @widget.incr event.key == 'Up' and '+' or '-'
-                event.stop()
-                return
-            if event.key not in '0123456789-.'
-                if event.key.length == 1
-                    event.stop()
-                    return
-            if event.key in '-.'
-                if @widget.input.value.indexOf(event.key) > -1
-                    event.stop()
-                    return
+        @elem.on 'keypress', @onKey
 
         @input = @getChild('spin-input').elem
 
@@ -74,6 +62,24 @@ class Spin extends Value
 
         @input.value = @config.value
         @setValue @config.value
+
+    onKey: (event, e) =>
+        log 'event', event.key
+        if event.key in ['Up', 'Down']
+            @incr event.key == 'Up' and '+' or '-'
+            event.stop()
+            return 
+        if event.key in ['Return', 'Enter', 'Tab']
+            @setValue parseFloat @input.value
+            return
+        if event.key not in '0123456789-.'
+            if event.key.length == 1
+                event.stop()
+                return
+        if event.key in '-.'
+            if @input.value.indexOf(event.key) > -1
+                event.stop()
+                return
 
     setValue: (a) =>
         super a

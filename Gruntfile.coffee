@@ -7,6 +7,7 @@ module.exports = (grunt) ->
         pepper:
             options:
                 verbose:       false
+                quiet:         true
                 pepper:        ['log', 'warn', 'error']
             knix:
                 files:
@@ -50,8 +51,8 @@ module.exports = (grunt) ->
         stylus:
             compile:
                 files:
-                    'style/bright.css': ['style/bright.styl']
-                    'style/dark.css': ['style/dark.styl']
+                    'style/bright.css': ['style/bright-style.styl']
+                    'style/dark.css': ['style/dark-style.styl']
 
         watch:
           scripts:
