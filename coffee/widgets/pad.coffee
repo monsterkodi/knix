@@ -27,6 +27,7 @@ class Pad extends Widget
                 minHeight: cfg.minHeight
             child:
                 type: 'svg'
+                noMove: true
         
         @svg = @getChild 'svg'
         

@@ -34,10 +34,8 @@ class Widget
         @config = cfg                                       # set config
         @config.id = @elem.id                               # store id in config
 
-        @elem.getWindow     = @getWindow
-        @elem.getChild      = @getChild
-        @elem.getParent     = @getParent
-        @elem.toggleDisplay = @toggleDisplay
+        @initElem()
+        
         @elem.relPos = -> o = @positionedOffset(); pos o.left, o.top
 
         @elem.writeAttribute('id', @config.id) if @config.id? # set element id
@@ -99,6 +97,7 @@ class Widget
     # ________________________________________________________________________________ dump
     
     dump: => @config
+    returnThis:  => @
 
     # ________________________________________________________________________________ event handling
 
@@ -220,6 +219,13 @@ class Widget
         e.id = "%s.%s".fmt clss, uuid.v4()
         e.addClassName clss
         e
+        
+    initElem: =>
+        @elem.getWindow     = @getWindow
+        @elem.getChild      = @getChild
+        @elem.getParent     = @getParent
+        @elem.toggleDisplay = @toggleDisplay        
+        
     # ____________________________________________________________________________ hierarchy
 
     addToParent: (p) =>
@@ -255,8 +261,8 @@ class Widget
             @config.children = c
         @
 
-    # returns first ancestor element that matches class or id of first argument
-    # with no arument: the element with config.parentId or the parent element
+    # returns first ancestor element that matches class or id of argument
+    # with no argument: the element with config.parentId or the parent element
 
     getParent: =>
         args = $A(arguments)
@@ -267,7 +273,9 @@ class Widget
                     return a.widget
             return
         return $(@config.parentId).widget if @config.parentId
-        return $(@parentElement.id).wiget
+        return $(@parentElement.id).widget if @parentElement?
+        return @getWidget().getParent() if @getWidget?()?.getParent?
+        return undefined
         
     getAncestors: => [@getParent(), @getParent()?.getAncestors()].flatten()
     matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?

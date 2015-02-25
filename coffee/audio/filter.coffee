@@ -63,11 +63,11 @@ class Filter extends Window
 
         @setFilter Filter.filters.indexOf cfg.filter
 
-    setDetune: (arg) => @audio.detune.value       = _.arg(arg)
-    setQ:      (arg) => @audio.Q.value            = _.arg(arg)
-    setFreq:   (arg) => @audio.frequency.value    = _.arg(arg)
-    setGain:   (arg) => @audio.gain.value         = _.arg(arg)
-    setFilter: (arg) => @audio.type = Filter.filters[_.arg(arg)]
+    setDetune: (v) => @audio.detune.value       = _.value v
+    setQ:      (v) => @audio.Q.value            = _.value v
+    setFreq:   (v) => @audio.frequency.value    = _.value v
+    setGain:   (v) => @audio.gain.value         = _.value v
+    setFilter: (v) => @audio.type = Filter.filters[_.value v]
 
     @menu: =>
 

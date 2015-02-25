@@ -145,7 +145,12 @@ class Window extends Widget
 
         if e?.getWidget?()
             m = @matchConfigValue 'noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten()
-            return if m.length
+            if m.length
+                return
+            # else
+            #     log 'no noMove'
+        
+        # log 'hover', e.id
         
         eventPos = Stage.absPos(event)
         d1 = eventPos.sub(@absPos())

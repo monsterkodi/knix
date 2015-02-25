@@ -32,8 +32,8 @@ class Gain extends Window
                 maxValue:   1.0
             ]
 
-    setGain:  (arg) => @audio.gain.value = _.arg(arg)
-    setValue: (arg) => @audio.gain.value = _.arg(arg)
+    setGain:  (v) => @audio.gain.value = _.value v
+    setValue: (v) => @audio.gain.value = _.value v
 
     @menu: =>
 

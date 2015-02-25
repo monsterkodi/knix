@@ -18,6 +18,7 @@ class Path extends Widget
             end:      pos(0,0)
             endDir:   pos(0,0)
             svg:      knix.svg
+            noMove:   true
 
         @path = @config.svg.path()
         @path .M  0,0
@@ -31,6 +32,7 @@ class Path extends Widget
         @path.addClass(clss) for clss in @config.class.split(' ') if @config.class?
         @path.fill('none')
         @path.widget = @
+        @path.node.getWidget = @returnThis
         @elem = @path
         
         if @config.startHandle?

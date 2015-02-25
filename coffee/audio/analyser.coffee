@@ -61,9 +61,9 @@ class Analyser extends Window
         knix.deanimate @
         super
 
-    setScaleX:   (a) => @config.scaleX   = _.arg(a)
-    setScaleY:   (a) => @config.scaleY   = _.arg(a)
-    setTriggerY: (a) => @config.triggerY = _.arg(a)
+    setScaleX:   (v) => @config.scaleX   = _.value v
+    setScaleY:   (v) => @config.scaleY   = _.value v
+    setTriggerY: (v) => @config.triggerY = _.value v
 
     sizeWindow: =>
         

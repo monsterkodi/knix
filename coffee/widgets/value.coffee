@@ -32,10 +32,10 @@ class Value extends Widget
         @elem.on "onValue", @config.onValue  if @config.onValue?
         super
 
-    setValue: (a) =>
+    setValue: (v) =>
         # tag 'value'
         oldValue = @config.value
-        v = @round(@clamp(_.arg(a)))
+        v = @round(@clamp(_.value(v)))
         if v != oldValue
             # log v
             @config.value = v

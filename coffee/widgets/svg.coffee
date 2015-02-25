@@ -14,7 +14,8 @@ class Svg extends Widget
     
         cfg = _.def cfg, defs
         super cfg,
-            type: 'svg'
-            # elem: 'svg'
+            type:   'svg'
             
         @svg = SVG @elem
+        @svg.node.getWidget = @returnThis
+        @svg.widget = @

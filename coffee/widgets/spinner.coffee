@@ -39,8 +39,8 @@ class Spinner extends Spin
         v      = @size2value width
         @setValue v
 
-    setValue: (a) =>
-        d = _.arg(a) - @range()/2
+    setValue: (v) =>
+        d = _.value(v) - @range()/2
         v = @range()/2 + d * @config.valueStep  * @steps() / @range()
         super v
         c = @getChild 'spin-content'

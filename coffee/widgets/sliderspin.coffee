@@ -49,8 +49,8 @@ class Sliderspin extends Hbox
         @connect cfg.id+'_slider:onValue', cfg.id+':setValue'
         @connect cfg.id+':onValue', cfg.id+'_slider:setValue'
 
-    setValue: (a) =>
-        @config.value = _.arg(a) 
+    setValue: (v) =>
+        @config.value = _.value v
         # log 'sliderspin value', @config.value
         @getChild(@config.id+'_slider').setValue @config.value
         

@@ -43,8 +43,8 @@ class Oscillator extends Window
         @setFreq cfg.freq
         @setShape(Oscillator.shapes.indexOf(cfg.shape)) if cfg.shape?
 
-    setFreq: (arg)  => @audio.frequency.value = _.arg(arg)
-    setShape: (arg) => @audio.type = Oscillator.shapes[_.arg(arg)]
+    setFreq:  (v) => @audio.frequency.value = _.value v
+    setShape: (v) => @audio.type = Oscillator.shapes[_.value(v)]
 
     @menu: =>
 

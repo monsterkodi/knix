@@ -33,7 +33,7 @@ class Delay extends Window
                 onValue:    @setDelay
             ]
 
-    setDelay: (arg) => @audio.delayTime.value = _.arg(arg)
+    setDelay: (v) => @audio.delayTime.value = _.value v
 
     @menu: =>
 

@@ -41,7 +41,7 @@ class Connection
         @path.connection = @
 
         @drag = Drag.create
-            target:  @path.path
+            target:  @path.path.node
             cursor:  'grab'
             doMove:  false
             onStart: @dragStart

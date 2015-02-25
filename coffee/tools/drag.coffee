@@ -26,8 +26,15 @@ class Drag
                 doMove:  true
                 active:  true
 
-        @target = document.getElementById(@target) if typeof (@target) is "string"
-        return unless @target?
+        if typeof @target is "string"
+            t = document.getElementById @target
+            if not t?
+                error 'cant find drag target with id', @target
+                return
+            @target = t
+        if not @target?
+            error 'cant find drag target', @target
+            return
         if @minPos? and @maxPos?
             tempPos = @minPos
             @minPos = @minPos.min(@maxPos)
@@ -53,14 +60,14 @@ class Drag
     dragStart: (event) =>
         return if @dragging or not @listening
         @dragging = true
-        # log 'drag start', @onStart?
         @onStart @, event if @onStart?
         @cursorStartPos = @absPos(event)
         if @doMove
             @targetStartPos = @target.relPos()
             @targetStartPos = @targetStartPos.check()
-        @eventMove = $(document).on 'mousemove', @dragMove
-        @eventUp   = $(document).on 'mouseup',   @dragUp
+
+        document.addEventListener 'mousemove', @dragMove
+        document.addEventListener 'mouseup',   @dragUp
 
     dragMove: (event) =>
         return if not @dragging
@@ -77,8 +84,8 @@ class Drag
 
     dragStop: (event) =>
         return if not @dragging
-        @eventMove.stop()
-        @eventUp.stop()
+        document.removeEventListener 'mousemove', @dragMove
+        document.removeEventListener 'mouseup',   @dragUp
         @cursorStartPos = null
         @targetStartPos = null
         @onStop this, event if @onStop? and event?
@@ -88,12 +95,12 @@ class Drag
     activate: =>
         return if @listening
         @listening = true
-        @eventDown = @handle.on 'mousedown', @dragStart
+        @handle.addEventListener 'mousedown', @dragStart
         return
 
     deactivate: (stopCurrentDragging) =>
         return if not @listening
-        @eventDown.stop()
+        @handle.removeEventListener 'mousedown', @dragStart
         @listening = false
         @dragStop() if stopCurrentDragging and @dragging
         return

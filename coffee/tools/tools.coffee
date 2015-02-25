@@ -56,3 +56,5 @@ _.arg = (event, argname='') ->
         
     #log 'just value', event
     event
+
+_.value = (event) -> _.arg event, 'value'

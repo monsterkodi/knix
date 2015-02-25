@@ -23,7 +23,7 @@ class Envelope extends Window
             maxScale:     10.0
             scaleStep:    0.01
             offset:       0.0
-            minOffset:    10.0
+            minOffset:   -10.0
             maxOffset:    10.0
             offsetStep:   0.1
 
@@ -31,8 +31,8 @@ class Envelope extends Window
             title: 'envelope'
             children: \
             [
-                id:   'envelope_pad'
                 type: 'pad'
+                id:   'envelope_pad'
             ,
                 type:       'sliderspin'
                 id:         'duration'
@@ -61,9 +61,9 @@ class Envelope extends Window
 
         @sizeWindow()
 
-    setDuration: (a) => @config.duration = _.arg(a)
-    setOffset:   (a) => @config.Offset   = _.arg(a)
-    setScale:    (a) => @config.scale    = _.arg(a)
+    setDuration: (v) => @config.duration = _.value v
+    setOffset:   (v) => @config.Offset   = _.value v
+    setScale:    (v) => @config.scale    = _.value v
 
     sizeWindow: =>
         pad = @getChild 'pad'

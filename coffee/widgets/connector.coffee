@@ -83,7 +83,7 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         @handle = knix.get
-            type:  'handle'
+            type:  'connector_handle'
             style:
                 cursor: 'grabbing'
 
@@ -122,7 +122,7 @@ class Connector extends Widget
 
     dragStop: (drag,event) =>
 
-        p = drag.absPos(event)
+        p = drag.absPos event
 
         if conn = @connectorAtPos p
             new Connection
@@ -132,6 +132,6 @@ class Connector extends Widget
         else if @connections.length == 0
             @elem.removeClassName 'connected'
 
-        if 1
-            @handle.close()
-            @path.path.remove()
+        log 'stop'
+        @handle.close()
+        @path.path.remove()
