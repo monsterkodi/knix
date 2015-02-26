@@ -279,19 +279,18 @@ class Window extends Widget
     contentHeight: => @elem.getLayout().get('padding-box-height') - @headerSize()
 
     shade: =>
-        size = @getChild 'size'
         if @config.isShaded
-            @elem.setStyle('min-height': @config.minHeight+'px')
-            @setHeight @config.height
+            # @elem.setStyle({'min-height': @config.minHeight+'px'})
             @config.isShaded = false
-            size.elem.show() if size
             $(@content).show()
+            @setHeight @config.height
+            @elem.setStyle({'min-height': @minHeightShade})
         else
             @config.height = @getHeight()
-            @elem.setStyle('min-height': '0px')
+            @minHeightShade = @elem.getStyle('min-height')
+            @elem.setStyle({'min-height': '0px'})
             @setHeight @headerSize()
             @config.isShaded = true
-            size.elem.hide() if size
             $(@content).hide()
 
         @emit 'shade',

@@ -1,6 +1,6 @@
 {
     "name": "knix",
-    "version": "0.3.272",
+    "version": "0.4.0",
     "private": true,
     "description": "kann noch immer knix",
     "main": "index.html",
