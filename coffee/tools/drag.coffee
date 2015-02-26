@@ -73,8 +73,11 @@ class Drag
         return if not @dragging
         if @doMove
             newPos = @absPos(event)
-            newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
+            # newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
+            newPos = @targetStartPos.add(newPos.sub(@cursorStartPos))
+            # log @targetStartPos, newPos.sub(@cursorStartPos), newPos
             newPos.clamp @minPos, @maxPos
+            # log newPos
             @target.getWidget().setPos newPos
         if @onMove?
             @onMove this, event

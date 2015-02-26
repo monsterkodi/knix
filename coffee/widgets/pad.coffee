@@ -76,6 +76,23 @@ class Pad extends Widget
             @config.handles[i].x = x
         if y != @config.handles[i].y
             @config.handles[i].y = y
+            
+        @handleConstraints()
+
+    handleConstraints: =>
+        width = @getWidth()
+        height = @getHeight()
+
+        for i in [0...@config.handles.length]
+            if i == 0
+                [minX, maxX] = [0, 0]
+            else if i == @config.handles.length-1
+                [minX, maxX] = [width, width]
+            else
+                minX = @handles[i-1].relPos().x
+                maxX = @handles[i+1].relPos().x
+            @handles[i].drag.minPos = pos minX, 0
+            @handles[i].drag.maxPos = pos maxX, height
                 
     setSize: (width, height) =>
         @svg.setWidth width
@@ -86,3 +103,4 @@ class Pad extends Widget
         for i in [0...@config.handles.length]
             hp = pos @config.handles[i].x * width, height - @config.handles[i].y * height
             @handles[i].setPos hp
+            @handleConstraints()

@@ -54,8 +54,8 @@ class Pos
 
     clamp: (lower, upper) =>
         if lower? and upper?
-            @x = _.clamp(lower.x, upper.x, x)
-            @y = _.clamp(lower.y, upper.y, y)
+            @x = _.clamp(lower.x, upper.x, @x)
+            @y = _.clamp(lower.y, upper.y, @y)
         @
 
     square:         => (@x * @x) + (@y * @y)

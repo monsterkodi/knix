@@ -40,7 +40,7 @@ class Delay extends Window
         knix.create
             type:   'button'
             id:     'new_delay'
-            icon:   'octicon-dashboard'
+            icon:   'octicon-hourglass'
             class:  'tool-button'
             parent: 'menu'
             onClick: -> new Delay
