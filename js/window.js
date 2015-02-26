@@ -135,9 +135,7 @@ Window = (function(_super) {
         type: 'icon',
         icon: 'octicon-x'
       },
-      onClick: function(event, e) {
-        return e.getWindow().close();
-      }
+      onClick: this.close
     });
   };
 
@@ -150,9 +148,7 @@ Window = (function(_super) {
         type: 'icon',
         icon: 'octicon-dash'
       },
-      onClick: function(event, e) {
-        return e.getWindow().shade();
-      }
+      onClick: this.shade
     });
   };
 
@@ -192,13 +188,17 @@ Window = (function(_super) {
   };
 
   Window.prototype.onHover = function(event, e) {
-    var action, border, cursor, d1, d2, eventPos, m, md;
-    if (this.sizeMoveDrag) {
+    var a, action, border, cursor, d1, d2, eventPos, m, md, _ref;
+    if (this.sizeMoveDrag != null) {
+      if (this.sizeMoveDrag.dragging) {
+        return;
+      }
       this.sizeMoveDrag.deactivate();
+      this.sizeMoveDrag = null;
     }
-    this.sizeMoveDrag = null;
-    if (e.getWidget()) {
-      m = this.matchConfigValue('noMove', true, [e.getWidget(), e.getWidget().getAncestors()].flatten());
+    if ((e != null ? typeof e.getWidget === "function" ? (_ref = e.getWidget()) != null ? _ref.getAncestors : void 0 : void 0 : void 0) != null) {
+      a = e.getWidget().getAncestors();
+      m = this.matchConfigValue('noMove', true, [e.getWidget(), a].flatten());
       if (m.length) {
         return;
       }
@@ -255,10 +255,12 @@ Window = (function(_super) {
   };
 
   Window.prototype.onLeave = function(event) {
-    if (this.sizeMoveDrag) {
-      this.sizeMoveDrag.deactivate();
+    if ((this.sizeMoveDrag != null) && !this.sizeMoveDrag.dragging) {
+      if (this.sizeMoveDrag) {
+        this.sizeMoveDrag.deactivate();
+      }
+      return this.sizeMoveDrag = null;
     }
-    return this.sizeMoveDrag = null;
   };
 
   Window.prototype.sizeStart = function(drag, event) {
@@ -322,7 +324,7 @@ Window = (function(_super) {
     }
   };
 
-  Window.prototype.raise = function(event, e) {
+  Window.prototype.raise = function(event) {
     var scrolltop;
     scrolltop = $(this.content).scrollTop;
     this.elem.parentElement.appendChild(this.elem);
@@ -356,28 +358,21 @@ Window = (function(_super) {
   };
 
   Window.prototype.shade = function() {
-    var size;
-    size = this.getChild('size');
     if (this.config.isShaded) {
-      this.elem.setStyle({
-        'min-height': this.config.minHeight + 'px'
-      });
-      this.setHeight(this.config.height);
       this.config.isShaded = false;
-      if (size) {
-        size.elem.show();
-      }
       $(this.content).show();
+      this.setHeight(this.config.height);
+      this.elem.setStyle({
+        'min-height': this.minHeightShade
+      });
     } else {
       this.config.height = this.getHeight();
+      this.minHeightShade = this.elem.getStyle('min-height');
       this.elem.setStyle({
         'min-height': '0px'
       });
       this.setHeight(this.headerSize());
       this.config.isShaded = true;
-      if (size) {
-        size.elem.hide();
-      }
       $(this.content).hide();
     }
     this.emit('shade', {
@@ -386,6 +381,14 @@ Window = (function(_super) {
   };
 
   Window.prototype.close = function() {
+    log({
+      "file": "./coffee/window.coffee",
+      "class": "Window",
+      "line": 302,
+      "args": ["box=\"border-box-height\""],
+      "method": "close",
+      "type": "."
+    }, 'close');
     if (this.config.popup != null) {
       knix.delPopup(this);
     }

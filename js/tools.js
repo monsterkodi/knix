@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000   000
 0000000    000   000  000   000   0000000
  */
-var Drag, Pos, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
+var Drag, Pos, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -21,10 +21,11 @@ Drag = (function() {
     this.activate = __bind(this.activate, this);
     this.dragStop = __bind(this.dragStop, this);
     this.dragUp = __bind(this.dragUp, this);
+    this.constrain = __bind(this.constrain, this);
     this.dragMove = __bind(this.dragMove, this);
     this.dragStart = __bind(this.dragStart, this);
     this.absPos = __bind(this.absPos, this);
-    var tempPos;
+    var t, _ref;
     _.extend(this, _.def(cfg, {
       target: null,
       handle: null,
@@ -38,15 +39,33 @@ Drag = (function() {
       active: true
     }));
     if (typeof this.target === "string") {
-      this.target = document.getElementById(this.target);
+      t = document.getElementById(this.target);
+      if (t == null) {
+        error({
+          "file": "./coffee/tools/drag.coffee",
+          "class": "Drag",
+          "line": 32,
+          "args": ["cfg"],
+          "method": "constructor",
+          "type": "."
+        }, 'cant find drag target with id', this.target);
+        return;
+      }
+      this.target = t;
     }
     if (this.target == null) {
+      error({
+        "file": "./coffee/tools/drag.coffee",
+        "class": "Drag",
+        "line": 36,
+        "args": ["cfg"],
+        "method": "constructor",
+        "type": "."
+      }, 'cant find drag target', this.target);
       return;
     }
     if ((this.minPos != null) && (this.maxPos != null)) {
-      tempPos = this.minPos;
-      this.minPos = this.minPos.min(this.maxPos);
-      this.maxPos = tempPos.max(this.maxPos);
+      _ref = [this.minPos.min(this.maxPos), this.minPos.max(this.maxPos)], this.minPos = _ref[0], this.maxPos = _ref[1];
     }
     this.cursorStartPos = null;
     this.targetStartPos = null;
@@ -78,6 +97,14 @@ Drag = (function() {
     if (this.dragging || !this.listening) {
       return;
     }
+    log({
+      "file": "./coffee/tools/drag.coffee",
+      "class": "Drag",
+      "line": 60,
+      "args": ["event"],
+      "method": "dragStart",
+      "type": "."
+    }, 'start', this.target.id);
     this.dragging = true;
     if (this.onStart != null) {
       this.onStart(this, event);
@@ -87,8 +114,8 @@ Drag = (function() {
       this.targetStartPos = this.target.relPos();
       this.targetStartPos = this.targetStartPos.check();
     }
-    this.eventMove = $(document).on('mousemove', this.dragMove);
-    return this.eventUp = $(document).on('mouseup', this.dragUp);
+    document.addEventListener('mousemove', this.dragMove);
+    return document.addEventListener('mouseup', this.dragUp);
   };
 
   Drag.prototype.dragMove = function(event) {
@@ -98,12 +125,25 @@ Drag = (function() {
     }
     if (this.doMove) {
       newPos = this.absPos(event);
-      newPos = newPos.add(this.targetStartPos).sub(this.cursorStartPos);
-      newPos.clamp(this.minPos, this.maxPos);
-      newPos.apply(this.target);
+      newPos = this.targetStartPos.add(newPos.sub(this.cursorStartPos));
+      newPos = newPos.clamp(this.minPos, this.maxPos);
+      this.target.getWidget().setPos(newPos);
     }
     if (this.onMove != null) {
       return this.onMove(this, event);
+    }
+  };
+
+  Drag.prototype.constrain = function(minX, minY, maxX, maxY) {
+    var cp, wp;
+    wp = this.target.getWidget().relPos();
+    this.minPos = pos(minX, minY);
+    this.maxPos = pos(maxX, maxY);
+    cp = wp.clamp(this.minPos, this.maxPos);
+    if (wp.notSame(cp)) {
+      if (this.doMove) {
+        return this.target.getWidget().setPos(cp);
+      }
     }
   };
 
@@ -112,11 +152,19 @@ Drag = (function() {
   };
 
   Drag.prototype.dragStop = function(event) {
+    log({
+      "file": "./coffee/tools/drag.coffee",
+      "class": "Drag",
+      "line": 106,
+      "args": ["event"],
+      "method": "dragStop",
+      "type": "."
+    }, 'stop', this.target.id);
     if (!this.dragging) {
       return;
     }
-    this.eventMove.stop();
-    this.eventUp.stop();
+    document.removeEventListener('mousemove', this.dragMove);
+    document.removeEventListener('mouseup', this.dragUp);
     this.cursorStartPos = null;
     this.targetStartPos = null;
     if ((this.onStop != null) && (event != null)) {
@@ -130,16 +178,16 @@ Drag = (function() {
       return;
     }
     this.listening = true;
-    this.eventDown = this.handle.on('mousedown', this.dragStart);
+    this.handle.addEventListener('mousedown', this.dragStart);
   };
 
-  Drag.prototype.deactivate = function(stopCurrentDragging) {
+  Drag.prototype.deactivate = function() {
     if (!this.listening) {
       return;
     }
-    this.eventDown.stop();
+    this.handle.removeEventListener('mousedown', this.dragStart);
     this.listening = false;
-    if (stopCurrentDragging && this.dragging) {
+    if (this.dragging) {
       this.dragStop();
     }
   };
@@ -187,8 +235,9 @@ Pos = (function() {
     this.x = x;
     this.y = y;
     this._str = __bind(this._str, this);
-    this.apply = __bind(this.apply, this);
     this.check = __bind(this.check, this);
+    this.notSame = __bind(this.notSame, this);
+    this.same = __bind(this.same, this);
     this.dist = __bind(this.dist, this);
     this.distSquare = __bind(this.distSquare, this);
     this.square = __bind(this.square, this);
@@ -196,14 +245,20 @@ Pos = (function() {
     this.max = __bind(this.max, this);
     this.min = __bind(this.min, this);
     this.mid = __bind(this.mid, this);
+    this.scale = __bind(this.scale, this);
     this.mul = __bind(this.mul, this);
     this.sub = __bind(this.sub, this);
     this.add = __bind(this.add, this);
+    this.copy = __bind(this.copy, this);
   }
+
+  Pos.prototype.copy = function() {
+    return new Pos(this.x, this.y);
+  };
 
   Pos.prototype.add = function(val) {
     var newPos;
-    newPos = new Pos(this.x, this.y);
+    newPos = this.copy();
     if (val != null) {
       if (!isNaN(val.x)) {
         newPos.x += val.x;
@@ -217,7 +272,7 @@ Pos = (function() {
 
   Pos.prototype.sub = function(val) {
     var newPos;
-    newPos = new Pos(this.x, this.y);
+    newPos = this.copy();
     if (val != null) {
       if (!isNaN(val.x)) {
         newPos.x -= val.x;
@@ -235,13 +290,19 @@ Pos = (function() {
     return this;
   };
 
+  Pos.prototype.scale = function(other) {
+    this.x *= other.x;
+    this.y *= other.y;
+    return this;
+  };
+
   Pos.prototype.mid = function(other) {
     return this.add(other).mul(0.5);
   };
 
   Pos.prototype.min = function(val) {
     var newPos;
-    newPos = new Pos(this.x, this.y);
+    newPos = this.copy();
     if (val == null) {
       return newPos;
     }
@@ -256,7 +317,7 @@ Pos = (function() {
 
   Pos.prototype.max = function(val) {
     var newPos;
-    newPos = new Pos(this.x, this.y);
+    newPos = this.copy();
     if (val == null) {
       return newPos;
     }
@@ -270,11 +331,13 @@ Pos = (function() {
   };
 
   Pos.prototype.clamp = function(lower, upper) {
+    var newPos;
+    newPos = this.copy();
     if ((lower != null) && (upper != null)) {
-      this.x = _.clamp(lower.x, upper.x, x);
-      this.y = _.clamp(lower.y, upper.y, y);
+      newPos.x = _.clamp(lower.x, upper.x, this.x);
+      newPos.y = _.clamp(lower.y, upper.y, this.y);
     }
-    return this;
+    return newPos;
   };
 
   Pos.prototype.square = function() {
@@ -289,9 +352,17 @@ Pos = (function() {
     return Math.sqrt(this.distSquare(o));
   };
 
+  Pos.prototype.same = function(o) {
+    return this.x === (o != null ? o.x : void 0) && this.y === (o != null ? o.y : void 0);
+  };
+
+  Pos.prototype.notSame = function(o) {
+    return this.x !== (o != null ? o.x : void 0) || this.y !== (o != null ? o.y : void 0);
+  };
+
   Pos.prototype.check = function() {
     var newPos;
-    newPos = new Pos(this.x, this.y);
+    newPos = this.copy();
     if (isNaN(newPos.x)) {
       newPos.x = 0;
     }
@@ -301,23 +372,8 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.apply = function(element) {
-    if (typeof element === "string") {
-      element = document.getElementById(element);
-    }
-    if (element == null) {
-      return;
-    }
-    if (!isNaN(this.x)) {
-      element.style.left = this.x + "px";
-    }
-    if (!isNaN(this.y)) {
-      element.style.top = this.y + "px";
-    }
-  };
-
   Pos.prototype._str = function() {
-    return "<x:%2.0f y:%2.0f>".fmt(this.x, this.y);
+    return "<x:%2.2f y:%2.2f>".fmt(this.x, this.y);
   };
 
   return Pos;
@@ -327,6 +383,48 @@ Pos = (function() {
 pos = function(x, y) {
   return new Pos(x, y);
 };
+
+
+/*
+
+ 0000000  00000000  000000000  000000000  000  000   000   0000000    0000000
+000       000          000        000     000  0000  000  000        000     
+0000000   0000000      000        000     000  000 0 000  000  0000  0000000 
+     000  000          000        000     000  000  0000  000   000       000
+0000000   00000000     000        000     000  000   000   0000000   0000000
+ */
+
+Settings = (function() {
+  function Settings() {}
+
+  Settings.set = function(key, value) {
+    var settings;
+    settings = {};
+    if (localStorage.getItem('settings') != null) {
+      settings = JSON.parse(localStorage.getItem('settings'));
+    }
+    settings[key] = value;
+    localStorage.setItem('settings', JSON.stringify(settings));
+    return Settings;
+  };
+
+  Settings.get = function(key, def) {
+    var s, settings;
+    s = localStorage.getItem('settings');
+    settings = JSON.parse(s);
+    if ((settings != null ? settings[key] : void 0) != null) {
+      return settings[key];
+    }
+    return def;
+  };
+
+  Settings.clear = function() {
+    return localStorage.setItem('settings', "{}");
+  };
+
+  return Settings;
+
+})();
 
 
 /*
@@ -359,8 +457,8 @@ Stage = (function() {
     if ($('stage_content') === e) {
       log({
         "file": "./coffee/tools/stage.coffee",
-        "line": 30,
         "class": "Stage",
+        "line": 30,
         "method": "showContextMenu",
         "type": "@",
         "args": ["event", "e"]
@@ -481,7 +579,7 @@ str = function(o, indent, visited) {
       s += '\n' + indent + strIndent + ']';
     } else {
       if (o._str != null) {
-        s = o._str();
+        return o._str();
       } else {
         s = "<" + protoname + ">\n";
         visited.push(o);
@@ -622,6 +720,10 @@ Element.addMethods({
   }
 });
 
+SVGAnimatedLength.prototype._str = function() {
+  return "<%0.2f>".fmt(this.baseVal.value);
+};
+
 _.del = function(l, e) {
   return _.remove(l, function(n) {
     return n === e;
@@ -650,21 +752,37 @@ _.clamp = function(r1, r2, v) {
   return v;
 };
 
-_.arg = function(event, argname) {
+_.arg = function(arg, argname) {
   if (argname == null) {
-    argname = 'value';
+    argname = '';
   }
-  if (typeof event === 'object') {
-    if (event.detail[argname] != null) {
-      return event.detail[argname];
-    } else {
-      return event.detail;
+  if (arg == null) {
+    arg = _.arg.caller["arguments"][0];
+  }
+  if (typeof arg === 'object') {
+    if (arg.detail != null) {
+      if (arg.detail[argname] != null) {
+        return arg.detail[argname];
+      }
+      return arg.detail;
     }
   }
   if (argname === 'value') {
-    return parseFloat(event);
+    return parseFloat(arg);
   }
-  return event;
+  return arg;
+};
+
+_.value = function(arg) {
+  return _.arg(arg, 'value');
+};
+
+_.win = function() {
+  return _.win.caller["arguments"][0].target.getWidget().getWindow();
+};
+
+_.wid = function() {
+  return _.wid.caller["arguments"][0].target.getWidget();
 };
 
 //# sourceMappingURL=tools.js.map

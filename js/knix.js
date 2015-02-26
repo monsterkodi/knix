@@ -13,7 +13,7 @@ var knix,
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.2.365';
+  knix.version = '0.4.1';
 
   knix.init = function(config) {
     var c, s;
@@ -26,8 +26,8 @@ knix = (function() {
     s = 'welcome to';
     log({
       "file": "./coffee/knix.coffee",
-      "line": 23,
       "class": "knix",
+      "line": 23,
       "args": ["config"],
       "method": "init",
       "type": "@"
@@ -148,7 +148,7 @@ knix = (function() {
   };
 
   knix.dumpWindows = function() {
-    var dump, w;
+    var dump, files, w;
     dump = '\n    knix.restore ';
     dump += JSON.stringify({
       'windows': (function() {
@@ -165,37 +165,28 @@ knix = (function() {
     }, null, '    ');
     dump = dump.slice(0, -1);
     dump += "    }";
-    log({
-      "file": "./coffee/knix.coffee",
-      "line": 109,
-      "class": "knix",
-      "args": ["cfg", "def"],
-      "method": "dumpWindows",
-      "type": "@"
-    }, dump);
-    return localStorage.setItem(uuid.v4(), dump);
+    files = {};
+    if (localStorage.getItem('files') != null) {
+      files = JSON.parse(localStorage.getItem('files'));
+    }
+    files[uuid.v4()] = dump;
+    return localStorage.setItem('files', JSON.stringify(files));
   };
 
   knix.restoreMenu = function() {
-    var i, _i, _ref, _results;
-    log({
-      "file": "./coffee/knix.coffee",
-      "line": 113,
-      "class": "knix",
-      "args": ["cfg", "def"],
-      "method": "restoreMenu",
-      "type": "@"
-    }, localStorage.length);
+    var data, file, _ref, _results;
+    _ref = JSON.parse(localStorage.getItem('files'));
     _results = [];
-    for (i = _i = 0, _ref = localStorage.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+    for (file in _ref) {
+      data = _ref[file];
       _results.push(log({
         "file": "./coffee/knix.coffee",
-        "line": 115,
         "class": "knix",
+        "line": 118,
         "args": ["cfg", "def"],
         "method": "restoreMenu",
         "type": "@"
-      }, 'storage', i, localStorage.key(i)));
+      }, 'file', file, data.length));
     }
     return _results;
   };
@@ -231,7 +222,7 @@ knix = (function() {
     }
     knix.popups.push(p);
     if (knix.popupHandler == null) {
-      return knix.popupHandler = document.on('mousedown', knix.closePopups);
+      return knix.popupHandler = document.addEventListener('mousedown', knix.closePopups);
     }
   };
 
@@ -239,8 +230,9 @@ knix = (function() {
     return knix.popups = knix.popups.without(p);
   };
 
-  knix.closePopups = function(event, e) {
-    var p, _i, _j, _len, _len1, _ref, _ref1;
+  knix.closePopups = function(event) {
+    var e, p, _i, _j, _len, _len1, _ref, _ref1;
+    e = event.target;
     if (knix.popups != null) {
       _ref = knix.popups;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -291,20 +283,11 @@ knix = (function() {
   knix.initSVG = function() {
     var svg;
     svg = knix.get({
+      type: 'svg',
       id: 'stage_svg',
-      type: 'svg'
-    });
-    return knix.svg = svg.svg;
-  };
-
-  knix.svg = function(cfg) {
-    var svg;
-    svg = new Widget(cfg, {
-      elem: 'svg',
       parent: 'stage_content'
     });
-    svg.svg = SVG(svg.elem.id);
-    return svg;
+    return knix.svg = svg.svg;
   };
 
   knix.canvas = function(cfg) {
