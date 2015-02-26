@@ -69,18 +69,35 @@ class Drag
         document.addEventListener 'mouseup',   @dragUp
 
     dragMove: (event) =>
-        # log 'move', @target.id, @onMove?
+
         return if not @dragging
+        # log 'move', @target.id, @onMove?
+        
         if @doMove
             newPos = @absPos(event)
-            # newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
             newPos = @targetStartPos.add(newPos.sub(@cursorStartPos))
-            # log @targetStartPos, newPos.sub(@cursorStartPos), newPos
-            newPos.clamp @minPos, @maxPos
-            # log newPos
+            newPos = newPos.clamp @minPos, @maxPos
             @target.getWidget().setPos newPos
+            
         if @onMove?
             @onMove this, event
+
+    constrain: (minX, minY, maxX, maxY) =>
+        
+        wp = @target.getWidget().relPos()
+
+        @minPos = pos minX, minY
+        @maxPos = pos maxX, maxY
+        
+        cp = wp.clamp @minPos, @maxPos
+
+        if wp.notSame cp
+            
+            if @doMove
+                @target.getWidget().setPos cp
+                
+            # if @onMove?
+            #     @onMove this, {clientX: cp.x, clientY: cp.y}
 
     dragUp: (event) =>
         @dragStop event

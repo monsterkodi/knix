@@ -11,16 +11,18 @@
 class Pos
 
     constructor: (@x, @y) ->
+        
+    copy: => new Pos @x, @y
 
     add: (val) =>
-        newPos = new Pos(@x, @y)
+        newPos = @copy()
         if val?
             newPos.x += val.x  unless isNaN(val.x)
             newPos.y += val.y  unless isNaN(val.y)
         newPos
 
     sub: (val) =>
-        newPos = new Pos(@x, @y)
+        newPos = @copy()
         if val?
             newPos.x -= val.x  unless isNaN(val.x)
             newPos.y -= val.y  unless isNaN(val.y)
@@ -39,34 +41,35 @@ class Pos
     mid: (other) => @add(other).mul(0.5)
 
     min: (val) =>
-        newPos = new Pos(@x, @y)
+        newPos = @copy()
         return newPos unless val?
         newPos.x = val.x  if not isNaN(val.x) and @x > val.x
         newPos.y = val.y  if not isNaN(val.y) and @y > val.y
         newPos
 
     max: (val) =>
-        newPos = new Pos(@x, @y)
+        newPos = @copy()
         return newPos unless val?
         newPos.x = val.x  if not isNaN(val.x) and @x < val.x
         newPos.y = val.y  if not isNaN(val.y) and @y < val.y
         newPos
 
     clamp: (lower, upper) =>
+        newPos = @copy()
         if lower? and upper?
-            @x = _.clamp(lower.x, upper.x, @x)
-            @y = _.clamp(lower.y, upper.y, @y)
-        @
+            newPos.x = _.clamp(lower.x, upper.x, @x)
+            newPos.y = _.clamp(lower.y, upper.y, @y)
+        newPos
 
     square:         => (@x * @x) + (@y * @y)
     distSquare: (o) => @sub(o).square()
     dist:       (o) => Math.sqrt @distSquare(o)
 
-    same:    (o) => @x == o.x and @y == o.y
-    notSame: (o) => @x != o.x or  @y != o.y
+    same:    (o) => @x == o?.x and @y == o?.y
+    notSame: (o) => @x != o?.x or  @y != o?.y
 
     check: =>
-        newPos = new Pos(@x, @y)
+        newPos = @copy()
         newPos.x = 0  if isNaN(newPos.x)
         newPos.y = 0  if isNaN(newPos.y)
         newPos

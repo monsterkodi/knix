@@ -34,7 +34,7 @@ str = (o,indent="",visited=[]) ->
             s += '\n'+indent+strIndent+']'
         else
             if o._str?
-                s = o._str()
+                return o._str()
             else
                 s = "<" + protoname + ">\n"
                 visited.push o

@@ -23,6 +23,8 @@ Element.addMethods
         return element.widget if element?.widget?
         return element?.parentElement?.getWidget()
 
+SVGAnimatedLength.prototype._str = -> "<%0.2f>".fmt @baseVal.value
+
 _.del = (l,e) ->
     _.remove l, (n) -> n == e
 

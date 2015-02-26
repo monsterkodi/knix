@@ -474,15 +474,16 @@ a
     stroke:           colors.connection-highlight
 
 .pad
-    background-color: colors.analyser
-    // & > .path
-    //     stroke:       yellow
+    background-color: colors.pad
+    shadowInner()
+    border-radius:    buttonRadius
     
 .pad_path
-    stroke:           colors.analyser-trace
+    stroke:           colors.pad-path
+    stroke-width:     padStrokeWidth
 
 .pad_handle
-    fill:             colors.analyser-trace
+    fill:             colors.pad-handle
     
 // ____________________________________ spin
 

@@ -40,6 +40,7 @@ class Pad extends Widget
                     svg:   @svg.svg
                     class: 'pad_handle'
                     onPos: @onHandlePos
+                    onUp:  @onHandleUp
             
         if @config.hasPaths
             for i in [1...@config.numHandles]
@@ -59,7 +60,7 @@ class Pad extends Widget
         @setSize 100, 100
         
     getWidth:  => @svg.elem.width    
-    getHeight: => @svg.elem.height    
+    getHeight: => @svg.elem.height
     
     onHandlePos: (event) =>
         w = @getWidth()
@@ -69,28 +70,27 @@ class Pad extends Widget
         i = @handles.indexOf event.target.getWidget()
         x =       p.x / w
         y = 1.0 - p.y / h
-        
-        if x != @config.handles[i].x
-            @config.handles[i].x = x
-        if y != @config.handles[i].y
-            @config.handles[i].y = y
-            
-        @handleConstraints()
+        @config.handles[i].x = x
+        @config.handles[i].y = y
+    
+    onHandleUp: =>
+        @constrainHandles()
 
-    handleConstraints: =>
-        width = @getWidth()
-        height = @getHeight()
+    constrainHandles: =>
+        o = 8
+        width  = @getWidth()-2*o
+        height = @getHeight()-2*o
 
         for i in [0...@config.handles.length]
             if i == 0
-                [minX, maxX] = [0, 0]
+                [minX, maxX] = [o, o]
             else if i == @config.handles.length-1
-                [minX, maxX] = [width, width]
+                [minX, maxX] = [o+width, o+width]
             else
                 minX = @handles[i-1].relPos().x
                 maxX = @handles[i+1].relPos().x
-            @handles[i].drag.minPos = pos minX, 0
-            @handles[i].drag.maxPos = pos maxX, height
+                
+            @handles[i].constrain minX, o, maxX, o+height
                 
     setSize: (width, height) =>
         @svg.setWidth width
@@ -98,7 +98,9 @@ class Pad extends Widget
         @svg.elem.width = width
         @svg.elem.height = height
         
+        @constrainHandles()
+
         for i in [0...@config.handles.length]
             hp = pos @config.handles[i].x * width, height - @config.handles[i].y * height
             @handles[i].setPos hp
-            @handleConstraints()
+            

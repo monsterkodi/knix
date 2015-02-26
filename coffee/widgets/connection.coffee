@@ -149,11 +149,13 @@ class Connection
 
     close: =>
         @disconnect()
-        @config.source.delConnection @
-        @config.target.delConnection @
-        @path.close()
-        @path = null
-        @config = null
+        if @config?
+            @config.source.delConnection @
+            @config.target.delConnection @
+            @config = null
+        if @path?
+            @path.close()
+            @path = null
 
     shaded: (event) =>
         visible = not event.detail.shaded and
