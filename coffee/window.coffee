@@ -175,7 +175,8 @@ class Window extends Widget
             action = 'size'
             border+= 'right'
 
-        if action == 'size'
+        if action == 'size' and not @config.isShaded
+
             if border == 'left' or border == 'right'
                 cursor = 'ew-resize'
             else if border == 'top' or border == 'bottom'
@@ -280,16 +281,15 @@ class Window extends Widget
 
     shade: =>
         if @config.isShaded
-            # @elem.setStyle({'min-height': @config.minHeight+'px'})
             @config.isShaded = false
             $(@content).show()
-            @setHeight @config.height
+            @setHeightNoEmit @config.height
             @elem.setStyle({'min-height': @minHeightShade})
         else
             @config.height = @getHeight()
             @minHeightShade = @elem.getStyle('min-height')
             @elem.setStyle({'min-height': '0px'})
-            @setHeight @headerSize()
+            @setHeightNoEmit @headerSize()
             @config.isShaded = true
             $(@content).hide()
 

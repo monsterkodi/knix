@@ -9,7 +9,9 @@ rsync ../js/*.js js
 rsync ../js/lib/*.js js/lib
 rsync ../style/dark.css style
 rsync ../style/bright.css style
-rsync ../index.html demo.html
+
+printf "%s---\ntitle: demo\n---\n" "" > demo.html
+cat ../index.html >> demo.html
 
 git commit -am "latest demo"
 git push

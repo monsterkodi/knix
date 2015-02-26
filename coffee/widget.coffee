@@ -342,13 +342,14 @@ class Widget
     setHeight: (h) =>
         if h?
             oh = @elem.style.height
-            @elem.style.height = "%dpx".fmt(h) if h?
-
-            diff = @getHeight() - h
-            @elem.style.height = "%dpx".fmt(h - diff) if diff
-
+            @setHeightNoEmit h
             @emitSize() if oh != @elem.style.height
         @
+
+    setHeightNoEmit: (h) =>
+        @elem.style.height = "%dpx".fmt(h) if h?
+        diff = @getHeight() - h
+        @elem.style.height = "%dpx".fmt(h - diff) if diff
 
     resize: (w, h) =>
         @setWidth w
