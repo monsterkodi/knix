@@ -10,11 +10,15 @@
 
 class About extends Window
 
-    constructor: (cfg={}, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
 
         @url = '::.info.json:home-url::'
 
-        super _.def(cfg,defs),
+        super cfg,
             title:     'about'
             id:        'about'
             resize:    'horizontal'

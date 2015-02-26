@@ -10,16 +10,14 @@
 
 class Connection
 
-    constructor: (config) ->
+    constructor: (cfg, defs) ->
+                
+        if _.isArray cfg
+            cfg =
+                source: $(cfg[0]).widget
+                target: $(cfg[1]).widget
 
-        # log config.source.elem.id, config.target.elem.id
-        
-        if _.isArray config
-            config =
-                source: $(config[0]).widget
-                target: $(config[1]).widget
-
-        @config = config
+        @config = _.def cfg, defs
         
         for c in [@config.source, @config.target]
             c.addConnection @

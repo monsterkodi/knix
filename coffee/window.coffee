@@ -16,8 +16,8 @@ class Window extends Widget
 
     init: (cfg, defs) =>
 
-        cfg = _.def cfg, defs
-
+        cfg = _.def cfg, defs 
+        
         children = cfg.children
         if cfg.child
             if not children? then children = []

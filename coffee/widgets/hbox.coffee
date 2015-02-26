@@ -10,7 +10,9 @@
 
 class Hbox extends Widget
 
-    constructor: (cfg,defs) ->
+    constructor: (cfg,defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
         spacing = cfg.spacing? and cfg.spacing or 5

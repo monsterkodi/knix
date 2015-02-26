@@ -11,9 +11,12 @@
 
 class Envelope extends Window
 
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
 
-        cfg = _.def cfg, defs
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
+
         cfg = _.def cfg,
             duration:     1.0
             minDuration:  0.01

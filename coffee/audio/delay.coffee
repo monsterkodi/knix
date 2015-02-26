@@ -10,7 +10,11 @@
 
 class Delay extends Window
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
 
         [ @audio, cfg ] = Audio.delay cfg
 

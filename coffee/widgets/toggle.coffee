@@ -10,7 +10,9 @@
 
 class Toggle extends Button
 
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>
 
         super cfg, _.def defs,
             class:      'button'

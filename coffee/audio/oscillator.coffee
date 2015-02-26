@@ -12,7 +12,11 @@ class Oscillator extends Window
 
     @shapes = ['sine', 'triangle', 'sawtooth', 'square']
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) -> super cfg, defs
+
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
 
         [ @audio, cfg ] = Audio.oscillator cfg
 

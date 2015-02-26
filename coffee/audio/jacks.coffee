@@ -10,9 +10,12 @@
 
 class Jacks extends Hbox
 
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
 
-        cfg = _.def cfg, defs
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
+
         cfg = _.def cfg,
             onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
             onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio

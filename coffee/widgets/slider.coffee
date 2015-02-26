@@ -10,7 +10,9 @@
 
 class Slider extends Value
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>
 
         sliderFunc = (drag, event) ->
             slider = drag.target.widget

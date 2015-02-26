@@ -12,7 +12,11 @@ class Filter extends Window
 
     @filters = ['bandpass', 'lowpass', 'highpass', 'notch', 'allpass']
 
-    constructor: (cfg) ->
+    constructor: (cfg, defs) -> super cfg, defs
+
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
 
         [ @audio, cfg ] = Audio.filter cfg
 

@@ -10,8 +10,10 @@
 
 class Value extends Widget
 
-    constructor: (cfg, def) ->
+    constructor: (cfg, def) -> super cfg, def
 
+    init: (cfg, def) => 
+        
         cfg = _.def cfg, def
         
         super cfg,
@@ -20,11 +22,6 @@ class Value extends Widget
             minValue:   0
             maxValue:   100
             tooltip:    true
-
-      #   if not @config.tooltip? or @config.tooltip
-      #      Tooltip.create
-      #          target: @
-      #          onTooltip: @onTooltip
 
     onTooltip: => @elem.id
 

@@ -10,14 +10,16 @@
 
 class Connector extends Widget
 
-    constructor: (config) ->
+    constructor: (cfg, defs) -> super cfg, defs
+    
+    init: (cfg, defs) =>
 
-        config.class = 'slot'   if config.slot?
-        config.class = 'signal' if config.signal?
-        config.class = 'in'     if config.in?
-        config.class = 'out'    if config.out?
+        cfg.class = 'slot'   if cfg.slot?
+        cfg.class = 'signal' if cfg.signal?
+        cfg.class = 'in'     if cfg.in?
+        cfg.class = 'out'    if cfg.out?
 
-        super config,
+        super cfg,
             type: 'connector'
             onOver: @onOver
             onOut:  @onOut
