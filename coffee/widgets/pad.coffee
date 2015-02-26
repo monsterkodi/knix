@@ -60,7 +60,7 @@ class Pad extends Widget
             
         @setSize 100, 100
         
-    getWidth: => @svg.elem.width    
+    getWidth:  => @svg.elem.width    
     getHeight: => @svg.elem.height    
     
     onHandlePos: (event) =>
@@ -71,14 +71,10 @@ class Pad extends Widget
         i = @handles.indexOf event.target.getWidget()
         x =       p.x / w
         y = 1.0 - p.y / h
-
-        log i, p, x, y
         
         if x != @config.handles[i].x
-            log 'set x', x
             @config.handles[i].x = x
         if y != @config.handles[i].y
-            log 'set y', y
             @config.handles[i].y = y
                 
     setSize: (width, height) =>

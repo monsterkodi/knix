@@ -26,7 +26,7 @@ class Handle extends Widget
         @initEvents()
         @elem.relPos    = @relPos
         
-        new Drag
+        @drag = new Drag
             target:  @elem
             doMove:  false
             onMove:  @onDragMove
@@ -43,8 +43,8 @@ class Handle extends Widget
         log 'startmove'
     
     onDragMove: (drag, event) =>
-        tag 'Drag'
-        log 'relPos', drag.absPos(event).sub @config.svg.node.getWidget().absPos()
+        # tag 'Drag'
+        # log 'relPos', drag.absPos(event).sub @config.svg.node.getWidget().absPos()
         @setPos drag.absPos(event).sub @config.svg.node.getWidget().absPos()
     
     setPos: =>

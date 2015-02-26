@@ -36,10 +36,8 @@ class Drag
             error 'cant find drag target', @target
             return
         if @minPos? and @maxPos?
-            tempPos = @minPos
-            @minPos = @minPos.min(@maxPos)
-            @maxPos = tempPos.max(@maxPos)
-        @cursorStartPos  = null
+            [@minPos, @maxPos] = [@minPos.min(@maxPos), @minPos.max(@maxPos)]
+        @cursorStartPos = null
         @targetStartPos = null
         @dragging  = false
         @listening = false
@@ -71,13 +69,13 @@ class Drag
         document.addEventListener 'mouseup',   @dragUp
 
     dragMove: (event) =>
-        log 'move', @target.id, @onMove?
+        # log 'move', @target.id, @onMove?
         return if not @dragging
         if @doMove
             newPos = @absPos(event)
             newPos = newPos.add(@targetStartPos).sub(@cursorStartPos)
             newPos.clamp @minPos, @maxPos
-            newPos.apply @target
+            @target.getWidget().setPos newPos
         if @onMove?
             @onMove this, event
 
@@ -102,7 +100,7 @@ class Drag
         return
 
     deactivate: =>
-        log 'deactivate', @target.id
+        # log 'deactivate', @target.id
         return if not @listening
         @handle.removeEventListener 'mousedown', @dragStart
         @listening = false

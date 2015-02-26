@@ -80,7 +80,7 @@ class Envelope extends Window
         knix.create
             type:   'button'
             id:     'new_envelope'
-            icon:   'octicon-pulse'
+            icon:   'octicon-diff-modified'
             class:  'tool-button'
             parent: 'menu'
             onClick: -> new Envelope

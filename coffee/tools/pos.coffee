@@ -71,13 +71,6 @@ class Pos
         newPos.y = 0  if isNaN(newPos.y)
         newPos
 
-    apply: (element) =>
-        element = document.getElementById(element)  if typeof (element) is "string"
-        return  unless element?
-        element.style.left = @x + "px"  unless isNaN(@x)
-        element.style.top = @y + "px"  unless isNaN(@y)
-        return
-        
     _str: => "<x:%2.2f y:%2.2f>".fmt @x, @y
 
 pos = (x,y) -> new Pos x,y

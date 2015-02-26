@@ -140,8 +140,8 @@ class Window extends Widget
 
         if @sizeMoveDrag? 
             if @sizeMoveDrag.dragging then return
-            tag 'Drag'
-            log 'deactivate sizeMoveDrag'
+            # tag 'Drag'
+            # log 'deactivate sizeMoveDrag'
             @sizeMoveDrag.deactivate() 
             @sizeMoveDrag = null
 
@@ -185,8 +185,8 @@ class Window extends Widget
             else
                 cursor = 'nesw-resize'
 
-            tag 'Drag'
-            log 'new resize drag'
+            # tag 'Drag'
+            # log 'new resize drag'
             @sizeMoveDrag = Drag.create
                 target:  @elem
                 onStart: @sizeStart
@@ -196,8 +196,8 @@ class Window extends Widget
 
             @sizeMoveDrag.border = border
         else
-            tag 'Drag'
-            log 'new move drag'
+            # tag 'Drag'
+            # log 'new move drag'
             @sizeMoveDrag = Drag.create
                 target: @elem
                 minPos: pos(undefined,0)
