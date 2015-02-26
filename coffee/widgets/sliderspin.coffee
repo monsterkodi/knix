@@ -9,8 +9,6 @@
 ###
 
 class Sliderspin extends Hbox
-
-    constructor: (cfg, defs) -> super cfg, defs
     
     init: (cfg, defs) =>
 

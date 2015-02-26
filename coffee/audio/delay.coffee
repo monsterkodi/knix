@@ -9,8 +9,6 @@
 ###
 
 class Delay extends Window
-
-    constructor: (cfg, defs) -> super cfg, defs
     
     init: (cfg, defs) =>        
     

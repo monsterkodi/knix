@@ -9,8 +9,6 @@
 ###
 
 class Handle extends Widget
-
-    constructor: (cfg, defs) -> super cfg, defs
         
     init: (cfg, defs) =>
 

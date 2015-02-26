@@ -10,8 +10,6 @@
 
 class Analyser extends Window
 
-    constructor: (cfg, defs) -> super cfg, defs
-
     init: (cfg, defs) =>        
     
         _.def cfg, defs

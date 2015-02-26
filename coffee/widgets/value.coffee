@@ -10,8 +10,6 @@
 
 class Value extends Widget
 
-    constructor: (cfg, def) -> super cfg, def
-
     init: (cfg, def) => 
         
         cfg = _.def cfg, def

@@ -11,8 +11,6 @@
 class Console extends Window
 
     @scopeTags = []
-
-    constructor: (cfg, defs) -> super cfg, defs
         
     init: (cfg, defs) =>
 

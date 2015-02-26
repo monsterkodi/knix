@@ -10,8 +10,6 @@
 
 class Path extends Widget
 
-    constructor: (cfg, defs) -> super cfg, defs
-
     init: (cfg, defs) =>
         
         @config = _.def cfg, _.def defs,

@@ -9,8 +9,6 @@
 ###
 
 class Spin extends Value
-
-    constructor: (cfg, defs) -> super cfg, defs
     
     init: (cfg, defs) =>
 

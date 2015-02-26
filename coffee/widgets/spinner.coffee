@@ -9,8 +9,6 @@
 ###
 
 class Spinner extends Spin
-
-    constructor: (cfg, defs) -> super cfg, defs
     
     init: (cfg, defs) =>
 
