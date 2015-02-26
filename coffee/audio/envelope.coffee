@@ -36,6 +36,8 @@ class Envelope extends Window
                 type:       'pad'
                 id:         'envelope_pad'
                 numHandles:  5
+                minHeight:   50
+                minWidth:    150
             ,
                 type:       'sliderspin'
                 id:         'duration'
@@ -73,7 +75,7 @@ class Envelope extends Window
         if pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()
-            height = content.innerHeight() - 100
+            height = content.innerHeight() - 110
             width  = content.innerWidth() - 20
             pad.setSize width, height
 

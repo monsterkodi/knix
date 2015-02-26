@@ -14,17 +14,16 @@ class Pad extends Widget
     
         cfg = _.def cfg, defs
         cfg = _.def cfg,
-            minWidth:   '100px'
-            minHeight:  '100px'
+            minWidth:    100
+            minHeight:   100
             numHandles:  1
             hasPaths:    true
         
         super cfg,
             type:   'pad'
             noMove: true
-            style:
-                minWidth:  cfg.minWidth
-                minHeight: cfg.minHeight
+            minWidth:  cfg.minWidth
+            minHeight: cfg.minHeight
             child:
                 type: 'svg'
                 noMove: true
@@ -57,7 +56,7 @@ class Pad extends Widget
                 hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
                 @config.handles.push hp
             
-        @setSize 100, 100
+        @setSize cfg.minWidth, cfg.minHeight
         
     getWidth:  => @svg.elem.width    
     getHeight: => @svg.elem.height
@@ -74,6 +73,7 @@ class Pad extends Widget
         @config.handles[i].y = y
     
     onHandleUp: =>
+        log 'up'
         @constrainHandles()
 
     constrainHandles: =>

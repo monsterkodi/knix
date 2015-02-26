@@ -27,11 +27,11 @@ class Handle extends Widget
         @elem.relPos    = @relPos
         
         @drag = new Drag
-            target:  @elem
+            target: @elem
+            onStop: @config.onUp
     
     initEvents: =>
         @elem.addEventListener 'onpos',   @config.onPos if @config.onPos?
-        @elem.addEventListener 'mouseup', @config.onUp  if @config.onUp?
     
     constrain: (minX, minY, maxX, maxY) => @drag.constrain minX, minY, maxX, maxY
     
