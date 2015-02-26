@@ -20,7 +20,7 @@ class Oscillator extends Window
 
         super cfg,
             title:      'oscillator'
-            minWidth:   150
+            minWidth:   220
             resize:     'horizontal'
             children: \
             [

@@ -36,10 +36,10 @@ class Pad extends Widget
         @handles = []
         for i in [0...@config.numHandles]
             @handles.push new Handle
-                    svg:   @svg.svg
-                    class: 'pad_handle'
-                    onPos: @onHandlePos
-                    onUp:  @onHandleUp
+                svg:   @svg.svg
+                class: 'pad_handle'
+                onPos: @onHandlePos
+                onUp:  @onHandleUp
             
         if @config.hasPaths
             for i in [1...@config.numHandles]
@@ -55,9 +55,10 @@ class Pad extends Widget
             for i in [0...@config.numHandles]
                 hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
                 @config.handles.push hp
-            
-        @setSize cfg.minWidth, cfg.minHeight
-        
+                
+        @setSVGSize cfg.minWidth, cfg.minHeight                    
+        @updateHandles()
+                                        
     getWidth:  => @svg.elem.width    
     getHeight: => @svg.elem.height
     
@@ -92,15 +93,18 @@ class Pad extends Widget
                 
             @handles[i].constrain minX, o, maxX, o+height
                 
-    setSize: (width, height) =>
+    setSVGSize: (width, height) =>
         @svg.setWidth width
         @svg.setHeight height
         @svg.elem.width = width
-        @svg.elem.height = height
+        @svg.elem.height = height  
         
-        @constrainHandles()
-
+    updateHandles: =>
         for i in [0...@config.handles.length]
-            hp = pos @config.handles[i].x * width, height - @config.handles[i].y * height
+            hp = pos @config.handles[i].x * @getWidth(), @getHeight() - @config.handles[i].y * @getHeight()
             @handles[i].setPos hp
-            
+                
+    setSize: (width, height) =>
+        @setSVGSize width, height
+        @updateHandles()
+        @constrainHandles()

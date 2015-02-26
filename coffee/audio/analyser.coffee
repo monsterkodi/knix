@@ -31,7 +31,6 @@ class Analyser extends Window
             ,
                 id:   'analyser_canvas'
                 type: 'canvas'
-                
                 style:
                     width:  '100%'
                     height: '100%'
@@ -43,17 +42,24 @@ class Analyser extends Window
                 minValue:   1.0
                 maxValue:   20.0
                 valueStep:  1
-            ,
-                type:       'sliderspin'
-                id:         'triggerY'
-                value:      cfg.triggerY
-                onValue:    @setTriggerY
-                minValue:   -1.0
-                maxValue:   1.0
-                spinStep:   0.01
+            # ,
+            #     type:       'sliderspin'
+            #     id:         'triggerY'
+            #     value:      cfg.triggerY
+            #     onValue:    @setTriggerY
+            #     minValue:   -1.0
+            #     maxValue:   1.0
+            #     spinStep:   0.01
             ]
 
         @canvas = @getChild 'analyser_canvas'
+
+        new Drag
+            doMove:  false
+            target:  @canvas.elem
+            cursor:  'crosshair'
+            onStart: @onCanvasTrigger
+            onMove:  @onCanvasTrigger
 
         knix.animate @
         @sizeWindow()
@@ -65,6 +71,10 @@ class Analyser extends Window
     setScaleX:   (v) => @config.scaleX   = _.value v
     setScaleY:   (v) => @config.scaleY   = _.value v
     setTriggerY: (v) => @config.triggerY = _.value v
+
+    onCanvasTrigger: (drag, event) =>
+        if event.target == @canvas.elem
+            @setTriggerY -2*(drag.relPos(event).y/@canvas.elem.height-0.5)
 
     sizeWindow: =>
         

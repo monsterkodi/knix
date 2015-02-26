@@ -63,3 +63,10 @@ class Stage
                        event.clientY + document.documentElement.scrollTop + document.body.scrollTop)
         else
             return pos(event.clientX + window.scrollX, event.clientY + window.scrollY)
+
+    @relPos: (event) =>
+        event = if event? then event else window.event
+        c = pos event.clientX, event.clientY
+        t = event.target.getWidget().absPos()
+        # log c, t
+        return c.sub t

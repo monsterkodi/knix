@@ -47,13 +47,8 @@ class Drag
         @activate() if @active
         return
 
-    absPos: (event) =>
-        event = (if event then event else window.event)
-        if isNaN(window.scrollX)
-            return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft,
-                       event.clientY + document.documentElement.scrollTop + document.body.scrollTop)
-        else
-            return pos(event.clientX + window.scrollX, event.clientY + window.scrollY)
+    absPos: (event) => Stage.absPos event
+    relPos: (event) => Stage.relPos event
 
     dragStart: (event) =>
         return if @dragging or not @listening
