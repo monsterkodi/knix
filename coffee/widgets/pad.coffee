@@ -10,7 +10,9 @@
 
 class Pad extends Widget
     
-    constructor: (cfg, defs) ->
+    constructor: (cfg, defs) -> super cfg, defs
+
+    init: (cfg, defs) =>
     
         cfg = _.def cfg, defs
         cfg = _.def cfg,
@@ -58,9 +60,26 @@ class Pad extends Widget
             
         @setSize 100, 100
         
-    onHandlePos: => 
+    getWidth: => @svg.elem.width    
+    getHeight: => @svg.elem.height    
+    
+    onHandlePos: (event) =>
+        w = @getWidth()
+        h = @getHeight()
+        if not w? or not h? then return
         p = _.arg()
-        log p
+        i = @handles.indexOf event.target.getWidget()
+        x =       p.x / w
+        y = 1.0 - p.y / h
+
+        log i, p, x, y
+        
+        if x != @config.handles[i].x
+            log 'set x', x
+            @config.handles[i].x = x
+        if y != @config.handles[i].y
+            log 'set y', y
+            @config.handles[i].y = y
                 
     setSize: (width, height) =>
         @svg.setWidth width
