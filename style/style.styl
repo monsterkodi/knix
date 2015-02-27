@@ -131,7 +131,6 @@ a
 
 .button
     handCursor()
-    // noSelection()
     overflow:             hidden
     box-sizing:           border-box
     padding-left:         6px
@@ -155,6 +154,29 @@ a
     &:hover *
         color:            colors.button-active-text
 
+.value-button
+    handCursor()
+    overflow:             hidden
+    font-size:            13px
+    padding-left:         6px
+    padding-right:        6px
+    font-weight:          bold
+    border-radius:        valueRadius
+    border:               borders.button
+    background-color:     colors.button
+    color:                textColors.button
+    height:               buttonHeight
+    &:hover
+        background-color: colors.button-hover
+        color:            colors.button-hover-text
+    &:hover *
+        color:            colors.button-hover-text
+    &:active
+        background-color: colors.button-active
+        color:            colors.button-active-text
+    &:hover *
+        color:            colors.button-active-text
+    
 // ____________________________________ toggle
 
 .toggle
@@ -188,7 +210,7 @@ a
     padding-left: 0
     padding-right: 0
 
-.connector_handle
+.connector-handle
     handCursor()
     position:         absolute
     box-sizing:       border-box
@@ -199,7 +221,7 @@ a
     margin-top:       - 10px
     background-color: colors.button-hover
 
-.connector_handle.highlight
+.connector-handle.highlight
     background-color: colors.connector-connectable
 
 // ____________________________________ menus
@@ -387,7 +409,7 @@ a
 .slider
     max-height:       valueHeight
     overflow:         hidden
-    border-radius:    widgetTopRadius
+    border-radius:    valueRadius
     background-color: colors.slider
     &:hover
         background-color: colors.slider-hover
@@ -478,9 +500,13 @@ a
     shadowInner()
     border-radius:    buttonRadius
     
-.pad_path
+.pad-path
     stroke:           colors.pad-path
-    stroke-width:     padStrokeWidth
+    stroke-width:     padPathWidth
+
+.pad-ruler
+    stroke:           colors.pad-handle
+    stroke-width:     padRulerWidth
 
 .pad_handle
     fill:             colors.pad-handle
@@ -492,7 +518,7 @@ a
     height:           valueHeight
     overflow:         hidden
     handCursor()
-    border-radius:    widgetTopRadius
+    border-radius:    valueRadius
     border:           borders.spin
     background-color: colors.spin
 

@@ -27,18 +27,22 @@ class Pos
             newPos.x -= val.x  unless isNaN(val.x)
             newPos.y -= val.y  unless isNaN(val.y)
         newPos
+        
+    to: (other) => other.sub @
 
-    mul: (val) =>
+    scale: (val) =>
         @x *= val
         @y *= val
         @
+        
+    times: (val) => @copy().scale(val)
 
-    scale: (other) =>
+    mul: (other) =>
         @x *= other.x
         @y *= other.y
         @
 
-    mid: (other) => @add(other).mul(0.5)
+    mid: (other) => @add(other).scale(0.5)
 
     min: (val) =>
         newPos = @copy()
@@ -64,6 +68,7 @@ class Pos
     square:         => (@x * @x) + (@y * @y)
     distSquare: (o) => @sub(o).square()
     dist:       (o) => Math.sqrt @distSquare(o)
+    length:         => return Math.sqrt @square()
 
     same:    (o) => @x == o?.x and @y == o?.y
     notSame: (o) => @x != o?.x or  @y != o?.y

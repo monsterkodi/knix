@@ -100,7 +100,7 @@ class Analyser extends Window
             onClick: -> new Analyser
                             center: true
 
-    anim: (timestamp) =>
+    anim: =>
 
         @audio.getByteTimeDomainData(@dataArray)
 

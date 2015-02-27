@@ -12,6 +12,8 @@ class Spin extends Value
     
     init: (cfg, defs) =>
 
+        log cfg.minValue, defs?.minValue
+
         cfg = _.def cfg, defs
         
         super cfg,

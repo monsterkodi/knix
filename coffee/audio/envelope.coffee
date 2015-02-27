@@ -28,19 +28,22 @@ class Envelope extends Window
             minOffset:   -10.0
             maxOffset:    10.0
             offsetStep:   0.1
+            id:           'envelope'
+            valueFormat:  "%0.3f"
 
         super cfg,
             title: 'envelope'
+            id:    cfg.id
             children: \
             [
                 type:       'pad'
-                id:         'envelope_pad'
-                numHandles:  5
+                id:         cfg.id+'_pad'
+                numHandles:  7
                 minHeight:   50
                 minWidth:    150
             ,
                 type:       'sliderspin'
-                id:         'duration'
+                id:         cfg.id+'_duration'
                 onValue:    @setDuration
                 value:      cfg.duration
                 minValue:   cfg.minDuration
@@ -48,7 +51,7 @@ class Envelope extends Window
                 valueStep:  cfg.durationStep
             ,
                 type:       'sliderspin'
-                id:         'offset'
+                id:         cfg.id+'_offset'
                 onValue:    @setOffset
                 value:      cfg.offset
                 minValue:   cfg.minOffset
@@ -56,26 +59,74 @@ class Envelope extends Window
                 spinStep:   cfg.offsetStep
             ,
                 type:       'sliderspin'
-                id:         'scale'
+                id:         cfg.id+'_scale'
                 onValue:    @setScale
                 value:      cfg.scale
                 minValue:   cfg.minScale
                 maxValue:   cfg.maxScale
                 spinStep:   cfg.scaleStep
+            ,
+                type:       'hbox'
+                children:   \
+                [
+                    type:       'connector'
+                    slot:       cfg.id+':trigger'
+                ,
+                    type:       'value-button'
+                    text:       'trigger'
+                    onDown:     @triggerDown
+                ,
+                    type:       'spin'
+                    id:         cfg.id+'_value'
+                    valueStep:  0.001
+                    minValue:   -Number.MAX_VALUE/2
+                    maxValue:   +Number.MAX_VALUE/2
+                    minWidth:   100
+                    maxWidth:   10000
+                    format:     cfg.valueFormat
+                    style:
+                        width:  '100%'
+                ,
+                    type:       'connector'
+                    signal:     cfg.id+':onValue'
+                ]
             ]
 
+        @pad = @getChild 'envelope_pad'
         @sizeWindow()
 
     setDuration: (v) => @config.duration = _.value v
-    setOffset:   (v) => @config.Offset   = _.value v
+    setOffset:   (v) => @config.offset   = _.value v
     setScale:    (v) => @config.scale    = _.value v
+
+    trigger: => log 'trigger'
+    triggerDown: => 
+        if @config.reltime != 0
+            knix.deanimate @
+        @setRelTime 0
+        knix.animate @
+        
+    setRelTime: (rel) =>
+        @config.reltime = rel
+        @config.relval = @pad.valAtRel rel
+        @config.absval = @config.relval * @config.scale + @config.offset
+        @getChild(@config.id+'_value').setValue @config.absval
+        @emitValue @config.absval
+        
+    anim: (step) =>
+        @setRelTime @config.reltime + step.dsecs / @config.duration
+        @pad.showRuler @config.reltime, @config.relval
+        if @config.reltime > 1.0
+            @pad.hideRuler()
+            knix.deanimate @
+            @setRelTime 0
 
     sizeWindow: =>
         pad = @getChild 'pad'
         if pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()
-            height = content.innerHeight() - 110
+            height = content.innerHeight() - 150
             width  = content.innerWidth() - 20
             pad.setSize width, height
 

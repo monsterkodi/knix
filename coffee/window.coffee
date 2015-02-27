@@ -48,7 +48,7 @@ class Window extends Widget
         if cfg.popup then knix.addPopup @
 
         if cfg.center
-            @moveTo Math.max(0,Stage.size().width/2 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
+            @moveTo Math.max(0,Stage.size().width/4 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
         @
 
     #__________________________________________________ init window

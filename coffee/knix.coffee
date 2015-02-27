@@ -29,7 +29,6 @@ class knix
         @initTools()
         @initAudio()
         c.raise()
-        
         @
         
     # ________________________________________________________________________________ tools menu
@@ -150,16 +149,25 @@ class knix
                         
     # ________________________________________________________________________________ animation
 
-    @initAnim: => window.requestAnimationFrame @anim
-
-    @animObjects = []
-    @deanimate: (o) => _.del @animObjects, o
-    @animate: (o) => @animObjects.push(o)
-    @anim: (timestamp) =>
-        for animObject in @animObjects
-            animObject.anim timestamp
+    @initAnim: => 
+        @animTimeStamp = 0
         window.requestAnimationFrame @anim
 
+    @animObjects = []
+    @animate: (o) => @animObjects.push(o)
+    @deanimate: (o) => _.del @animObjects, o
+    
+    @anim: (timestamp) =>
+        step = 
+            stamp: timestamp 
+            delta: timestamp-@animTimeStamp
+            dsecs: (timestamp-@animTimeStamp)*0.001
+        for animObject in @animObjects
+            animObject.anim step
+        @animTimeStamp = timestamp
+        window.requestAnimationFrame @anim
+
+    # ________________________________________________________________________________ audio
 
     @initAudio: => Audio.init()
 
@@ -180,10 +188,6 @@ class knix
         cvs = new Widget cfg,
             elem: 'canvas'
             noMove: true
-        # fbc = new fabric.Canvas cvs.elem.id
-        # fbc.setWidth(cfg.width) if cfg.width?
-        # fbc.setHeight(cfg.height) if cfg.height?
-        # cvs.fc = fbc
         cvs
 
     # ________________________________________________________________________________ icon

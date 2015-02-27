@@ -30,11 +30,12 @@ class Value extends Widget
     setValue: (v) =>
         # tag 'value'
         oldValue = @config.value
+        log @clamp(_.value(v)), @config.minValue, @config.maxValue
         v = @round(@clamp(_.value(v)))
+        
         if v != oldValue
-            # log v
             @config.value = v
-            @emit 'onValue', value: v
+            @emitValue v
         @
 
     incr: (d=1) =>

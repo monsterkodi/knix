@@ -83,7 +83,7 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         @handle = knix.get
-            type:  'connector_handle'
+            type:  'connector-handle'
             style:
                 cursor: 'grabbing'
 

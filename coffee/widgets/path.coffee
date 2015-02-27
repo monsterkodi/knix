@@ -59,7 +59,7 @@ class Path extends Widget
 
     setStart: =>
         p = _.arg()
-        @config.start = pos(p.x, p.y)
+        @config.start = pos p.x, p.y
         # log '@config.start', @config.start
         @config.startHead = @config.start.add(@config.startDir)
         @config.mid = @config.startHead.mid(@config.endHead)
@@ -71,7 +71,7 @@ class Path extends Widget
 
     setEnd: =>
         p = _.arg()
-        @config.end = pos(p.x, p.y)
+        @config.end = pos p.x, p.y
         # log '@config.end', @config.end
         @config.endHead = @config.end.add(@config.endDir)
         @config.mid = @config.startHead.mid(@config.endHead)
