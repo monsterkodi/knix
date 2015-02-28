@@ -42,7 +42,7 @@ class Spinner extends Spin
     setValue: (v) =>
         d = _.value(v) - @range()/2
         v = @range()/2 + d * @config.valueStep  * @steps() / @range()
-        super v
+        super @round v
         c = @getChild 'spin-content'
         c.clear()
         w = c.getWidth()/@steps()

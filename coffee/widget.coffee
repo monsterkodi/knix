@@ -211,7 +211,9 @@ class Widget
             pos: @absPos()
         @
 
-    emitValue: (v) =>
+    emitValue: (v) => 
+        # tag 'value'
+        # log v, @elem.id
         @emit 'onValue',
             value: v
         @
@@ -297,7 +299,7 @@ class Widget
         undefined
 
     close: =>
-        log 'close', @elem.id
+        # log 'close', @elem.id
         @emit 'close'
         # @elem.purge()
         @elem.remove()

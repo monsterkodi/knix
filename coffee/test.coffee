@@ -103,7 +103,7 @@ class Test
 
         o3= new Oscillator
             title:   'low'
-            minFreq: 1
+            minFreq: 0
             maxFreq: 400
             freq:    333
             shape:   'square'

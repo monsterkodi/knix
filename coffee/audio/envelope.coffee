@@ -20,67 +20,39 @@ class Envelope extends Window
             minDuration:  0.01
             maxDuration:  10.0
             durationStep: 0.01
-            scale:        1.0
-            minScale:     0.01
-            maxScale:     10.0
-            scaleStep:    0.01
-            offset:       0.0
-            minOffset:   -10.0
-            maxOffset:    10.0
-            offsetStep:   0.1
-            id:           'envelope'
             valueFormat:  "%0.3f"
 
         super cfg,
             title: 'envelope'
-            id:    cfg.id
             children: \
             [
                 type:       'pad'
-                id:         cfg.id+'_pad'
+                id:         'envelope_pad'
                 numHandles:  7
                 minHeight:   50
                 minWidth:    150
             ,
                 type:       'sliderspin'
-                id:         cfg.id+'_duration'
+                id:         'envelope_duration'
                 onValue:    @setDuration
                 value:      cfg.duration
                 minValue:   cfg.minDuration
                 maxValue:   cfg.maxDuration
-                valueStep:  cfg.durationStep
-            ,
-                type:       'sliderspin'
-                id:         cfg.id+'_offset'
-                onValue:    @setOffset
-                value:      cfg.offset
-                minValue:   cfg.minOffset
-                maxValue:   cfg.maxOffset
-                spinStep:   cfg.offsetStep
-            ,
-                type:       'sliderspin'
-                id:         cfg.id+'_scale'
-                onValue:    @setScale
-                value:      cfg.scale
-                minValue:   cfg.minScale
-                maxValue:   cfg.maxScale
-                spinStep:   cfg.scaleStep
+                spinStep:   cfg.durationStep
             ,
                 type:       'hbox'
                 children:   \
                 [
                     type:       'connector'
-                    slot:       cfg.id+':trigger'
+                    slot:       'envelope:trigger'
                 ,
                     type:       'value-button'
                     text:       'trigger'
                     onDown:     @triggerDown
                 ,
                     type:       'spin'
-                    id:         cfg.id+'_value'
-                    valueStep:  0.001
-                    minValue:   -Number.MAX_VALUE/2
-                    maxValue:   +Number.MAX_VALUE/2
+                    id:         'envelope'
+                    valueStep:  0.00001
                     minWidth:   100
                     maxWidth:   10000
                     format:     cfg.valueFormat
@@ -88,7 +60,7 @@ class Envelope extends Window
                         width:  '100%'
                 ,
                     type:       'connector'
-                    signal:     cfg.id+':onValue'
+                    signal:     'envelope:onValue'
                 ]
             ]
 
@@ -96,8 +68,6 @@ class Envelope extends Window
         @sizeWindow()
 
     setDuration: (v) => @config.duration = _.value v
-    setOffset:   (v) => @config.offset   = _.value v
-    setScale:    (v) => @config.scale    = _.value v
 
     trigger: => log 'trigger'
     triggerDown: => 
@@ -108,14 +78,13 @@ class Envelope extends Window
         
     setRelTime: (rel) =>
         @config.reltime = rel
-        @config.relval = @pad.valAtRel rel
-        @config.absval = @config.relval * @config.scale + @config.offset
-        @getChild(@config.id+'_value').setValue @config.absval
-        @emitValue @config.absval
+        @config.value = @pad.valAtRel rel
+        @getChild('envelope').setValue @config.value
+        @emitValue @config.value
         
     anim: (step) =>
         @setRelTime @config.reltime + step.dsecs / @config.duration
-        @pad.showRuler @config.reltime, @config.relval
+        @pad.showRuler @config.reltime, @config.value
         if @config.reltime > 1.0
             @pad.hideRuler()
             knix.deanimate @
@@ -126,7 +95,7 @@ class Envelope extends Window
         if pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()
-            height = content.innerHeight() - 150
+            height = content.innerHeight() - 80
             width  = content.innerWidth() - 20
             pad.setSize width, height
 

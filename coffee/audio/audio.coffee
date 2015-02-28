@@ -20,6 +20,7 @@ class Audio
         Delay.menu()
         Analyser.menu()
         Envelope.menu() 
+        Range.menu()
 
     @filter: (cfg) =>
 

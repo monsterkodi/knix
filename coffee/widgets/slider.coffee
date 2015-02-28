@@ -21,9 +21,6 @@ class Slider extends Value
 
         super cfg,
             type:      'slider'
-            value:      0
-            minValue:   0
-            maxValue:   100
             minWidth:   50
             child:
                 type:    'slider-bar'

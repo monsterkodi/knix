@@ -96,9 +96,9 @@ class Connection
 
     connect: =>
         [outConnector, inConnector] = @outInConnector()
-        # log 'connect',
-        #     outConnector.config.signal or outConnector.config.out,
-        #     inConnector.config.slot or inConnector.config.in
+        log 'connect',
+            outConnector.config.signal or outConnector.config.out,
+            inConnector.config.slot or inConnector.config.in
         if outConnector.config.onConnect?
             outConnector.config.onConnect outConnector, inConnector
         if inConnector.config.onConnect?
@@ -120,7 +120,7 @@ class Connection
             connection.signal   = signal
             connection.slot     = slot
             connection.receiver = slotFunction
-
+            log signal, slot
         connection
 
     disconnect: =>

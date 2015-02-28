@@ -52,7 +52,7 @@ class Drag
 
     dragStart: (event) =>
         return if @dragging or not @listening
-        log 'start', @target.id
+        # log 'start', @target.id
         @dragging = true
         @onStart @, event if @onStart?
         @cursorStartPos = @absPos(event)
@@ -98,7 +98,7 @@ class Drag
         @dragStop event
 
     dragStop: (event) =>
-        log 'stop', @target.id
+        # log 'stop', @target.id
         return if not @dragging
         document.removeEventListener 'mousemove', @dragMove
         document.removeEventListener 'mouseup',   @dragUp

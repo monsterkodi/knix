@@ -24,6 +24,18 @@ document.observe "dom:loaded", ->
     # Test.sliderAndValue()
     # Test.svgPath()
     Test.audio()
+    
+    e = new Envelope
+        center: true
+        
+    r = new Range
+        x: 300
+        y: 50
+
+    new Connection
+        source: e.connector 'envelope:onValue'
+        target: r.connector 'range_in:setValue'
+
 
     # StyleSwitch.toggle()
     # $('show_about').click()

@@ -12,8 +12,6 @@ class Spin extends Value
     
     init: (cfg, defs) =>
 
-        log cfg.minValue, defs?.minValue
-
         cfg = _.def cfg, defs
         
         super cfg,
@@ -65,7 +63,7 @@ class Spin extends Value
         @setValue @config.value
 
     onKey: (event, e) =>
-        log 'event', event.key
+        # log 'event', event.key
         if event.key in ['Up', 'Down']
             @incr event.key == 'Up' and '+' or '-'
             event.stop()
