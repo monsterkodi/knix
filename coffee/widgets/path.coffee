@@ -13,6 +13,7 @@ class Path extends Widget
     init: (cfg, defs) =>
         
         @config = _.def cfg, _.def defs,
+            type:     'path'
             start:    pos(0,0)
             startDir: pos(0,0)
             end:      pos(0,0)

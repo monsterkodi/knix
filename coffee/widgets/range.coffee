@@ -24,6 +24,7 @@ class Range extends Window
             maxHigh:      10000
             highStep:     0.1
             valueFormat:  "%0.3f"
+            resize:       'horizontal'
 
         super cfg,
             title: 'range'

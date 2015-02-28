@@ -49,18 +49,19 @@ class knix
             onClick: -> Stage.toggleFullscreen()
 
         @get btn,
+            tooltip: 'style'
             icon:   'octicon-color-mode'
             onClick: -> StyleSwitch.toggle()
 
         @get btn,
             tooltip: 'save'
             icon:    'octicon-file-binary'
-            onClick: @dumpWindows
+            onClick:  Files.saveWindows
 
         @get btn,
-            tooltip: 'restore'
+            tooltip: 'load'
             icon:    'octicon-file-directory'
-            onClick:  @restoreMenu
+            onClick:  Files.loadMenu
 
         @get btn,
             icon:   'octicon-dash'
@@ -89,10 +90,13 @@ class knix
 
     @get: (cfg, def) =>
         cfg = _.def cfg, def
-        @create _.def cfg,
+        w = @create _.def cfg,
             type:   'window'
             parent: 'stage_content'
-
+        log w.elem.id
+        Stage.positionWindow w    
+        w
+        
     # ________________________________________________________________________________ windows
 
     @allWindows:     => w.widget for w in $$('.window') when not w.hasClassName 'console-window'
@@ -100,24 +104,9 @@ class knix
 
     @closeWindows: => @allWindows().each (w) -> w.close()
     @shadeWindows: => @allWindows().each (w) -> w.shade()
-    @dumpWindows:  => 
-        dump = '\n    knix.restore '
-        dump += JSON.stringify { 'windows': (w.config for w in @allWindows()), 'connections': @allConnections() }, null, '    '
-        dump = dump.slice(0,-1)
-        dump += "    }"
-        # log dump
-        files = {} 
-        if localStorage.getItem('files')?
-            files = JSON.parse localStorage.getItem('files')
-        files[uuid.v4()] = dump
-        localStorage.setItem 'files', JSON.stringify(files)
-
-    @restoreMenu: =>
-        for file, data of JSON.parse(localStorage.getItem('files'))
-            log 'file', file, data.length
 
     @restore: (state) =>
-        @restoreWindows state.windows
+        @restoreWindows     state.windows
         @restoreConnections state.connections
 
     @restoreWindows: (windows) => 
@@ -139,7 +128,7 @@ class knix
         @popups = @popups.without p
 
     @closePopups: (event) =>
-        e = event.target
+        e = event?.target
         if @popups?
             for p in @popups
                 p.close() for p in @popups when e not in p.elem.descendants()

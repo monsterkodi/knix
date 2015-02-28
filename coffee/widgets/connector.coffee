@@ -82,17 +82,18 @@ class Connector extends Widget
 
         p = drag.absPos(event)
 
-        @handle = knix.get
-            type:  'connector-handle'
+        @handle = new Window
+            type:   'connector-handle'
+            parent: 'stage_content'
             style:
                 cursor: 'grabbing'
 
         @handle.setPos p
         @elem.addClassName 'connected'
 
-        @path = knix.get
-            type:  'path'
-            class: 'connector'
+        @path = new Path
+            class:  'connector'
+            parent: 'stage_content'
             start:  @absCenter()
             end:    p
             startDir: if @isOut() then pos(100,-10) else pos(-100,-10)

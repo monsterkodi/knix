@@ -25,8 +25,11 @@ class Files
 
     @loadMenu: (event) =>
 
+        files = JSON.parse(localStorage.getItem('files'))
+        if _.isEmpty files then return
+            
         children = []
-        for file, data of JSON.parse(localStorage.getItem('files'))
+        for file, data of files
             log 'file', file, data.length
             children.push
                 type:       'button'
@@ -53,6 +56,7 @@ class Files
 
     @trashFiles: =>
         localStorage.setItem 'files', "{}"
+        knix.closePopups()
 
     @loadFile: (event) =>
         filename = event.target.getWidget().config.text

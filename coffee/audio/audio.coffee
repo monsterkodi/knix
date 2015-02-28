@@ -29,10 +29,12 @@ class Audio
             connection.config.target.getWindow().paramValuesAtConnector paramValues, connection.config.target
 
     @setValuesForParam: (paramValues, param) =>
-        t = @context.currentTime + 0.010
-        param.cancelScheduledValues @context.currentTime
+        # t = @context.currentTime + 0.010
         offset = paramValues.offset or 0
         range  = paramValues.range  or 1
+        t = @context.currentTime
+        param.cancelScheduledValues t
+        t += 0.01
         for i in [0...paramValues.values.length]
             value = offset + paramValues.values[i].value * range
             param.linearRampToValueAtTime value, t + paramValues.values[i].time

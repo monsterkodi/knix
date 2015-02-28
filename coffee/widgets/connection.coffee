@@ -11,7 +11,7 @@
 class Connection
 
     constructor: (cfg, defs) ->
-                
+    
         if _.isArray cfg
             cfg =
                 source: $(cfg[0]).widget
@@ -28,9 +28,9 @@ class Connection
             w.addEventListener 'shade', @shaded
             w.addEventListener 'close', @close
 
-        @path = knix.get
-            type:     'path'
+        @path = new Path
             class:    'connection'
+            parent:   'stage_content'
             startDir: if @config.source.isOut() then pos(100,1) else pos(-100,-1)
             endDir:   if @config.target.isOut() then pos(100,1) else pos(-100,-1)
             onOver:   @onOver
@@ -144,8 +144,9 @@ class Connection
         ]
 
     update: =>
-        @path.setStart @config.source.absCenter()
-        @path.setEnd   @config.target.absCenter()
+        if @path?
+            @path.setStart @config.source.absCenter()
+            @path.setEnd   @config.target.absCenter()
 
     close: =>
         @disconnect()
