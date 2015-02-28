@@ -11,9 +11,11 @@
 class Files
 
     @saveWindows: =>
+        windows = knix.allWindows()
+        if _.isEmpty windows then return
         log 'saveWindows'
         dump = ''
-        dump += JSON.stringify { 'windows': (w.config for w in knix.allWindows()), 'connections': knix.allConnections() }, null, '    '
+        dump += JSON.stringify { 'windows': (w.config for w in windows), 'connections': knix.allConnections() }, null, '    '
         dump = dump.slice(0,-1)
         dump += "    }"
         log dump

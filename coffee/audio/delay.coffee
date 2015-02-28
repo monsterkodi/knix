@@ -17,6 +17,7 @@ class Delay extends Window
         [ @audio, cfg ] = Audio.delay cfg
 
         super cfg,
+            type:      'delay'
             title:     'delay'
             minWidth:  240
             resize:    'horizontal'

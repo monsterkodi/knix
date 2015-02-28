@@ -76,7 +76,7 @@ class knix
     @create: (cfg, defs) =>
 
         cfg = _.def cfg, defs
-
+        log cfg.type
         if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
             @[cfg.type] cfg
         else if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'
@@ -93,13 +93,12 @@ class knix
         w = @create _.def cfg,
             type:   'window'
             parent: 'stage_content'
-        log w.elem.id
         Stage.positionWindow w    
         w
         
     # ________________________________________________________________________________ windows
 
-    @allWindows:     => w.widget for w in $$('.window') when not w.hasClassName 'console-window'
+    @allWindows:     => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections: => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
 
     @closeWindows: => @allWindows().each (w) -> w.close()

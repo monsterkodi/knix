@@ -16,8 +16,8 @@ class Window extends Widget
 
     init: (cfg, defs) =>
 
-        cfg = _.def cfg, defs 
-        
+        cfg = _.def cfg, defs
+            
         children = cfg.children
         if cfg.child
             if not children? then children = []
@@ -30,6 +30,7 @@ class Window extends Widget
 
         super cfg,
             type:     'window'
+            class:    'window'            
             parent:   'stage_content'
             hasClose:  true
             hasShade:  true
@@ -76,6 +77,7 @@ class Window extends Widget
                 width:      '100%'
                 height:     "%dpx".fmt(@contentHeight())
 
+        log 'init Window'
         @elem.on 'size', @sizeWindow
         @
 
@@ -299,7 +301,7 @@ class Window extends Widget
         return
 
     close: =>
-        log 'close'
+        # log 'close'
         if @config.popup?
             knix.delPopup @
         super

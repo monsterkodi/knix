@@ -23,6 +23,7 @@ class Ramp extends Window
             resize:       'horizontal'
 
         super cfg,
+            type:  'ramp'
             title: 'ramp'
             children: \
             [

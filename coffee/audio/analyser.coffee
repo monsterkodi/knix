@@ -23,6 +23,7 @@ class Analyser extends Window
         @dataArray = new Uint8Array(cfg.fftSize);
 
         super cfg,
+            type:  'analyser'
             title: 'analyser'
             children: \
             [

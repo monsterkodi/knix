@@ -19,6 +19,7 @@ class Oscillator extends Window
         [ @audio, cfg ] = Audio.oscillator cfg
 
         super cfg,
+            type:       'oscillator'
             title:      'oscillator'
             minWidth:   220
             resize:     'horizontal'

@@ -17,6 +17,7 @@ class Gain extends Window
         [ @audio, cfg ]  = Audio.gain cfg
 
         super cfg,
+            type:      'gain'
             title:     cfg.master and 'master' or 'gain'
             minWidth:  240
             resize:    'horizontal'

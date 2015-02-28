@@ -19,6 +19,7 @@ class Filter extends Window
         [ @audio, cfg ] = Audio.filter cfg
 
         super cfg,
+            type:      'filter'
             title:     'filter'
             minWidth:  240
             resize:    'horizontal'
