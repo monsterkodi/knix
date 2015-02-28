@@ -21,6 +21,7 @@ class Audio
         Analyser.menu()
         Envelope.menu() 
         Range.menu()
+        Ramp.menu()
 
     @filter: (cfg) =>
 

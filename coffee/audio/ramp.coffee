@@ -1,0 +1,75 @@
+###
+
+00000000    0000000   00     00  00000000 
+000   000  000   000  000   000  000   000
+0000000    000000000  000000000  00000000 
+000   000  000   000  000 0 000  000      
+000   000  000   000  000   000  000      
+
+###
+
+class Ramp extends Window
+
+    init: (cfg, defs) =>        
+    
+        _.def cfg, defs
+
+        cfg = _.def cfg,
+            duration:     2.0
+            minDuration:  0.01
+            maxDuration:  10.0
+            durationStep: 0.01
+            valueFormat:  "%0.3f"
+
+        super cfg,
+            title: 'ramp'
+            children: \
+            [
+                type:       'sliderspin'
+                id:         'ramp'
+                minValue:   0.0
+                maxValue:   1.0
+            ,
+                type:       'sliderspin'
+                id:         'ramp_duration'
+                onValue:    @setDuration
+                value:      cfg.duration
+                minValue:   cfg.minDuration
+                maxValue:   cfg.maxDuration
+                spinStep:   cfg.durationStep
+            ,
+                type:       'button'
+                text:       'trigger'
+                onDown:     @triggerDown
+            ]
+
+    setDuration: (v) => @config.duration = _.value v
+
+    triggerDown: => 
+        if @config.reltime != 0
+            knix.deanimate @
+        @setRelTime 0
+        knix.animate @
+                            
+    anim: (step) =>
+        @setRelTime @config.reltime + step.dsecs / @config.duration
+        if @config.reltime > 1.0
+            knix.deanimate @
+            @setRelTime 0
+
+    setRelTime: (rel) =>
+        @config.reltime = rel
+        @config.value = @config.reltime
+        @getChild('ramp').setValue @config.value
+        # @emitValue @config.value
+
+    @menu: =>
+
+        knix.create
+            type:   'button'
+            id:     'new_ramp'
+            icon:   'octicon-diff-modified'
+            class:  'tool-button'
+            parent: 'menu'
+            onClick: -> new Ramp
+                            center: true
