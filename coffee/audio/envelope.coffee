@@ -16,7 +16,7 @@ class Envelope extends Window
         _.def cfg, defs
 
         cfg = _.def cfg,
-            duration:     1.0
+            duration:     4.0
             minDuration:  0.01
             maxDuration:  10.0
             durationStep: 0.01
@@ -28,7 +28,8 @@ class Envelope extends Window
             [
                 type:       'pad'
                 id:         'envelope_pad'
-                numHandles:  7
+                numHandles:  3
+                vals:        [pos(0,0), pos(0.5,1), pos(1,0)]
                 minHeight:   50
                 minWidth:    150
             ,
@@ -70,25 +71,51 @@ class Envelope extends Window
     setDuration: (v) => @config.duration = _.value v
 
     trigger: => log 'trigger'
+    
+    triggerDownX: => 
+        if @config.reltime != 0
+            clearInterval @timer if @timer
+        @setRelTime 0
+        @lastStep = Date.now()
+        @timer = setInterval(@step, 1)
+        @animSteps = 0
+
     triggerDown: => 
         if @config.reltime != 0
             knix.deanimate @
         @setRelTime 0
         knix.animate @
-        
+        @animSteps = 0
+                
+    step: =>
+        thisStep = Date.now()
+        dsecs = (thisStep - @lastStep) * 0.001
+        @lastStep = thisStep
+        @setRelTime @config.reltime + dsecs / @config.duration
+        @pad.showRuler @config.reltime, @config.value
+        @animSteps += 1
+        if @config.reltime > 1.0
+            @pad.hideRuler()
+            clearInterval @timer
+            @timer = null
+            @setRelTime 0 
+            log 'steps', @animSteps
+            
+    anim: (step) =>
+        @setRelTime @config.reltime + step.dsecs / @config.duration
+        @pad.showRuler @config.reltime, @config.value
+        @animSteps += 1
+        if @config.reltime > 1.0
+            @pad.hideRuler()
+            knix.deanimate @
+            @setRelTime 0
+            log 'anims', @animSteps
+
     setRelTime: (rel) =>
         @config.reltime = rel
         @config.value = @pad.valAtRel rel
         @getChild('envelope').setValue @config.value
         @emitValue @config.value
-        
-    anim: (step) =>
-        @setRelTime @config.reltime + step.dsecs / @config.duration
-        @pad.showRuler @config.reltime, @config.value
-        if @config.reltime > 1.0
-            @pad.hideRuler()
-            knix.deanimate @
-            @setRelTime 0
 
     sizeWindow: =>
         pad = @getChild 'pad'
