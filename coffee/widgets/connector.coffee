@@ -135,3 +135,12 @@ class Connector extends Widget
         log 'stop'
         @handle.close()
         @path.path.remove()
+
+    _str: =>
+        s  = @elem.id + " "
+        s += "signal: " + @config.signal if @isSignal()
+        s += "slot: " + @config.slot if @isSlot()
+        s += @config.in if @config.in?
+        s += @config.out if @config.out?
+        s
+    

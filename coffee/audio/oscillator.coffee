@@ -48,13 +48,16 @@ class Oscillator extends Window
     setFreq:  (v) => @audio.frequency.value = _.value v
     setShape: (v) => @audio.type = Oscillator.shapes[_.value(v)]
 
+    paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.frequency
+
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_oscillator'
-            icon:   'octicon-sync'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'oscillator'
+            id:      'new_oscillator'
+            icon:    'octicon-sync'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Oscillator
                             center: true

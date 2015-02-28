@@ -92,11 +92,12 @@ class Analyser extends Window
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_analyser'
-            icon:   'octicon-pulse'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            id:      'new_analyser'
+            tooltip: 'analyser'
+            icon:    'octicon-diff-modified'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Analyser
                             center: true
 

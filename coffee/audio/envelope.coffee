@@ -17,6 +17,8 @@ class Envelope extends Window
 
         cfg = _.def cfg,
             valueFormat:  "%0.3f"
+            numHandles:  10
+            # vals:        [pos(0,0), pos(0.25,0.5), pos(0.5,1), pos(0.75,0.5), pos(1,0)]
 
         super cfg,
             title: 'envelope'
@@ -24,8 +26,8 @@ class Envelope extends Window
             [
                 type:       'pad'
                 id:         'envelope_pad'
-                numHandles:  5
-                vals:        [pos(0,0), pos(0.25,0.5), pos(0.5,1), pos(0.75,0.5), pos(1,0)]
+                numHandles:  cfg.numHandles
+                vals:        cfg.vals
                 minHeight:   50
                 minWidth:    150
             ,
@@ -61,6 +63,15 @@ class Envelope extends Window
 
         @pad = @getChild 'envelope_pad'
         @sizeWindow()
+            
+    paramValuesAtConnector: (paramValues, connector) =>
+        if paramValues.duration? 
+            paramValues.values = [] 
+            for v in @pad.config.vals
+                paramValues.values.push
+                    time:  v.x * paramValues.duration
+                    value: v.y
+            Audio.sendParamValuesFromConnector paramValues, @connector "envelope:onValue"
                                 
     setRel: (rel) =>
         @config.reltime = _.value rel
@@ -83,10 +94,11 @@ class Envelope extends Window
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_envelope'
-            icon:   'octicon-diff-modified'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'envelope'
+            id:      'new_envelope'
+            icon:    'octicon-pulse'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Envelope
                             center: true

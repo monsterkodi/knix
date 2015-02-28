@@ -74,10 +74,11 @@ class Filter extends Window
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_filter'
-            icon:   'octicon-gear'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'filter'
+            id:      'new_filter'
+            icon:    'octicon-gear'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Filter
                             center: true

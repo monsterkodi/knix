@@ -37,23 +37,27 @@ class Gain extends Window
     setGain:  (v) => @audio.gain.value = _.value v
     setValue: (v) => @audio.gain.value = _.value v
 
+    paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.gain
+
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_gain'
-            icon:   'octicon-dashboard'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            id:      'new_gain'
+            tooltip: 'gain'
+            icon:    'octicon-dashboard'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Gain
                             center: true
 
         knix.create
-            type:   'button'
-            id:     'new_master'
-            icon:   'octicon-unmute'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'master'
+            id:      'new_master'
+            icon:    'octicon-unmute'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Gain
                             center: true
                             master: true

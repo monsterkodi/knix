@@ -45,9 +45,10 @@ class Ramp extends Window
 
     setDuration: (v) => @config.duration = _.value v
 
-    triggerDown: => 
+    triggerDown: =>
         if @config.reltime != 0
             knix.deanimate @
+        Audio.sendParamValuesFromConnector { duration: @config.duration }, @connector 'ramp:onValue'
         @setRelTime 0
         knix.animate @
                             
@@ -61,15 +62,15 @@ class Ramp extends Window
         @config.reltime = rel
         @config.value = @config.reltime
         @getChild('ramp').setValue @config.value
-        # @emitValue @config.value
 
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_ramp'
-            icon:   'octicon-diff-modified'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'ramp'
+            id:      'new_ramp'
+            icon:    'octicon-playback-play'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Ramp
                             center: true

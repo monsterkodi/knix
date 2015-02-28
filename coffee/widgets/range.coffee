@@ -74,6 +74,12 @@ class Range extends Window
                     signal:     'range_out:onValue'
                 ]
             ]
+    
+    paramValuesAtConnector: (paramValues, connector) =>
+        if connector.config.slot == 'range_in:setValue'
+            paramValues.offset = @config.low
+            paramValues.range  = @config.high - @config.low
+            Audio.sendParamValuesFromConnector paramValues, @connector "range_out:onValue"
             
     setHigh: (v) => 
         @config.high = Math.max(@config.low, _.value v)
@@ -94,10 +100,11 @@ class Range extends Window
     @menu: =>
 
         knix.create
-            type:   'button'
-            id:     'new_range'
-            icon:   'octicon-settings'
-            class:  'tool-button'
-            parent: 'menu'
+            type:    'button'
+            tooltip: 'range'
+            id:      'new_range'
+            icon:    'octicon-settings'
+            class:   'tool-button'
+            parent:  'menu'
             onClick: -> new Range
                             center: true

@@ -17,9 +17,9 @@ class Tooltip
                   delay: 700
                   
         cfg.target.tooltip = cfg
-        cfg.target.elem.on 'mousemove', @onHover
+        cfg.target.elem.on 'mousemove',  @onHover
         cfg.target.elem.on 'mouseleave', @onLeave
-        cfg.target.elem.on 'mousedown', @onLeave
+        cfg.target.elem.on 'mousedown',  @onLeave
 
     @onHover: (event, d) =>
         for e in [d, d.ancestors()].flatten()
@@ -51,10 +51,11 @@ class Tooltip
             isMovable:  false
             x:          pos.x + 12
             y:          pos.y + 12
-            text:       text
             hasClose:   false
             hasShade:   false
             hasTitle:   false
+            child:
+                text:   text
 
     @onLeave: (event, e) =>
         if tooltip = e?.widget?.tooltip

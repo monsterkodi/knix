@@ -56,11 +56,14 @@ class Spin extends Value
 
         @input = @getChild('spin-input').elem
 
-        @input.addEventListener 'change', ->
-            @getParent(@config.type).setValue @getValue()
+        @input.addEventListener 'change', @onInputChange
 
         @input.value = @config.value
         @setValue @config.value
+
+    onInputChange: =>
+        log 'input change'
+        @setValue @input.value
 
     onKey: (event, e) =>
         # log 'event', event.key
