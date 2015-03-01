@@ -15,7 +15,7 @@ class Gain extends Window
         cfg = _.def cfg, defs
 
         [ @audio, cfg ]  = Audio.gain cfg
-
+        
         super cfg,
             type:      'gain'
             title:     cfg.master and 'master' or 'gain'
@@ -34,9 +34,10 @@ class Gain extends Window
             ]
             
         @connect 'gain:onValue', @setGain
+        @setGain @config.gain
 
-    setGain:  (v) => @audio.gain.value = _.value v
-    setValue: (v) => @audio.gain.value = _.value v
+    setGain:  (v) => @config.gain = _.value v; @audio.gain.value = @config.gain
+    setValue: (v) => @setGain v
 
     paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.gain
 

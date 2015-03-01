@@ -12,9 +12,12 @@ class Oscillator extends Window
 
     @shapes = ['sine', 'triangle', 'sawtooth', 'square']
 
-    init: (cfg, defs) =>        
+    init: (cfg, defs) =>
     
         cfg = _.def cfg, defs
+        
+        cfg = _.def cfg,
+            shape: Oscillator.shapes[0]
 
         [ @audio, cfg ] = Audio.oscillator cfg
 
@@ -30,7 +33,7 @@ class Oscillator extends Window
             ,
                 type:       'spinner'
                 id:         'shape'
-                value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
+                value:      cfg.shape
                 values:     Oscillator.shapes
             ,
                 type:       'sliderspin'
@@ -43,11 +46,13 @@ class Oscillator extends Window
         @connect 'shape:onValue',     @setShape
         @connect 'frequency:onValue', @setFreq
 
-        @setFreq cfg.freq
-        @setShape(Oscillator.shapes.indexOf(cfg.shape)) if cfg.shape?
+        @setFreq  @config.freq
+        @setShape @config.shape
 
-    setFreq:  (v) => @audio.frequency.value = _.value v
-    setShape: (v) => @audio.type = Oscillator.shapes[_.value(v)]
+    setFreq:  (v) => @config.freq  = _.value v; @audio.frequency.value = @config.freq
+    setShape: (v) => 
+        @config.shape = if _.isString v then v else _.value v 
+        @audio.type = @config.shape
 
     paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.frequency
 

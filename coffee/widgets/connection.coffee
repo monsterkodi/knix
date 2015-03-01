@@ -96,16 +96,8 @@ class Connection
 
     connect: =>
         [outConnector, inConnector] = @outInConnector()
-        # log 'connect',
-        #     outConnector.config.signal or outConnector.config.out,
-        #     inConnector.config.slot or inConnector.config.in
-        log 'connect', outConnector.config, inConnector.config
-        # if outConnector.config.onConnect?
-        #     log 'onConnect out'
-        #     outConnector.config.onConnect outConnector, inConnector
-        # if inConnector.config.onConnect?
-        #     log 'onConnect in'
-        #     inConnector.config.onConnect inConnector, outConnector
+
+        # log 'connect', outConnector.config, inConnector.config
             
         outConnector.emit 'onConnect', {source:outConnector, target:inConnector}
         # inConnector.emit  'onConnect', {source:inConnector, target:outConnector}
@@ -132,11 +124,6 @@ class Connection
     disconnect: =>
         if @connection
             log "disconnect", @connection.out.elem.id, @connection.in.elem.id #@path.path.id()
-
-            # if @connection.out.config.onDisconnect?
-            #     @connection.out.config.onDisconnect @connection.out, @connection.in
-            # if @connection.in.config.onDisconnect?
-            #     @connection.in.config.onDisconnect @connection.in, @connection.out
 
             @connection.out.emit 'onDisconnect', {source:@connection.out, target:@connection.in}
             # @connection.in.emit  'onDisconnect', {source:@connection.in, target:@connection.out}

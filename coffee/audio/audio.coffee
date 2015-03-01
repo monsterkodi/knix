@@ -25,11 +25,9 @@ class Audio
 
     @sendParamValuesFromConnector: (paramValues, connector) =>
         for connection in connector.connections
-            # log connection.config.target.getWindow().elem.id
             connection.config.target.getWindow().paramValuesAtConnector paramValues, connection.config.target
 
     @setValuesForParam: (paramValues, param) =>
-        # t = @context.currentTime + 0.010
         offset = paramValues.offset or 0
         range  = paramValues.range  or 1
         t = @context.currentTime
@@ -38,7 +36,6 @@ class Audio
         for i in [0...paramValues.values.length]
             value = offset + paramValues.values[i].value * range
             param.linearRampToValueAtTime value, t + paramValues.values[i].time
-        # param.linearRampToValueAtTime values[0].value, t + 1
 
     @filter: (cfg) =>
 
@@ -82,8 +79,6 @@ class Audio
             minFreq: 0
             maxFreq: 14000
 
-        # log cfg
-
         oscillator = @context.createOscillator()
         oscillator.frequency.value = cfg.freq # in Hz
         oscillator.start 0
@@ -93,8 +88,6 @@ class Audio
 
         cfg = _.def cfg,
             gain:    0        
-
-        # log cfg
 
         gain = @context.createGain()
         gain.gain.value = cfg.gain # [0.0, 1.0]

@@ -37,14 +37,29 @@ class Spinner extends Spin
         pos    = @getChild('spin-content').absPos()
         width  = event.clientX-pos.x
         v      = @size2value width
-        @setValue v
+        
+        d = v - @range()/2
+        i = @range()/2 + d * @config.valueStep  * @steps() / @range()
+        i = @clamp @round(i)
 
-    setValue: (v) =>
-        d = _.value(v) - @range()/2
-        v = @range()/2 + d * @config.valueStep  * @steps() / @range()
-        super @round v
+        @setValue @config.values[i]
+
+    index: => @config.values.indexOf @config.value
+
+    incr: (d=1) =>
+        log d
+        if d in ['+', '++'] then d = 1
+        else if d in ['-', '--'] then d = -1
+        i = @clamp(@index() + d)
+        @setValue @config.values[i]
+
+    setValue: (a) =>
+        v = _.arg a
+        i = @config.values.indexOf v
         c = @getChild 'spin-content'
         c.clear()
         w = c.getWidth()/@steps()
-        c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, @config.value*w)
-        c.elem.insert String @config.values[@config.value]
+        c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, i*w)
+        @config.value = @config.values[i]
+        c.elem.insert String @config.value
+        @emitValue @config.value

@@ -143,8 +143,8 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        tag 'Connection'
-        log @elem.id, signal, slot
+        # tag 'Connection'
+        # log @elem.id, signal, slot
         [signalSender, signalEvent] = @resolveSignal signal
         slotFunction = @resolveSlot slot
         if not signalSender?

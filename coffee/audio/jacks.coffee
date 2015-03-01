@@ -45,9 +45,9 @@ class Jacks extends Hbox
         @connect 'out:onDisconnect', @onDisconnect
         
     onConnect: (event) =>
-        log 'onConnect', event.detail
-        log 'onConnect', event.detail.source.getWindow().audio
-        log 'onConnect', event.detail.target.getWindow().audio
+        # log 'onConnect', event.detail
+        # log 'onConnect', event.detail.source.getWindow().audio
+        # log 'onConnect', event.detail.target.getWindow().audio
         event.detail.source.getWindow().audio.connect event.detail.target.getWindow().audio
         
     onDisconnect: (event) =>

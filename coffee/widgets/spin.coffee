@@ -28,8 +28,6 @@ class Spin extends Value
                         id:     'decr'
                         elem:   'td'
                         type:   'spin-td'
-                        # onDown:  @startDecr
-                        # onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-left'
@@ -39,13 +37,10 @@ class Spin extends Value
                         child:
                             type:   'input'
                             class:  'spin-input'
-                            # onDown: (event) -> event.stopPropagation()
                     ,
                         id:     'incr'
                         elem:   'td'
                         type:   'spin-td'
-                        # onDown:  @startIncr
-                        # onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-right'

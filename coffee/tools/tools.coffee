@@ -47,16 +47,12 @@ _.arg = (arg, argname='') ->
     if typeof arg == 'object'
         if arg.detail?
             if arg.detail[argname]?
-                #log 'event detail arg'
                 return arg.detail[argname]
-            #log 'event detail'
             return arg.detail
             
     if argname == 'value'
-        #log 'float value'
-        return parseFloat arg
-        
-    #log 'just value', event
+        if typeof arg == 'string'
+            return parseFloat arg
     arg
 
 _.value = (arg) -> _.arg arg, 'value'
