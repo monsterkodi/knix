@@ -201,19 +201,22 @@ class Widget
         @
 
     emitSize: =>
+        @config.width  = @getWidth()
+        @config.height = @getHeight()       
         @emit 'size',
-            width:  @getWidth()
-            height: @getHeight()
+            width:  @config.width
+            height: @config.height
         @
 
     emitMove: =>
+        p = @absPos()
+        @config.x = p.x
+        @config.y = p.y
         @emit 'move',
-            pos: @absPos()
+            pos: p
         @
 
     emitValue: (v) => 
-        # tag 'value'
-        # log v, @elem.id
         @emit 'onValue',
             value: v
         @

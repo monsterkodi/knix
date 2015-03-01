@@ -11,8 +11,11 @@
 class Canvas extends Widget
 
     init: (cfg, defs) =>
-    
+            
         cfg = _.def cfg, defs
+
+        cfg.width  = undefined
+        cfg.height = undefined
         
         super cfg,
             elem: 'canvas'

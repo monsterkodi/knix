@@ -73,16 +73,16 @@ class Analyser extends Window
 
     sizeWindow: =>
         
-        hbox = @getChild('hbox')
+        hbox = @getChild 'hbox'
         height = @contentHeight()
-        content = @getChild('content')
-        content.setHeight(height)
+        content = @getChild 'content'
+        content.setHeight height
         height = content.innerHeight() - 100
         @canvas?.setHeight height
         width  = content.innerWidth() - 20
         @canvas?.elem.width  = width
         @canvas?.elem.height = height
-        @dataArray = new Uint8Array(2*width)
+        @dataArray = new Uint8Array 2*width
 
     @menu: =>
 

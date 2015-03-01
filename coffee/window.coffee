@@ -46,10 +46,11 @@ class Window extends Widget
         @initConnections()
         @layoutChildren()
 
-        if cfg.popup then knix.addPopup @
+        if @config.popup then knix.addPopup @
 
-        if cfg.center
+        if @config.center
             @moveTo Math.max(0,Stage.size().width/4 - @getWidth()/2), Math.max(0,Stage.size().height/2 - @getHeight()/2)
+            @config.center = undefined
         @
 
     #__________________________________________________ init window
@@ -187,8 +188,6 @@ class Window extends Widget
             else
                 cursor = 'nesw-resize'
 
-            # tag 'Drag'
-            # log 'new resize drag'
             @sizeMoveDrag = Drag.create
                 target:  @elem
                 onStart: @sizeStart
@@ -198,8 +197,6 @@ class Window extends Widget
 
             @sizeMoveDrag.border = border
         else
-            # tag 'Drag'
-            # log 'new move drag'
             @sizeMoveDrag = Drag.create
                 target: @elem
                 minPos: pos(undefined,0)
