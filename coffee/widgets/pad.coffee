@@ -51,7 +51,15 @@ class Pad extends Widget
                     class:       'pad-path'
                     startHandle: @handles[i-1]
                     endHandle:   @handles[i]
-                p.path.back()    
+                p.path.back()   
+                Drag.create
+                    target:  p.path.node
+                    cursor:  'grab'
+                    doMove:  false
+                    onStart: @pathDragStart
+                    onMove:  @pathDragMove
+                    onStop:  @pathDragStop
+ 
             
         if not @config.vals?
             @config.vals = []
@@ -62,6 +70,23 @@ class Pad extends Widget
         @setSVGSize cfg.minWidth, cfg.minHeight                    
         @updateHandles()
         @
+    
+    pathDragStart: (drag, event) =>
+        log 'start'
+        # log drag.target.getWidget().config.startHandle
+        # log drag.target.getWidget().config.endHandle
+
+    pathDragMove: (drag, event) =>
+        log drag.target.getWidget().config.startHandle
+        log drag.target.getWidget().config.endHandle
+        log event.movementX, event.movementY
+        log event
+        
+
+    pathDragStop: (drag, event) =>
+        log 'end'
+        # log drag.target.getWidget().config.startHandle
+        # log drag.target.getWidget().config.endHandle
     
     valAtRel: (rel) =>
         if @config.numHandles < 2 then return @config.vals[0].y
