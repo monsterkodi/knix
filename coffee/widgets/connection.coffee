@@ -96,12 +96,15 @@ class Connection
 
     connect: =>
         [outConnector, inConnector] = @outInConnector()
-        log 'connect',
-            outConnector.config.signal or outConnector.config.out,
-            inConnector.config.slot or inConnector.config.in
+        # log 'connect',
+        #     outConnector.config.signal or outConnector.config.out,
+        #     inConnector.config.slot or inConnector.config.in
+        log 'connect', outConnector, inConnector
         if outConnector.config.onConnect?
+            log 'onConnect out'
             outConnector.config.onConnect outConnector, inConnector
         if inConnector.config.onConnect?
+            log 'onConnect in'
             inConnector.config.onConnect inConnector, outConnector
 
         connection =

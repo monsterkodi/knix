@@ -12,7 +12,7 @@ class Ramp extends Window
 
     init: (cfg, defs) =>        
     
-        _.def cfg, defs
+        cfg = _.def cfg, defs
 
         cfg = _.def cfg,
             duration:     2.0

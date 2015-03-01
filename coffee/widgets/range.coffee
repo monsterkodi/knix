@@ -12,7 +12,7 @@ class Range extends Window
 
     init: (cfg, defs) =>
     
-        _.def cfg, defs
+        cfg = _.def cfg, defs
 
         cfg = _.def cfg,
             low:          0.0

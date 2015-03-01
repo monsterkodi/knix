@@ -12,7 +12,7 @@ class About extends Window
     
     init: (cfg, defs) =>        
     
-        _.def cfg, defs
+        cfg = _.def cfg, defs
 
         @url = '::.info.json:home-url::'
 

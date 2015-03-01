@@ -76,7 +76,7 @@ class knix
     @create: (cfg, defs) =>
 
         cfg = _.def cfg, defs
-        log cfg.type
+        # log cfg.type
         if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
             @[cfg.type] cfg
         else if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'

@@ -12,7 +12,7 @@ class Delay extends Window
     
     init: (cfg, defs) =>        
     
-        _.def cfg, defs
+        cfg = _.def cfg, defs
 
         [ @audio, cfg ] = Audio.delay cfg
 

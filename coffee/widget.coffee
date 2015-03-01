@@ -382,6 +382,7 @@ class Widget
 
     addMovement: =>        
         if @config.isMovable
+            tag 'Drag'
             log 'addMovement'
             Drag.create
                 target:  @elem
@@ -396,10 +397,12 @@ class Widget
         @emitMove()
         
     moveStart: (drag, event) =>
+        tag 'Drag'
         log 'start', event.target?.id
         StyleSwitch.togglePathFilter()
 
     moveStop: (drag, event) =>
+        tag 'Drag'
         log 'stop', event.target?.id
         StyleSwitch.togglePathFilter()
 

@@ -82,6 +82,8 @@ class Audio
             minFreq: 0
             maxFreq: 14000
 
+        # log cfg
+
         oscillator = @context.createOscillator()
         oscillator.frequency.value = cfg.freq # in Hz
         oscillator.start 0
@@ -91,6 +93,8 @@ class Audio
 
         cfg = _.def cfg,
             gain:    0        
+
+        # log cfg
 
         gain = @context.createGain()
         gain.gain.value = cfg.gain # [0.0, 1.0]

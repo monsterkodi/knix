@@ -77,7 +77,6 @@ class Window extends Widget
                 width:      '100%'
                 height:     "%dpx".fmt(@contentHeight())
 
-        log 'init Window'
         @elem.on 'size', @sizeWindow
         @
 

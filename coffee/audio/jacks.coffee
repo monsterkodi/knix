@@ -10,11 +10,12 @@
 
 class Jacks extends Hbox
 
-    init: (cfg, defs) =>        
+    init: (cfg, defs) =>
     
-        _.def cfg, defs
+        cfg = _.def cfg, defs
 
         cfg = _.def cfg,
+            type:         'jacks'
             onConnect:    (source, target) -> source.config.audio.connect    target.config.audio
             onDisconnect: (source, target) -> source.config.audio.disconnect target.config.audio
 
@@ -22,9 +23,9 @@ class Jacks extends Hbox
 
         if not (cfg.hasInput == false)
             children.push
-                type:        'connector'
-                in:             'audio'
-                audio:        cfg.audio
+                type:   'connector'
+                in:     'audio'
+                audio:  cfg.audio
 
         children.push
             type:         'jack_content'
