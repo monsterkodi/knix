@@ -7,7 +7,7 @@
    000     000   000  000      000   000  000     
     0      000   000  0000000   0000000   00000000
  */
-var About, Button, Connection, Connector, Console, Handle, Hbox, Pad, Path, Slider, Sliderspin, Spin, Spinner, Svg, Toggle, Tooltip, Value, tag,
+var About, Button, Canvas, Connection, Connector, Console, Files, Handle, Hbox, Icon, Input, Pad, Path, Range, Slider, Sliderspin, Spin, Spinner, Svg, Toggle, Tooltip, Value, tag,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -36,9 +36,9 @@ Value = (function(_super) {
     cfg = _.def(cfg, def);
     return Value.__super__.init.call(this, cfg, {
       value: 0,
+      minValue: -Number.MAX_VALUE / 2,
+      maxValue: +Number.MAX_VALUE / 2,
       noMove: true,
-      minValue: 0,
-      maxValue: 100,
       tooltip: true
     });
   };
@@ -48,8 +48,24 @@ Value = (function(_super) {
   };
 
   Value.prototype.initEvents = function() {
+    var win;
     if (this.config.onValue != null) {
-      this.elem.on("onValue", this.config.onValue);
+      if (_.isString(this.config.onValue)) {
+        console.log('onValue', this.config.onValue);
+        log({
+          "file": "./coffee/widgets/value.coffee",
+          "class": "Value",
+          "line": 30,
+          "args": ["cfg", "def"],
+          "method": "initEvents",
+          "type": "."
+        }, 'onValue anc', this.elem.ancestors());
+        win = this.getWindow();
+        console.log('onValue win', win);
+        this.elem.on("onValue", win[this.config.onValue]);
+      } else {
+        this.elem.on("onValue", this.config.onValue);
+      }
     }
     return Value.__super__.initEvents.apply(this, arguments);
   };
@@ -57,12 +73,10 @@ Value = (function(_super) {
   Value.prototype.setValue = function(v) {
     var oldValue;
     oldValue = this.config.value;
-    v = this.round(this.clamp(_.value(v)));
+    v = this.clamp(_.value(v));
     if (v !== oldValue) {
       this.config.value = v;
-      this.emit('onValue', {
-        value: v
-      });
+      this.emitValue(v);
     }
     return this;
   };
@@ -77,12 +91,8 @@ Value = (function(_super) {
     } else if (d === '-' || d === '--') {
       d = -1;
     }
-    if (this.config.valueStep != null) {
-      step = this.config.valueStep;
-    } else {
-      step = 1;
-    }
-    return this.setValue(this.config.value + step * d);
+    step = this.config.valueStep && this.config.valueStep || 1;
+    return this.setValue(this.round(this.config.value + step * d));
   };
 
   Value.prototype.decr = function() {
@@ -90,9 +100,8 @@ Value = (function(_super) {
   };
 
   Value.prototype.percentage = function(v) {
-    var cfg, pct;
-    cfg = this.config;
-    pct = 100 * (v - cfg.minValue) / this.range();
+    var pct;
+    pct = 100 * (v - this.config.minValue) / this.range();
     return Math.max(0, Math.min(pct, 100));
   };
 
@@ -114,7 +123,7 @@ Value = (function(_super) {
 
   Value.prototype.round = function(v) {
     var d;
-    if (this.config.valueStep != null) {
+    if (this.config.valueStep) {
       d = -v + Math.round(v / this.config.valueStep) * this.config.valueStep;
       v += d;
     }
@@ -148,8 +157,7 @@ Hbox = (function(_super) {
     var spacing;
     cfg = _.def(cfg, defs);
     spacing = (cfg.spacing != null) && cfg.spacing || 5;
-    return Hbox.__super__.init.call(this, cfg, {
-      spacing: 5,
+    Hbox.__super__.init.call(this, cfg, {
       type: 'hbox',
       style: {
         display: 'table',
@@ -158,6 +166,7 @@ Hbox = (function(_super) {
         marginLeft: '-%dpx'.fmt(spacing)
       }
     });
+    return this;
   };
 
   Hbox.prototype.insertChild = function(cfg) {
@@ -165,6 +174,7 @@ Hbox = (function(_super) {
     child = Hbox.__super__.insertChild.call(this, cfg);
     child.elem.style.display = 'table-cell';
     child.elem.style.marginLeft = '10px';
+    child.elem.style.verticalAlign = 'middle';
     return child;
   };
 
@@ -191,7 +201,7 @@ About = (function(_super) {
   }
 
   About.prototype.init = function(cfg, defs) {
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     this.url = 'http://monsterkodi.github.io/knix/';
     return About.__super__.init.call(this, cfg, {
       title: 'about',
@@ -257,19 +267,6 @@ About = (function(_super) {
     }
   };
 
-  About.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'show_about',
-      icon: 'octicon-info',
-      "class": 'tool-button',
-      parent: 'tool',
-      onClick: function() {
-        return About.show();
-      }
-    });
-  };
-
   return About;
 
 })(Window);
@@ -321,6 +318,45 @@ Button = (function(_super) {
 
 /*
 
+ 0000000   0000000   000   000  000   000   0000000    0000000
+000       000   000  0000  000  000   000  000   000  000     
+000       000000000  000 0 000   000 000   000000000  0000000 
+000       000   000  000  0000     000     000   000       000
+ 0000000  000   000  000   000      0      000   000  0000000
+ */
+
+Canvas = (function(_super) {
+  __extends(Canvas, _super);
+
+  function Canvas() {
+    this.resize = __bind(this.resize, this);
+    this.init = __bind(this.init, this);
+    return Canvas.__super__.constructor.apply(this, arguments);
+  }
+
+  Canvas.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    cfg.width = void 0;
+    cfg.height = void 0;
+    return Canvas.__super__.init.call(this, cfg, {
+      elem: 'canvas',
+      noMove: true
+    });
+  };
+
+  Canvas.prototype.resize = function(width, height) {
+    this.setHeightNoEmit(height);
+    this.elem.width = width;
+    return this.elem.height = height;
+  };
+
+  return Canvas;
+
+})(Widget);
+
+
+/*
+
  0000000   0000000   000   000  000   000  00000000   0000000  000000000  000   0000000   000   000
 000       000   000  0000  000  0000  000  000       000          000     000  000   000  0000  000
 000       000   000  000 0 000  000 0 000  0000000   000          000     000  000   000  000 0 000
@@ -363,9 +399,9 @@ Connection = (function() {
       w.addEventListener('shade', this.shaded);
       w.addEventListener('close', this.close);
     }
-    this.path = knix.get({
-      type: 'path',
+    this.path = new Path({
       "class": 'connection',
+      parent: 'stage_content',
       startDir: this.config.source.isOut() ? pos(100, 1) : pos(-100, -1),
       endDir: this.config.target.isOut() ? pos(100, 1) : pos(-100, -1),
       onOver: this.onOver,
@@ -449,12 +485,10 @@ Connection = (function() {
   Connection.prototype.connect = function() {
     var connection, inConnector, outConnector, signal, signalEvent, signalSender, slot, slotFunction, _ref, _ref1;
     _ref = this.outInConnector(), outConnector = _ref[0], inConnector = _ref[1];
-    if (outConnector.config.onConnect != null) {
-      outConnector.config.onConnect(outConnector, inConnector);
-    }
-    if (inConnector.config.onConnect != null) {
-      inConnector.config.onConnect(inConnector, outConnector);
-    }
+    outConnector.emit('onConnect', {
+      source: outConnector,
+      target: inConnector
+    });
     connection = {
       out: outConnector,
       "in": inConnector
@@ -477,20 +511,10 @@ Connection = (function() {
   Connection.prototype.disconnect = function() {
     var _ref;
     if (this.connection) {
-      log({
-        "file": "./coffee/widgets/connection.coffee",
-        "class": "Connection",
-        "line": 128,
-        "args": ["event"],
-        "method": "disconnect",
-        "type": "."
-      }, "disconnect", this.connection.out.elem.id, this.connection["in"].elem.id);
-      if (this.connection.out.config.onDisconnect != null) {
-        this.connection.out.config.onDisconnect(this.connection.out, this.connection["in"]);
-      }
-      if (this.connection["in"].config.onDisconnect != null) {
-        this.connection["in"].config.onDisconnect(this.connection["in"], this.connection.out);
-      }
+      this.connection.out.emit('onDisconnect', {
+        source: this.connection.out,
+        target: this.connection["in"]
+      });
       if (((_ref = this.connection) != null ? _ref.handler : void 0) != null) {
         this.connection.handler.stop();
       }
@@ -503,8 +527,10 @@ Connection = (function() {
   };
 
   Connection.prototype.update = function() {
-    this.path.setStart(this.config.source.absCenter());
-    return this.path.setEnd(this.config.target.absCenter());
+    if (this.path != null) {
+      this.path.setStart(this.config.source.absCenter());
+      return this.path.setEnd(this.config.target.absCenter());
+    }
   };
 
   Connection.prototype.close = function() {
@@ -548,6 +574,7 @@ Connector = (function(_super) {
   __extends(Connector, _super);
 
   function Connector() {
+    this._str = __bind(this._str, this);
     this.dragStop = __bind(this.dragStop, this);
     this.dragMove = __bind(this.dragMove, this);
     this.dragStart = __bind(this.dragStart, this);
@@ -568,6 +595,7 @@ Connector = (function(_super) {
   }
 
   Connector.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
     if (cfg.slot != null) {
       cfg["class"] = 'slot';
     }
@@ -595,7 +623,8 @@ Connector = (function(_super) {
       onMove: this.dragMove,
       onStop: this.dragStop
     });
-    return this.connections = [];
+    this.connections = [];
+    return this;
   };
 
   Connector.prototype.close = function() {
@@ -677,17 +706,18 @@ Connector = (function(_super) {
   Connector.prototype.dragStart = function(drag, event) {
     var p;
     p = drag.absPos(event);
-    this.handle = knix.get({
-      type: 'connector_handle',
+    this.handle = new Window({
+      type: 'connector-handle',
+      parent: 'stage_content',
       style: {
         cursor: 'grabbing'
       }
     });
     this.handle.setPos(p);
     this.elem.addClassName('connected');
-    this.path = knix.get({
-      type: 'path',
+    this.path = new Path({
       "class": 'connector',
+      parent: 'stage_content',
       start: this.absCenter(),
       end: p,
       startDir: this.isOut() ? pos(100, -10) : pos(-100, -10)
@@ -731,16 +761,35 @@ Connector = (function(_super) {
     } else if (this.connections.length === 0) {
       this.elem.removeClassName('connected');
     }
+    tag('Drag');
     log({
       "file": "./coffee/widgets/connector.coffee",
       "class": "Connector",
-      "line": 135,
+      "line": 140,
       "args": ["drag", "event"],
       "method": "dragStop",
       "type": "."
     }, 'stop');
     this.handle.close();
     return this.path.path.remove();
+  };
+
+  Connector.prototype._str = function() {
+    var s;
+    s = this.elem.id + " ";
+    if (this.isSignal()) {
+      s += "signal: " + this.config.signal;
+    }
+    if (this.isSlot()) {
+      s += "slot: " + this.config.slot;
+    }
+    if (this.config["in"] != null) {
+      s += this.config["in"];
+    }
+    if (this.config.out != null) {
+      s += this.config.out;
+    }
+    return s;
   };
 
   return Connector;
@@ -769,6 +818,7 @@ Console = (function(_super) {
     this.logInfo = __bind(this.logInfo, this);
     this.insert = __bind(this.insert, this);
     this.onTagState = __bind(this.onTagState, this);
+    this.trashSettings = __bind(this.trashSettings, this);
     this.onContextMenu = __bind(this.onContextMenu, this);
     this.init = __bind(this.init, this);
     return Console.__super__.constructor.apply(this, arguments);
@@ -789,8 +839,8 @@ Console = (function(_super) {
       width: w,
       height: h,
       content: 'scroll',
-      showMethods: true,
-      showClasses: true,
+      showMethods: Settings.get('logMethods', true),
+      showClasses: Settings.get('logClasses', true),
       buttons: [
         {
           "class": 'window-button-right',
@@ -814,7 +864,8 @@ Console = (function(_super) {
         noMove: true
       }
     });
-    return this.elem.addEventListener('contextmenu', this.onContextMenu);
+    this.elem.addEventListener('contextmenu', this.onContextMenu);
+    return this;
   };
 
   Console.prototype.onContextMenu = function(event) {
@@ -902,6 +953,13 @@ Console = (function(_super) {
           type: "window-button-right",
           child: {
             type: 'icon',
+            icon: 'octicon-trashcan'
+          },
+          onClick: this.trashSettings
+        }, {
+          type: "window-button-right",
+          child: {
+            type: 'icon',
             icon: 'octicon-list-unordered'
           },
           onClick: this.toggleMethods
@@ -916,6 +974,12 @@ Console = (function(_super) {
       ]
     });
     return event.preventDefault();
+  };
+
+  Console.prototype.trashSettings = function() {
+    Settings.set('logTags', {});
+    Settings.set('logMethods', void 0);
+    return Settings.set('logClasses', void 0);
   };
 
   Console.prototype.onTagState = function(event) {
@@ -988,6 +1052,7 @@ Console = (function(_super) {
   Console.prototype.toggleClasses = function() {
     var t, _i, _len, _ref, _results;
     this.config.showClasses = !this.config.showClasses;
+    Settings.set('logClasses', this.config.showClasses);
     _ref = this.elem.select('.console-class');
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1004,6 +1069,7 @@ Console = (function(_super) {
   Console.prototype.toggleMethods = function() {
     var t, _i, _len, _ref, _results;
     this.config.showMethods = !this.config.showMethods;
+    Settings.set('logMethods', this.config.showMethods);
     _ref = this.elem.select('.console-method', '.console-method-type');
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1086,24 +1152,141 @@ Console = (function(_super) {
     return html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>').replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>').replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>');
   };
 
-  Console.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'open_console',
-      icon: 'octicon-terminal',
-      "class": 'tool-button',
-      parent: 'tool',
-      onClick: function() {
-        return new Console();
-      }
-    });
-  };
-
   return Console;
 
 })(Window);
 
 tag = Console.setScopeTags;
+
+
+/*
+
+00000000  000  000      00000000   0000000
+000       000  000      000       000     
+000000    000  000      0000000   0000000 
+000       000  000      000            000
+000       000  0000000  00000000  0000000
+ */
+
+Files = (function() {
+  function Files() {}
+
+  Files.saveWindows = function() {
+    var files, json, w, windows;
+    windows = knix.allWindows();
+    if (_.isEmpty(windows)) {
+      return;
+    }
+    json = JSON.stringify({
+      'windows': (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = windows.length; _i < _len; _i++) {
+          w = windows[_i];
+          _results.push(w.config);
+        }
+        return _results;
+      })(),
+      'connections': knix.allConnections()
+    }, null, '    ');
+    log({
+      "file": "./coffee/widgets/files.coffee",
+      "class": "Files",
+      "line": 20,
+      "method": "saveWindows",
+      "type": "@"
+    }, json);
+    files = Files.allFiles();
+    files[uuid.v4()] = json;
+    return localStorage.setItem('files', JSON.stringify(files));
+  };
+
+  Files.loadMenu = function(event) {
+    var children, data, file, files;
+    files = Files.allFiles();
+    if (_.isEmpty(files)) {
+      return;
+    }
+    children = [];
+    for (file in files) {
+      data = files[file];
+      log({
+        "file": "./coffee/widgets/files.coffee",
+        "class": "Files",
+        "line": 33,
+        "method": "loadMenu",
+        "type": "@",
+        "args": ["event"]
+      }, 'file', file, data.length);
+      children.push({
+        type: 'button',
+        text: file,
+        onClick: Files.fileSelected
+      });
+    }
+    return knix.get({
+      hasClose: true,
+      hasMaxi: false,
+      title: ' ',
+      resize: false,
+      hasShade: false,
+      popup: true,
+      pos: Stage.absPos(event),
+      children: children,
+      buttons: [
+        {
+          type: "window-button-left",
+          child: {
+            type: 'icon',
+            icon: 'octicon-trashcan'
+          },
+          onClick: Files.trashFiles
+        }
+      ]
+    });
+  };
+
+  Files.trashFiles = function() {
+    localStorage.setItem('files', "{}");
+    return knix.closePopups();
+  };
+
+  Files.allFiles = function() {
+    if (localStorage.getItem('files') != null) {
+      return JSON.parse(localStorage.getItem('files'));
+    }
+    return {};
+  };
+
+  Files.loadLast = function() {
+    return Files.loadFile(_.keys(Files.allFiles()).last());
+  };
+
+  Files.fileSelected = function(event) {
+    return Files.loadFile(event.target.getWidget().config.text);
+  };
+
+  Files.loadFile = function(filename) {
+    var data, state;
+    log({
+      "file": "./coffee/widgets/files.coffee",
+      "class": "Files",
+      "line": 71,
+      "method": "loadFile",
+      "type": "@",
+      "args": ["filename"]
+    }, filename);
+    if (filename) {
+      data = Files.allFiles()[filename];
+      knix.closeWindows();
+      state = JSON.parse(data);
+      return knix.restore(state);
+    }
+  };
+
+  return Files;
+
+})();
 
 
 /*
@@ -1141,10 +1324,11 @@ Handle = (function(_super) {
     this.initElem();
     this.initEvents();
     this.elem.relPos = this.relPos;
-    return this.drag = new Drag({
+    this.drag = new Drag({
       target: this.elem,
       onStop: this.config.onUp
     });
+    return this;
   };
 
   Handle.prototype.initEvents = function() {
@@ -1184,6 +1368,76 @@ Handle = (function(_super) {
 
 /*
 
+000   0000000   0000000   000   000
+000  000       000   000  0000  000
+000  000       000   000  000 0 000
+000  000       000   000  000  0000
+000   0000000   0000000   000   000
+ */
+
+Icon = (function(_super) {
+  __extends(Icon, _super);
+
+  function Icon() {
+    this.init = __bind(this.init, this);
+    return Icon.__super__.constructor.apply(this, arguments);
+  }
+
+  Icon.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    return Icon.__super__.init.call(this, cfg, {
+      child: {
+        elem: 'span',
+        type: 'octicon',
+        "class": cfg.icon
+      }
+    });
+  };
+
+  return Icon;
+
+})(Widget);
+
+
+/*
+
+000  000   000  00000000   000   000  000000000
+000  0000  000  000   000  000   000     000   
+000  000 0 000  00000000   000   000     000   
+000  000  0000  000        000   000     000   
+000  000   000  000         0000000      000
+ */
+
+Input = (function(_super) {
+  __extends(Input, _super);
+
+  function Input() {
+    this.init = __bind(this.init, this);
+    return Input.__super__.constructor.apply(this, arguments);
+  }
+
+  Input.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    Input.__super__.init.call(this, cfg, {
+      type: 'input',
+      elem: 'input'
+    });
+    this.elem.setAttribute('size', 6);
+    this.elem.setAttribute('type', 'text');
+    this.elem.setAttribute('inputmode', 'numeric');
+    this.elem.getValue = function() {
+      return parseFloat(this.value);
+    };
+    return this;
+  };
+
+  return Input;
+
+})(Widget);
+
+
+/*
+
 00000000    0000000   0000000  
 000   000  000   000  000   000
 00000000   000000000  000   000
@@ -1196,17 +1450,22 @@ Pad = (function(_super) {
 
   function Pad() {
     this.setSize = __bind(this.setSize, this);
+    this.updateHandles = __bind(this.updateHandles, this);
+    this.setSVGSize = __bind(this.setSVGSize, this);
     this.constrainHandles = __bind(this.constrainHandles, this);
     this.onHandleUp = __bind(this.onHandleUp, this);
     this.onHandlePos = __bind(this.onHandlePos, this);
     this.getHeight = __bind(this.getHeight, this);
     this.getWidth = __bind(this.getWidth, this);
+    this.hideRuler = __bind(this.hideRuler, this);
+    this.showRuler = __bind(this.showRuler, this);
+    this.valAtRel = __bind(this.valAtRel, this);
     this.init = __bind(this.init, this);
     return Pad.__super__.constructor.apply(this, arguments);
   }
 
   Pad.prototype.init = function(cfg, defs) {
-    var hp, i, p, _i, _j, _k, _ref, _ref1, _ref2;
+    var hp, i, p, v, _i, _j, _k, _ref, _ref1, _ref2;
     cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
       minWidth: 100,
@@ -1214,6 +1473,7 @@ Pad = (function(_super) {
       numHandles: 1,
       hasPaths: true
     });
+    this.o = 8;
     Pad.__super__.init.call(this, cfg, {
       type: 'pad',
       noMove: true,
@@ -1225,8 +1485,18 @@ Pad = (function(_super) {
       }
     });
     this.svg = this.getChild('svg');
-    if (this.config.handles != null) {
-      this.config.numHandles = this.config.handles.length;
+    if (this.config.vals != null) {
+      this.config.vals = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.config.vals;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          v = _ref[_i];
+          _results.push(pos(v.x, v.y));
+        }
+        return _results;
+      }).call(this);
+      this.config.numHandles = this.config.vals.length;
     }
     this.handles = [];
     for (i = _i = 0, _ref = this.config.numHandles; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
@@ -1241,21 +1511,95 @@ Pad = (function(_super) {
       for (i = _j = 1, _ref1 = this.config.numHandles; 1 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 1 <= _ref1 ? ++_j : --_j) {
         p = new Path({
           svg: this.svg.svg,
-          "class": 'pad_path',
+          "class": 'pad-path',
           startHandle: this.handles[i - 1],
           endHandle: this.handles[i]
         });
         p.path.back();
       }
     }
-    if (this.config.handles == null) {
-      this.config.handles = [];
+    if (this.config.vals == null) {
+      this.config.vals = [];
       for (i = _k = 0, _ref2 = this.config.numHandles; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
         hp = pos(i.toFixed(3) / (this.config.numHandles - 1), i.toFixed(3) / (this.config.numHandles - 1));
-        this.config.handles.push(hp);
+        this.config.vals.push(hp);
       }
     }
-    return this.setSize(cfg.minWidth, cfg.minHeight);
+    this.setSVGSize(cfg.minWidth, cfg.minHeight);
+    this.updateHandles();
+    return this;
+  };
+
+  Pad.prototype.valAtRel = function(rel) {
+    var dl, dp, ei, ep, i, p, si, sp, _i, _ref, _ref1;
+    if (this.config.numHandles < 2) {
+      return this.config.vals[0].y;
+    }
+    si = 0;
+    ei = 1;
+    for (i = _i = 0, _ref = this.config.numHandles; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      if (this.config.vals[i].x <= rel) {
+        si = i;
+      } else {
+        ei = i;
+        break;
+      }
+    }
+    _ref1 = [this.config.vals[si], this.config.vals[ei]], sp = _ref1[0], ep = _ref1[1];
+    dp = sp.to(ep);
+    dl = dp.length();
+    if (dl === 0 || dp.x === 0) {
+      log({
+        "file": "./coffee/widgets/pad.coffee",
+        "class": "Pad",
+        "line": 81,
+        "args": ["rel"],
+        "method": "valAtRel",
+        "type": "."
+      }, 'null', rel, si, ei, dl, dp.x);
+      return sp.y;
+    } else {
+      p = sp.add(dp.times((rel - this.config.vals[si].x) / dp.x));
+      return p.y;
+    }
+  };
+
+  Pad.prototype.showRuler = function(x, y) {
+    var h, w, _ref;
+    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
+    if (x != null) {
+      if (this.rulerx == null) {
+        this.rulerx = new Path({
+          svg: this.svg.svg,
+          "class": 'pad-ruler'
+        });
+        this.rulerx.path.back();
+      }
+      this.rulerx.setStart(pos(x * w + this.o, 0));
+      this.rulerx.setEnd(pos(x * w + this.o, h + 2 * this.o));
+    }
+    if (y != null) {
+      if (this.rulery == null) {
+        this.rulery = new Path({
+          svg: this.svg.svg,
+          "class": 'pad-ruler'
+        });
+        this.rulery.path.back();
+      }
+      this.rulery.setStart(pos(0, h - y * h + this.o));
+      return this.rulery.setEnd(pos(w + 2 * this.o, h - y * h + this.o));
+    }
+  };
+
+  Pad.prototype.hideRuler = function() {
+    if (this.rulerx) {
+      this.rulerx.close();
+      this.rulerx = null;
+    }
+    if (this.rulery) {
+      this.rulery.close();
+      return this.rulery = null;
+    }
   };
 
   Pad.prototype.getWidth = function() {
@@ -1267,65 +1611,66 @@ Pad = (function(_super) {
   };
 
   Pad.prototype.onHandlePos = function(event) {
-    var h, i, p, w, x, y;
-    w = this.getWidth();
-    h = this.getHeight();
+    var h, i, p, w, x, y, _ref;
+    if (this.config.vals == null) {
+      return;
+    }
+    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
     if ((w == null) || (h == null)) {
       return;
     }
     p = _.arg();
     i = this.handles.indexOf(event.target.getWidget());
-    x = p.x / w;
-    y = 1.0 - p.y / h;
-    this.config.handles[i].x = x;
-    return this.config.handles[i].y = y;
+    x = (p.x - this.o) / w;
+    y = 1.0 - (p.y - this.o) / h;
+    this.config.vals[i].x = x;
+    return this.config.vals[i].y = y;
   };
 
   Pad.prototype.onHandleUp = function() {
-    log({
-      "file": "./coffee/widgets/pad.coffee",
-      "class": "Pad",
-      "line": 76,
-      "args": ["event"],
-      "method": "onHandleUp",
-      "type": "."
-    }, 'up');
     return this.constrainHandles();
   };
 
   Pad.prototype.constrainHandles = function() {
-    var height, i, maxX, minX, o, width, _i, _ref, _ref1, _ref2, _results;
-    o = 8;
-    width = this.getWidth() - 2 * o;
-    height = this.getHeight() - 2 * o;
+    var h, i, maxX, minX, w, _i, _ref, _ref1, _ref2, _ref3, _results;
+    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
     _results = [];
-    for (i = _i = 0, _ref = this.config.handles.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+    for (i = _i = 0, _ref1 = this.config.vals.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
       if (i === 0) {
-        _ref1 = [o, o], minX = _ref1[0], maxX = _ref1[1];
-      } else if (i === this.config.handles.length - 1) {
-        _ref2 = [o + width, o + width], minX = _ref2[0], maxX = _ref2[1];
+        _ref2 = [this.o, this.o], minX = _ref2[0], maxX = _ref2[1];
+      } else if (i === this.config.vals.length - 1) {
+        _ref3 = [this.o + w, this.o + w], minX = _ref3[0], maxX = _ref3[1];
       } else {
         minX = this.handles[i - 1].relPos().x;
         maxX = this.handles[i + 1].relPos().x;
       }
-      _results.push(this.handles[i].constrain(minX, o, maxX, o + height));
+      _results.push(this.handles[i].constrain(minX, this.o, maxX, this.o + h));
+    }
+    return _results;
+  };
+
+  Pad.prototype.setSVGSize = function(width, height) {
+    this.svg.setWidth(width);
+    this.svg.setHeight(height);
+    this.svg.elem.width = width;
+    return this.svg.elem.height = height;
+  };
+
+  Pad.prototype.updateHandles = function() {
+    var h, hp, i, w, _i, _ref, _ref1, _results;
+    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
+    _results = [];
+    for (i = _i = 0, _ref1 = this.config.vals.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+      hp = pos(this.o + this.config.vals[i].x * w, h - this.config.vals[i].y * h + this.o);
+      _results.push(this.handles[i].setPos(hp));
     }
     return _results;
   };
 
   Pad.prototype.setSize = function(width, height) {
-    var hp, i, _i, _ref, _results;
-    this.svg.setWidth(width);
-    this.svg.setHeight(height);
-    this.svg.elem.width = width;
-    this.svg.elem.height = height;
-    this.constrainHandles();
-    _results = [];
-    for (i = _i = 0, _ref = this.config.handles.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      hp = pos(this.config.handles[i].x * width, height - this.config.handles[i].y * height);
-      _results.push(this.handles[i].setPos(hp));
-    }
-    return _results;
+    this.setSVGSize(width, height);
+    this.updateHandles();
+    return this.constrainHandles();
   };
 
   return Pad;
@@ -1362,6 +1707,7 @@ Path = (function(_super) {
   Path.prototype.init = function(cfg, defs) {
     var clss, _i, _len, _ref;
     this.config = _.def(cfg, _.def(defs, {
+      type: 'path',
       start: pos(0, 0),
       startDir: pos(0, 0),
       end: pos(0, 0),
@@ -1402,7 +1748,8 @@ Path = (function(_super) {
     this.config.startHead = this.config.start.add(this.config.startDir);
     this.setStart(this.config.start);
     this.setEnd(this.config.end);
-    return this.initEvents();
+    this.initEvents();
+    return this;
   };
 
   Path.prototype.close = function() {
@@ -1448,10 +1795,7 @@ Path = (function(_super) {
     this.config.mid = this.config.startHead.mid(this.config.endHead);
     this.setCtrl(0, this.config.start);
     this.setCtrl(1, this.config.startHead);
-    this.setCtrl(2, this.config.mid);
-    if (this.config.startHandle != null) {
-      return this.config.startHandle.setPos(this.config.start);
-    }
+    return this.setCtrl(2, this.config.mid);
   };
 
   Path.prototype.setEnd = function() {
@@ -1462,10 +1806,7 @@ Path = (function(_super) {
     this.config.mid = this.config.startHead.mid(this.config.endHead);
     this.setCtrl(2, this.config.mid);
     this.setCtrl(3, this.config.endHead);
-    this.setCtrl(4, this.config.end);
-    if (this.config.endHandle != null) {
-      return this.config.endHandle.setPos(this.config.end);
-    }
+    return this.setCtrl(4, this.config.end);
   };
 
   Path.prototype.setCtrl = function(c, p) {
@@ -1481,6 +1822,148 @@ Path = (function(_super) {
   return Path;
 
 })(Widget);
+
+
+/*
+
+00000000    0000000   000   000   0000000   00000000
+000   000  000   000  0000  000  000        000     
+0000000    000000000  000 0 000  000  0000  0000000 
+000   000  000   000  000  0000  000   000  000     
+000   000  000   000  000   000   0000000   00000000
+ */
+
+Range = (function(_super) {
+  __extends(Range, _super);
+
+  function Range() {
+    this.setValue = __bind(this.setValue, this);
+    this.range = __bind(this.range, this);
+    this.setLow = __bind(this.setLow, this);
+    this.setHigh = __bind(this.setHigh, this);
+    this.paramValuesAtConnector = __bind(this.paramValuesAtConnector, this);
+    this.init = __bind(this.init, this);
+    return Range.__super__.constructor.apply(this, arguments);
+  }
+
+  Range.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      low: 0.0,
+      minLow: -10000,
+      maxLow: 10000,
+      lowStep: 0.1,
+      high: 1.0,
+      minHigh: -10000,
+      maxHigh: 10000,
+      highStep: 0.1,
+      valueFormat: "%0.3f",
+      resize: 'horizontal'
+    });
+    Range.__super__.init.call(this, cfg, {
+      type: 'range',
+      title: 'range',
+      children: [
+        {
+          type: 'sliderspin',
+          id: 'range_low',
+          value: cfg.low,
+          minValue: cfg.minLow,
+          maxValue: cfg.maxLow,
+          spinStep: cfg.lowStep
+        }, {
+          type: 'sliderspin',
+          id: 'range_high',
+          value: cfg.high,
+          minValue: cfg.minHigh,
+          maxValue: cfg.maxHigh,
+          spinStep: cfg.highStep
+        }, {
+          type: 'hbox',
+          children: [
+            {
+              type: 'connector',
+              slot: 'range_in:setValue'
+            }, {
+              type: 'spin',
+              id: 'range_in',
+              valueStep: 0.001,
+              minWidth: 100,
+              maxWidth: 10000,
+              format: cfg.valueFormat,
+              style: {
+                width: '50%'
+              }
+            }, {
+              type: 'spin',
+              id: 'range_out',
+              valueStep: 0.001,
+              minWidth: 100,
+              maxWidth: 10000,
+              format: cfg.valueFormat,
+              style: {
+                width: '50%'
+              }
+            }, {
+              type: 'connector',
+              signal: 'range_out:onValue'
+            }
+          ]
+        }
+      ]
+    });
+    this.connect('range_in:onValue', this.setValue);
+    this.connect('range_low:onValue', this.setLow);
+    this.connect('range_high:onValue', this.setHigh);
+    return this;
+  };
+
+  Range.prototype.paramValuesAtConnector = function(paramValues, connector) {
+    if (connector.config.slot === 'range_in:setValue') {
+      paramValues.offset = this.config.low;
+      paramValues.range = this.config.high - this.config.low;
+      return Audio.sendParamValuesFromConnector(paramValues, this.connector("range_out:onValue"));
+    }
+  };
+
+  Range.prototype.setHigh = function(v) {
+    this.config.high = Math.max(this.config.low, _.value(v));
+    return this.getChild('range_high').setValue(Math.max(this.config.low, this.config.high));
+  };
+
+  Range.prototype.setLow = function(v) {
+    this.config.low = _.value(v);
+    return this.getChild('range_low').setValue(Math.min(this.config.low, this.config.high));
+  };
+
+  Range.prototype.range = function() {
+    return this.config.high - this.config.low;
+  };
+
+  Range.prototype.setValue = function(v) {
+    this.config.value = this.config.low + _.clamp(0.0, 1.0, _.value(v)) * this.range();
+    return this.getChild('range_out').setValue(this.config.value);
+  };
+
+  Range.menu = function() {
+    return knix.create({
+      type: 'button',
+      tooltip: 'range',
+      id: 'new_range',
+      icon: 'octicon-settings',
+      "class": 'tool-button',
+      parent: 'menu',
+      onClick: function() {
+        return new Range({
+          center: true
+        });
+      }
+    });
+  };
+
+  return Range;
+
+})(Window);
 
 
 /*
@@ -1516,9 +1999,6 @@ Slider = (function(_super) {
     };
     Slider.__super__.init.call(this, cfg, {
       type: 'slider',
-      value: 0,
-      minValue: 0,
-      maxValue: 100,
       minWidth: 50,
       child: {
         type: 'slider-bar',
@@ -1531,13 +2011,14 @@ Slider = (function(_super) {
       this.getChild('slider-knob').elem.hide();
     }
     this.setBarValue(this.config.value);
-    return Drag.create({
+    Drag.create({
       cursor: 'ew-resize',
       target: this.elem,
       doMove: false,
       onMove: sliderFunc,
       onStart: sliderFunc
     });
+    return this;
   };
 
   Slider.prototype.onWindowSize = function() {
@@ -1585,6 +2066,7 @@ Sliderspin = (function(_super) {
 
   function Sliderspin() {
     this.setValue = __bind(this.setValue, this);
+    this.onSpinValue = __bind(this.onSpinValue, this);
     this.init = __bind(this.init, this);
     return Sliderspin.__super__.constructor.apply(this, arguments);
   }
@@ -1613,7 +2095,6 @@ Sliderspin = (function(_super) {
           value: cfg.value,
           minValue: cfg.minValue,
           maxValue: cfg.maxValue,
-          onValue: cfg.onValue,
           valueStep: cfg.spinStep,
           minWidth: 100,
           format: cfg.spinFormat || "%3.2f",
@@ -1627,7 +2108,13 @@ Sliderspin = (function(_super) {
       ]
     });
     this.connect(cfg.id + '_slider:onValue', cfg.id + '_spin:setValue');
-    return this.connect(cfg.id + '_spin:onValue', cfg.id + '_slider:setValue');
+    this.connect(cfg.id + '_spin:onValue', cfg.id + '_slider:setValue');
+    this.connect(cfg.id + '_spin:onValue', this.onSpinValue);
+    return this;
+  };
+
+  Sliderspin.prototype.onSpinValue = function(v) {
+    return this.emitValue(_.value(v));
   };
 
   Sliderspin.prototype.setValue = function(v) {
@@ -1660,6 +2147,7 @@ Spin = (function(_super) {
     this.startIncr = __bind(this.startIncr, this);
     this.setValue = __bind(this.setValue, this);
     this.onKey = __bind(this.onKey, this);
+    this.onInputChange = __bind(this.onInputChange, this);
     this.init = __bind(this.init, this);
     return Spin.__super__.constructor.apply(this, arguments);
   }
@@ -1677,10 +2165,9 @@ Spin = (function(_super) {
           type: 'spin-row',
           children: [
             {
+              id: 'decr',
               elem: 'td',
               type: 'spin-td',
-              onDown: this.startDecr,
-              onUp: this.stopTimer,
               child: {
                 type: 'icon',
                 icon: 'octicon-triangle-left'
@@ -1690,16 +2177,12 @@ Spin = (function(_super) {
               type: 'spin-content',
               child: {
                 type: 'input',
-                "class": 'spin-input',
-                onDown: function(event) {
-                  return event.stopPropagation();
-                }
+                "class": 'spin-input'
               }
             }, {
+              id: 'incr',
               elem: 'td',
               type: 'spin-td',
-              onDown: this.startIncr,
-              onUp: this.stopTimer,
               child: {
                 type: 'icon',
                 icon: 'octicon-triangle-right'
@@ -1709,28 +2192,38 @@ Spin = (function(_super) {
         }
       }
     });
+    this.connect('decr:mousedown', this.startDecr);
+    this.connect('decr:mouseup', this.stopTimer);
+    this.connect('incr:mousedown', this.startIncr);
+    this.connect('incr:mouseup', this.stopTimer);
+    this.connect('input:mousedown', function(event) {
+      return event.stopPropagation();
+    });
     if (this.config.valueStep == null) {
       this.config.valueStep = this.range() > 1 && 1 || this.range() / 100;
     }
     this.elem.on('keypress', this.onKey);
     this.input = this.getChild('spin-input').elem;
-    this.input.addEventListener('change', function() {
-      return this.getParent(this.config.type).setValue(this.getValue());
-    });
+    this.input.addEventListener('change', this.onInputChange);
     this.input.value = this.config.value;
-    return this.setValue(this.config.value);
+    this.setValue(this.config.value);
+    return this;
+  };
+
+  Spin.prototype.onInputChange = function() {
+    log({
+      "file": "./coffee/widgets/spin.coffee",
+      "class": "Spin",
+      "line": 71,
+      "args": ["cfg", "defs"],
+      "method": "onInputChange",
+      "type": "."
+    }, 'input change');
+    return this.setValue(this.input.value);
   };
 
   Spin.prototype.onKey = function(event, e) {
     var _ref, _ref1, _ref2, _ref3;
-    log({
-      "file": "./coffee/widgets/spin.coffee",
-      "class": "Spin",
-      "line": 66,
-      "args": ["event", "e"],
-      "method": "onKey",
-      "type": "."
-    }, 'event', event.key);
     if ((_ref = event.key) === 'Up' || _ref === 'Down') {
       this.incr(event.key === 'Up' && '+' || '-');
       event.stop();
@@ -1807,6 +2300,8 @@ Spinner = (function(_super) {
 
   function Spinner() {
     this.setValue = __bind(this.setValue, this);
+    this.incr = __bind(this.incr, this);
+    this.index = __bind(this.index, this);
     this.sliderFunc = __bind(this.sliderFunc, this);
     this.size2value = __bind(this.size2value, this);
     this.onWindowSize = __bind(this.onWindowSize, this);
@@ -1829,10 +2324,19 @@ Spinner = (function(_super) {
       onMove: this.sliderFunc,
       onStart: this.sliderFunc
     });
-    return this.input = null;
+    this.input = null;
+    return this;
   };
 
   Spinner.prototype.onWindowSize = function() {
+    log({
+      "file": "./coffee/widgets/spinner.coffee",
+      "class": "Spinner",
+      "line": 34,
+      "args": ["cfg", "defs"],
+      "method": "onWindowSize",
+      "type": "."
+    }, 'onWindowSize');
     return this.setValue(this.config.value);
   };
 
@@ -1841,23 +2345,69 @@ Spinner = (function(_super) {
   };
 
   Spinner.prototype.sliderFunc = function(drag, event) {
-    var pos, v, width;
+    var d, i, pos, v, width;
     pos = this.getChild('spin-content').absPos();
     width = event.clientX - pos.x;
     v = this.size2value(width);
-    return this.setValue(v);
+    d = v - this.range() / 2;
+    i = this.range() / 2 + d * this.config.valueStep * this.steps() / this.range();
+    i = this.clamp(this.round(i));
+    return this.setValue(this.config.values[i]);
   };
 
-  Spinner.prototype.setValue = function(v) {
-    var c, d, w;
-    d = _.value(v) - this.range() / 2;
-    v = this.range() / 2 + d * this.config.valueStep * this.steps() / this.range();
-    Spinner.__super__.setValue.call(this, v);
+  Spinner.prototype.index = function() {
+    return this.config.values.indexOf(this.config.value);
+  };
+
+  Spinner.prototype.incr = function(d) {
+    var i;
+    if (d == null) {
+      d = 1;
+    }
+    log({
+      "file": "./coffee/widgets/spinner.coffee",
+      "class": "Spinner",
+      "line": 53,
+      "args": ["d=1"],
+      "method": "incr",
+      "type": "."
+    }, d);
+    if (d === '+' || d === '++') {
+      d = 1;
+    } else if (d === '-' || d === '--') {
+      d = -1;
+    }
+    i = this.clamp(this.index() + d);
+    return this.setValue(this.config.values[i]);
+  };
+
+  Spinner.prototype.setValue = function(a) {
+    var c, i, v, w;
+    v = _.arg(a);
+    i = this.config.values.indexOf(v);
     c = this.getChild('spin-content');
+    log({
+      "file": "./coffee/widgets/spinner.coffee",
+      "class": "Spinner",
+      "line": 63,
+      "args": ["a"],
+      "method": "setValue",
+      "type": "."
+    }, c.getWidth());
     c.clear();
     w = c.getWidth() / this.steps();
-    c.elem.insert('<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, this.config.value * w));
-    return c.elem.insert(String(this.config.values[this.config.value]));
+    log({
+      "file": "./coffee/widgets/spinner.coffee",
+      "class": "Spinner",
+      "line": 66,
+      "args": ["a"],
+      "method": "setValue",
+      "type": "."
+    }, i, w);
+    c.elem.insert('<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, i * w));
+    this.config.value = this.config.values[i];
+    c.elem.insert(String(this.config.value));
+    return this.emitValue(this.config.value);
   };
 
   return Spinner;
@@ -1888,7 +2438,8 @@ Svg = (function(_super) {
       type: 'svg'
     });
     this.svg = SVG(this.elem);
-    return this.svg.node.getWidget = this.returnThis;
+    this.svg.node.getWidget = this.returnThis;
+    return this;
   };
 
   return Svg;
@@ -1929,7 +2480,8 @@ Toggle = (function(_super) {
     if (this.config.onState != null) {
       this.elem.on('onState', this.config.onState);
     }
-    return this.setState(this.config.state);
+    this.setState(this.config.state);
+    return this;
   };
 
   Toggle.prototype.setState = function(state) {
@@ -2028,10 +2580,12 @@ Tooltip = (function() {
       isMovable: false,
       x: pos.x + 12,
       y: pos.y + 12,
-      text: text,
       hasClose: false,
       hasShade: false,
-      hasTitle: false
+      hasTitle: false,
+      child: {
+        text: text
+      }
     });
   };
 

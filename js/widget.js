@@ -32,6 +32,7 @@ Widget = (function() {
     this.getSize = __bind(this.getSize, this);
     this.setSize = __bind(this.setSize, this);
     this.resize = __bind(this.resize, this);
+    this.setHeightNoEmit = __bind(this.setHeightNoEmit, this);
     this.setHeight = __bind(this.setHeight, this);
     this.setWidth = __bind(this.setWidth, this);
     this.moveBy = __bind(this.moveBy, this);
@@ -50,6 +51,7 @@ Widget = (function() {
     this.addToParent = __bind(this.addToParent, this);
     this.returnThis = __bind(this.returnThis, this);
     this.initElem = __bind(this.initElem, this);
+    this.emitValue = __bind(this.emitValue, this);
     this.emitMove = __bind(this.emitMove, this);
     this.emitSize = __bind(this.emitSize, this);
     this.emit = __bind(this.emit, this);
@@ -63,7 +65,7 @@ Widget = (function() {
     this.dump = __bind(this.dump, this);
     this.onTooltip = __bind(this.onTooltip, this);
     this.init = __bind(this.init, this);
-    this.init(_.def(cfg, defs));
+    this.init(cfg, defs);
   }
 
   Widget.prototype.init = function(cfg, defs) {
@@ -361,16 +363,29 @@ Widget = (function() {
   };
 
   Widget.prototype.emitSize = function() {
+    this.config.width = this.getWidth();
+    this.config.height = this.getHeight();
     this.emit('size', {
-      width: this.getWidth(),
-      height: this.getHeight()
+      width: this.config.width,
+      height: this.config.height
     });
     return this;
   };
 
   Widget.prototype.emitMove = function() {
+    var p;
+    p = this.absPos();
+    this.config.x = p.x;
+    this.config.y = p.y;
     this.emit('move', {
-      pos: this.absPos()
+      pos: p
+    });
+    return this;
+  };
+
+  Widget.prototype.emitValue = function(v) {
+    this.emit('onValue', {
+      value: v
     });
     return this;
   };
@@ -400,7 +415,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 234,
+        "line": 244,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -411,7 +426,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 237,
+        "line": 247,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -431,7 +446,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 243,
+        "line": 253,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -532,14 +547,6 @@ Widget = (function() {
   };
 
   Widget.prototype.close = function() {
-    log({
-      "file": "./coffee/widget.coffee",
-      "class": "Widget",
-      "line": 295,
-      "args": ["classOrID"],
-      "method": "close",
-      "type": "."
-    }, 'close', this.elem.id);
     this.emit('close');
     this.elem.remove();
     this.elem = null;
@@ -607,21 +614,26 @@ Widget = (function() {
   };
 
   Widget.prototype.setHeight = function(h) {
-    var diff, oh;
+    var oh;
     if (h != null) {
       oh = this.elem.style.height;
-      if (h != null) {
-        this.elem.style.height = "%dpx".fmt(h);
-      }
-      diff = this.getHeight() - h;
-      if (diff) {
-        this.elem.style.height = "%dpx".fmt(h - diff);
-      }
+      this.setHeightNoEmit(h);
       if (oh !== this.elem.style.height) {
         this.emitSize();
       }
     }
     return this;
+  };
+
+  Widget.prototype.setHeightNoEmit = function(h) {
+    var diff;
+    if (h != null) {
+      this.elem.style.height = "%dpx".fmt(h);
+    }
+    diff = this.getHeight() - h;
+    if (diff) {
+      return this.elem.style.height = "%dpx".fmt(h - diff);
+    }
   };
 
   Widget.prototype.resize = function(w, h) {
@@ -711,15 +723,16 @@ Widget = (function() {
   };
 
   Widget.prototype.absCenter = function() {
-    return this.absPos().add(pos(this.elem.getWidth(), this.elem.getHeight()).mul(0.5));
+    return this.absPos().add(pos(this.elem.getWidth(), this.elem.getHeight()).scale(0.5));
   };
 
   Widget.prototype.addMovement = function() {
     if (this.config.isMovable) {
+      tag('Drag');
       log({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 377,
+        "line": 393,
         "args": ["s"],
         "method": "addMovement",
         "type": "."
@@ -741,10 +754,11 @@ Widget = (function() {
 
   Widget.prototype.moveStart = function(drag, event) {
     var _ref;
+    tag('Drag');
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 391,
+      "line": 408,
       "args": ["drag", "event"],
       "method": "moveStart",
       "type": "."
@@ -754,10 +768,11 @@ Widget = (function() {
 
   Widget.prototype.moveStop = function(drag, event) {
     var _ref;
+    tag('Drag');
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 395,
+      "line": 413,
       "args": ["drag", "event"],
       "method": "moveStop",
       "type": "."

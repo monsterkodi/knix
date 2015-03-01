@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000  000   000
 000   000   0000000   0000000    000   0000000
  */
-var Analyser, Audio, Delay, Envelope, Filter, Gain, Jacks, Oscillator,
+var Analyser, Audio, AudioWindow, Delay, Envelope, Filter, Gain, Jacks, Oscillator, Ramp,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -17,12 +17,39 @@ Audio = (function() {
 
   Audio.init = function() {
     Audio.context = new (window.AudioContext || window.webkitAudioContext)();
+    Ramp.menu();
+    Envelope.menu();
+    Range.menu();
     Oscillator.menu();
     Filter.menu();
-    Gain.menu();
     Delay.menu();
     Analyser.menu();
-    return Envelope.menu();
+    return Gain.menu();
+  };
+
+  Audio.sendParamValuesFromConnector = function(paramValues, connector) {
+    var connection, _i, _len, _ref, _results;
+    _ref = connector.connections;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      connection = _ref[_i];
+      _results.push(connection.config.target.getWindow().paramValuesAtConnector(paramValues, connection.config.target));
+    }
+    return _results;
+  };
+
+  Audio.setValuesForParam = function(paramValues, param) {
+    var i, offset, range, t, value, _i, _ref, _results;
+    offset = paramValues.offset || 0;
+    range = paramValues.range || 1;
+    param.cancelScheduledValues(Audio.context.currentTime);
+    t = Audio.context.currentTime + 0.04;
+    _results = [];
+    for (i = _i = 0, _ref = paramValues.values.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      value = offset + paramValues.values[i].value * range;
+      _results.push(param.linearRampToValueAtTime(value, t + paramValues.values[i].time));
+    }
+    return _results;
   };
 
   Audio.filter = function(cfg) {
@@ -104,9 +131,44 @@ Audio = (function() {
     return [analyser, cfg];
   };
 
+  Audio.destroy = function(node) {
+    node.disconnect();
+    if (typeof node.stop === "function") {
+      node.stop();
+    }
+    return void 0;
+  };
+
   return Audio;
 
 })();
+
+
+/*
+
+ 0000000   000   000  0000000    000   0000000   000   000  000  000   000  0000000     0000000   000   000
+000   000  000   000  000   000  000  000   000  000 0 000  000  0000  000  000   000  000   000  000 0 000
+000000000  000   000  000   000  000  000   000  000000000  000  000 0 000  000   000  000   000  000000000
+000   000  000   000  000   000  000  000   000  000   000  000  000  0000  000   000  000   000  000   000
+000   000   0000000   0000000    000   0000000   00     00  000  000   000  0000000     0000000   00     00
+ */
+
+AudioWindow = (function(_super) {
+  __extends(AudioWindow, _super);
+
+  function AudioWindow() {
+    this.close = __bind(this.close, this);
+    return AudioWindow.__super__.constructor.apply(this, arguments);
+  }
+
+  AudioWindow.prototype.close = function() {
+    this.audio = Audio.destroy(this.audio);
+    return AudioWindow.__super__.close.apply(this, arguments);
+  };
+
+  return AudioWindow;
+
+})(Window);
 
 
 /*
@@ -124,6 +186,7 @@ Analyser = (function(_super) {
   function Analyser() {
     this.anim = __bind(this.anim, this);
     this.sizeWindow = __bind(this.sizeWindow, this);
+    this.onCanvasTrigger = __bind(this.onCanvasTrigger, this);
     this.setTriggerY = __bind(this.setTriggerY, this);
     this.setScaleY = __bind(this.setScaleY, this);
     this.setScaleX = __bind(this.setScaleX, this);
@@ -134,7 +197,7 @@ Analyser = (function(_super) {
 
   Analyser.prototype.init = function(cfg, defs) {
     var _ref;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
       scaleX: 1.0,
       scaleY: 1.0,
@@ -143,11 +206,11 @@ Analyser = (function(_super) {
     _ref = Audio.analyser(cfg), this.audio = _ref[0], cfg = _ref[1];
     this.dataArray = new Uint8Array(cfg.fftSize);
     Analyser.__super__.init.call(this, cfg, {
+      type: 'analyser',
       title: 'analyser',
       children: [
         {
-          type: 'jacks',
-          audio: this.audio
+          type: 'jacks'
         }, {
           id: 'analyser_canvas',
           type: 'canvas',
@@ -159,24 +222,24 @@ Analyser = (function(_super) {
           type: 'sliderspin',
           id: 'scaleX',
           value: cfg.scaleX,
-          onValue: this.setScaleX,
           minValue: 1.0,
           maxValue: 20.0,
           valueStep: 1
-        }, {
-          type: 'sliderspin',
-          id: 'triggerY',
-          value: cfg.triggerY,
-          onValue: this.setTriggerY,
-          minValue: -1.0,
-          maxValue: 1.0,
-          spinStep: 0.01
         }
       ]
     });
+    this.connect('scaleX:onValue', this.setScaleX);
     this.canvas = this.getChild('analyser_canvas');
+    new Drag({
+      doMove: false,
+      target: this.canvas.elem,
+      cursor: 'crosshair',
+      onStart: this.onCanvasTrigger,
+      onMove: this.onCanvasTrigger
+    });
     knix.animate(this);
-    return this.sizeWindow();
+    this.sizeWindow();
+    return this;
   };
 
   Analyser.prototype.close = function() {
@@ -196,34 +259,31 @@ Analyser = (function(_super) {
     return this.config.triggerY = _.value(v);
   };
 
+  Analyser.prototype.onCanvasTrigger = function(drag, event) {
+    if (event.target === this.canvas.elem) {
+      return this.setTriggerY(-2 * (drag.relPos(event).y / this.canvas.elem.height - 0.5));
+    }
+  };
+
   Analyser.prototype.sizeWindow = function() {
-    var content, hbox, height, width, _ref, _ref1, _ref2;
+    var content, hbox, height, width, _ref;
     hbox = this.getChild('hbox');
     height = this.contentHeight();
     content = this.getChild('content');
     content.setHeight(height);
-    height = content.innerHeight() - 100;
-    if ((_ref = this.canvas) != null) {
-      _ref.setHeight(height);
-    }
+    height = content.innerHeight() - 70;
     width = content.innerWidth() - 20;
-    if ((_ref1 = this.canvas) != null) {
-      _ref1.elem.width = width;
-    }
-    if ((_ref2 = this.canvas) != null) {
-      _ref2.elem.height = height;
+    if ((_ref = this.canvas) != null) {
+      _ref.resize(width, height);
     }
     return this.dataArray = new Uint8Array(2 * width);
   };
 
   Analyser.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'new_analyser',
-      icon: 'octicon-pulse',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+    return Analyser.menuButton({
+      text: 'analyser',
+      icon: 'octicon-diff-modified',
+      action: function() {
         return new Analyser({
           center: true
         });
@@ -231,7 +291,7 @@ Analyser = (function(_super) {
     });
   };
 
-  Analyser.prototype.anim = function(timestamp) {
+  Analyser.prototype.anim = function() {
     var ctx, cvh, cvs, cvw, i, samples, t, th, v, x, xd, y, _i;
     this.audio.getByteTimeDomainData(this.dataArray);
     cvs = this.canvas.elem;
@@ -279,7 +339,7 @@ Analyser = (function(_super) {
 
   return Analyser;
 
-})(Window);
+})(AudioWindow);
 
 
 /*
@@ -302,42 +362,41 @@ Delay = (function(_super) {
 
   Delay.prototype.init = function(cfg, defs) {
     var _ref;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     _ref = Audio.delay(cfg), this.audio = _ref[0], cfg = _ref[1];
-    return Delay.__super__.init.call(this, cfg, {
+    Delay.__super__.init.call(this, cfg, {
+      type: 'delay',
       title: 'delay',
       minWidth: 240,
       resize: 'horizontal',
       children: [
         {
-          type: 'jacks',
-          audio: this.audio
+          type: 'jacks'
         }, {
           type: 'sliderspin',
           id: 'delay',
           value: cfg.delay,
           minValue: cfg.minDelay,
           maxValue: cfg.maxDelay,
-          spinStep: 0.00001,
-          spinFormat: "%3.5f",
-          onValue: this.setDelay
+          spinStep: 0.0001,
+          spinFormat: "%3.5f"
         }
       ]
     });
+    this.connect('delay:onValue', this.setDelay);
+    return this;
   };
 
   Delay.prototype.setDelay = function(v) {
-    return this.audio.delayTime.value = _.value(v);
+    this.config.delay = _.value(v);
+    return this.audio.delayTime.value = this.config.delay;
   };
 
   Delay.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'new_delay',
+    return Delay.menuButton({
+      text: 'delay',
       icon: 'octicon-hourglass',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+      action: function() {
         return new Delay({
           center: true
         });
@@ -347,7 +406,7 @@ Delay = (function(_super) {
 
   return Delay;
 
-})(Window);
+})(AudioWindow);
 
 
 /*
@@ -364,28 +423,18 @@ Envelope = (function(_super) {
 
   function Envelope() {
     this.sizeWindow = __bind(this.sizeWindow, this);
-    this.setScale = __bind(this.setScale, this);
-    this.setOffset = __bind(this.setOffset, this);
-    this.setDuration = __bind(this.setDuration, this);
+    this.setRel = __bind(this.setRel, this);
+    this.paramValuesAtConnector = __bind(this.paramValuesAtConnector, this);
     this.init = __bind(this.init, this);
     return Envelope.__super__.constructor.apply(this, arguments);
   }
 
   Envelope.prototype.init = function(cfg, defs) {
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
-      duration: 1.0,
-      minDuration: 0.01,
-      maxDuration: 10.0,
-      durationStep: 0.01,
-      scale: 1.0,
-      minScale: 0.01,
-      maxScale: 10.0,
-      scaleStep: 0.01,
-      offset: 0.0,
-      minOffset: -10.0,
-      maxOffset: 10.0,
-      offsetStep: 0.1
+      type: 'envelope',
+      valueFormat: "%0.3f",
+      numHandles: 10
     });
     Envelope.__super__.init.call(this, cfg, {
       title: 'envelope',
@@ -393,49 +442,75 @@ Envelope = (function(_super) {
         {
           type: 'pad',
           id: 'envelope_pad',
-          numHandles: 5,
+          numHandles: cfg.numHandles,
+          vals: cfg.vals,
           minHeight: 50,
           minWidth: 150
         }, {
-          type: 'sliderspin',
-          id: 'duration',
-          onValue: this.setDuration,
-          value: cfg.duration,
-          minValue: cfg.minDuration,
-          maxValue: cfg.maxDuration,
-          valueStep: cfg.durationStep
-        }, {
-          type: 'sliderspin',
-          id: 'offset',
-          onValue: this.setOffset,
-          value: cfg.offset,
-          minValue: cfg.minOffset,
-          maxValue: cfg.maxOffset,
-          spinStep: cfg.offsetStep
-        }, {
-          type: 'sliderspin',
-          id: 'scale',
-          onValue: this.setScale,
-          value: cfg.scale,
-          minValue: cfg.minScale,
-          maxValue: cfg.maxScale,
-          spinStep: cfg.scaleStep
+          type: 'hbox',
+          children: [
+            {
+              type: 'connector',
+              slot: 'envelope_in:setValue'
+            }, {
+              type: 'spin',
+              id: 'envelope_in',
+              valueStep: 0.001,
+              minWidth: 100,
+              maxWidth: 10000,
+              format: cfg.valueFormat,
+              style: {
+                width: '50%'
+              }
+            }, {
+              type: 'spin',
+              id: 'envelope',
+              valueStep: 0.00001,
+              minWidth: 100,
+              maxWidth: 10000,
+              format: cfg.valueFormat,
+              style: {
+                width: '50%'
+              }
+            }, {
+              type: 'connector',
+              signal: 'envelope:onValue'
+            }
+          ]
         }
       ]
     });
-    return this.sizeWindow();
+    this.connect('envelope_in:onValue', this.setRel);
+    this.pad = this.getChild('envelope_pad');
+    this.sizeWindow();
+    return this;
   };
 
-  Envelope.prototype.setDuration = function(v) {
-    return this.config.duration = _.value(v);
+  Envelope.prototype.paramValuesAtConnector = function(paramValues, connector) {
+    var v, _i, _len, _ref;
+    if (paramValues.duration != null) {
+      paramValues.values = [];
+      _ref = this.pad.config.vals;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        v = _ref[_i];
+        paramValues.values.push({
+          time: v.x * paramValues.duration,
+          value: v.y
+        });
+      }
+      return Audio.sendParamValuesFromConnector(paramValues, this.connector("envelope:onValue"));
+    }
   };
 
-  Envelope.prototype.setOffset = function(v) {
-    return this.config.Offset = _.value(v);
-  };
-
-  Envelope.prototype.setScale = function(v) {
-    return this.config.scale = _.value(v);
+  Envelope.prototype.setRel = function(rel) {
+    this.config.reltime = _.value(rel);
+    this.config.value = this.pad.valAtRel(this.config.reltime);
+    if (this.config.reltime === 0) {
+      this.pad.hideRuler();
+    } else {
+      this.pad.showRuler(this.config.reltime, this.config.value);
+    }
+    return this.getChild('envelope').setValue(this.config.value);
   };
 
   Envelope.prototype.sizeWindow = function() {
@@ -444,20 +519,17 @@ Envelope = (function(_super) {
     if (pad != null) {
       content = this.getChild('content');
       content.setHeight(this.contentHeight());
-      height = content.innerHeight() - 110;
+      height = content.innerHeight() - 50;
       width = content.innerWidth() - 20;
       return pad.setSize(width, height);
     }
   };
 
   Envelope.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'new_envelope',
-      icon: 'octicon-diff-modified',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+    return Envelope.menuButton({
+      text: 'envelope',
+      icon: 'octicon-pulse',
+      action: function() {
         return new Envelope({
           center: true
         });
@@ -484,7 +556,6 @@ Filter = (function(_super) {
 
   function Filter() {
     this.setFilter = __bind(this.setFilter, this);
-    this.setGain = __bind(this.setGain, this);
     this.setFreq = __bind(this.setFreq, this);
     this.setQ = __bind(this.setQ, this);
     this.setDetune = __bind(this.setDetune, this);
@@ -496,78 +567,82 @@ Filter = (function(_super) {
 
   Filter.prototype.init = function(cfg, defs) {
     var _ref;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      filter: Filter.filters[0]
+    });
     _ref = Audio.filter(cfg), this.audio = _ref[0], cfg = _ref[1];
     Filter.__super__.init.call(this, cfg, {
+      type: 'filter',
       title: 'filter',
       minWidth: 240,
       resize: 'horizontal',
       children: [
         {
-          type: 'jacks',
-          audio: this.audio
+          type: 'jacks'
         }, {
           type: 'spinner',
           id: 'filter',
-          value: Filter.filters.indexOf(cfg.filter),
-          values: Filter.filters,
-          onValue: this.setFilter
+          value: cfg.filter,
+          values: Filter.filters
         }, {
           type: 'sliderspin',
           id: 'frequency',
           value: cfg.freq,
           minValue: cfg.minFreq,
-          maxValue: cfg.maxFreq,
-          onValue: this.setFreq
+          maxValue: cfg.maxFreq
         }, {
           type: 'sliderspin',
           id: 'detune',
           value: cfg.detune,
           minValue: cfg.minDetune,
-          maxValue: cfg.maxDetune,
-          onValue: this.setDetune
+          maxValue: cfg.maxDetune
         }, {
           type: 'sliderspin',
           id: 'Q',
           value: cfg.Q,
-          onValue: this.setQ,
           minValue: cfg.minQ,
           maxValue: cfg.maxQ,
           spinStep: 0.01
         }
       ]
     });
-    return this.setFilter(Filter.filters.indexOf(cfg.filter));
+    this.connect('filter:onValue', this.setFilter);
+    this.connect('frequency:onValue', this.setFreq);
+    this.connect('detune:onValue', this.setDetune);
+    this.connect('Q:onValue', this.setQ);
+    this.setQ(this.config.Q);
+    this.setFreq(this.config.freq);
+    this.setDetune(this.config.detune);
+    this.setFilter(this.config.filter);
+    return this;
   };
 
   Filter.prototype.setDetune = function(v) {
-    return this.audio.detune.value = _.value(v);
+    this.config.detune = _.value(v);
+    return this.audio.detune.value = this.config.detune;
   };
 
   Filter.prototype.setQ = function(v) {
-    return this.audio.Q.value = _.value(v);
+    this.config.Q = _.value(v);
+    return this.audio.Q.value = this.config.Q;
   };
 
   Filter.prototype.setFreq = function(v) {
-    return this.audio.frequency.value = _.value(v);
-  };
-
-  Filter.prototype.setGain = function(v) {
-    return this.audio.gain.value = _.value(v);
+    this.config.freq = _.value(v);
+    return this.audio.frequency.value = this.config.freq;
   };
 
   Filter.prototype.setFilter = function(v) {
-    return this.audio.type = Filter.filters[_.value(v)];
+    this.config.filter = _.isString(v) ? v : _.value(v);
+    return this.audio.type = this.config.filter;
   };
 
   Filter.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'new_filter',
+    return Filter.menuButton({
+      text: 'filter',
       icon: 'octicon-gear',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+      action: function() {
         return new Filter({
           center: true
         });
@@ -577,7 +652,7 @@ Filter = (function(_super) {
 
   return Filter;
 
-})(Window);
+})(AudioWindow);
 
 
 /*
@@ -593,6 +668,7 @@ Gain = (function(_super) {
   __extends(Gain, _super);
 
   function Gain() {
+    this.paramValuesAtConnector = __bind(this.paramValuesAtConnector, this);
     this.setValue = __bind(this.setValue, this);
     this.setGain = __bind(this.setGain, this);
     this.init = __bind(this.init, this);
@@ -601,57 +677,58 @@ Gain = (function(_super) {
 
   Gain.prototype.init = function(cfg, defs) {
     var _ref;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     _ref = Audio.gain(cfg), this.audio = _ref[0], cfg = _ref[1];
-    return Gain.__super__.init.call(this, cfg, {
+    Gain.__super__.init.call(this, cfg, {
+      type: 'gain',
       title: cfg.master && 'master' || 'gain',
       minWidth: 240,
       resize: 'horizontal',
       children: [
         {
           type: 'jacks',
-          audio: this.audio,
           hasOutput: cfg.master == null
         }, {
           type: 'sliderspin',
           id: 'gain',
           value: cfg.gain,
-          onValue: this.setGain,
           minValue: 0.0,
           maxValue: 1.0
         }
       ]
     });
+    this.connect('gain:onValue', this.setGain);
+    this.setGain(this.config.gain);
+    return this;
   };
 
   Gain.prototype.setGain = function(v) {
-    return this.audio.gain.value = _.value(v);
+    this.config.gain = _.value(v);
+    return this.audio.gain.value = this.config.gain;
   };
 
   Gain.prototype.setValue = function(v) {
-    return this.audio.gain.value = _.value(v);
+    return this.setGain(v);
+  };
+
+  Gain.prototype.paramValuesAtConnector = function(paramValues, connector) {
+    return Audio.setValuesForParam(paramValues, this.audio.gain);
   };
 
   Gain.menu = function() {
-    knix.create({
-      type: 'button',
-      id: 'new_gain',
+    Gain.menuButton({
+      text: 'gain',
       icon: 'octicon-dashboard',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+      action: function() {
         return new Gain({
           center: true
         });
       }
     });
-    return knix.create({
-      type: 'button',
-      id: 'new_master',
+    return Gain.menuButton({
+      text: 'master',
       icon: 'octicon-unmute',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+      ection: function() {
         return new Gain({
           center: true,
           master: true
@@ -662,7 +739,7 @@ Gain = (function(_super) {
 
   return Gain;
 
-})(Window);
+})(AudioWindow);
 
 
 /*
@@ -678,27 +755,23 @@ Jacks = (function(_super) {
   __extends(Jacks, _super);
 
   function Jacks() {
+    this.onDisconnect = __bind(this.onDisconnect, this);
+    this.onConnect = __bind(this.onConnect, this);
     this.init = __bind(this.init, this);
     return Jacks.__super__.constructor.apply(this, arguments);
   }
 
   Jacks.prototype.init = function(cfg, defs) {
     var children;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
-      onConnect: function(source, target) {
-        return source.config.audio.connect(target.config.audio);
-      },
-      onDisconnect: function(source, target) {
-        return source.config.audio.disconnect(target.config.audio);
-      }
+      type: 'jacks'
     });
     children = [];
     if (!(cfg.hasInput === false)) {
       children.push({
         type: 'connector',
-        "in": 'audio',
-        audio: cfg.audio
+        "in": 'audio'
       });
     }
     children.push({
@@ -712,15 +785,32 @@ Jacks = (function(_super) {
     if (!(cfg.hasOutput === false)) {
       children.push({
         type: 'connector',
-        out: 'audio',
-        audio: cfg.audio,
-        onConnect: cfg.onConnect,
-        onDisconnect: cfg.onDisconnect
+        out: 'audio'
       });
     }
-    return Jacks.__super__.init.call(this, cfg, {
+    Jacks.__super__.init.call(this, cfg, {
       children: children
     });
+    this.connect('out:onConnect', this.onConnect);
+    this.connect('out:onDisconnect', this.onDisconnect);
+    return this;
+  };
+
+  Jacks.prototype.onConnect = function(event) {
+    return event.detail.source.getWindow().audio.connect(event.detail.target.getWindow().audio);
+  };
+
+  Jacks.prototype.onDisconnect = function(event) {
+    tag('Connection');
+    log({
+      "file": "./coffee/audio/jacks.coffee",
+      "class": "Jacks",
+      "line": 50,
+      "args": ["event"],
+      "method": "onDisconnect",
+      "type": "."
+    }, 'onDisconnect', event.detail);
+    return event.detail.source.getWindow().audio.disconnect(event.detail.target.getWindow().audio);
   };
 
   return Jacks;
@@ -741,6 +831,7 @@ Oscillator = (function(_super) {
   __extends(Oscillator, _super);
 
   function Oscillator() {
+    this.paramValuesAtConnector = __bind(this.paramValuesAtConnector, this);
     this.setShape = __bind(this.setShape, this);
     this.setFreq = __bind(this.setFreq, this);
     this.init = __bind(this.init, this);
@@ -751,55 +842,61 @@ Oscillator = (function(_super) {
 
   Oscillator.prototype.init = function(cfg, defs) {
     var _ref;
-    _.def(cfg, defs);
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      shape: Oscillator.shapes[0]
+    });
     _ref = Audio.oscillator(cfg), this.audio = _ref[0], cfg = _ref[1];
     Oscillator.__super__.init.call(this, cfg, {
+      type: 'oscillator',
       title: 'oscillator',
-      minWidth: 150,
+      minWidth: 220,
       resize: 'horizontal',
       children: [
         {
           type: 'jacks',
-          audio: this.audio,
           hasInput: false
         }, {
           type: 'spinner',
           id: 'shape',
-          value: (cfg.shape != null) && Oscillator.shapes.indexOf(cfg.shape) || 0,
-          values: Oscillator.shapes,
-          onValue: this.setShape
+          value: cfg.shape,
+          values: Oscillator.shapes
         }, {
           type: 'sliderspin',
           id: 'frequency',
           value: cfg.freq,
           minValue: cfg.minFreq,
-          maxValue: cfg.maxFreq,
-          onValue: this.setFreq
+          maxValue: cfg.maxFreq
         }
       ]
     });
-    this.setFreq(cfg.freq);
-    if (cfg.shape != null) {
-      return this.setShape(Oscillator.shapes.indexOf(cfg.shape));
-    }
+    this.connect('shape:onValue', this.setShape);
+    this.connect('frequency:onValue', this.setFreq);
+    this.setFreq(this.config.freq);
+    this.setShape(this.config.shape);
+    this.sizeWindow();
+    return this;
   };
 
   Oscillator.prototype.setFreq = function(v) {
-    return this.audio.frequency.value = _.value(v);
+    this.config.freq = _.value(v);
+    return this.audio.frequency.value = this.config.freq;
   };
 
   Oscillator.prototype.setShape = function(v) {
-    return this.audio.type = Oscillator.shapes[_.value(v)];
+    this.config.shape = _.isString(v) ? v : _.value(v);
+    return this.audio.type = this.config.shape;
+  };
+
+  Oscillator.prototype.paramValuesAtConnector = function(paramValues, connector) {
+    return Audio.setValuesForParam(paramValues, this.audio.frequency);
   };
 
   Oscillator.menu = function() {
-    return knix.create({
-      type: 'button',
-      id: 'new_oscillator',
+    return Oscillator.menuButton({
+      text: 'oscillator',
       icon: 'octicon-sync',
-      "class": 'tool-button',
-      parent: 'menu',
-      onClick: function() {
+      action: function() {
         return new Oscillator({
           center: true
         });
@@ -808,6 +905,110 @@ Oscillator = (function(_super) {
   };
 
   return Oscillator;
+
+})(AudioWindow);
+
+
+/*
+
+00000000    0000000   00     00  00000000 
+000   000  000   000  000   000  000   000
+0000000    000000000  000000000  00000000 
+000   000  000   000  000 0 000  000      
+000   000  000   000  000   000  000
+ */
+
+Ramp = (function(_super) {
+  __extends(Ramp, _super);
+
+  function Ramp() {
+    this.setRelTime = __bind(this.setRelTime, this);
+    this.anim = __bind(this.anim, this);
+    this.triggerDown = __bind(this.triggerDown, this);
+    this.setDuration = __bind(this.setDuration, this);
+    this.init = __bind(this.init, this);
+    return Ramp.__super__.constructor.apply(this, arguments);
+  }
+
+  Ramp.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      duration: 2.0,
+      minDuration: 0.01,
+      maxDuration: 10.0,
+      durationStep: 0.01,
+      valueFormat: "%0.3f",
+      resize: 'horizontal'
+    });
+    Ramp.__super__.init.call(this, cfg, {
+      type: 'ramp',
+      title: 'ramp',
+      children: [
+        {
+          type: 'sliderspin',
+          id: 'ramp',
+          minValue: 0.0,
+          maxValue: 1.0
+        }, {
+          type: 'sliderspin',
+          id: 'ramp_duration',
+          value: cfg.duration,
+          minValue: cfg.minDuration,
+          maxValue: cfg.maxDuration,
+          spinStep: cfg.durationStep
+        }, {
+          type: 'button',
+          text: 'trigger'
+        }
+      ]
+    });
+    this.connect('ramp_duration:onValue', this.setDuration);
+    this.connect('button:mousedown', this.triggerDown);
+    return this;
+  };
+
+  Ramp.prototype.setDuration = function(v) {
+    return this.config.duration = _.value(v);
+  };
+
+  Ramp.prototype.triggerDown = function() {
+    if (this.config.reltime !== 0) {
+      knix.deanimate(this);
+    }
+    Audio.sendParamValuesFromConnector({
+      duration: this.config.duration
+    }, this.connector('ramp:onValue'));
+    this.setRelTime(0);
+    return knix.animate(this);
+  };
+
+  Ramp.prototype.anim = function(step) {
+    this.setRelTime(this.config.reltime + step.dsecs / this.config.duration);
+    if (this.config.reltime > 1.0) {
+      knix.deanimate(this);
+      return this.setRelTime(0);
+    }
+  };
+
+  Ramp.prototype.setRelTime = function(rel) {
+    this.config.reltime = rel;
+    this.config.value = this.config.reltime;
+    return this.getChild('ramp').setValue(this.config.value);
+  };
+
+  Ramp.menu = function() {
+    return Ramp.menuButton({
+      text: 'ramp',
+      icon: 'octicon-playback-play',
+      action: function() {
+        return new Ramp({
+          center: true
+        });
+      }
+    });
+  };
+
+  return Ramp;
 
 })(Window);
 

@@ -24,6 +24,7 @@ Drag = (function() {
     this.constrain = __bind(this.constrain, this);
     this.dragMove = __bind(this.dragMove, this);
     this.dragStart = __bind(this.dragStart, this);
+    this.relPos = __bind(this.relPos, this);
     this.absPos = __bind(this.absPos, this);
     var t, _ref;
     _.extend(this, _.def(cfg, {
@@ -85,26 +86,17 @@ Drag = (function() {
   }
 
   Drag.prototype.absPos = function(event) {
-    event = (event ? event : window.event);
-    if (isNaN(window.scrollX)) {
-      return pos(event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft, event.clientY + document.documentElement.scrollTop + document.body.scrollTop);
-    } else {
-      return pos(event.clientX + window.scrollX, event.clientY + window.scrollY);
-    }
+    return Stage.absPos(event);
+  };
+
+  Drag.prototype.relPos = function(event) {
+    return Stage.relPos(event);
   };
 
   Drag.prototype.dragStart = function(event) {
     if (this.dragging || !this.listening) {
       return;
     }
-    log({
-      "file": "./coffee/tools/drag.coffee",
-      "class": "Drag",
-      "line": 60,
-      "args": ["event"],
-      "method": "dragStart",
-      "type": "."
-    }, 'start', this.target.id);
     this.dragging = true;
     if (this.onStart != null) {
       this.onStart(this, event);
@@ -152,14 +144,6 @@ Drag = (function() {
   };
 
   Drag.prototype.dragStop = function(event) {
-    log({
-      "file": "./coffee/tools/drag.coffee",
-      "class": "Drag",
-      "line": 106,
-      "args": ["event"],
-      "method": "dragStop",
-      "type": "."
-    }, 'stop', this.target.id);
     if (!this.dragging) {
       return;
     }
@@ -238,6 +222,7 @@ Pos = (function() {
     this.check = __bind(this.check, this);
     this.notSame = __bind(this.notSame, this);
     this.same = __bind(this.same, this);
+    this.length = __bind(this.length, this);
     this.dist = __bind(this.dist, this);
     this.distSquare = __bind(this.distSquare, this);
     this.square = __bind(this.square, this);
@@ -245,8 +230,10 @@ Pos = (function() {
     this.max = __bind(this.max, this);
     this.min = __bind(this.min, this);
     this.mid = __bind(this.mid, this);
-    this.scale = __bind(this.scale, this);
     this.mul = __bind(this.mul, this);
+    this.times = __bind(this.times, this);
+    this.scale = __bind(this.scale, this);
+    this.to = __bind(this.to, this);
     this.sub = __bind(this.sub, this);
     this.add = __bind(this.add, this);
     this.copy = __bind(this.copy, this);
@@ -284,20 +271,28 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.mul = function(val) {
+  Pos.prototype.to = function(other) {
+    return other.sub(this);
+  };
+
+  Pos.prototype.scale = function(val) {
     this.x *= val;
     this.y *= val;
     return this;
   };
 
-  Pos.prototype.scale = function(other) {
+  Pos.prototype.times = function(val) {
+    return this.copy().scale(val);
+  };
+
+  Pos.prototype.mul = function(other) {
     this.x *= other.x;
     this.y *= other.y;
     return this;
   };
 
   Pos.prototype.mid = function(other) {
-    return this.add(other).mul(0.5);
+    return this.add(other).scale(0.5);
   };
 
   Pos.prototype.min = function(val) {
@@ -350,6 +345,10 @@ Pos = (function() {
 
   Pos.prototype.dist = function(o) {
     return Math.sqrt(this.distSquare(o));
+  };
+
+  Pos.prototype.length = function() {
+    return Math.sqrt(this.square());
   };
 
   Pos.prototype.same = function(o) {
@@ -440,6 +439,13 @@ Stage = (function() {
   function Stage() {}
 
   Stage.initContextMenu = function() {
+    log({
+      "file": "./coffee/tools/stage.coffee",
+      "class": "Stage",
+      "line": 15,
+      "method": "initContextMenu",
+      "type": "@"
+    }, 'initContextMenu');
     $('stage_content').on('mousedown', Stage.showContextMenu);
     Stage.contextMenu = knix.get({
       id: 'context-menu',
@@ -453,12 +459,20 @@ Stage = (function() {
     return Stage.contextMenu;
   };
 
+  Stage.positionWindow = function(win) {
+    var h, p, w, _ref;
+    _ref = [win.absPos(), win.getWidth(), win.getHeight()], p = _ref[0], w = _ref[1], h = _ref[2];
+    if (p.x + w > Stage.width()) {
+      return win.setPos(pos(Stage.width() - w, Math.max(p.y, $('menu').getHeight())));
+    }
+  };
+
   Stage.showContextMenu = function(event, e) {
     if ($('stage_content') === e) {
       log({
         "file": "./coffee/tools/stage.coffee",
         "class": "Stage",
-        "line": 30,
+        "line": 37,
         "method": "showContextMenu",
         "type": "@",
         "args": ["event", "e"]
@@ -517,6 +531,14 @@ Stage = (function() {
     } else {
       return pos(event.clientX + window.scrollX, event.clientY + window.scrollY);
     }
+  };
+
+  Stage.relPos = function(event) {
+    var c, t;
+    event = event != null ? event : window.event;
+    c = pos(event.clientX, event.clientY);
+    t = event.target.getWidget().absPos();
+    return c.sub(t);
   };
 
   return Stage;
@@ -589,7 +611,9 @@ str = function(o, indent, visited) {
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             k = _ref[_i];
-            _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+            if (!_.isFunction(o[k])) {
+              _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+            }
           }
           return _results;
         })()).join("\n");
@@ -768,7 +792,9 @@ _.arg = function(arg, argname) {
     }
   }
   if (argname === 'value') {
-    return parseFloat(arg);
+    if (typeof arg === 'string') {
+      return parseFloat(arg);
+    }
   }
   return arg;
 };

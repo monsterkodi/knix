@@ -55,6 +55,7 @@ Window = (function(_super) {
     cfg.connect = null;
     Window.__super__.init.call(this, cfg, {
       type: 'window',
+      "class": 'window',
       parent: 'stage_content',
       hasClose: true,
       hasShade: true,
@@ -69,11 +70,12 @@ Window = (function(_super) {
     this.config.connect = connect;
     this.initConnections();
     this.layoutChildren();
-    if (cfg.popup) {
+    if (this.config.popup) {
       knix.addPopup(this);
     }
-    if (cfg.center) {
-      this.moveTo(Math.max(0, Stage.size().width / 2 - this.getWidth() / 2), Math.max(0, Stage.size().height / 2 - this.getHeight() / 2));
+    if (this.config.center) {
+      this.moveTo(Math.max(0, Stage.size().width / 4 - this.getWidth() / 2), Math.max(0, Stage.size().height / 2 - this.getHeight() / 2));
+      this.config.center = void 0;
     }
     return this;
   };
@@ -164,6 +166,14 @@ Window = (function(_super) {
 
   Window.prototype.sizeWindow = function() {
     var content, e, _i, _len, _ref, _ref1, _results;
+    log({
+      "file": "./coffee/window.coffee",
+      "class": "Window",
+      "line": 123,
+      "args": ["cfg", "defs"],
+      "method": "sizeWindow",
+      "type": "."
+    }, 'sizeWindow');
     if (this.config.content === 'scroll') {
       content = $(this.content).widget;
       content.setWidth(this.contentWidth());
@@ -224,7 +234,7 @@ Window = (function(_super) {
       action = 'size';
       border += 'right';
     }
-    if (action === 'size') {
+    if (action === 'size' && !this.config.isShaded) {
       if (border === 'left' || border === 'right') {
         cursor = 'ew-resize';
       } else if (border === 'top' || border === 'bottom') {
@@ -361,7 +371,7 @@ Window = (function(_super) {
     if (this.config.isShaded) {
       this.config.isShaded = false;
       $(this.content).show();
-      this.setHeight(this.config.height);
+      this.setHeightNoEmit(this.config.height);
       this.elem.setStyle({
         'min-height': this.minHeightShade
       });
@@ -371,7 +381,7 @@ Window = (function(_super) {
       this.elem.setStyle({
         'min-height': '0px'
       });
-      this.setHeight(this.headerSize());
+      this.setHeightNoEmit(this.headerSize());
       this.config.isShaded = true;
       $(this.content).hide();
     }
@@ -381,18 +391,22 @@ Window = (function(_super) {
   };
 
   Window.prototype.close = function() {
-    log({
-      "file": "./coffee/window.coffee",
-      "class": "Window",
-      "line": 302,
-      "args": ["box=\"border-box-height\""],
-      "method": "close",
-      "type": "."
-    }, 'close');
     if (this.config.popup != null) {
       knix.delPopup(this);
     }
     return Window.__super__.close.apply(this, arguments);
+  };
+
+  Window.menuButton = function(cfg) {
+    return knix.create({
+      type: 'button',
+      "class": 'tool-button',
+      parent: 'menu',
+      id: 'new_' + cfg.text,
+      tooltip: cfg.text,
+      icon: cfg.icon,
+      onClick: cfg.action
+    });
   };
 
   return Window;

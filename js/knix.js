@@ -13,7 +13,7 @@ var knix,
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.4.19';
+  knix.version = '0.5.1';
 
   knix.init = function(config) {
     var c, s;
@@ -44,42 +44,57 @@ knix = (function() {
 
   knix.initTools = function() {
     var btn;
-    Console.menu();
     btn = {
-      type: 'button',
       parent: 'tool',
       "class": 'tool-button'
     };
-    About.menu();
-    knix.get(btn, {
+    new Button(btn, {
+      tooltip: 'save',
+      icon: 'octicon-file-binary',
+      onClick: Files.saveWindows
+    });
+    new Button(btn, {
+      tooltip: 'load',
+      icon: 'octicon-file-directory',
+      onClick: Files.loadMenu
+    });
+    new Button(btn, {
+      tooltip: 'console',
+      icon: 'octicon-terminal',
+      onClick: function() {
+        return new Console();
+      }
+    });
+    new Button(btn, {
+      tooltip: 'fullscreen',
       icon: 'octicon-device-desktop',
       onClick: function() {
         return Stage.toggleFullscreen();
       }
     });
-    knix.get(btn, {
+    new Button(btn, {
+      tooltip: 'style',
       icon: 'octicon-color-mode',
       onClick: function() {
         return StyleSwitch.toggle();
       }
     });
-    knix.get(btn, {
-      tooltip: 'save',
-      icon: 'octicon-file-binary',
-      onClick: knix.dumpWindows
+    new Button(btn, {
+      tooltip: 'about',
+      icon: 'octicon-info',
+      onClick: function() {
+        return About.show();
+      }
     });
-    knix.get(btn, {
-      tooltip: 'restore',
-      icon: 'octicon-file-directory',
-      onClick: knix.restoreMenu
-    });
-    knix.get(btn, {
+    new Button(btn, {
+      tooltip: 'shade all',
       icon: 'octicon-dash',
       onClick: function() {
         return knix.shadeWindows();
       }
     });
-    return knix.get(btn, {
+    return new Button(btn, {
+      tooltip: 'close all',
       icon: 'octicon-x',
       onClick: function() {
         return knix.closeWindows();
@@ -89,9 +104,7 @@ knix = (function() {
 
   knix.create = function(cfg, defs) {
     cfg = _.def(cfg, defs);
-    if ((cfg.type != null) && (knix[cfg.type] != null) && typeof knix[cfg.type] === 'function') {
-      return knix[cfg.type](cfg);
-    } else if ((cfg.type != null) && (window[_.capitalize(cfg.type)] != null) && typeof window[_.capitalize(cfg.type)] === 'function') {
+    if ((cfg.type != null) && (window[_.capitalize(cfg.type)] != null) && typeof window[_.capitalize(cfg.type)] === 'function') {
       return new window[_.capitalize(cfg.type)](cfg);
     } else {
       return new Widget(cfg, {
@@ -101,11 +114,14 @@ knix = (function() {
   };
 
   knix.get = function(cfg, def) {
+    var w;
     cfg = _.def(cfg, def);
-    return knix.create(_.def(cfg, {
+    w = knix.create(_.def(cfg, {
       type: 'window',
       parent: 'stage_content'
     }));
+    Stage.positionWindow(w);
+    return w;
   };
 
   knix.allWindows = function() {
@@ -114,7 +130,7 @@ knix = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       w = _ref[_i];
-      if (!w.hasClassName('console-window')) {
+      if (!(w.hasClassName('console-window') || w.hasClassName('tooltip'))) {
         _results.push(w.widget);
       }
     }
@@ -135,7 +151,14 @@ knix = (function() {
     })()));
   };
 
+  knix.closeConnections = function() {
+    return knix.allConnections().each(function(c) {
+      return c.close();
+    });
+  };
+
   knix.closeWindows = function() {
+    knix.closeConnections();
     return knix.allWindows().each(function(w) {
       return w.close();
     });
@@ -145,50 +168,6 @@ knix = (function() {
     return knix.allWindows().each(function(w) {
       return w.shade();
     });
-  };
-
-  knix.dumpWindows = function() {
-    var dump, files, w;
-    dump = '\n    knix.restore ';
-    dump += JSON.stringify({
-      'windows': (function() {
-        var _i, _len, _ref, _results;
-        _ref = this.allWindows();
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          w = _ref[_i];
-          _results.push(w.config);
-        }
-        return _results;
-      }).call(knix),
-      'connections': knix.allConnections()
-    }, null, '    ');
-    dump = dump.slice(0, -1);
-    dump += "    }";
-    files = {};
-    if (localStorage.getItem('files') != null) {
-      files = JSON.parse(localStorage.getItem('files'));
-    }
-    files[uuid.v4()] = dump;
-    return localStorage.setItem('files', JSON.stringify(files));
-  };
-
-  knix.restoreMenu = function() {
-    var data, file, _ref, _results;
-    _ref = JSON.parse(localStorage.getItem('files'));
-    _results = [];
-    for (file in _ref) {
-      data = _ref[file];
-      _results.push(log({
-        "file": "./coffee/knix.coffee",
-        "class": "knix",
-        "line": 118,
-        "args": ["cfg", "def"],
-        "method": "restoreMenu",
-        "type": "@"
-      }, 'file', file, data.length));
-    }
-    return _results;
   };
 
   knix.restore = function(state) {
@@ -232,7 +211,7 @@ knix = (function() {
 
   knix.closePopups = function(event) {
     var e, p, _i, _j, _len, _len1, _ref, _ref1;
-    e = event.target;
+    e = event != null ? event.target : void 0;
     if (knix.popups != null) {
       _ref = knix.popups;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -253,26 +232,33 @@ knix = (function() {
   };
 
   knix.initAnim = function() {
+    knix.animTimeStamp = 0;
     return window.requestAnimationFrame(knix.anim);
   };
 
   knix.animObjects = [];
 
-  knix.deanimate = function(o) {
-    return _.del(knix.animObjects, o);
-  };
-
   knix.animate = function(o) {
     return knix.animObjects.push(o);
   };
 
+  knix.deanimate = function(o) {
+    return _.del(knix.animObjects, o);
+  };
+
   knix.anim = function(timestamp) {
-    var animObject, _i, _len, _ref;
+    var animObject, step, _i, _len, _ref;
+    step = {
+      stamp: timestamp,
+      delta: timestamp - knix.animTimeStamp,
+      dsecs: (timestamp - knix.animTimeStamp) * 0.001
+    };
     _ref = knix.animObjects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       animObject = _ref[_i];
-      animObject.anim(timestamp);
+      animObject.anim(step);
     }
+    knix.animTimeStamp = timestamp;
     return window.requestAnimationFrame(knix.anim);
   };
 
@@ -282,46 +268,12 @@ knix = (function() {
 
   knix.initSVG = function() {
     var svg;
-    svg = knix.get({
+    svg = knix.create({
       type: 'svg',
       id: 'stage_svg',
       parent: 'stage_content'
     });
     return knix.svg = svg.svg;
-  };
-
-  knix.canvas = function(cfg) {
-    var cvs;
-    cvs = new Widget(cfg, {
-      elem: 'canvas',
-      noMove: true
-    });
-    return cvs;
-  };
-
-  knix.icon = function(cfg) {
-    return new Widget(cfg, {
-      child: {
-        elem: 'span',
-        type: 'octicon',
-        "class": cfg.icon
-      }
-    });
-  };
-
-  knix.input = function(cfg) {
-    var inp;
-    inp = new Widget(cfg, {
-      elem: 'input',
-      type: 'input'
-    });
-    inp.elem.setAttribute('size', 6);
-    inp.elem.setAttribute('type', 'text');
-    inp.elem.setAttribute('inputmode', 'numeric');
-    inp.elem.getValue = function() {
-      return parseFloat(this.value);
-    };
-    return inp;
   };
 
   return knix;

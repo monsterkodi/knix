@@ -22,7 +22,57 @@ Test = (function() {
   000   000   0000000   0000000    000   0000000
    */
 
-  Test.delayNodes = function() {
+  Test.envelope = function() {
+    var e, m, o, r, t;
+    t = new Ramp({
+      x: 200,
+      y: 250,
+      duration: 1
+    });
+    e = new Envelope({
+      center: true,
+      vals: [pos(0, 0), pos(0.15, 0.75), pos(0.5, 1), pos(0.75, 0.25), pos(1, 0)]
+    });
+    r = new Range({
+      x: 200,
+      y: 50,
+      low: 100,
+      high: 400
+    });
+    o = new Oscillator({
+      freq: 200,
+      maxFreq: 2000,
+      x: 500,
+      y: 50
+    });
+    m = new Gain({
+      master: true,
+      x: 500,
+      y: 300
+    });
+    new Connection({
+      source: t.connector('ramp:onValue'),
+      target: e.connector('envelope_in:setValue')
+    });
+    new Connection({
+      source: e.connector('envelope:onValue'),
+      target: m.connector('gain:setValue')
+    });
+    new Connection({
+      source: e.connector('envelope:onValue'),
+      target: r.connector('range_in:setValue')
+    });
+    new Connection({
+      source: r.connector('range_out:onValue'),
+      target: o.connector('frequency:setValue')
+    });
+    return new Connection({
+      source: o.connector('audio:out'),
+      target: m.connector('audio:in')
+    });
+  };
+
+  Test.delay = function() {
     var a1, a2, d1, g1, g2, gm, o1;
     o1 = new Oscillator({
       title: 'low',
@@ -93,7 +143,7 @@ Test = (function() {
     });
   };
 
-  Test.audioNodes = function() {
+  Test.oscillator = function() {
     var a4, an, f4, g1, g2, g3, gm, o1, o2, o3;
     o1 = new Oscillator({
       title: 'high',
@@ -111,7 +161,7 @@ Test = (function() {
     });
     o3 = new Oscillator({
       title: 'low',
-      minFreq: 1,
+      minFreq: 0,
       maxFreq: 400,
       freq: 333,
       shape: 'square',
@@ -190,21 +240,29 @@ Test = (function() {
   };
 
   Test.audio = function() {
-    var a, b;
+    var a, b, c;
     a = knix.get({
       type: 'button',
-      text: 'audio',
+      text: 'oscillator',
       parent: 'menu',
       onClick: function() {
-        return Test.audioNodes();
+        return Test.oscillator();
       }
     });
-    return b = knix.get({
+    b = knix.get({
       type: 'button',
       text: 'delay',
       parent: 'menu',
       onClick: function() {
-        return Test.delayNodes();
+        return Test.delay();
+      }
+    });
+    return c = knix.get({
+      type: 'button',
+      text: 'envelope',
+      parent: 'menu',
+      onClick: function() {
+        return Test.envelope();
       }
     });
   };
@@ -627,7 +685,8 @@ document.observe("dom:loaded", function() {
   knix.init({
     console: true
   });
-  return Test.audio();
+  Test.audio();
+  return Files.loadLast();
 });
 
 //# sourceMappingURL=main.js.map
