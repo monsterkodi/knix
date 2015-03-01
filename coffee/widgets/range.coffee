@@ -107,7 +107,7 @@ class Range extends Window
             type:    'button'
             tooltip: 'range'
             id:      'new_range'
-            icon:    'octicon-settings'
+            icon:    'fa-sliders'
             class:   'tool-button'
             parent:  'menu'
             onClick: -> new Range

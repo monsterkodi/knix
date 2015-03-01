@@ -62,6 +62,6 @@ class Oscillator extends AudioWindow
 
         @menuButton
             text:    'oscillator'
-            icon:    'octicon-sync'
+            icon:    'fa-circle-o-notch'
             action:  -> new Oscillator
                             center: true

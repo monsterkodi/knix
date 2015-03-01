@@ -76,6 +76,6 @@ class Filter extends AudioWindow
 
         @menuButton
             text:    'filter'
-            icon:    'octicon-gear'
+            icon:    'fa-filter'
             action:  -> new Filter
                             center: true

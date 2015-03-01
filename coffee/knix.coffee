@@ -41,12 +41,12 @@ class knix
 
         new Button btn,
             tooltip: 'save'
-            icon:    'octicon-file-binary'
+            icon:    'fa-floppy-o'
             onClick:  Files.saveWindows
 
         new Button btn,
             tooltip: 'load'
-            icon:    'octicon-file-directory'
+            icon:    'fa-folder-o'
             onClick:  Files.loadMenu
 
         new Button btn,

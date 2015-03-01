@@ -86,7 +86,7 @@ class Analyser extends AudioWindow
 
         @menuButton
             text:    'analyser'
-            icon:    'octicon-diff-modified'
+            icon:    'fa-area-chart'
             action:  -> new Analyser
                             center: true
                             

@@ -14,8 +14,14 @@ class Icon extends Widget
     
         cfg = _.def cfg, defs
     
+        if cfg.icon.startsWith 'fa'
+            cfg.icon += ' fa'
+            elem = 'i'
+        else
+            elem = 'span'
+
         super cfg,
             child:
-                elem:   'span'
+                elem:   elem
                 type:   'octicon'
                 class:   cfg.icon

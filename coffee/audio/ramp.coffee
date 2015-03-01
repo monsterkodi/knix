@@ -71,6 +71,6 @@ class Ramp extends Window
 
         @menuButton
             text:    'ramp'
-            icon:    'octicon-playback-play'
+            icon:    'fa-external-link-square'
             action:  -> new Ramp
                             center: true

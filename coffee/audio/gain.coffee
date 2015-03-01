@@ -46,13 +46,13 @@ class Gain extends AudioWindow
 
         @menuButton
             text:    'gain'
-            icon:    'octicon-dashboard'
+            icon:    'fa-volume-up'
             action:  -> new Gain
                             center: true
 
         @menuButton
             text:    'master'
-            icon:    'octicon-unmute'
+            icon:    'fa-sign-out'
             ection:  -> new Gain
                             center: true
                             master: true
