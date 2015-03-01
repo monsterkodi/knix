@@ -1,8 +1,8 @@
 {
     "name": "knix",
-    "version": "0.4.1044",
+    "version": "0.5.0",
     "private": true,
-    "description": "kann noch immer knix",
+    "description": "small coffescript ui framework",
     "main": "index.html",
     "author": "monsterkodi",
     "devDependencies": {

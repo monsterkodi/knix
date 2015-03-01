@@ -26,3 +26,5 @@ document.observe "dom:loaded", ->
     Test.audio()
     # StyleSwitch.toggle()
     # $('show_about').click()
+
+    Files.loadLast()

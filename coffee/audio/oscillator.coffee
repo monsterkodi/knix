@@ -48,6 +48,7 @@ class Oscillator extends AudioWindow
 
         @setFreq  @config.freq
         @setShape @config.shape
+        @sizeWindow()
         @
 
     setFreq:  (v) => @config.freq  = _.value v; @audio.frequency.value = @config.freq
@@ -61,6 +62,6 @@ class Oscillator extends AudioWindow
 
         @menuButton
             text:    'oscillator'
-            id:      'new_oscillator'
+            icon:    'octicon-sync'
             action:  -> new Oscillator
                             center: true

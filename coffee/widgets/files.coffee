@@ -19,15 +19,13 @@ class Files
         
         log json
         
-        files = {} 
-        if localStorage.getItem('files')?
-            files = JSON.parse localStorage.getItem('files')
+        files = @allFiles()
         files[uuid.v4()] = json
         localStorage.setItem 'files', JSON.stringify(files)
 
     @loadMenu: (event) =>
 
-        files = JSON.parse(localStorage.getItem('files'))
+        files = @allFiles()
         if _.isEmpty files then return
             
         children = []
@@ -36,7 +34,7 @@ class Files
             children.push
                 type:       'button'
                 text:       file
-                onClick:    @loadFile
+                onClick:    @fileSelected
 
         knix.get
             hasClose: true
@@ -60,12 +58,21 @@ class Files
         localStorage.setItem 'files', "{}"
         knix.closePopups()
 
-    @loadFile: (event) =>
-        filename = event.target.getWidget().config.text
+    @allFiles: => 
+        if localStorage.getItem('files')? 
+            return JSON.parse localStorage.getItem('files') 
+        {}
+
+    @loadLast: => @loadFile _.keys(@allFiles()).last()
+        
+    @fileSelected: (event) => @loadFile event.target.getWidget().config.text
+
+    @loadFile: (filename) =>
         log filename
-        data = JSON.parse(localStorage.getItem('files'))[filename]
-        knix.closeWindows()
-        state = JSON.parse data
-        log state
-        knix.restore state
+        if filename
+            data = @allFiles()[filename]
+            knix.closeWindows()
+            state = JSON.parse data
+            # log state
+            knix.restore state
         
