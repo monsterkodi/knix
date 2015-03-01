@@ -33,6 +33,7 @@ class Pad extends Widget
         @svg = @getChild 'svg'
         
         if @config.vals?
+            @config.vals = ( pos v.x, v.y for v in @config.vals )
             @config.numHandles = @config.vals.length
         
         @handles = []
@@ -74,7 +75,6 @@ class Pad extends Widget
                 break
         
         [sp,ep] = [@config.vals[si],@config.vals[ei]]
-        log si, ei, sp, ep
         dp = sp.to ep
         dl = dp.length()
         if dl == 0 or dp.x == 0
