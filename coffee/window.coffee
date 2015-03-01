@@ -301,3 +301,14 @@ class Window extends Widget
         if @config.popup?
             knix.delPopup @
         super
+
+    @menuButton: (cfg) =>
+
+        knix.create
+            type:    'button'
+            class:   'tool-button'
+            parent:  'menu'
+            id:      'new_' + cfg.text
+            tooltip: cfg.text
+            icon:    cfg.icon
+            onClick: cfg.action

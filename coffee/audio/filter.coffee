@@ -74,12 +74,8 @@ class Filter extends AudioWindow
         
     @menu: =>
 
-        knix.create
-            type:    'button'
-            tooltip: 'filter'
-            id:      'new_filter'
+        @menuButton
+            text:    'filter'
             icon:    'octicon-gear'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Filter
+            action:  -> new Filter
                             center: true

@@ -57,18 +57,10 @@ class Oscillator extends AudioWindow
 
     paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.frequency
 
-    # close: =>
-    #     @audio = Audio.destroy @audio
-    #     super
-
     @menu: =>
 
-        knix.create
-            type:    'button'
-            tooltip: 'oscillator'
+        @menuButton
+            text:    'oscillator'
             id:      'new_oscillator'
-            icon:    'octicon-sync'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Oscillator
+            action:  -> new Oscillator
                             center: true

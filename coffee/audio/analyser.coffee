@@ -84,16 +84,12 @@ class Analyser extends AudioWindow
 
     @menu: =>
 
-        knix.create
-            type:    'button'
-            id:      'new_analyser'
-            tooltip: 'analyser'
+        @menuButton
+            text:    'analyser'
             icon:    'octicon-diff-modified'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Analyser
+            action:  -> new Analyser
                             center: true
-
+                            
     anim: =>
 
         @audio.getByteTimeDomainData(@dataArray)

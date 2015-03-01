@@ -46,6 +46,7 @@ class Jacks extends Hbox
         event.detail.source.getWindow().audio.connect event.detail.target.getWindow().audio
         
     onDisconnect: (event) =>
+        tag 'Connection'
         log 'onDisconnect', event.detail
         event.detail.source.getWindow().audio.disconnect event.detail.target.getWindow().audio
         

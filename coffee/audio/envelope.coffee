@@ -97,12 +97,8 @@ class Envelope extends Window
 
     @menu: =>
 
-        knix.create
-            type:    'button'
-            tooltip: 'envelope'
-            id:      'new_envelope'
+        @menuButton
+            text:    'envelope'
             icon:    'octicon-pulse'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Envelope
+            action:  -> new Envelope
                             center: true

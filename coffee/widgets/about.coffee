@@ -60,13 +60,3 @@ class About extends Window
         log "about..."
         if $('about') then $('about').raise()
         else new About
-
-    @menu: ->
-
-        knix.create
-            type:   'button'
-            id:     'show_about'
-            icon:   'octicon-info'
-            class:  'tool-button'
-            parent: 'tool'
-            onClick: -> About.show()

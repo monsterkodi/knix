@@ -27,8 +27,8 @@ class Console extends Window
             width:          w
             height:         h
             content:        'scroll'
-            showMethods:    true
-            showClasses:    true
+            showMethods:    Settings.get 'logMethods', true
+            showClasses:    Settings.get 'logClasses', true
             buttons:  \
             [
                 class:   'window-button-right'
@@ -108,6 +108,12 @@ class Console extends Window
                 type:    "window-button-right"
                 child:
                     type: 'icon'
+                    icon: 'octicon-trashcan'
+                onClick: @trashSettings
+            ,
+                type:    "window-button-right"
+                child:
+                    type: 'icon'
                     icon: 'octicon-list-unordered'
                 onClick: @toggleMethods
             ,
@@ -119,6 +125,11 @@ class Console extends Window
             ]
 
         event.preventDefault()
+
+    trashSettings: =>
+        Settings.set 'logTags', {}
+        Settings.set 'logMethods', undefined
+        Settings.set 'logClasses', undefined
 
     onTagState: (event) =>
         tag = _.wid().config.text
@@ -167,11 +178,13 @@ class Console extends Window
 
     toggleClasses: =>
         @config.showClasses = not @config.showClasses
+        Settings.set 'logClasses', @config.showClasses
         for t in @elem.select('.console-class')
             if @config.showClasses then t.show() else t.hide()
 
     toggleMethods: =>
         @config.showMethods = not @config.showMethods
+        Settings.set 'logMethods', @config.showMethods
         for t in @elem.select('.console-method', '.console-method-type')
             if @config.showMethods then t.show() else t.hide()
 
@@ -212,15 +225,5 @@ class Console extends Window
         html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>')
             .replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>')
             .replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>')
-
-    @menu: =>
-
-        knix.create
-            type:   'button'
-            id:     'open_console'
-            icon:   'octicon-terminal'
-            class:  'tool-button'
-            parent: 'tool'
-            onClick: -> new Console()
 
 tag = Console.setScopeTags

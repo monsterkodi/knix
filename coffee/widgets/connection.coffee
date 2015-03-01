@@ -118,7 +118,7 @@ class Connection
             connection.signal   = signal
             connection.slot     = slot
             connection.receiver = slotFunction
-            log signal, slot
+            # log signal, slot
         connection
 
     disconnect: =>

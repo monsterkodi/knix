@@ -69,12 +69,8 @@ class Ramp extends Window
 
     @menu: =>
 
-        knix.create
-            type:    'button'
-            tooltip: 'ramp'
-            id:      'new_ramp'
+        @menuButton
+            text:    'ramp'
             icon:    'octicon-playback-play'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Ramp
+            action:  -> new Ramp
                             center: true

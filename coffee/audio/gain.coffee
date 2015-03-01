@@ -44,23 +44,15 @@ class Gain extends AudioWindow
     
     @menu: =>
 
-        knix.create
-            type:    'button'
-            id:      'new_gain'
-            tooltip: 'gain'
+        @menuButton
+            text:    'gain'
             icon:    'octicon-dashboard'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Gain
+            action:  -> new Gain
                             center: true
 
-        knix.create
-            type:    'button'
-            tooltip: 'master'
-            id:      'new_master'
+        @menuButton
+            text:    'master'
             icon:    'octicon-unmute'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Gain
+            ection:  -> new Gain
                             center: true
                             master: true

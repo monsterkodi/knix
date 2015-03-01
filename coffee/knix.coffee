@@ -35,22 +35,9 @@ class knix
 
     @initTools: =>
 
-        Console.menu()
-
         btn =
             parent: 'tool'
             class:  'tool-button'
-
-        About.menu()
-
-        new Button btn,
-            icon:   'octicon-device-desktop'
-            onClick: -> Stage.toggleFullscreen()
-
-        new Button btn,
-            tooltip: 'style'
-            icon:   'octicon-color-mode'
-            onClick: -> StyleSwitch.toggle()
 
         new Button btn,
             tooltip: 'save'
@@ -63,11 +50,33 @@ class knix
             onClick:  Files.loadMenu
 
         new Button btn,
-            icon:   'octicon-dash'
+            tooltip: 'console'
+            icon:   'octicon-terminal'
+            onClick: -> new Console()
+
+        new Button btn,
+            tooltip: 'fullscreen'
+            icon:    'octicon-device-desktop'
+            onClick: -> Stage.toggleFullscreen()
+
+        new Button btn,
+            tooltip: 'style'
+            icon:    'octicon-color-mode'
+            onClick: -> StyleSwitch.toggle()
+
+        new Button btn,
+            tooltip: 'about'
+            icon:    'octicon-info'
+            onClick: -> About.show()
+
+        new Button btn,
+            tooltip: 'shade all'
+            icon:    'octicon-dash'
             onClick: -> knix.shadeWindows()
 
         new Button btn,
-            icon:   'octicon-x'
+            tooltip: 'close all'
+            icon:    'octicon-x'
             onClick: -> knix.closeWindows()
 
     # ________________________________________________________________________________ element creation

@@ -41,12 +41,8 @@ class Delay extends AudioWindow
 
     @menu: =>
 
-        knix.create
-            type:    'button'
-            id:      'new_delay'
-            tooltip: 'delay'
+        @menuButton
+            text:    'delay'
             icon:    'octicon-hourglass'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Delay
+            action:  -> new Delay
                             center: true
