@@ -146,15 +146,18 @@ class Pad extends Widget
         [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
 
         for i in [0...@config.vals.length]
+            minY = @o
             if i == 0
+                minY = @o+h
                 [minX, maxX] = [@o, @o]
             else if i == @config.vals.length-1
+                minY = @o+h
                 [minX, maxX] = [@o+w, @o+w]
             else
                 minX = @handles[i-1].relPos().x
                 maxX = @handles[i+1].relPos().x
                 
-            @handles[i].constrain minX, @o, maxX, @o+h
+            @handles[i].constrain minX, minY, maxX, @o+h
                 
     setSVGSize: (width, height) =>
         @svg.setWidth width
