@@ -24,7 +24,6 @@ class Delay extends Window
             children:  \
             [
                 type:       'jacks'
-                audio:      @audio
             ,
                 type:       'sliderspin'
                 id:         'delay'
@@ -33,8 +32,9 @@ class Delay extends Window
                 maxValue:   cfg.maxDelay
                 spinStep:   0.00001
                 spinFormat: "%3.5f"
-                onValue:    @setDelay
             ]
+            
+        @connect 'delay:onValue', @setDelay
 
     setDelay: (v) => @audio.delayTime.value = _.value v
 

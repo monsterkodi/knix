@@ -43,7 +43,6 @@ class Envelope extends Window
                     valueStep:  0.001
                     minWidth:   100
                     maxWidth:   10000
-                    onValue:    @setRel
                     format:     cfg.valueFormat
                     style:
                         width:  '50%'
@@ -61,6 +60,8 @@ class Envelope extends Window
                     signal:     'envelope:onValue'
                 ]
             ]
+
+        @connect 'envelope_in:onValue', @setRel
 
         @pad = @getChild 'envelope_pad'
         @sizeWindow()

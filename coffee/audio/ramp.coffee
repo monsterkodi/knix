@@ -34,7 +34,6 @@ class Ramp extends Window
             ,
                 type:       'sliderspin'
                 id:         'ramp_duration'
-                onValue:    @setDuration
                 value:      cfg.duration
                 minValue:   cfg.minDuration
                 maxValue:   cfg.maxDuration
@@ -44,6 +43,8 @@ class Ramp extends Window
                 text:       'trigger'
                 onDown:     @triggerDown
             ]
+    
+        @connect 'ramp_duration:onValue', @setDuration
 
     setDuration: (v) => @config.duration = _.value v
 

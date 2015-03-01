@@ -35,7 +35,7 @@ class Sliderspin extends Hbox
                 value:      cfg.value
                 minValue:   cfg.minValue
                 maxValue:   cfg.maxValue
-                onValue:    cfg.onValue
+                # onValue:    cfg.onValue
                 valueStep:  cfg.spinStep
                 minWidth:   100
                 format:     cfg.spinFormat or "%3.2f"
@@ -48,7 +48,10 @@ class Sliderspin extends Hbox
 
         @connect cfg.id+'_slider:onValue', cfg.id+'_spin:setValue'
         @connect cfg.id+'_spin:onValue', cfg.id+'_slider:setValue'
+        @connect cfg.id+'_spin:onValue', @onSpinValue
 
+    onSpinValue: (v) => @emitValue _value v
+    
     setValue: (v) =>
         @config.value = _.value v
         @getChild(@config.id+'_slider').setValue @config.value

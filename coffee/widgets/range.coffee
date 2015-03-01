@@ -32,7 +32,6 @@ class Range extends Window
             [
                 type:       'sliderspin'
                 id:         'range_low'
-                onValue:    @setLow
                 value:      cfg.low
                 minValue:   cfg.minLow
                 maxValue:   cfg.maxLow
@@ -40,7 +39,6 @@ class Range extends Window
             ,
                 type:       'sliderspin'
                 id:         'range_high'
-                onValue:    @setHigh
                 value:      cfg.high
                 minValue:   cfg.minHigh
                 maxValue:   cfg.maxHigh
@@ -57,7 +55,6 @@ class Range extends Window
                     valueStep:  0.001
                     minWidth:   100
                     maxWidth:   10000
-                    onValue:    @setValue
                     format:     cfg.valueFormat
                     style:
                         width:  '50%'
@@ -75,6 +72,10 @@ class Range extends Window
                     signal:     'range_out:onValue'
                 ]
             ]
+            
+        @connect 'range_in:onValue', @setValue
+        @connect 'range_low:onValue', @setLow
+        @connect 'range_high:onValue', @setHigh
     
     paramValuesAtConnector: (paramValues, connector) =>
         if connector.config.slot == 'range_in:setValue'

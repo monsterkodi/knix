@@ -24,16 +24,16 @@ class Gain extends Window
             children:  \
             [
                 type:       'jacks'
-                audio:      @audio
                 hasOutput:  not cfg.master?
             ,
                 type:       'sliderspin'
                 id:         'gain'
                 value:      cfg.gain
-                onValue:    @setGain
                 minValue:   0.0
                 maxValue:   1.0
             ]
+            
+        @connect 'gain:onValue', @setGain
 
     setGain:  (v) => @audio.gain.value = _.value v
     setValue: (v) => @audio.gain.value = _.value v

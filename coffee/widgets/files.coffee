@@ -66,6 +66,6 @@ class Files
         data = JSON.parse(localStorage.getItem('files'))[filename]
         knix.closeWindows()
         state = JSON.parse data
-        # log state
+        log state
         knix.restore state
         

@@ -143,10 +143,10 @@ class Widget
         @
 
     connect: (signal, slot) =>
-        # tag 'Connection'
-        # log @elem.id, signal, slot
-        [signalSender, signalEvent] = @resolveSignal(signal)
-        slotFunction = @resolveSlot(slot)
+        tag 'Connection'
+        log @elem.id, signal, slot
+        [signalSender, signalEvent] = @resolveSignal signal
+        slotFunction = @resolveSlot slot
         if not signalSender?
             error "sender not found!"
         if not signalEvent?
@@ -277,8 +277,11 @@ class Widget
         if args.length
             anc = @elem.ancestors()
             for a in anc
+                # console.log '--- a', a.id
                 if a.match("#"+args[0]) or a.match("."+args[0])
+                    # console.log 'match!'
                     return a.widget
+            # console.log '!!!'
             return
         return $(@config.parentId).widget if @config.parentId
         return $(@parentElement.id).widget if @parentElement?
@@ -289,9 +292,10 @@ class Widget
     matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?
         
     getWindow: => # returns this or first ancestor element with class 'window'
-        if @elem.hasClassName('window')
+        if @elem.hasClassName 'window'
             return this
-        @getParent('window')
+        # console.log '----', @elem.id
+        @getParent 'window'
 
     getChild: (classOrID) => # returns first child element that matches class or element id
         c = @elem.select('#'+classOrID, '.'+classOrID)

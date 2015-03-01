@@ -28,7 +28,6 @@ class Analyser extends Window
             children: \
             [
                 type: 'jacks'
-                audio: @audio
             ,
                 id:   'analyser_canvas'
                 type: 'canvas'
@@ -39,19 +38,12 @@ class Analyser extends Window
                 type:       'sliderspin'
                 id:         'scaleX'
                 value:      cfg.scaleX
-                onValue:    @setScaleX
                 minValue:   1.0
                 maxValue:   20.0
                 valueStep:  1
-            # ,
-            #     type:       'sliderspin'
-            #     id:         'triggerY'
-            #     value:      cfg.triggerY
-            #     onValue:    @setTriggerY
-            #     minValue:   -1.0
-            #     maxValue:   1.0
-            #     spinStep:   0.01
             ]
+            
+        @connect 'scaleX:onValue', @setScaleX
 
         @canvas = @getChild 'analyser_canvas'
 

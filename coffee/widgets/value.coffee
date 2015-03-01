@@ -24,7 +24,15 @@ class Value extends Widget
     onTooltip: => @elem.id
 
     initEvents: =>
-        @elem.on "onValue", @config.onValue  if @config.onValue?
+        if @config.onValue?
+            if _.isString @config.onValue
+                console.log 'onValue', @config.onValue
+                log 'onValue anc', @elem.ancestors()
+                win = @getWindow()
+                console.log 'onValue win', win
+                @elem.on "onValue", win[@config.onValue]
+            else
+                @elem.on "onValue", @config.onValue  
         super
 
     setValue: (v) =>

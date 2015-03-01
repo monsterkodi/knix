@@ -26,43 +26,36 @@ class Filter extends Window
             children:  \
             [
                 type:       'jacks'
-                audio:      @audio
             ,
                 type:       'spinner'
                 id:         'filter'
                 value:      Filter.filters.indexOf(cfg.filter)
                 values:     Filter.filters
-                onValue:    @setFilter
             ,
                 type:       'sliderspin'
                 id:         'frequency'
                 value:      cfg.freq
                 minValue:   cfg.minFreq
                 maxValue:   cfg.maxFreq
-                onValue:    @setFreq
             ,
                 type:       'sliderspin'
                 id:         'detune'
                 value:      cfg.detune
                 minValue:   cfg.minDetune
                 maxValue:   cfg.maxDetune
-                onValue:    @setDetune
             ,
                 type:       'sliderspin'
                 id:         'Q'
                 value:      cfg.Q
-                onValue:    @setQ
                 minValue:   cfg.minQ
                 maxValue:   cfg.maxQ
                 spinStep:   0.01
-            # ,
-            #     type:       'sliderspin'
-            #     id:         'gain'
-            #     value:      cfg.gain
-            #     onValue:    @setGain
-            #     minValue:   0.0
-            #     maxValue:   1.0
             ]
+            
+        @connect 'filter:onValue', @setFilter
+        @connect 'frequency:onValue', @setFreq
+        @connect 'detune:onValue', @setDetune
+        @connect 'Q:onValue', @setQ
 
         @setFilter Filter.filters.indexOf cfg.filter
 

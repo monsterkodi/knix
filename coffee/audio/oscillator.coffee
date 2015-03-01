@@ -26,22 +26,22 @@ class Oscillator extends Window
             children: \
             [
                 type:       'jacks'
-                audio:      @audio
                 hasInput:   false
             ,
                 type:       'spinner'
                 id:         'shape'
                 value:      cfg.shape? and Oscillator.shapes.indexOf(cfg.shape) or 0
                 values:     Oscillator.shapes
-                onValue:    @setShape
             ,
                 type:       'sliderspin'
                 id:         'frequency'
                 value:      cfg.freq
                 minValue:   cfg.minFreq
                 maxValue:   cfg.maxFreq
-                onValue:    @setFreq
             ]
+
+        @connect 'shape:onValue',     @setShape
+        @connect 'frequency:onValue', @setFreq
 
         @setFreq cfg.freq
         @setShape(Oscillator.shapes.indexOf(cfg.shape)) if cfg.shape?

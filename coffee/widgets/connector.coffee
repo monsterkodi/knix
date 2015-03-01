@@ -11,6 +11,10 @@
 class Connector extends Widget
     
     init: (cfg, defs) =>
+        
+        cfg = _.def cfg, defs
+        
+        log cfg
 
         cfg.class = 'slot'   if cfg.slot?
         cfg.class = 'signal' if cfg.signal?

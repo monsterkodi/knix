@@ -25,10 +25,11 @@ class Spin extends Value
                     type:   'spin-row'
                     children: \
                     [
+                        id:     'decr'
                         elem:   'td'
                         type:   'spin-td'
-                        onDown:  @startDecr
-                        onUp:    @stopTimer
+                        # onDown:  @startDecr
+                        # onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-left'
@@ -38,16 +39,25 @@ class Spin extends Value
                         child:
                             type:   'input'
                             class:  'spin-input'
-                            onDown: (event) -> event.stopPropagation()
+                            # onDown: (event) -> event.stopPropagation()
                     ,
+                        id:     'incr'
                         elem:   'td'
                         type:   'spin-td'
-                        onDown:  @startIncr
-                        onUp:    @stopTimer
+                        # onDown:  @startIncr
+                        # onUp:    @stopTimer
                         child:
                             type: 'icon'
                             icon: 'octicon-triangle-right'
                     ]
+
+        @connect 'decr:mousedown', @startDecr
+        @connect 'decr:mouseup',   @stopTimer
+        
+        @connect 'incr:mousedown', @startIncr
+        @connect 'incr:mouseup',   @stopTimer
+
+        @connect 'input:mousedown', (event) -> event.stopPropagation()
 
         if not @config.valueStep?
             @config.valueStep = @range() > 1 and 1 or @range()/100
