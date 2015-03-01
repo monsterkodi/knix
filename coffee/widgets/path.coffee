@@ -40,8 +40,8 @@ class Path extends Widget
         if @config.endHandle?
             @config.endHandle.elem.addEventListener 'onpos', @setEnd
 
-        @config.endHead   = @config.end.add @config.endDir
-        @config.startHead = @config.start.add @config.startDir
+        @config.endHead   = @config.end.plus @config.endDir
+        @config.startHead = @config.start.plus @config.startDir
         @setStart @config.start
         @setEnd   @config.end
         @initEvents()
@@ -56,13 +56,13 @@ class Path extends Widget
 
     setEndDir:    (p) => @config.endDir = p; @setEnd @config.end
     setStartDir:  (p) => @config.startDir = p; @setStart @config.start
-    setEndHead:   (p) => @setEndDir p.sub(@config.end)
-    setStartHead: (p) => @setStartDir p.sub(@config.start)
+    setEndHead:   (p) => @setEndDir p.minus(@config.end)
+    setStartHead: (p) => @setStartDir p.minus(@config.start)
 
     setStart: =>
         p = _.arg()
         @config.start = pos p.x, p.y
-        @config.startHead = @config.start.add(@config.startDir)
+        @config.startHead = @config.start.plus(@config.startDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 0, @config.start
         @setCtrl 1, @config.startHead
@@ -71,7 +71,7 @@ class Path extends Widget
     setEnd: =>
         p = _.arg()
         @config.end = pos p.x, p.y
-        @config.endHead = @config.end.add(@config.endDir)
+        @config.endHead = @config.end.plus(@config.endDir)
         @config.mid = @config.startHead.mid(@config.endHead)
         @setCtrl 2, @config.mid
         @setCtrl 3, @config.endHead

@@ -82,17 +82,17 @@ class Pad extends Widget
         log event.movementX, event.movementY
         log event
         
-
     pathDragStop: (drag, event) =>
         log 'end'
         # log drag.target.getWidget().config.startHandle
         # log drag.target.getWidget().config.endHandle
     
     valAtRel: (rel) =>
-        if @config.numHandles < 2 then return @config.vals[0].y
+        if @config.numHandles < 2 or rel <= 0 then return @config.vals[0].y
+        if rel >= 1 then return @config.vals[@config.vals.length-1].y
         si = 0
         ei = 1
-        for i in [0...@config.numHandles]
+        for i in [0...@config.vals.length]
             if @config.vals[i].x <= rel
                 si = i
             else
@@ -106,7 +106,7 @@ class Pad extends Widget
             log 'null', rel, si, ei, dl, dp.x
             sp.y
         else
-            p = sp.add dp.times (rel - @config.vals[si].x) / dp.x
+            p = sp.plus dp.times (rel - @config.vals[si].x) / dp.x
             p.y
     
     showRuler: (x, y) =>
@@ -147,6 +147,7 @@ class Pad extends Widget
         i = @handles.indexOf event.target.getWidget()
         x =       (p.x - @o) / w
         y = 1.0 - (p.y - @o) / h
+        log 'onHandlePos'
         @config.vals[i].x = x
         @config.vals[i].y = y
     

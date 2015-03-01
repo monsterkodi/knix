@@ -14,35 +14,26 @@ class Pos
         
     copy: => new Pos @x, @y
 
-    add: (val) =>
+    plus: (val) =>
         newPos = @copy()
         if val?
             newPos.x += val.x  unless isNaN(val.x)
             newPos.y += val.y  unless isNaN(val.y)
         newPos
 
-    sub: (val) =>
+    minus: (val) =>
         newPos = @copy()
         if val?
             newPos.x -= val.x  unless isNaN(val.x)
             newPos.y -= val.y  unless isNaN(val.y)
         newPos
         
-    to: (other) => other.sub @
-
-    scale: (val) =>
-        @x *= val
-        @y *= val
-        @
+    times: (val) => @copy().scale val
         
-    times: (val) => @copy().scale(val)
-
-    mul: (other) =>
-        @x *= other.x
-        @y *= other.y
-        @
-
-    mid: (other) => @add(other).scale(0.5)
+    clamped: (lower, upper) => @copy().clamp lower, upper
+        
+    to:  (other) => other.minus @
+    mid: (other) => @plus(other).scale 0.5
 
     min: (val) =>
         newPos = @copy()
@@ -58,27 +49,47 @@ class Pos
         newPos.y = val.y  if not isNaN(val.y) and @y < val.y
         newPos
 
-    clamp: (lower, upper) =>
-        newPos = @copy()
-        if lower? and upper?
-            newPos.x = _.clamp(lower.x, upper.x, @x)
-            newPos.y = _.clamp(lower.y, upper.y, @y)
-        newPos
-
-    square:         => (@x * @x) + (@y * @y)
-    distSquare: (o) => @sub(o).square()
-    dist:       (o) => Math.sqrt @distSquare(o)
     length:         => return Math.sqrt @square()
-
-    same:    (o) => @x == o?.x and @y == o?.y
-    notSame: (o) => @x != o?.x or  @y != o?.y
+    square:         => (@x * @x) + (@y * @y)
+    distSquare: (o) => @minus(o).square()
+    dist:       (o) => Math.sqrt @distSquare(o)
+    same:       (o) => @x == o?.x and @y == o?.y
+    notSame:    (o) => @x != o?.x or  @y != o?.y
 
     check: =>
         newPos = @copy()
-        newPos.x = 0  if isNaN(newPos.x)
-        newPos.y = 0  if isNaN(newPos.y)
+        newPos.x = 0 if isNaN(newPos.x)
+        newPos.y = 0 if isNaN(newPos.y)
         newPos
 
     _str: => "<x:%2.2f y:%2.2f>".fmt @x, @y
+
+    #_________________________________________________________ destructive
+    
+    scale: (val) =>
+        @x *= val
+        @y *= val
+        @
+
+    mul: (other) =>
+        @x *= other.x
+        @y *= other.y
+        @
+
+    add: (other) =>
+        @x += other.x
+        @y += other.y
+        @
+
+    sub: (other) =>
+        @x -= other.x
+        @y -= other.y
+        @
+
+    clamp: (lower, upper) =>
+        if lower? and upper?
+            @x = _.clamp(lower.x, upper.x, @x)
+            @y = _.clamp(lower.y, upper.y, @y)
+        @
 
 pos = (x,y) -> new Pos x,y

@@ -70,7 +70,7 @@ class Drag
         
         if @doMove
             newPos = @absPos(event)
-            newPos = @targetStartPos.add(newPos.sub(@cursorStartPos))
+            newPos = @targetStartPos.plus(newPos.minus(@cursorStartPos))
             newPos = newPos.clamp @minPos, @maxPos
             @target.getWidget().setPos newPos
             
@@ -84,7 +84,7 @@ class Drag
         @minPos = pos minX, minY
         @maxPos = pos maxX, maxY
         
-        cp = wp.clamp @minPos, @maxPos
+        cp = wp.clamped @minPos, @maxPos
 
         if wp.notSame cp
             

@@ -158,8 +158,8 @@ class Window extends Widget
         # log 'hover', e.id
         
         eventPos = Stage.absPos(event)
-        d1 = eventPos.sub(@absPos())
-        d2 = @absPos().add(pos(@getWidth(), @getHeight())).sub(eventPos)
+        d1 = eventPos.minus @absPos()
+        d2 = @absPos().plus(pos(@getWidth(), @getHeight())).minus eventPos
 
         md = 10
         action = 'move'
