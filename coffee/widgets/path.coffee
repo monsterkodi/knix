@@ -58,6 +58,11 @@ class Path extends Widget
     setStartDir:  (p) => @config.startDir = p; @setStart @config.start
     setEndHead:   (p) => @setEndDir p.minus(@config.end)
     setStartHead: (p) => @setStartDir p.minus(@config.start)
+    
+    swapStartHandle: (h) => 
+        @config.startHandle.elem.removeEventListener 'onpos', @setStart
+        @config.startHandle = h
+        @config.startHandle.elem.addEventListener 'onpos', @setStart
 
     setStart: =>
         p = _.arg()

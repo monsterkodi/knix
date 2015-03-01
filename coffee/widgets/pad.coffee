@@ -35,40 +35,69 @@ class Pad extends Widget
         if @config.vals?
             @config.vals = ( pos v.x, v.y for v in @config.vals )
             @config.numHandles = @config.vals.length
-        
-        @handles = []
-        for i in [0...@config.numHandles]
-            @handles.push new Handle
-                svg:   @svg.svg
-                class: 'pad_handle'
-                onPos: @onHandlePos
-                onUp:  @onHandleUp
-            
-        if @config.hasPaths
-            for i in [1...@config.numHandles]
-                p = new Path
-                    svg:         @svg.svg
-                    class:       'pad-path'
-                    startHandle: @handles[i-1]
-                    endHandle:   @handles[i]
-                p.path.back()   
-                Drag.create
-                    target:  p.path.node
-                    cursor:  'grab'
-                    doMove:  false
-                    onMove:  @pathDragMove
- 
-            
-        if not @config.vals?
+        else
             @config.vals = []
             for i in [0...@config.numHandles]
                 hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
                 @config.vals.push hp
+        
+        @handles = []
+        for i in [0...@config.numHandles]
+            @handles.push @createHandle()
+            
+        if @config.hasPaths
+            @paths = []
+            for i in [0...@config.numHandles-1]
+                @createPathAtIndex i
+             
+        # if not @config.vals?
+        #     @config.vals = []
+        #     for i in [0...@config.numHandles]
+        #         hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
+        #         @config.vals.push hp
                             
         @setSVGSize cfg.minWidth, cfg.minHeight                    
         @updateHandles()
         @
     
+    createPathAtIndex: (i) =>
+        p = new Path
+            svg:         @svg.svg
+            class:       'pad-path'
+            startHandle: @handles[i]
+            endHandle:   @handles[i+1]
+        p.path.node.addEventListener 'dblclick', @pathDoubleClick
+        p.path.back()   
+        Drag.create
+            target:  p.path.node
+            cursor:  'grab'
+            doMove:  false
+            onMove:  @pathDragMove
+        @paths.splice i, 0, p 
+    
+    createHandle: =>
+        new Handle
+            svg:   @svg.svg
+            class: 'pad_handle'
+            onPos: @onHandlePos
+            onUp:  @onHandleUp
+
+    splitPathAtIndex: (i) =>
+        log 'split', i, @config.vals
+        @config.vals.splice i+1, 0, @config.vals[i].mid(@config.vals[i+1])
+        h = @createHandle()
+        @handles.splice i+1, 0, h
+        @handles[i].circle.center 0, 0
+        @createPathAtIndex i
+        @paths[i+1].swapStartHandle @handles[i+1]
+        @updateHandles()
+    
+    pathDoubleClick: (event) =>
+        sh = event.target.getWidget().config.startHandle
+        eh = event.target.getWidget().config.endHandle
+        i = @handles.indexOf sh
+        @splitPathAtIndex i
+        
     pathDragMove: (drag) =>
         sh = drag.target.getWidget().config.startHandle
         sh.move drag.delta
