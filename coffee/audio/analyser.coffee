@@ -77,11 +77,9 @@ class Analyser extends Window
         height = @contentHeight()
         content = @getChild 'content'
         content.setHeight height
-        height = content.innerHeight() - 100
-        @canvas?.setHeight height
+        height = content.innerHeight() - 70
         width  = content.innerWidth() - 20
-        @canvas?.elem.width  = width
-        @canvas?.elem.height = height
+        @canvas?.resize width, height
         @dataArray = new Uint8Array 2*width
 
     @menu: =>
@@ -107,21 +105,18 @@ class Analyser extends Window
 
         ctx.lineWidth = 1
 
-        # ctx.fillStyle   = "rgb(200,0,0)"
         ctx.fillStyle   = StyleSwitch.colors.analyser
         ctx.fillRect    0, 0, cvw, cvh
         ctx.strokeStyle = 'rgb(0,0,0)'
         ctx.strokeRect  0, 0, cvw, cvh
 
         ctx.beginPath()
-        # ctx.strokeStyle = 'rgba(100,0,0,0.4)'
         ctx.strokeStyle = StyleSwitch.colors.analyser_trigger
         th = cvh*(0.5-@config.triggerY/2)
         ctx.moveTo  0,   th
         ctx.lineTo  cvw, th
         ctx.stroke()
 
-        # ctx.strokeStyle = 'rgb(255,200,0)'
         ctx.strokeStyle = StyleSwitch.colors.analyser_trace
         ctx.beginPath()
 

@@ -20,3 +20,9 @@ class Canvas extends Widget
         super cfg,
             elem: 'canvas'
             noMove: true
+
+    resize: (width, height) =>
+        
+        @setHeightNoEmit height
+        @elem.width  = width
+        @elem.height = height

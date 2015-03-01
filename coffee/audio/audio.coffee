@@ -30,9 +30,9 @@ class Audio
     @setValuesForParam: (paramValues, param) =>
         offset = paramValues.offset or 0
         range  = paramValues.range  or 1
-        t = @context.currentTime
-        param.cancelScheduledValues t
-        t += 0.01
+        param.cancelScheduledValues @context.currentTime
+        # param.setValueAtTime param.value, @context.currentTime
+        t = @context.currentTime + 0.04
         for i in [0...paramValues.values.length]
             value = offset + paramValues.values[i].value * range
             param.linearRampToValueAtTime value, t + paramValues.values[i].time
