@@ -25,6 +25,7 @@ class Audio
 
     @sendParamValuesFromConnector: (paramValues, connector) =>
         for connection in connector.connections
+            # log connection.config.target.getWindow()
             connection.config.target.getWindow().paramValuesAtConnector paramValues, connection.config.target
 
     @setValuesForParam: (paramValues, param) =>
@@ -110,3 +111,9 @@ class Audio
         analyser.smoothingTimeConstant = cfg.smoothingTime
         analyser.fftSize = cfg.fftSize
         [ analyser, cfg ]
+    
+    @destroy: (node) =>
+        node.disconnect()
+        node.stop?()
+        undefined
+        

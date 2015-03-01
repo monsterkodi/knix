@@ -27,6 +27,7 @@ class Range extends Window
             resize:       'horizontal'
 
         super cfg,
+            type:  'range'
             title: 'range'
             children: \
             [

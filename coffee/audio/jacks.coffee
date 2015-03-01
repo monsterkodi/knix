@@ -17,7 +17,6 @@ class Jacks extends Hbox
         cfg = _.def cfg,
             type:         'jacks'
 
-        # cfg.children = undefined
         children = []
 
         if not (cfg.hasInput == false)
@@ -36,8 +35,6 @@ class Jacks extends Hbox
             children.push
                 type:         'connector'
                 out:          'audio'
-                # onConnect:    (source, target) -> source.getWindow().audio.connect target.getWindow().audio
-                # onDisconnect: (source, target) -> source.getWindow().audio.disconnect target.getWindow().audio
 
         super cfg, children:children
 
@@ -46,12 +43,9 @@ class Jacks extends Hbox
         @
         
     onConnect: (event) =>
-        # log 'onConnect', event.detail
-        # log 'onConnect', event.detail.source.getWindow().audio
-        # log 'onConnect', event.detail.target.getWindow().audio
         event.detail.source.getWindow().audio.connect event.detail.target.getWindow().audio
         
     onDisconnect: (event) =>
-        # log 'onDisconnect', event.detail
+        log 'onDisconnect', event.detail
         event.detail.source.getWindow().audio.disconnect event.detail.target.getWindow().audio
         

@@ -8,7 +8,7 @@
 
 ###
 
-class Delay extends Window
+class Delay extends AudioWindow
     
     init: (cfg, defs) =>        
     

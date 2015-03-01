@@ -8,7 +8,7 @@
 
 ###
 
-class Oscillator extends Window
+class Oscillator extends AudioWindow
 
     @shapes = ['sine', 'triangle', 'sawtooth', 'square']
 
@@ -56,6 +56,10 @@ class Oscillator extends Window
         @audio.type = @config.shape
 
     paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.frequency
+
+    # close: =>
+    #     @audio = Audio.destroy @audio
+    #     super
 
     @menu: =>
 

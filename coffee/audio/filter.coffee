@@ -8,7 +8,7 @@
 
 ###
 
-class Filter extends Window
+class Filter extends AudioWindow
 
     @filters = ['bandpass', 'lowpass', 'highpass', 'notch', 'allpass']
 
@@ -71,7 +71,7 @@ class Filter extends Window
     setFilter: (v) =>
         @config.filter = if _.isString v then v else _.value v 
         @audio.type    = @config.filter
-
+        
     @menu: =>
 
         knix.create

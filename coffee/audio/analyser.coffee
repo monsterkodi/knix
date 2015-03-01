@@ -8,7 +8,7 @@
 
 ###
 
-class Analyser extends Window
+class Analyser extends AudioWindow
 
     init: (cfg, defs) =>        
     

@@ -8,7 +8,7 @@
 
 ###
 
-class Gain extends Window
+class Gain extends AudioWindow
 
     init: (cfg, defs) =>        
     
@@ -41,7 +41,7 @@ class Gain extends Window
     setValue: (v) => @setGain v
 
     paramValuesAtConnector: (paramValues, connector) => Audio.setValuesForParam paramValues, @audio.gain
-
+    
     @menu: =>
 
         knix.create

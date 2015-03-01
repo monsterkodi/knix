@@ -97,8 +97,10 @@ class knix
 
     @allWindows:     => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections: => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
-
-    @closeWindows: => @allWindows().each (w) -> w.close()
+    @closeConnections: => @allConnections().each (c) -> c.close()
+    @closeWindows: => 
+        @closeConnections()
+        @allWindows().each (w) -> w.close()
     @shadeWindows: => @allWindows().each (w) -> w.shade()
 
     @restore: (state) =>
