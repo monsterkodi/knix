@@ -31,7 +31,7 @@ class Spinner extends Spin
         @
 
     onWindowSize: => 
-        log 'onWindowSize'
+        # log 'onWindowSize'
         @setValue @config.value
         
     size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()
@@ -60,10 +60,8 @@ class Spinner extends Spin
         v = _.arg a
         i = @config.values.indexOf v
         c = @getChild 'spin-content'
-        log c.getWidth()
         c.clear()
         w = c.getWidth()/@steps()
-        log i, w
         c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, i*w)
         @config.value = @config.values[i]
         c.elem.insert String @config.value

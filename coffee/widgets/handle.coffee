@@ -39,6 +39,7 @@ class Handle extends Widget
     relPos: => pos @circle.cx(), @circle.cy()
     absPos: => pos @circle.cx(), @circle.cy()
     
+    move: (p) => @setPos @absPos().plus p
     setPos: =>
         p = _.arg()
         o = @relPos()

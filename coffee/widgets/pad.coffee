@@ -56,9 +56,7 @@ class Pad extends Widget
                     target:  p.path.node
                     cursor:  'grab'
                     doMove:  false
-                    onStart: @pathDragStart
                     onMove:  @pathDragMove
-                    onStop:  @pathDragStop
  
             
         if not @config.vals?
@@ -71,22 +69,13 @@ class Pad extends Widget
         @updateHandles()
         @
     
-    pathDragStart: (drag, event) =>
-        log 'start'
-        # log drag.target.getWidget().config.startHandle
-        # log drag.target.getWidget().config.endHandle
-
-    pathDragMove: (drag, event) =>
-        log drag.target.getWidget().config.startHandle
-        log drag.target.getWidget().config.endHandle
-        log event.movementX, event.movementY
-        log event
-        
-    pathDragStop: (drag, event) =>
-        log 'end'
-        # log drag.target.getWidget().config.startHandle
-        # log drag.target.getWidget().config.endHandle
-    
+    pathDragMove: (drag) =>
+        sh = drag.target.getWidget().config.startHandle
+        sh.move drag.delta
+        eh = drag.target.getWidget().config.endHandle
+        eh.move drag.delta
+        @constrainHandles()
+            
     valAtRel: (rel) =>
         if @config.numHandles < 2 or rel <= 0 then return @config.vals[0].y
         if rel >= 1 then return @config.vals[@config.vals.length-1].y
@@ -147,7 +136,7 @@ class Pad extends Widget
         i = @handles.indexOf event.target.getWidget()
         x =       (p.x - @o) / w
         y = 1.0 - (p.y - @o) / h
-        log 'onHandlePos'
+        
         @config.vals[i].x = x
         @config.vals[i].y = y
     

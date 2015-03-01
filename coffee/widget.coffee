@@ -328,6 +328,7 @@ class Widget
     # ____________________________________________________________________________ geometry
 
     setPos: (p) => @moveTo p.x, p.y
+    move:   (p) => @moveBy p.x, p.y
 
     moveTo: (x, y) =>
         @elem.style.left = "%dpx".fmt(x) if x?

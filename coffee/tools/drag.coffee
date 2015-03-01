@@ -37,8 +37,8 @@ class Drag
             return
         if @minPos? and @maxPos?
             [@minPos, @maxPos] = [@minPos.min(@maxPos), @minPos.max(@maxPos)]
-        @cursorStartPos = null
-        @targetStartPos = null
+        @lastPos = null
+        @startPos = null
         @dragging  = false
         @listening = false
         @handle = document.getElementById(@handle) if typeof (@handle) is "string"
@@ -55,10 +55,11 @@ class Drag
         # log 'start', @target.id
         @dragging = true
         @onStart @, event if @onStart?
-        @cursorStartPos = @absPos(event)
+        @lastPos = @absPos event
+        
         if @doMove
-            @targetStartPos = @target.relPos()
-            @targetStartPos = @targetStartPos.check()
+            @startPos = @target.relPos()
+            @startPos = @startPos.check()
 
         document.addEventListener 'mousemove', @dragMove
         document.addEventListener 'mouseup',   @dragUp
@@ -66,16 +67,18 @@ class Drag
     dragMove: (event) =>
 
         return if not @dragging
-        # log 'move', @target.id, @onMove?
+
+        @pos   = @absPos event
+        @delta = @lastPos.to @pos
         
         if @doMove
-            newPos = @absPos(event)
-            newPos = @targetStartPos.plus(newPos.minus(@cursorStartPos))
-            newPos = newPos.clamp @minPos, @maxPos
+            newPos = @startPos.add(@delta).clamp @minPos, @maxPos
             @target.getWidget().setPos newPos
             
         if @onMove?
             @onMove this, event
+
+        @lastPos = @pos
 
     constrain: (minX, minY, maxX, maxY) =>
         
@@ -102,8 +105,8 @@ class Drag
         return if not @dragging
         document.removeEventListener 'mousemove', @dragMove
         document.removeEventListener 'mouseup',   @dragUp
-        @cursorStartPos = null
-        @targetStartPos = null
+        @lastPos = null
+        @startPos = null
         @onStop this, event if @onStop? and event?
         @dragging = false
         return

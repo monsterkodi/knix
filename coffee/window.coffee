@@ -120,7 +120,7 @@ class Window extends Widget
         @
 
     sizeWindow: =>
-        log 'sizeWindow'
+        # log 'sizeWindow'
         if @config.content == 'scroll'
             content = $(@content).widget
             content.setWidth  @contentWidth()
