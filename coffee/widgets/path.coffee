@@ -48,6 +48,10 @@ class Path extends Widget
         @
 
     close: =>
+        if @config.startHandle?
+            @config.startHandle.elem.removeEventListener 'onpos', @setStart
+        if @config.endHandle?
+            @config.endHandle.elem.removeEventListener 'onpos', @setEnd
         @path?.remove()
         @path = null
         super()

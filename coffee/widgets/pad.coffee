@@ -50,12 +50,6 @@ class Pad extends Widget
             for i in [0...@config.numHandles-1]
                 @createPathAtIndex i
              
-        # if not @config.vals?
-        #     @config.vals = []
-        #     for i in [0...@config.numHandles]
-        #         hp = pos i.toFixed(3)/(@config.numHandles-1), i.toFixed(3)/(@config.numHandles-1)
-        #         @config.vals.push hp
-                            
         @setSVGSize cfg.minWidth, cfg.minHeight                    
         @updateHandles()
         @
@@ -76,14 +70,15 @@ class Pad extends Widget
         @paths.splice i, 0, p 
     
     createHandle: =>
-        new Handle
+        h = new Handle
             svg:   @svg.svg
             class: 'pad_handle'
             onPos: @onHandlePos
             onUp:  @onHandleUp
+        h.elem.addEventListener 'dblclick', @handleDoubleClick
+        h
 
     splitPathAtIndex: (i) =>
-        log 'split', i, @config.vals
         @config.vals.splice i+1, 0, @config.vals[i].mid(@config.vals[i+1])
         h = @createHandle()
         @handles.splice i+1, 0, h
@@ -92,11 +87,25 @@ class Pad extends Widget
         @paths[i+1].swapStartHandle @handles[i+1]
         @updateHandles()
     
+    removeHandleAtIndex: (i) =>
+        log 'remove', i, @config.vals
+        @paths[i].swapStartHandle @handles[i-1]
+        @config.vals.splice i, 1
+        @paths.splice(i-1, 1).close()
+        @handles.splice(i, 1).close()
+        @updateHandles()
+    
     pathDoubleClick: (event) =>
         sh = event.target.getWidget().config.startHandle
         eh = event.target.getWidget().config.endHandle
         i = @handles.indexOf sh
         @splitPathAtIndex i
+
+    handleDoubleClick: (event) =>
+        h = event.target.getWidget()
+        i = @handles.indexOf h
+        if i > 0 and i < @handles.length-1
+            @removeHandleAtIndex i
         
     pathDragMove: (drag) =>
         sh = drag.target.getWidget().config.startHandle
