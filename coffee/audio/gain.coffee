@@ -35,6 +35,7 @@ class Gain extends Window
             
         @connect 'gain:onValue', @setGain
         @setGain @config.gain
+        @
 
     setGain:  (v) => @config.gain = _.value v; @audio.gain.value = @config.gain
     setValue: (v) => @setGain v

@@ -60,6 +60,7 @@ class Pad extends Widget
                             
         @setSVGSize cfg.minWidth, cfg.minHeight                    
         @updateHandles()
+        @
     
     valAtRel: (rel) =>
         if @config.numHandles < 2 then return @config.vals[0].y
@@ -73,6 +74,7 @@ class Pad extends Widget
                 break
         
         [sp,ep] = [@config.vals[si],@config.vals[ei]]
+        log si, ei, sp, ep
         dp = sp.to ep
         dl = dp.length()
         if dl == 0 or dp.x == 0

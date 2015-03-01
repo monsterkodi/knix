@@ -45,6 +45,7 @@ class Ramp extends Window
             ]
     
         @connect 'ramp_duration:onValue', @setDuration
+        @
 
     setDuration: (v) => @config.duration = _.value v
 

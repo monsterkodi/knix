@@ -10,7 +10,7 @@
 
 class Widget
 
-    constructor: (cfg, defs) -> @init _.def cfg, defs
+    constructor: (cfg, defs) -> @init cfg, defs
 
     init: (cfg, defs) =>
 

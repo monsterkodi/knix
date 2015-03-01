@@ -65,6 +65,7 @@ class Spin extends Value
 
         @input.value = @config.value
         @setValue @config.value
+        @
 
     onInputChange: =>
         log 'input change'

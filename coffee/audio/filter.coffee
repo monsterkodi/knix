@@ -15,6 +15,8 @@ class Filter extends Window
     init: (cfg, defs) =>        
     
         cfg = _.def cfg, defs
+        cfg = _.def cfg,
+            filter: Filter.filters[0]
 
         [ @audio, cfg ] = Audio.filter cfg
 
@@ -29,7 +31,7 @@ class Filter extends Window
             ,
                 type:       'spinner'
                 id:         'filter'
-                value:      Filter.filters.indexOf(cfg.filter)
+                value:      cfg.filter
                 values:     Filter.filters
             ,
                 type:       'sliderspin'
@@ -57,13 +59,18 @@ class Filter extends Window
         @connect 'detune:onValue', @setDetune
         @connect 'Q:onValue', @setQ
 
-        @setFilter Filter.filters.indexOf cfg.filter
+        @setQ      @config.Q
+        @setFreq   @config.freq
+        @setDetune @config.detune
+        @setFilter @config.filter
+        @
 
-    setDetune: (v) => @audio.detune.value       = _.value v
-    setQ:      (v) => @audio.Q.value            = _.value v
-    setFreq:   (v) => @audio.frequency.value    = _.value v
-    setGain:   (v) => @audio.gain.value         = _.value v
-    setFilter: (v) => @audio.type = Filter.filters[_.value v]
+    setDetune: (v) => @config.detune = _.value v; @audio.detune.value    = @config.detune
+    setQ:      (v) => @config.Q      = _.value v; @audio.Q.value         = @config.Q
+    setFreq:   (v) => @config.freq   = _.value v; @audio.frequency.value = @config.freq
+    setFilter: (v) =>
+        @config.filter = if _.isString v then v else _.value v 
+        @audio.type    = @config.filter
 
     @menu: =>
 

@@ -28,6 +28,7 @@ class Spinner extends Spin
             onStart:    @sliderFunc
 
         @input = null
+        @
 
     onWindowSize: => @setValue @config.value
         

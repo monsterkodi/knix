@@ -65,7 +65,7 @@ class Envelope extends Window
 
         @pad = @getChild 'envelope_pad'
         @sizeWindow()
-        log 'envelop constructd'
+        @
             
     paramValuesAtConnector: (paramValues, connector) =>
         if paramValues.duration? 

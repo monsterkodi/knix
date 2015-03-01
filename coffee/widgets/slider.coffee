@@ -38,6 +38,7 @@ class Slider extends Value
             doMove:     false
             onMove:     sliderFunc
             onStart:    sliderFunc
+        @
 
     onWindowSize: => @setValue @config.value
 

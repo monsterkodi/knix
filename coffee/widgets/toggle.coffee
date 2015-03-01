@@ -22,7 +22,8 @@ class Toggle extends Button
 
         @elem.on 'onState', @config.onState if @config.onState?
         @setState @config.state
-
+        @
+        
     setState: (state) =>
         e = @getChild('octicon').elem
         e.removeClassName @config.icons[@getIndex()]

@@ -76,6 +76,7 @@ class Range extends Window
         @connect 'range_in:onValue', @setValue
         @connect 'range_low:onValue', @setLow
         @connect 'range_high:onValue', @setHigh
+        @
     
     paramValuesAtConnector: (paramValues, connector) =>
         if connector.config.slot == 'range_in:setValue'

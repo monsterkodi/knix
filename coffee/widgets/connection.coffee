@@ -123,7 +123,7 @@ class Connection
 
     disconnect: =>
         if @connection
-            log "disconnect", @connection.out.elem.id, @connection.in.elem.id #@path.path.id()
+            # log "disconnect", @connection.out.elem.id, @connection.in.elem.id #@path.path.id()
 
             @connection.out.emit 'onDisconnect', {source:@connection.out, target:@connection.in}
             # @connection.in.emit  'onDisconnect', {source:@connection.in, target:@connection.out}

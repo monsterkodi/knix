@@ -20,7 +20,8 @@ class Analyser extends Window
             triggerY:   0.0
 
         [ @audio, cfg ] = Audio.analyser cfg
-        @dataArray = new Uint8Array(cfg.fftSize);
+        
+        @dataArray = new Uint8Array cfg.fftSize
 
         super cfg,
             type:  'analyser'
@@ -56,6 +57,7 @@ class Analyser extends Window
 
         knix.animate @
         @sizeWindow()
+        @
 
     close: =>
         knix.deanimate @

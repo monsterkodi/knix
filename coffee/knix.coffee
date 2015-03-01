@@ -38,36 +38,35 @@ class knix
         Console.menu()
 
         btn =
-            type:   'button'
             parent: 'tool'
             class:  'tool-button'
 
         About.menu()
 
-        @get btn,
+        new Button btn,
             icon:   'octicon-device-desktop'
             onClick: -> Stage.toggleFullscreen()
 
-        @get btn,
+        new Button btn,
             tooltip: 'style'
             icon:   'octicon-color-mode'
             onClick: -> StyleSwitch.toggle()
 
-        @get btn,
+        new Button btn,
             tooltip: 'save'
             icon:    'octicon-file-binary'
             onClick:  Files.saveWindows
 
-        @get btn,
+        new Button btn,
             tooltip: 'load'
             icon:    'octicon-file-directory'
             onClick:  Files.loadMenu
 
-        @get btn,
+        new Button btn,
             icon:   'octicon-dash'
             onClick: -> knix.shadeWindows()
 
-        @get btn,
+        new Button btn,
             icon:   'octicon-x'
             onClick: -> knix.closeWindows()
 
@@ -76,10 +75,8 @@ class knix
     @create: (cfg, defs) =>
 
         cfg = _.def cfg, defs
-        # log cfg.type
-        if cfg.type? and @[cfg.type]? and typeof @[cfg.type] == 'function'
-            @[cfg.type] cfg
-        else if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'
+        # log cfg
+        if cfg.type? and window[_.capitalize(cfg.type)]? and typeof window[_.capitalize(cfg.type)] == 'function'
             new window[_.capitalize(cfg.type)] cfg
         else
             new Widget cfg, { type: 'widget' }
@@ -163,39 +160,9 @@ class knix
 
     @initSVG: =>
 
-        svg = @get
+        svg = @create
             type:   'svg'
             id:     'stage_svg'
             parent: 'stage_content'
 
         @svg = svg.svg
-
-    # ________________________________________________________________________________ canvas
-
-    @canvas: (cfg) =>
-        cvs = new Widget cfg,
-            elem: 'canvas'
-            noMove: true
-        cvs
-
-    # ________________________________________________________________________________ icon
-
-    @icon: (cfg) =>
-        new Widget cfg,
-            child:
-                elem:   'span'
-                type:   'octicon'
-                class:   cfg.icon
-
-    # ________________________________________________________________________________ input
-
-    @input: (cfg) =>
-        inp = new Widget cfg,
-            elem: 'input'
-            type: 'input'
-
-        inp.elem.setAttribute 'size', 6
-        inp.elem.setAttribute 'type', 'text'
-        inp.elem.setAttribute 'inputmode', 'numeric'
-        inp.elem.getValue = -> parseFloat(@value)
-        inp

@@ -45,6 +45,7 @@ class Path extends Widget
         @setStart @config.start
         @setEnd   @config.end
         @initEvents()
+        @
 
     close: =>
         @path?.remove()

@@ -21,6 +21,7 @@ class Hbox extends Widget
                 borderSpacing: '%dpx 0px'.fmt spacing
                 marginRight:   '-%dpx'.fmt spacing
                 marginLeft:    '-%dpx'.fmt spacing
+        @
 
     insertChild: (cfg) =>
 

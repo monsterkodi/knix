@@ -11,18 +11,18 @@
 class Files
 
     @saveWindows: =>
+        
         windows = knix.allWindows()
         if _.isEmpty windows then return
-        log 'saveWindows'
-        dump = ''
-        dump += JSON.stringify { 'windows': (w.config for w in windows), 'connections': knix.allConnections() }, null, '    '
-        dump = dump.slice(0,-1)
-        dump += "    }"
-        log dump
+
+        json = JSON.stringify { 'windows': (w.config for w in windows), 'connections': knix.allConnections() }, null, '    '
+        
+        log json
+        
         files = {} 
         if localStorage.getItem('files')?
             files = JSON.parse localStorage.getItem('files')
-        files[uuid.v4()] = dump
+        files[uuid.v4()] = json
         localStorage.setItem 'files', JSON.stringify(files)
 
     @loadMenu: (event) =>
@@ -66,6 +66,6 @@ class Files
         data = JSON.parse(localStorage.getItem('files'))[filename]
         knix.closeWindows()
         state = JSON.parse data
-        # log state
+        log state
         knix.restore state
         

@@ -49,6 +49,7 @@ class Console extends Window
                 noMove: true
 
         @elem.addEventListener 'contextmenu', @onContextMenu
+        @
 
     onContextMenu: (event) =>
 

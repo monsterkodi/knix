@@ -30,13 +30,14 @@ class Delay extends Window
                 value:      cfg.delay
                 minValue:   cfg.minDelay
                 maxValue:   cfg.maxDelay
-                spinStep:   0.00001
+                spinStep:   0.0001
                 spinFormat: "%3.5f"
             ]
             
         @connect 'delay:onValue', @setDelay
+        @
 
-    setDelay: (v) => @audio.delayTime.value = _.value v
+    setDelay: (v) => @config.delay = _.value v; @audio.delayTime.value = @config.delay
 
     @menu: =>
 

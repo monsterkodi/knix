@@ -29,6 +29,7 @@ class Handle extends Widget
         @drag = new Drag
             target: @elem
             onStop: @config.onUp
+        @
     
     initEvents: =>
         @elem.addEventListener 'onpos',   @config.onPos if @config.onPos?

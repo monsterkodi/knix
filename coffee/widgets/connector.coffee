@@ -37,6 +37,7 @@ class Connector extends Widget
             onStop:  @dragStop
 
         @connections = []
+        @
 
     close: =>
         @connections = []
