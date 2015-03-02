@@ -67,18 +67,24 @@ class Spin extends Value
         @setValue @config.value
         @
 
-    onInputChange: =>
-        log 'input change'
-        @setValue @input.value
+    onInputChange: => @setValue @input.value
 
     onKey: (event, e) =>
-        # log 'event', event.key
+        if event.key in ['Esc']
+            @setValue @config.value
+            return
         if event.key in ['Up', 'Down']
+            @onInputChange()
             @incr event.key == 'Up' and '+' or '-'
             event.stop()
             return 
-        if event.key in ['Return', 'Enter', 'Tab']
-            @setValue parseFloat @input.value
+        if event.key in ['Left', 'Right', ' ', 'Tab']
+            if event.key == ' '
+                event.stop()
+            @onInputChange()
+            return
+        if event.key in ['Backspace']
+            setTimeout @onInputChange, 1
             return
         if event.key not in '0123456789-.'
             if event.key.length == 1
@@ -90,8 +96,30 @@ class Spin extends Value
                 return
 
     setValue: (a) =>
-        super a
-        @input.value = @strip0 @format(@config.value) if @input?
+        super _.value a
+        [start, end] = [@input.selectionStart, @input.selectionEnd]
+        @input.value = @format(@config.value) if @input?
+        [@input.selectionStart, @input.selectionEnd] = [start, end]
+
+    incr: (d=1) =>
+        valueLength = @input.value.length
+        [start, end] = [@input.selectionStart, @input.selectionEnd]
+        [trats, dne] = [@input.selectionStart-valueLength, @input.selectionEnd-valueLength]
+        
+        dotindex = @input.value.indexOf '.'
+        if dotindex >= 0 and start >= dotindex
+            tempStep = 1.0 / (Math.pow 10, start - dotindex)
+        else 
+            if dotindex >= 0 
+                valueLength = dotindex
+            tempStep = Math.pow 10, valueLength - start - 1
+
+        [saveStep, @config.valueStep] = [@config.valueStep, tempStep]
+        super 
+        @config.valueStep = saveStep
+        
+        valueLength = @input.value.length
+        [@input.selectionStart, @input.selectionEnd] = [valueLength+trats, valueLength+dne]
 
     startIncr: => @incr(); @timer = setInterval(@incr, Math.max(80, 2000/@steps()))
     startDecr: => @decr(); @timer = setInterval(@decr, Math.max(80, 2000/@steps()))
