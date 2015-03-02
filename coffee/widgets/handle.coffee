@@ -33,6 +33,11 @@ class Handle extends Widget
     
     initEvents: =>
         @elem.addEventListener 'onpos',   @config.onPos if @config.onPos?
+
+    close: =>
+        @circle?.remove()
+        @circle = undefined
+        super()
     
     constrain: (minX, minY, maxX, maxY) => @drag.constrain minX, minY, maxX, maxY
     

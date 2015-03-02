@@ -51,7 +51,7 @@ class Path extends Widget
         if @config.startHandle? then @config.startHandle.elem.removeEventListener 'onpos', @setStart
         if @config.endHandle?   then @config.endHandle.elem.removeEventListener 'onpos', @setEnd
         @path?.remove()
-        @path = null
+        @path = undefined
         super()
 
     setVisible:   (v) => if v then @path.show() else @path.hide()

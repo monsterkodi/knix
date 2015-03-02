@@ -82,18 +82,20 @@ class Pad extends Widget
         @config.vals.splice i+1, 0, @config.vals[i].mid(@config.vals[i+1])
         h = @createHandle()
         @handles.splice i+1, 0, h
-        @handles[i].circle.center 0, 0
+        @handles[i].circle.center -1, -1
         @createPathAtIndex i
         @paths[i+1].swapStartHandle @handles[i+1]
         @updateHandles()
+        @constrainHandles()
     
     removeHandleAtIndex: (i) =>
-        log 'remove', i, @config.vals
         @paths[i].swapStartHandle @handles[i-1]
+        @handles[i-1].circle.center -1, -1
         @config.vals.splice i, 1
-        @paths.splice(i-1, 1).close()
-        @handles.splice(i, 1).close()
+        @paths.splice(i-1, 1)[0].close()
+        @handles.splice(i, 1)[0].close()
         @updateHandles()
+        @constrainHandles()
     
     pathDoubleClick: (event) =>
         sh = event.target.getWidget().config.startHandle

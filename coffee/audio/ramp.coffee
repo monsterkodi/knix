@@ -19,7 +19,7 @@ class Ramp extends Window
             minDuration  : 0.01
             maxDuration  : 10.0
             durationStep : 0.01
-            valueFormat  : "%0.3f"
+            valueFormat  : "%1.3f"
             resize       : 'horizontal'
 
         super cfg,

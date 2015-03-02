@@ -23,7 +23,7 @@ class Range extends Window
             minHigh     : -10000
             maxHigh     : 10000
             highStep    : 0.1
-            valueFormat : "%0.3f"
+            valueFormat : "%1.3f"
             resize      : 'horizontal'
 
         super cfg,
