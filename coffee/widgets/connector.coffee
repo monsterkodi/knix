@@ -68,9 +68,9 @@ class Connector extends Widget
         @handle.elem.style.pointerEvents = 'none'
         elem = document.elementFromPoint p.x, p.y
         @handle.elem.style.pointerEvents = 'auto'
-        if elem?.widget?
-            if elem.widget.constructor == Connector and @canConnectTo(elem.widget)
-                return elem.widget
+        if elem.getWidget()
+            if elem.getWidget().constructor == Connector and @canConnectTo(elem.getWidget())
+                return elem.getWidget()
         undefined
 
     onOver: (event) =>

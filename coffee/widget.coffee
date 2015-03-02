@@ -90,6 +90,7 @@ class Widget
         @initSlots()
         @initConnections()
         @initEvents()
+        Keys.registerWidget @
         @
 
     onTooltip: => @config.tooltip
@@ -291,7 +292,9 @@ class Widget
         return @getWidget().getParent() if @getWidget?()?.getParent?
         return undefined
         
-    getAncestors: => [@getParent(), @getParent()?.getAncestors()].flatten()
+    getAncestors: => _.filter [@getParent(), @getParent()?.getAncestors()].flatten()
+    upWidgets:    => _.filter [@, @getAncestors()].flatten()
+    upWidgetWithConfigValue: (key) => _.find @upWidgets(), (w) -> w?.config?[key]? 
     matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?
         
     getWindow: => # returns this or first ancestor element with class 'window'
@@ -307,6 +310,7 @@ class Widget
 
     close: =>
         # log 'close', @elem.id
+        Keys.unregisterWidget @
         @emit 'close'
         # @elem.purge()
         @elem.remove()

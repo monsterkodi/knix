@@ -26,8 +26,9 @@ class Spin extends Value
                     children : \
                     [
                         id    : 'decr'
-                        elem  : 'td'
                         type  : 'spin-td'
+                        elem  : 'td'
+                        keys  : []
                         child :
                             type  : 'icon'
                             icon  : 'octicon-triangle-left'
@@ -39,8 +40,9 @@ class Spin extends Value
                             class : 'spin-input'
                     ,
                         id    : 'incr'
-                        elem  : 'td'
                         type  : 'spin-td'
+                        elem  : 'td'
+                        keys  : []
                         child :
                             type  : 'icon'
                             icon  : 'octicon-triangle-right'
@@ -83,9 +85,9 @@ class Spin extends Value
                 event.stop()
             @onInputChange()
             return
-        if event.key in ['Backspace']
-            setTimeout @onInputChange, 1
-            return
+        # if event.key in ['Backspace']
+        #     setTimeout @onInputChange, 1
+        #     return
         if event.key not in '0123456789-.'
             if event.key.length == 1
                 event.stop()

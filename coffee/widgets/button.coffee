@@ -13,6 +13,9 @@ class Button extends Widget
     init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
+        
+        cfg = _.def cfg,
+            keys: []
 
         if cfg.icon?
             if cfg.text?

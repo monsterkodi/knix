@@ -22,6 +22,7 @@ class knix
 
         s = 'welcome to'; log s, 'knix', 'version:', @version
 
+        Keys.init()
         StyleSwitch.init()
         Stage.initContextMenu()
         @initSVG()
@@ -63,6 +64,11 @@ class knix
             tooltip : 'style'
             icon    : 'octicon-color-mode'
             onClick : -> StyleSwitch.toggle()
+
+        new Button btn,
+            tooltip : 'set key'
+            icon    : 'fa-keyboard-o'
+            onClick : -> Keys.interactiveKey()
 
         new Button btn,
             tooltip : 'about'
