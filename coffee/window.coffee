@@ -157,7 +157,7 @@ class Window extends Widget
         
         # log 'hover', e.id
         
-        eventPos = Stage.absPos(event)
+        eventPos = Stage.absPos event
         d1 = eventPos.minus @absPos()
         d2 = @absPos().plus(pos(@getWidth(), @getHeight())).minus eventPos
 
@@ -199,7 +199,7 @@ class Window extends Widget
         else
             @sizeMoveDrag = Drag.create
                 target  : @elem
-                minPos  : pos(undefined,0)
+                minPos  : pos undefined, 0
                 onMove  : @emitMove
                 onStart : StyleSwitch.togglePathFilter
                 onStop  : StyleSwitch.togglePathFilter
@@ -223,7 +223,7 @@ class Window extends Widget
         if drag.border in ['left', 'topleft', 'top']
             wdt = wpos.x - spos.x + @getWidth()
             hgt = wpos.y - spos.y + @getHeight()
-            br  = wpos.add(pos(@getWidth(), @getHeight()))
+            br  = wpos.plus(pos(@getWidth(), @getHeight()))
         else
             wdt = spos.x - wpos.x
             hgt = spos.y - wpos.y
