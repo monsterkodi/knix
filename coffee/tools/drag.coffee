@@ -15,16 +15,16 @@ class Drag
     constructor: (cfg) ->
         
         _.extend @, _.def cfg,
-                target:  null
-                handle:  null
-                minPos:  null
-                maxPos:  null
-                cursor: "move"
-                onStart: null
-                onMove:  null
-                onStop:  null
-                doMove:  true
-                active:  true
+                target  : null
+                handle  : null
+                minPos  : null
+                maxPos  : null
+                cursor  : "move"
+                onStart : null
+                onMove  : null
+                onStop  : null
+                doMove  : true
+                active  : true
 
         if typeof @target is "string"
             t = document.getElementById @target
@@ -37,12 +37,12 @@ class Drag
             return
         if @minPos? and @maxPos?
             [@minPos, @maxPos] = [@minPos.min(@maxPos), @minPos.max(@maxPos)]
-        @lastPos = null
-        @startPos = null
+        @lastPos   = null
+        @startPos  = null
         @dragging  = false
         @listening = false
-        @handle = document.getElementById(@handle) if typeof (@handle) is "string"
-        @handle = @target unless @handle?
+        @handle    = document.getElementById(@handle) if typeof (@handle) is "string"
+        @handle    = @target unless @handle?
         @handle.style.cursor = @cursor
         @activate() if @active
         return
@@ -94,11 +94,7 @@ class Drag
             if @doMove
                 @target.getWidget().setPos cp
                 
-            # if @onMove?
-            #     @onMove this, {clientX: cp.x, clientY: cp.y}
-
-    dragUp: (event) =>
-        @dragStop event
+    dragUp: (event) => @dragStop event
 
     dragStop: (event) =>
         # log 'stop', @target.id

@@ -18,8 +18,8 @@ class Canvas extends Widget
         cfg.height = undefined
         
         super cfg,
-            elem: 'canvas'
-            noMove: true
+            elem   : 'canvas'
+            noMove : true
 
     resize: (width, height) =>
         

@@ -15,11 +15,11 @@ class Value extends Widget
         cfg = _.def cfg, def
         
         super cfg,
-            value:      0
-            minValue:   -Number.MAX_VALUE/2
-            maxValue:   +Number.MAX_VALUE/2
-            noMove:     true
-            tooltip:    true
+            value    : 0
+            minValue : -Number.MAX_VALUE/2
+            maxValue : +Number.MAX_VALUE/2
+            noMove   : true
+            tooltip  : true
 
     onTooltip: => @elem.id
 

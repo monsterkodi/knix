@@ -16,48 +16,48 @@ class Envelope extends Window
         cfg = _.def cfg, defs
 
         cfg = _.def cfg,
-            type:         'envelope'
-            valueFormat:  "%0.3f"
-            numHandles:   10
-            # vals:        [pos(0,0), pos(0.25,0.5), pos(0.5,1), pos(0.75,0.5), pos(1,0)]
+            type        : 'envelope'
+            valueFormat : "%0.3f"
+            numHandles  : 10
+            # vals      : [pos(0,0), pos(0.25,0.5), pos(0.5,1), pos(0.75,0.5), pos(1,0)]
 
         super cfg,
-            title: 'envelope'
-            children: \
+            title    : 'envelope'
+            children : \
             [
-                type:       'pad'
-                id:         'envelope_pad'
-                numHandles:  cfg.numHandles
-                vals:        cfg.vals
-                minHeight:   50
-                minWidth:    150
+                type       : 'pad'
+                id         : 'envelope_pad'
+                numHandles : cfg.numHandles
+                vals       : cfg.vals
+                minHeight  : 50
+                minWidth   : 150
             ,
-                type:       'hbox'
-                children:   \
+                type       : 'hbox'
+                children   : \
                 [
-                    type:       'connector'
-                    slot:       'envelope_in:setValue'
+                    type      : 'connector'
+                    slot      : 'envelope_in:setValue'
                 ,
-                    type:       'spin'
-                    id:         'envelope_in'
-                    valueStep:  0.001
-                    minWidth:   100
-                    maxWidth:   10000
-                    format:     cfg.valueFormat
-                    style:
-                        width:  '50%'
+                    type      : 'spin'
+                    id        : 'envelope_in'
+                    valueStep : 0.001
+                    minWidth  : 100
+                    maxWidth  : 10000
+                    format    : cfg.valueFormat
+                    style     :
+                        width : '50%'
                 ,
-                    type:       'spin'
-                    id:         'envelope'
-                    valueStep:  0.00001
-                    minWidth:   100
-                    maxWidth:   10000
-                    format:     cfg.valueFormat
-                    style:
-                        width:  '50%'
+                    type      : 'spin'
+                    id        : 'envelope'
+                    valueStep : 0.00001
+                    minWidth  : 100
+                    maxWidth  : 10000
+                    format    : cfg.valueFormat
+                    style     :
+                        width : '50%'
                 ,
-                    type:       'connector'
-                    signal:     'envelope:onValue'
+                    type      : 'connector'
+                    signal    : 'envelope:onValue'
                 ]
             ]
 
@@ -98,7 +98,7 @@ class Envelope extends Window
     @menu: =>
 
         @menuButton
-            text:    'envelope'
-            icon:    'octicon-pulse'
-            action:  -> new Envelope
+            text   : 'envelope'
+            icon   : 'octicon-pulse'
+            action : -> new Envelope
                             center: true

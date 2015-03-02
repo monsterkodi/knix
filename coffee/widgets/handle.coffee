@@ -27,8 +27,8 @@ class Handle extends Widget
         @elem.relPos    = @relPos
         
         @drag = new Drag
-            target: @elem
-            onStop: @config.onUp
+            target : @elem
+            onStop : @config.onUp
         @
     
     initEvents: =>

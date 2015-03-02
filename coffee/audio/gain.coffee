@@ -17,20 +17,20 @@ class Gain extends AudioWindow
         [ @audio, cfg ]  = Audio.gain cfg
         
         super cfg,
-            type:      'gain'
-            title:     cfg.master and 'master' or 'gain'
-            minWidth:  240
-            resize:    'horizontal'
-            children:  \
+            type     : 'gain'
+            title    : cfg.master and 'master' or 'gain'
+            minWidth : 240
+            resize   : 'horizontal'
+            children : \
             [
-                type:       'jacks'
-                hasOutput:  not cfg.master?
+                type      : 'jacks'
+                hasOutput : not cfg.master?
             ,
-                type:       'sliderspin'
-                id:         'gain'
-                value:      cfg.gain
-                minValue:   0.0
-                maxValue:   1.0
+                type      : 'sliderspin'
+                id        : 'gain'
+                value     : cfg.gain
+                minValue  : 0.0
+                maxValue  : 1.0
             ]
             
         @connect 'gain:onValue', @setGain
@@ -45,14 +45,14 @@ class Gain extends AudioWindow
     @menu: =>
 
         @menuButton
-            text:    'gain'
-            icon:    'fa-volume-up'
-            action:  -> new Gain
+            text   : 'gain'
+            icon   : 'fa-volume-up'
+            action : -> new Gain
                             center: true
 
         @menuButton
-            text:    'master'
-            icon:    'fa-sign-out'
-            ection:  -> new Gain
+            text   : 'master'
+            icon   : 'fa-sign-out'
+            action : -> new Gain
                             center: true
                             master: true

@@ -21,7 +21,7 @@ class Icon extends Widget
             elem = 'span'
 
         super cfg,
-            child:
-                elem:   elem
-                type:   'octicon'
-                class:   cfg.icon
+            child :
+                elem  : elem
+                type  : 'octicon'
+                class : cfg.icon

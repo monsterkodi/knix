@@ -15,26 +15,26 @@ class Jacks extends Hbox
         cfg = _.def cfg, defs
                 
         cfg = _.def cfg,
-            type:         'jacks'
+            type: 'jacks'
 
         children = []
 
         if not (cfg.hasInput == false)
             children.push
-                type:   'connector'
-                in:     'audio'
+                type : 'connector'
+                in   : 'audio'
 
         children.push
-            type:         'jack_content'
-            style:
-                width:    '100%'
-                height:   '20px'
-            children:     cfg.children
+            type       : 'jack_content'
+            style      :
+                width  : '100%'
+                height : '20px'
+            children   : cfg.children
 
         if not (cfg.hasOutput == false)
             children.push
-                type:         'connector'
-                out:          'audio'
+                type : 'connector'
+                out  : 'audio'
 
         super cfg, children:children
 

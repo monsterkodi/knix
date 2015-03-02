@@ -29,15 +29,15 @@ class Window extends Widget
         cfg.connect = null
 
         super cfg,
-            type:     'window'
-            class:    'window'            
-            parent:   'stage_content'
-            hasClose:  true
-            hasShade:  true
-            resize:    true
-            isMovable: true
-            isShaded:  false
-            onDown:    @raise
+            type      : 'window'
+            class     : 'window' 
+            parent    : 'stage_content'
+            hasClose  : true
+            hasShade  : true
+            resize    : true
+            isMovable : true
+            isShaded  : false
+            onDown    : @raise
 
         @initWindow()
         @config.children = children
@@ -85,30 +85,30 @@ class Window extends Widget
 
     addTitleBar: =>
         t = knix.create
-            type:       'title'
-            text:       @config.title
-            parent:     this
+            type   : 'title'
+            text   : @config.title
+            parent : this
         t.elem.ondblclick = @maximize
 
     addCloseButton: =>
         knix.create
-            type:    'close'
-            noMove:  true
-            parent:  this
-            child:
-                type: 'icon'
-                icon: 'octicon-x'
-            onClick: @close
+            type     : 'close'
+            noMove   : true
+            parent   : this
+            child    :
+                type : 'icon'
+                icon : 'octicon-x'
+            onClick  : @close
 
     addShadeButton: =>
         knix.create
-            type:    "shade"
-            noMove:  true
-            parent:  this
-            child:
-                type: 'icon'
-                icon: 'octicon-dash'
-            onClick: @shade
+            type     : "shade"
+            noMove   : true
+            parent   : this
+            child    :
+                type : 'icon'
+                icon : 'octicon-dash'
+            onClick  : @shade
 
     scrollToBottom: =>
         content = $(@content)
@@ -189,21 +189,21 @@ class Window extends Widget
                 cursor = 'nesw-resize'
 
             @sizeMoveDrag = Drag.create
-                target:  @elem
-                onStart: @sizeStart
-                onMove:  @sizeMove
-                doMove:  false
-                cursor:  cursor
+                target  : @elem
+                onStart : @sizeStart
+                onMove  : @sizeMove
+                doMove  : false
+                cursor  : cursor
 
             @sizeMoveDrag.border = border
         else
             @sizeMoveDrag = Drag.create
-                target: @elem
-                minPos: pos(undefined,0)
-                onMove: @emitMove
-                onStart: StyleSwitch.togglePathFilter
-                onStop:  StyleSwitch.togglePathFilter
-                cursor: 'grab'
+                target  : @elem
+                minPos  : pos(undefined,0)
+                onMove  : @emitMove
+                onStart : StyleSwitch.togglePathFilter
+                onStop  : StyleSwitch.togglePathFilter
+                cursor  : 'grab'
 
     onLeave: (event) =>
         if @sizeMoveDrag? and not @sizeMoveDrag.dragging
@@ -252,9 +252,9 @@ class Window extends Widget
             @setSize @config.size
             @config.isMaximized = false
         else
-            @config.pos = @absPos()
+            @config.pos  = @absPos()
             @config.size = @getSize()
-            menuHeight = $('menu').getHeight()
+            menuHeight   = $('menu').getHeight()
             @moveTo 0, menuHeight+2
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
@@ -305,10 +305,10 @@ class Window extends Widget
     @menuButton: (cfg) =>
 
         knix.create
-            type:    'button'
-            class:   'tool-button'
-            parent:  'menu'
-            id:      'new_' + cfg.text
-            tooltip: cfg.text
-            icon:    cfg.icon
-            onClick: cfg.action
+            type    : 'button'
+            class   : 'tool-button'
+            parent  : 'menu'
+            id      : 'new_' + cfg.text
+            tooltip : cfg.text
+            icon    : cfg.icon
+            onClick : cfg.action

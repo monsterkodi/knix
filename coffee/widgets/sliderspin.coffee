@@ -15,34 +15,34 @@ class Sliderspin extends Hbox
         cfg = _.def cfg, defs
 
         super cfg,
-            children: \
+            children : \
             [
-                type:       'connector'
-                slot:       cfg.id+':setValue'
+                type      : 'connector'
+                slot      : cfg.id+':setValue'
             ,
-                type:       'slider'
-                id:         cfg.id+'_slider'
-                value:      cfg.value
-                minValue:   cfg.minValue
-                maxValue:   cfg.maxValue
-                valueStep:  cfg.sliderStep
-                hasKnob:    cfg.sliderKnob
-                style:
-                    width:  '90%'
+                type      : 'slider'
+                id        : cfg.id+'_slider'
+                value     : cfg.value
+                minValue  : cfg.minValue
+                maxValue  : cfg.maxValue
+                valueStep : cfg.sliderStep
+                hasKnob   : cfg.sliderKnob
+                style     :
+                    width : '90%'
             ,
-                type:       'spin'
-                id:         cfg.id+'_spin'
-                value:      cfg.value
-                minValue:   cfg.minValue
-                maxValue:   cfg.maxValue
-                valueStep:  cfg.spinStep
-                minWidth:   100
-                format:     cfg.spinFormat or "%3.2f"
-                style:
-                    width:  '10%'
+                type      : 'spin'
+                id        : cfg.id+'_spin'
+                value     : cfg.value
+                minValue  : cfg.minValue
+                maxValue  : cfg.maxValue
+                valueStep : cfg.spinStep
+                minWidth  : 100
+                format    : cfg.spinFormat or "%3.2f"
+                style     :
+                    width : '10%'
             ,
-                type:       'connector'
-                signal:     cfg.id+':onValue'
+                type      : 'connector'
+                signal    : cfg.id+':onValue'
             ]
 
         @connect cfg.id+'_slider:onValue', cfg.id+'_spin:setValue'

@@ -32,26 +32,26 @@ class Files
         for file, data of files
             log 'file', file, data.length
             children.push
-                type:       'button'
-                text:       file
-                onClick:    @fileSelected
+                type    : 'button'
+                text    : file
+                onClick : @fileSelected
 
         knix.get
-            hasClose: true
-            hasMaxi:  false
-            title:    ' '
-            resize:   false
-            hasShade: false
-            popup:    true
-            pos:      Stage.absPos event
-            children: children
-            buttons:  \
+            hasClose : true
+            hasMaxi  : false
+            title    : ' '
+            resize   : false
+            hasShade : false
+            popup    : true
+            pos      : Stage.absPos event
+            children : children
+            buttons  : \
             [
-                type:    "window-button-left"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-trashcan'
-                onClick: @trashFiles
+                type    : "window-button-left"
+                onClick : @trashFiles
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-trashcan'
             ]
 
     @trashFiles: =>

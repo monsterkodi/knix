@@ -20,19 +20,19 @@ class Connector extends Widget
         cfg.class = 'out'    if cfg.out?
 
         super cfg,
-            type: 'connector'
-            onOver: @onOver
-            onOut:  @onOut
-            noMove: true
+            type   : 'connector'
+            onOver : @onOver
+            onOut  : @onOut
+            noMove : true
 
         Drag.create
-            target: @elem
-            minPos: pos(undefined,0)
-            cursor: 'grab'
-            doMove: false
-            onStart: @dragStart
-            onMove:  @dragMove
-            onStop:  @dragStop
+            target  : @elem
+            minPos  : pos(undefined,0)
+            cursor  : 'grab'
+            doMove  : false
+            onStart : @dragStart
+            onMove  : @dragMove
+            onStop  : @dragStop
 
         @connections = []
         @
@@ -86,20 +86,20 @@ class Connector extends Widget
         p = drag.absPos(event)
 
         @handle = new Window
-            type:   'connector-handle'
-            parent: 'stage_content'
-            style:
-                cursor: 'grabbing'
+            type   : 'connector-handle'
+            parent : 'stage_content'
+            style  :
+                cursor : 'grabbing'
 
         @handle.setPos p
         @elem.addClassName 'connected'
 
         @path = new Path
-            class:  'connector'
-            parent: 'stage_content'
-            start:  @absCenter()
-            end:    p
-            startDir: if @isOut() then pos(100,-10) else pos(-100,-10)
+            class    : 'connector'
+            parent   : 'stage_content'
+            start    : @absCenter()
+            end      : p
+            startDir : if @isOut() then pos(100,-10) else pos(-100,-10)
 
         @elem.style.cursor = 'grabbing'
 
@@ -130,8 +130,8 @@ class Connector extends Widget
 
         if conn = @connectorAtPos p
             new Connection
-                source: @
-                target: conn
+                source : @
+                target : conn
             conn.elem.removeClassName 'highlight'
         else if @connections.length == 0
             @elem.removeClassName 'connected'

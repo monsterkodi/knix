@@ -17,14 +17,14 @@ class Button extends Widget
         if cfg.icon?
             if cfg.text?
                 cfg.child =
-                    elem:   'span'
-                    type:   'octicon'
-                    class:   cfg.icon
+                    elem  : 'span'
+                    type  : 'octicon'
+                    class : cfg.icon
             else
                 cfg.child =
-                    type: 'icon'
-                    icon: cfg.icon
+                    type : 'icon'
+                    icon : cfg.icon
 
         super cfg,
-            type:     'button'
-            noMove:   true
+            type   : 'button'
+            noMove : true

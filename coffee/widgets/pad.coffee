@@ -14,10 +14,10 @@ class Pad extends Widget
     
         cfg = _.def cfg, defs
         cfg = _.def cfg,
-            minWidth:    100
-            minHeight:   100
-            numHandles:  1
-            hasPaths:    true
+            minWidth   : 100
+            minHeight  : 100
+            numHandles : 1
+            hasPaths   : true
         
         @o = 8 # offset from border
         
@@ -56,25 +56,25 @@ class Pad extends Widget
     
     createPathAtIndex: (i) =>
         p = new Path
-            svg:         @svg.svg
-            class:       'pad-path'
-            startHandle: @handles[i]
-            endHandle:   @handles[i+1]
+            svg         : @svg.svg
+            class       : 'pad-path'
+            startHandle : @handles[i]
+            endHandle   : @handles[i+1]
         p.path.node.addEventListener 'dblclick', @pathDoubleClick
         p.path.back()   
         Drag.create
-            target:  p.path.node
-            cursor:  'grab'
-            doMove:  false
-            onMove:  @pathDragMove
+            target : p.path.node
+            cursor : 'grab'
+            doMove : false
+            onMove : @pathDragMove
         @paths.splice i, 0, p 
     
     createHandle: =>
         h = new Handle
-            svg:   @svg.svg
-            class: 'pad_handle'
-            onPos: @onHandlePos
-            onUp:  @onHandleUp
+            svg   : @svg.svg
+            class : 'pad_handle'
+            onPos : @onHandlePos
+            onUp  : @onHandleUp
         h.elem.addEventListener 'dblclick', @handleDoubleClick
         h
 

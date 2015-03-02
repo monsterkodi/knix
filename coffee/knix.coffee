@@ -36,48 +36,48 @@ class knix
     @initTools: =>
 
         btn =
-            parent: 'tool'
-            class:  'tool-button'
+            parent  : 'tool'
+            class   : 'tool-button'
 
         new Button btn,
-            tooltip: 'save'
-            icon:    'fa-floppy-o'
-            onClick:  Files.saveWindows
+            tooltip : 'save'
+            icon    : 'fa-floppy-o'
+            onClick : Files.saveWindows
 
         new Button btn,
-            tooltip: 'load'
-            icon:    'fa-folder-o'
-            onClick:  Files.loadMenu
+            tooltip : 'load'
+            icon    : 'fa-folder-o'
+            onClick : Files.loadMenu
 
         new Button btn,
-            tooltip: 'console'
-            icon:   'octicon-terminal'
-            onClick: -> new Console()
+            tooltip : 'console'
+            icon    : 'octicon-terminal'
+            onClick : -> new Console()
 
         new Button btn,
-            tooltip: 'fullscreen'
-            icon:    'octicon-device-desktop'
-            onClick: -> Stage.toggleFullscreen()
+            tooltip : 'fullscreen'
+            icon    : 'octicon-device-desktop'
+            onClick : -> Stage.toggleFullscreen()
 
         new Button btn,
-            tooltip: 'style'
-            icon:    'octicon-color-mode'
-            onClick: -> StyleSwitch.toggle()
+            tooltip : 'style'
+            icon    : 'octicon-color-mode'
+            onClick : -> StyleSwitch.toggle()
 
         new Button btn,
-            tooltip: 'about'
-            icon:    'octicon-info'
-            onClick: -> About.show()
+            tooltip : 'about'
+            icon    : 'octicon-info'
+            onClick : -> About.show()
 
         new Button btn,
-            tooltip: 'shade all'
-            icon:    'octicon-dash'
-            onClick: -> knix.shadeWindows()
+            tooltip : 'shade all'
+            icon    : 'octicon-dash'
+            onClick : -> knix.shadeWindows()
 
         new Button btn,
-            tooltip: 'close all'
-            icon:    'octicon-x'
-            onClick: -> knix.closeWindows()
+            tooltip : 'close all'
+            icon    : 'octicon-x'
+            onClick : -> knix.closeWindows()
 
     # ________________________________________________________________________________ element creation
 
@@ -104,10 +104,10 @@ class knix
         
     # ________________________________________________________________________________ windows
 
-    @allWindows:     => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
-    @allConnections: => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
-    @closeConnections: => @allConnections().each (c) -> c.close()
-    @closeWindows: => 
+    @allWindows       : => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
+    @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
+    @closeConnections : => @allConnections().each (c) -> c.close()
+    @closeWindows     : => 
         @closeConnections()
         @allWindows().each (w) -> w.close()
     @shadeWindows: => @allWindows().each (w) -> w.shade()
@@ -172,8 +172,8 @@ class knix
     @initSVG: =>
 
         svg = @create
-            type:   'svg'
-            id:     'stage_svg'
-            parent: 'stage_content'
+            type   : 'svg'
+            id     : 'stage_svg'
+            parent : 'stage_content'
 
         @svg = svg.svg

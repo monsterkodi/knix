@@ -20,12 +20,12 @@ class Slider extends Value
             slider.setValue v
 
         super cfg,
-            type:      'slider'
-            minWidth:   50
-            child:
-                type:    'slider-bar'
-                child:
-                    type: 'slider-knob'
+            type     : 'slider'
+            minWidth : 50
+            child    :
+                type  : 'slider-bar'
+                child :
+                    type : 'slider-knob'
 
         if not @config.hasKnob
             @getChild('slider-knob').elem.hide()
@@ -33,11 +33,11 @@ class Slider extends Value
         @setBarValue @config.value
 
         Drag.create
-            cursor:     'ew-resize'
-            target:     @elem
-            doMove:     false
-            onMove:     sliderFunc
-            onStart:    sliderFunc
+            cursor  : 'ew-resize'
+            target  : @elem
+            doMove  : false
+            onMove  : sliderFunc
+            onStart : sliderFunc
         @
 
     onWindowSize: => @setValue @config.value

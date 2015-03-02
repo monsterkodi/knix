@@ -15,32 +15,32 @@ class Ramp extends Window
         cfg = _.def cfg, defs
 
         cfg = _.def cfg,
-            duration:     2.0
-            minDuration:  0.01
-            maxDuration:  10.0
-            durationStep: 0.01
-            valueFormat:  "%0.3f"
-            resize:       'horizontal'
+            duration     : 2.0
+            minDuration  : 0.01
+            maxDuration  : 10.0
+            durationStep : 0.01
+            valueFormat  : "%0.3f"
+            resize       : 'horizontal'
 
         super cfg,
-            type:  'ramp'
-            title: 'ramp'
-            children: \
+            type     : 'ramp'
+            title    : 'ramp'
+            children : \
             [
-                type:       'sliderspin'
-                id:         'ramp'
-                minValue:   0.0
-                maxValue:   1.0
+                type     : 'sliderspin'
+                id       : 'ramp'
+                minValue : 0.0
+                maxValue : 1.0
             ,
-                type:       'sliderspin'
-                id:         'ramp_duration'
-                value:      cfg.duration
-                minValue:   cfg.minDuration
-                maxValue:   cfg.maxDuration
-                spinStep:   cfg.durationStep
+                type     : 'sliderspin'
+                id       : 'ramp_duration'
+                value    : cfg.duration
+                minValue : cfg.minDuration
+                maxValue : cfg.maxDuration
+                spinStep : cfg.durationStep
             ,
-                type:       'button'
-                text:       'trigger'
+                type     : 'button'
+                text     : 'trigger'
             ]
     
         @connect 'ramp_duration:onValue', @setDuration
@@ -70,7 +70,7 @@ class Ramp extends Window
     @menu: =>
 
         @menuButton
-            text:    'ramp'
-            icon:    'fa-external-link-square'
-            action:  -> new Ramp
+            text   : 'ramp'
+            icon   : 'fa-external-link-square'
+            action : -> new Ramp
                             center: true

@@ -13,18 +13,18 @@ class Path extends Widget
     init: (cfg, defs) =>
         
         @config = _.def cfg, _.def defs,
-            type:     'path'
-            start:    pos(0,0)
-            startDir: pos(0,0)
-            end:      pos(0,0)
-            endDir:   pos(0,0)
-            svg:      knix.svg
-            noMove:   true
+            type     : 'path'
+            start    : pos(0,0)
+            startDir : pos(0,0)
+            end      : pos(0,0)
+            endDir   : pos(0,0)
+            svg      : knix.svg
+            noMove   : true
 
         @path = @config.svg.path()
-        @path .M  0,0
-            .Q  0,0,0,0
-            .Q  0,0,0,0
+        @path .M 0,0
+            .Q 0,0,0,0
+            .Q 0,0,0,0
 
         @path.attr('stroke-linecap': 'round', 'stroke-linejoin': 'round')
         @path.style(cursor: 'grabbing')
@@ -48,10 +48,8 @@ class Path extends Widget
         @
 
     close: =>
-        if @config.startHandle?
-            @config.startHandle.elem.removeEventListener 'onpos', @setStart
-        if @config.endHandle?
-            @config.endHandle.elem.removeEventListener 'onpos', @setEnd
+        if @config.startHandle? then @config.startHandle.elem.removeEventListener 'onpos', @setStart
+        if @config.endHandle?   then @config.endHandle.elem.removeEventListener 'onpos', @setEnd
         @path?.remove()
         @path = null
         super()

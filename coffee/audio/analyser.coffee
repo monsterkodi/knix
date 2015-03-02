@@ -15,33 +15,33 @@ class Analyser extends AudioWindow
         cfg = _.def cfg, defs
     
         cfg = _.def cfg,
-            scaleX:     1.0
-            scaleY:     1.0
-            triggerY:   0.0
+            scaleX   : 1.0
+            scaleY   : 1.0
+            triggerY : 0.0
 
         [ @audio, cfg ] = Audio.analyser cfg
         
         @dataArray = new Uint8Array cfg.fftSize
 
         super cfg,
-            type:  'analyser'
-            title: 'analyser'
-            children: \
+            type     : 'analyser'
+            title    : 'analyser'
+            children : \
             [
-                type: 'jacks'
+                type       : 'jacks'
             ,
-                id:   'analyser_canvas'
-                type: 'canvas'
-                style:
-                    width:  '100%'
-                    height: '100%'
+                id         : 'analyser_canvas'
+                type       : 'canvas'
+                style      :
+                    width  : '100%'
+                    height : '100%'
             ,
-                type:       'sliderspin'
-                id:         'scaleX'
-                value:      cfg.scaleX
-                minValue:   1.0
-                maxValue:   20.0
-                valueStep:  1
+                type       : 'sliderspin'
+                id         : 'scaleX'
+                value      : cfg.scaleX
+                minValue   : 1.0
+                maxValue   : 20.0
+                valueStep  : 1
             ]
             
         @connect 'scaleX:onValue', @setScaleX
@@ -49,11 +49,11 @@ class Analyser extends AudioWindow
         @canvas = @getChild 'analyser_canvas'
 
         new Drag
-            doMove:  false
-            target:  @canvas.elem
-            cursor:  'crosshair'
-            onStart: @onCanvasTrigger
-            onMove:  @onCanvasTrigger
+            doMove  : false
+            target  : @canvas.elem
+            cursor  : 'crosshair'
+            onStart : @onCanvasTrigger
+            onMove  : @onCanvasTrigger
 
         knix.animate @
         @sizeWindow()
@@ -73,21 +73,21 @@ class Analyser extends AudioWindow
 
     sizeWindow: =>
         
-        hbox = @getChild 'hbox'
-        height = @contentHeight()
-        content = @getChild 'content'
+        hbox       = @getChild 'hbox'
+        height     = @contentHeight()
+        content    = @getChild 'content'
         content.setHeight height
-        height = content.innerHeight() - 70
-        width  = content.innerWidth() - 20
+        height     = content.innerHeight() - 70
+        width      = content.innerWidth() - 20
         @canvas?.resize width, height
         @dataArray = new Uint8Array 2*width
 
     @menu: =>
 
         @menuButton
-            text:    'analyser'
-            icon:    'fa-area-chart'
-            action:  -> new Analyser
+            text   : 'analyser'
+            icon   : 'fa-area-chart'
+            action : -> new Analyser
                             center: true
                             
     anim: =>

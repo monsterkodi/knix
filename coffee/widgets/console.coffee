@@ -20,33 +20,33 @@ class Console extends Window
         h  = Stage.size().height - $('menu').getHeight() - 2
 
         super cfg,
-            title:          'console'
-            class:          'console-window'
-            x:              w
-            y:              $('menu').getHeight()+2
-            width:          w
-            height:         h
-            content:        'scroll'
-            showMethods:    Settings.get 'logMethods', true
-            showClasses:    Settings.get 'logClasses', true
-            buttons:  \
+            title       : 'console'
+            class       : 'console-window'
+            x           : w
+            y           : $('menu').getHeight()+2
+            width       : w
+            height      : h
+            content     : 'scroll'
+            showMethods : Settings.get 'logMethods', true
+            showClasses : Settings.get 'logClasses', true
+            buttons     : \
             [
-                class:   'window-button-right'
-                child:
-                    type: 'icon'
-                    icon: 'octicon-trashcan'
-                onClick: @clear
+                class   : 'window-button-right'
+                onClick : @clear
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-trashcan'
             ,
-                type:    "window-button-left"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-diff-added'
-                onClick: @maximize
+                type    : "window-button-left"
+                onClick : @maximize
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-diff-added'
             ]
             child:
-                class:  'console'
-                text:   '<span class="tiny-text" style="vertical-align:top">console - knix version '+knix.version+'</span>'
-                noMove: true
+                class  : 'console'
+                text   : '<span class="tiny-text" style="vertical-align:top">console - knix version '+knix.version+'</span>'
+                noMove : true
 
         @elem.addEventListener 'contextmenu', @onContextMenu
         @
@@ -57,71 +57,71 @@ class Console extends Window
         for tag of @logTags
             if not tag.startsWith('@') and not tag.startsWith('.')
                 children.push
-                    type:       'toggle'
-                    text:       tag
-                    states:     ['on', 'unset', 'off']
-                    icons:      ['octicon-check', 'octicon-dash', 'octicon-x']
-                    state:      @logTags[tag]
-                    onState:    @onTagState
+                    type    : 'toggle'
+                    text    : tag
+                    states  : ['on', 'unset', 'off']
+                    icons   : ['octicon-check', 'octicon-dash', 'octicon-x']
+                    state   : @logTags[tag]
+                    onState : @onTagState
 
         children.push
-            type: 'button'
-            text: 'ok'
-            onClick: -> _.win().close()
+            type    : 'button'
+            text    : 'ok'
+            onClick : -> _.win().close()
 
         knix.get
-            hasClose: true
-            hasMaxi:  false
-            title:    ' '
-            resize:   false
-            hasShade: false
-            popup:    true
-            pos:      Stage.absPos(event)
-            console:  @
-            children: children
-            buttons:  \
+            hasClose : true
+            hasMaxi  : false
+            title    : ' '
+            resize   : false
+            hasShade : false
+            popup    : true
+            pos      : Stage.absPos(event)
+            console  : @
+            children : children
+            buttons  : \
             [
-                type:    "window-button-left"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-check'
-                onClick: ->
+                type  : "window-button-left"
+                child :
+                    type : 'icon'
+                    icon : 'octicon-check'
+                onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('on')
             ,
-                type:    "window-button-left"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-dash'
-                onClick: ->
+                type  : "window-button-left"
+                child :
+                    type : 'icon'
+                    icon : 'octicon-dash'
+                onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('unset')
             ,
-                class:   'window-button-left'
-                child:
-                    type: 'icon'
-                    icon: 'octicon-x'
-                onClick: ->
+                class : 'window-button-left'
+                child :
+                    type : 'icon'
+                    icon : 'octicon-x'
+                onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('off')
             ,
-                type:    "window-button-right"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-trashcan'
-                onClick: @trashSettings
+                type    : "window-button-right"
+                onClick : @trashSettings
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-trashcan'
             ,
-                type:    "window-button-right"
-                child:
-                    type: 'icon'
-                    icon: 'octicon-list-unordered'
-                onClick: @toggleMethods
+                type    : "window-button-right"
+                onClick : @toggleMethods
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-list-unordered'
             ,
-                class:   'window-button-right'
-                child:
-                    type: 'icon'
-                    icon: 'octicon-three-bars'
-                onClick: @toggleClasses
+                class   : 'window-button-right'
+                onClick : @toggleClasses
+                child   :
+                    type : 'icon'
+                    icon : 'octicon-three-bars'
             ]
 
         event.preventDefault()

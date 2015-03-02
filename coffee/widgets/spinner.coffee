@@ -15,17 +15,17 @@ class Spinner extends Spin
         cfg = _.def cfg, defs
 
         super cfg,
-            tooltip:    false
-            valueStep:  1
-            minValue:   0
-            maxValue:   cfg.values.length-1
+            tooltip   : false
+            valueStep : 1
+            minValue  : 0
+            maxValue  : cfg.values.length-1
 
         Drag.create
-            cursor:     'ew-resize'
-            target:     @getChild('spin-content').elem
-            doMove:     false
-            onMove:     @sliderFunc
-            onStart:    @sliderFunc
+            cursor    : 'ew-resize'
+            target    : @getChild('spin-content').elem
+            doMove    : false
+            onMove    : @sliderFunc
+            onStart   : @sliderFunc
 
         @input = null
         @

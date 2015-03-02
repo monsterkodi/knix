@@ -14,8 +14,8 @@ class Connection
     
         if _.isArray cfg
             cfg =
-                source: $(cfg[0]).widget
-                target: $(cfg[1]).widget
+                source : $(cfg[0]).widget
+                target : $(cfg[1]).widget
 
         @config = _.def cfg, defs
         
@@ -29,23 +29,23 @@ class Connection
             w.addEventListener 'close', @close
 
         @path = new Path
-            class:    'connection'
-            parent:   'stage_content'
-            startDir: if @config.source.isOut() then pos(100,1) else pos(-100,-1)
-            endDir:   if @config.target.isOut() then pos(100,1) else pos(-100,-1)
-            onOver:   @onOver
-            onOut:    @onOut
-            onMove:   @onMove
+            class    : 'connection'
+            parent   : 'stage_content'
+            startDir : if @config.source.isOut() then pos(100,1) else pos(-100,-1)
+            endDir   : if @config.target.isOut() then pos(100,1) else pos(-100,-1)
+            onOver   : @onOver
+            onOut    : @onOut
+            onMove   : @onMove
             
         @path.connection = @
 
         @drag = Drag.create
-            target:  @path.path.node
-            cursor:  'grab'
-            doMove:  false
-            onStart: @dragStart
-            onMove:  @dragMove
-            onStop:  @dragStop
+            target  : @path.path.node
+            cursor  : 'grab'
+            doMove  : false
+            onStart : @dragStart
+            onMove  : @dragMove
+            onStop  : @dragStop
 
         @path.setStart @config.source.absCenter()
         @path.setEnd   @config.target.absCenter()
@@ -103,15 +103,15 @@ class Connection
         # inConnector.emit  'onConnect', {source:inConnector, target:outConnector}
 
         connection =
-            out: outConnector
-            in:  inConnector
+            out : outConnector
+            in  : inConnector
 
         signal = outConnector.config.signal
         slot   = inConnector.config.slot
 
         if signal? and slot?
             [signalSender, signalEvent] = outConnector.resolveSignal(signal)
-            slotFunction = inConnector.resolveSlot(slot)
+            slotFunction                = inConnector.resolveSlot(slot)
             connection.handler  = signalSender.elem.on signalEvent, slotFunction
             connection.sender   = signalSender
             connection.event    = signalEvent

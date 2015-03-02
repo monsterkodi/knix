@@ -13,12 +13,12 @@ class Toggle extends Button
     init: (cfg, defs) =>
 
         super cfg, _.def defs,
-            class:      'button'
-            onClick:    @onClick
-            state:      'off'
-            states:     ['on', 'off']
-            icon:       'octicon-check'
-            icons:      ['octicon-check', 'octicon-x']
+            class   : 'button'
+            onClick : @onClick
+            state   : 'off'
+            states  : ['on', 'off']
+            icon    : 'octicon-check'
+            icons   : ['octicon-check', 'octicon-x']
 
         @elem.on 'onState', @config.onState if @config.onState?
         @setState @config.state

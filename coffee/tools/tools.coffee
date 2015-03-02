@@ -25,9 +25,6 @@ Element.addMethods
 
 SVGAnimatedLength.prototype._str = -> "<%0.2f>".fmt @baseVal.value
 
-_.del = (l,e) ->
-    _.remove l, (n) -> n == e
-
 _.def = (c,d) ->
     if c?
         _.defaults(_.clone(c), d)
@@ -55,7 +52,7 @@ _.arg = (arg, argname='') ->
             return parseFloat arg
     arg
 
+_.del   = (l,e) -> _.remove l, (n) -> n == e
 _.value = (arg) -> _.arg arg, 'value'
-
-_.win = -> _.win.caller.arguments[0].target.getWidget().getWindow()
-_.wid = -> _.wid.caller.arguments[0].target.getWidget()
+_.win   =       -> _.win.caller.arguments[0].target.getWidget().getWindow()
+_.wid   =       -> _.wid.caller.arguments[0].target.getWidget()

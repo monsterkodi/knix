@@ -21,37 +21,37 @@ class Filter extends AudioWindow
         [ @audio, cfg ] = Audio.filter cfg
 
         super cfg,
-            type:      'filter'
-            title:     'filter'
-            minWidth:  240
-            resize:    'horizontal'
-            children:  \
+            type     : 'filter'
+            title    : 'filter'
+            minWidth : 240
+            resize   : 'horizontal'
+            children : \
             [
-                type:       'jacks'
+                type     : 'jacks'
             ,
-                type:       'spinner'
-                id:         'filter'
-                value:      cfg.filter
-                values:     Filter.filters
+                type     : 'spinner'
+                id       : 'filter'
+                value    : cfg.filter
+                values   : Filter.filters
             ,
-                type:       'sliderspin'
-                id:         'frequency'
-                value:      cfg.freq
-                minValue:   cfg.minFreq
-                maxValue:   cfg.maxFreq
+                type     : 'sliderspin'
+                id       : 'frequency'
+                value    : cfg.freq
+                minValue : cfg.minFreq
+                maxValue : cfg.maxFreq
             ,
-                type:       'sliderspin'
-                id:         'detune'
-                value:      cfg.detune
-                minValue:   cfg.minDetune
-                maxValue:   cfg.maxDetune
+                type     : 'sliderspin'
+                id       : 'detune'
+                value    : cfg.detune
+                minValue : cfg.minDetune
+                maxValue : cfg.maxDetune
             ,
-                type:       'sliderspin'
-                id:         'Q'
-                value:      cfg.Q
-                minValue:   cfg.minQ
-                maxValue:   cfg.maxQ
-                spinStep:   0.01
+                type     : 'sliderspin'
+                id       : 'Q'
+                value    : cfg.Q
+                minValue : cfg.minQ
+                maxValue : cfg.maxQ
+                spinStep : 0.01
             ]
             
         @connect 'filter:onValue', @setFilter
@@ -75,7 +75,7 @@ class Filter extends AudioWindow
     @menu: =>
 
         @menuButton
-            text:    'filter'
-            icon:    'fa-filter'
-            action:  -> new Filter
+            text   : 'filter'
+            icon   : 'fa-filter'
+            action : -> new Filter
                             center: true

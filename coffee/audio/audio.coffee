@@ -41,19 +41,19 @@ class Audio
     @filter: (cfg) =>
 
         cfg = _.def cfg,
-            freq:       440
-            minFreq:    100
-            maxFreq:    12000
-            detune:     0
-            minDetune:  -1000
-            maxDetune:  1000
-            gain:       1
-            minGain:    0
-            maxGain:    1
-            Q:          1
-            minQ:       0.0
-            maxQ:       50
-            filter:     'bandpass'
+            freq      : 440
+            minFreq   : 100
+            maxFreq   : 12000
+            detune    : 0
+            minDetune : -1000
+            maxDetune : 1000
+            gain      : 1
+            minGain   : 0
+            maxGain   : 1
+            Q         : 1
+            minQ      : 0.0
+            maxQ      : 50
+            filter    : 'bandpass'
 
         filter = @context.createBiquadFilter()
         filter.frequency.value = cfg.freq   # in Hz
@@ -65,9 +65,9 @@ class Audio
     @delay: (cfg) =>
         
         cfg = _.def cfg,
-            delay:      0.005
-            maxDelay:   5.0
-            minDelay:   0.0
+            delay    : 0.005
+            maxDelay : 5.0
+            minDelay : 0.0
         
         delay = @context.createDelay(cfg.maxDelay)
         delay.delayTime.value = cfg.delay
@@ -76,9 +76,9 @@ class Audio
     @oscillator: (cfg) =>
 
         cfg = _.def cfg,
-            freq:    0
-            minFreq: 0
-            maxFreq: 14000
+            freq    : 0
+            minFreq : 0
+            maxFreq : 14000
 
         oscillator = @context.createOscillator()
         oscillator.frequency.value = cfg.freq # in Hz
@@ -100,10 +100,10 @@ class Audio
     @analyser: (cfg) =>
 
         cfg = _.def cfg,
-            minDecibels:    -90    
-            maxDecibels:    -10   
-            smoothingTime:   0.85      
-            fftSize:         2048
+            minDecibels   : -90 
+            maxDecibels   : -10 
+            smoothingTime : 0.85 
+            fftSize       : 2048
 
         analyser = @context.createAnalyser()
         analyser.minDecibels = cfg.minDecibels

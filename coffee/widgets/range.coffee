@@ -15,62 +15,62 @@ class Range extends Window
         cfg = _.def cfg, defs
 
         cfg = _.def cfg,
-            low:          0.0
-            minLow:       -10000
-            maxLow:       10000
-            lowStep:      0.1
-            high:         1.0
-            minHigh:      -10000
-            maxHigh:      10000
-            highStep:     0.1
-            valueFormat:  "%0.3f"
-            resize:       'horizontal'
+            low         : 0.0
+            minLow      : -10000
+            maxLow      : 10000
+            lowStep     : 0.1
+            high        : 1.0
+            minHigh     : -10000
+            maxHigh     : 10000
+            highStep    : 0.1
+            valueFormat : "%0.3f"
+            resize      : 'horizontal'
 
         super cfg,
-            type:  'range'
-            title: 'range'
-            children: \
+            type     : 'range'
+            title    : 'range'
+            children : \
             [
-                type:       'sliderspin'
-                id:         'range_low'
-                value:      cfg.low
-                minValue:   cfg.minLow
-                maxValue:   cfg.maxLow
-                spinStep:   cfg.lowStep
+                type     : 'sliderspin'
+                id       : 'range_low'
+                value    : cfg.low
+                minValue : cfg.minLow
+                maxValue : cfg.maxLow
+                spinStep : cfg.lowStep
             ,
-                type:       'sliderspin'
-                id:         'range_high'
-                value:      cfg.high
-                minValue:   cfg.minHigh
-                maxValue:   cfg.maxHigh
-                spinStep:   cfg.highStep
+                type     : 'sliderspin'
+                id       : 'range_high'
+                value    : cfg.high
+                minValue : cfg.minHigh
+                maxValue : cfg.maxHigh
+                spinStep : cfg.highStep
             ,
-                type:       'hbox'
-                children:   \
+                type     : 'hbox'
+                children : \
                 [
-                    type:       'connector'
-                    slot:       'range_in:setValue'
+                    type      : 'connector'
+                    slot      : 'range_in:setValue'
                 ,
-                    type:       'spin'
-                    id:         'range_in'
-                    valueStep:  0.001
-                    minWidth:   100
-                    maxWidth:   10000
-                    format:     cfg.valueFormat
-                    style:
-                        width:  '50%'
+                    type      : 'spin'
+                    id        : 'range_in'
+                    valueStep : 0.001
+                    minWidth  : 100
+                    maxWidth  : 10000
+                    format    : cfg.valueFormat
+                    style     :
+                        width : '50%'
                 ,
-                    type:       'spin'
-                    id:         'range_out'
-                    valueStep:  0.001
-                    minWidth:   100
-                    maxWidth:   10000
-                    format:     cfg.valueFormat
-                    style:
-                        width:  '50%'
+                    type      : 'spin'
+                    id        : 'range_out'
+                    valueStep : 0.001
+                    minWidth  : 100
+                    maxWidth  : 10000
+                    format    : cfg.valueFormat
+                    style     :
+                        width : '50%'
                 ,
-                    type:       'connector'
-                    signal:     'range_out:onValue'
+                    type      : 'connector'
+                    signal    : 'range_out:onValue'
                 ]
             ]
             
@@ -104,11 +104,11 @@ class Range extends Window
     @menu: =>
 
         knix.create
-            type:    'button'
-            tooltip: 'range'
-            id:      'new_range'
-            icon:    'fa-sliders'
-            class:   'tool-button'
-            parent:  'menu'
-            onClick: -> new Range
+            type    : 'button'
+            tooltip : 'range'
+            id      : 'new_range'
+            icon    : 'fa-sliders'
+            class   : 'tool-button'
+            parent  : 'menu'
+            onClick : -> new Range
                             center: true

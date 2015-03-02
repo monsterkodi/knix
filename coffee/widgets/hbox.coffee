@@ -15,12 +15,12 @@ class Hbox extends Widget
         cfg = _.def cfg, defs
         spacing = cfg.spacing? and cfg.spacing or 5
         super cfg,
-            type: 'hbox'
-            style:
-                display:       'table'
-                borderSpacing: '%dpx 0px'.fmt spacing
-                marginRight:   '-%dpx'.fmt spacing
-                marginLeft:    '-%dpx'.fmt spacing
+            type  : 'hbox'
+            style :
+                display       : 'table'
+                borderSpacing : '%dpx 0px'.fmt spacing
+                marginRight   : '-%dpx'.fmt spacing
+                marginLeft    : '-%dpx'.fmt spacing
         @
 
     insertChild: (cfg) =>

@@ -15,35 +15,35 @@ class Spin extends Value
         cfg = _.def cfg, defs
         
         super cfg,
-            type:       'spin'
-            horizontal: true
-            child:
-                elem:   'table'
-                type:   'spin-table'
-                child:
-                    elem:   'tr'
-                    type:   'spin-row'
-                    children: \
+            type       : 'spin'
+            horizontal : true
+            child      :
+                elem   : 'table'
+                type   : 'spin-table'
+                child  :
+                    elem     : 'tr'
+                    type     : 'spin-row'
+                    children : \
                     [
-                        id:     'decr'
-                        elem:   'td'
-                        type:   'spin-td'
-                        child:
-                            type: 'icon'
-                            icon: 'octicon-triangle-left'
+                        id    : 'decr'
+                        elem  : 'td'
+                        type  : 'spin-td'
+                        child :
+                            type  : 'icon'
+                            icon  : 'octicon-triangle-left'
                     ,
-                        elem:   'td'
-                        type:   'spin-content'
-                        child:
-                            type:   'input'
-                            class:  'spin-input'
+                        elem  : 'td'
+                        type  : 'spin-content'
+                        child :
+                            type  : 'input'
+                            class : 'spin-input'
                     ,
-                        id:     'incr'
-                        elem:   'td'
-                        type:   'spin-td'
-                        child:
-                            type: 'icon'
-                            icon: 'octicon-triangle-right'
+                        id    : 'incr'
+                        elem  : 'td'
+                        type  : 'spin-td'
+                        child :
+                            type  : 'icon'
+                            icon  : 'octicon-triangle-right'
                     ]
 
         @connect 'decr:mousedown', @startDecr

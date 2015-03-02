@@ -14,7 +14,7 @@ class Tooltip
 
         cfg = _.def cfg, defs
         cfg = _.def cfg, 
-                  delay: 700
+                  delay : 700
                   
         cfg.target.tooltip = cfg
         cfg.target.elem.on 'mousemove',  @onHover
@@ -46,16 +46,16 @@ class Tooltip
         else
             text = e.id
         tooltip.window = new Window
-            class:      'tooltip'
-            parent:     'stage_content'
-            isMovable:  false
-            x:          pos.x + 12
-            y:          pos.y + 12
-            hasClose:   false
-            hasShade:   false
-            hasTitle:   false
-            child:
-                text:   text
+            class     : 'tooltip'
+            parent    : 'stage_content'
+            isMovable : false
+            x         : pos.x + 12
+            y         : pos.y + 12
+            hasClose  : false
+            hasShade  : false
+            hasTitle  : false
+            child     :
+                text  : text
 
     @onLeave: (event, e) =>
         if tooltip = e?.widget?.tooltip

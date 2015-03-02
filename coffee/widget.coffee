@@ -194,9 +194,9 @@ class Widget
 
     emit: (signal, args) =>
         event = new CustomEvent signal,
-            bubbles:    true,
-            cancelable: true,
-            detail:     args
+            bubbles    : true,
+            cancelable : true,
+            detail     : args
         @elem.dispatchEvent event
         @
 
@@ -204,8 +204,8 @@ class Widget
         @config.width  = @getWidth()
         @config.height = @getHeight()       
         @emit 'size',
-            width:  @config.width
-            height: @config.height
+            width  : @config.width
+            height : @config.height
         @
 
     emitMove: =>
@@ -371,20 +371,20 @@ class Widget
         @setHeight h
         @
 
-    setSize: (s) => @resize s.width, s.height
-    getSize: => return { width: @getWidth(), height: @getHeight() }
-    getWidth: => @elem.getWidth()
-    getHeight: => @elem.getHeight()
+    setSize     : (s) => @resize s.width, s.height
+    getSize     :     => return { width : @getWidth(), height : @getHeight() }
+    getWidth    :     => @elem.getWidth()
+    getHeight   :     => @elem.getHeight()
 
-    innerWidth:  => @elem.getLayout().get("padding-box-width")
-    innerHeight: => @elem.getLayout().get("padding-box-height")
-    minWidth:    => w = parseInt @elem.getStyle('min-width' ); if w then w else 0
-    minHeight:   => h = parseInt @elem.getStyle('min-height'); if h then h else 0
-    maxWidth:    => w = parseInt @elem.getStyle('max-width' ); if w then w else Number.MAX_VALUE
-    maxHeight:   => h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
-    relPos:      => o = @elem.positionedOffset(); pos o.left, o.top
-    absPos:      => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
-    absCenter:   => @absPos().plus(pos(@elem.getWidth(),@elem.getHeight()).scale(0.5))
+    innerWidth  :     => @elem.getLayout().get("padding-box-width")
+    innerHeight :     => @elem.getLayout().get("padding-box-height")
+    minWidth    :     => w = parseInt @elem.getStyle('min-width' ); if w then w else 0
+    minHeight   :     => h = parseInt @elem.getStyle('min-height'); if h then h else 0
+    maxWidth    :     => w = parseInt @elem.getStyle('max-width' ); if w then w else Number.MAX_VALUE
+    maxHeight   :     => h = parseInt @elem.getStyle('max-height'); if h then h else Number.MAX_VALUE
+    relPos      :     => o = @elem.positionedOffset(); pos o.left, o.top
+    absPos      :     => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
+    absCenter   :     => @absPos().plus(pos(@elem.getWidth(),@elem.getHeight()).scale(0.5))
 
     # ____________________________________________________________________________ movement
 
