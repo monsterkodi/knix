@@ -71,6 +71,12 @@ class knix
             action : Files.saveWindows
 
         Menu.addButton btn,
+            tooltip : 'reload'
+            keys    : ['r']
+            icon    : 'fa-retweet'
+            action : Files.loadLast
+
+        Menu.addButton btn,
             tooltip : 'load'
             icon    : 'fa-folder-o'
             action  : Files.loadMenu
