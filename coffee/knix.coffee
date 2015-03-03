@@ -115,6 +115,7 @@ class knix
         Menu.addButton btn,
             tooltip : 'close all'
             icon    : 'octicon-x'
+            keys    : ['x']
             action  : -> knix.closeWindows()
 
     # ________________________________________________________________________________ element creation

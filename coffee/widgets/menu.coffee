@@ -23,6 +23,7 @@ class Menu extends Widget
         
     @addButton: (cfg, defs) => 
         cfg = _.def cfg, defs
+        log 'add button'
         @menu(cfg.menu).insertChild cfg,
             type    : 'button'
             class   : 'tool-button'

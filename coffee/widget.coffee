@@ -16,7 +16,7 @@ class Widget
 
         cfg = _.def cfg, defs
         
-        log cfg
+        # log cfg
 
         #__________________________________________________ initialization
 
@@ -66,7 +66,7 @@ class Widget
 
         @addToParent(@config.parent) if @config.parent?
         @insertChildren()
-        @elem.insert(@config.text) if @config.text?
+        @insertText()
 
         #__________________________________________________ position and size
 
@@ -275,6 +275,9 @@ class Widget
             @config.children = c
         @
 
+    insertText: =>
+        @elem?.insert(@config.text) if @config.text?
+        
     # returns first ancestor element that matches class or id of argument
     # with no argument: the element with config.parentId or the parent element
 

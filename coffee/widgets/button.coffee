@@ -16,6 +16,8 @@ class Button extends Widget
         
         children = []
         
+        log 'init', cfg
+        
         if cfg.icon?
             # if cfg.text?
             #     cfg.child =
@@ -26,12 +28,12 @@ class Button extends Widget
             children.push
                 type : 'icon'
                 icon : cfg.icon
-            delete cfg.icon
+            # delete cfg.icon
                 
-        if cfg.text?
-            children.push
-                text : cfg.text
-            delete cfg.text
+        # if cfg.text? and cfg.menu != 'menu'
+        #     log 'button text', cfg.text
+        #     children.push
+        #         text : cfg.text
 
         super cfg,
             onClick  : cfg.action
@@ -39,3 +41,8 @@ class Button extends Widget
             type     : 'button'
             noMove   : true
             children : children
+
+    insertText: =>
+        if @config.menu != 'menu'
+            log 'button text', @config.text
+            super
