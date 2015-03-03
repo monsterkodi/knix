@@ -24,13 +24,38 @@ class knix
 
         Keys.init()
         StyleSwitch.init()
-        Stage.initContextMenu()
+                
         @initSVG()
+        @initMenu()
         @initAnim()
         @initTools()
         @initAudio()
-        c.raise()
+                
+        Stage.initContextMenu()
+        
+        if config.loadLast then Files.loadLast()
+        
+        c?.raise()
+        
+        log 'knix initialised'
         @
+    
+    # ________________________________________________________________________________ menus
+        
+    @initMenu: =>
+        
+        mainMenu = new Menu
+            id      : 'menu'
+            parent  : 'stage'
+            style   : 
+                top : '0px'
+            
+        toolMenu = new Menu
+            id        : 'tool'
+            parent    : 'stage'
+            style     :
+                top   : '0px'
+                right : '0px'
         
     # ________________________________________________________________________________ tools menu
 
@@ -42,6 +67,7 @@ class knix
 
         new Button btn,
             tooltip : 'save'
+            keys    : ['s']
             icon    : 'fa-floppy-o'
             onClick : Files.saveWindows
 
@@ -62,6 +88,7 @@ class knix
 
         new Button btn,
             tooltip : 'style'
+            keys    : ['i']
             icon    : 'octicon-color-mode'
             onClick : -> StyleSwitch.toggle()
 

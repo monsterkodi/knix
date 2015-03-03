@@ -15,10 +15,19 @@ class Stage
         log 'initContextMenu'
         $('stage_content').on 'mousedown', @showContextMenu
 
+        log $('menu')?
+        log $('menu')?.getWidget()?
+        log $('menu')?.getWidget()?.config.children?.length
+        children = []
+        # for b in 
+        # children.push child
+
         @contextMenu = knix.get
             id:    'context-menu'
             type:  'context-menu'
             title: 'context'
+            popup: true
+            children: children
             style:
                 position: 'absolute'
 
@@ -33,9 +42,9 @@ class Stage
             win.setPos pos @width() - w, Math.max(p.y, $('menu').getHeight())
 
     @showContextMenu: (event, e) =>
-        if $('stage_content') == e
-            log 'showContextMenu'
-            @contextMenu.elem.show()
+        log 'showContextMenu', Stage.absPos event
+        @contextMenu.setPos Stage.absPos event
+        @contextMenu.elem.show()
 
     @width:  => @size().width
     @height: => @size().height

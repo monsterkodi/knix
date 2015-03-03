@@ -14,18 +14,19 @@ class Console extends Window
         
     init: (cfg, defs) =>
 
+        cfg = _.def cfg, defs
+        
         @logTags = Settings.get 'logTags', {}
 
-        w  = Stage.size().width/2
-        h  = Stage.size().height - $('menu').getHeight() - 2
+        cfg = _.def cfg,
+            x:       Stage.size().width/2
+            y:       30
+            width:   Stage.size().width/2
+            height:  Stage.size().height/2-30
 
         super cfg,
             title       : 'console'
             class       : 'console-window'
-            x           : w
-            y           : $('menu').getHeight()+2
-            width       : w
-            height      : h
             content     : 'scroll'
             showMethods : Settings.get 'logMethods', true
             showClasses : Settings.get 'logClasses', true

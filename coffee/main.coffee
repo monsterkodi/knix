@@ -13,7 +13,8 @@ document.observe "dom:loaded", ->
     # _________________________________________________________________________ init
 
     knix.init
-        console: true
+        console:  true
+        loadLast: true
         # console: 'shade'
 
     # _________________________________________________________________________ widget test
@@ -26,5 +27,3 @@ document.observe "dom:loaded", ->
     Test.audio()
     # StyleSwitch.toggle()
     # $('show_about').click()
-
-    Files.loadLast()
