@@ -49,6 +49,7 @@ class Menu extends Widget
             btn         = _.clone e.widget.config
             btn.id      = undefined
             btn.parent  = 'context-menu'
+            btn.menu    = 'context-menu'
             btn.onClick = @onContextAction
             btn.action  = e.widget.config.action
             log btn

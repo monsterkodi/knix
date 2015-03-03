@@ -104,7 +104,7 @@ class Range extends Window
     @menu: =>
 
         @menuButton
-            tooltip : 'range'
+            text    : 'range'
             icon    : 'fa-sliders'
             action  : -> new Range
                             center: true

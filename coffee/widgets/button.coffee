@@ -19,22 +19,10 @@ class Button extends Widget
         log 'init', cfg
         
         if cfg.icon?
-            # if cfg.text?
-            #     cfg.child =
-            #         elem  : 'span'
-            #         # type  : 'octicon'
-            #         # class : cfg.icon
-            # else
             children.push
                 type : 'icon'
                 icon : cfg.icon
-            # delete cfg.icon
                 
-        # if cfg.text? and cfg.menu != 'menu'
-        #     log 'button text', cfg.text
-        #     children.push
-        #         text : cfg.text
-
         super cfg,
             onClick  : cfg.action
             keys     : []
@@ -44,5 +32,4 @@ class Button extends Widget
 
     insertText: =>
         if @config.menu != 'menu'
-            log 'button text', @config.text
             super

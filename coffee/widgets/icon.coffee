@@ -13,15 +13,18 @@ class Icon extends Widget
     init: (cfg, defs) =>
     
         cfg = _.def cfg, defs
-    
+        
+        cfg = _.def cfg, 
+            type  : 'icon'
+            elem  : 'span'
+                
         if cfg.icon.startsWith 'fa'
-            cfg.icon += ' fa'
-            elem = 'i'
+            super cfg,
+                class : 'octicon'
+                child :
+                    elem  : 'i'
+                    class : 'fa '+cfg.icon
         else
-            elem = 'span'
-
-        super cfg,
-            child :
-                elem  : elem
-                type  : 'octicon'
-                class : cfg.icon
+            super cfg,
+                class : 'octicon ' + cfg.icon
+    
