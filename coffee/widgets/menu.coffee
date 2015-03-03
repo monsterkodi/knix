@@ -31,12 +31,13 @@ class Menu extends Widget
             tooltip : cfg.text
 
     @initContextMenu: =>
-
         log 'initContextMenu'
-        
-        $('stage_content').addEventListener 'mousedown', Menu.showContextMenu    
+        stage = $('stage_content')
+        stage.addEventListener 'contextmenu', Menu.showContextMenu
 
     @showContextMenu: (event) =>
+
+        event.preventDefault()
 
         m = @menu 'context-menu'
 
@@ -57,6 +58,7 @@ class Menu extends Widget
 
         m = knix.get
             title    : 'audio'
+            class    : 'context-menu'
             id       : 'context-menu'
             hasClose : true
             hasMaxi  : false
@@ -64,7 +66,7 @@ class Menu extends Widget
             hasShade : true 
             pos      : Stage.absPos event            
             children : children
-            
+                        
     @onContextAction: (event) =>
         log 'button action', event.target.getWidget()
         w = event.target.getWidget().config.action()

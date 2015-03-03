@@ -34,36 +34,6 @@ textCursor()
     -moz-user-select:   text
     -user-select:       text
 
-// ____________________________________ icons
-
-.icon
-  width:                20px
-  height:               20px
-  border:               0px
-  background-color:     transparent
-  text-align:           center
-  vertical-align:       top
-  color:                colors.bg
-  &:hover
-      color:            colors.button-hover-text
-  &:active
-      color:            colors.button-active-text
-
-  .octicon
-      position: relative
-      top: -2px
-
-.menu .icon
-      width:                30px
-      height:               30px
-      color:                textColors.menu
-      &:hover
-          color:            textColors.menu-hover
-      &:active
-          color:            textColors.menu-active
-      .octicon
-          top: 0px
-
 // ____________________________________ toplevel
 
 body
@@ -126,6 +96,33 @@ a
     color: colors.analyser-trace
 .analyser_trigger
     color: colors.analyser-trigger
+
+// ____________________________________ icons
+
+.icon
+  width:                20px
+  height:               20px
+  border:               0px
+  background-color:     transparent
+  text-align:           center
+  vertical-align:       top
+  padding-top:          2px
+  color:                colors.bg
+  &:hover
+      color:            colors.button-hover-text
+  &:active
+      color:            colors.button-active-text
+
+.menu .icon
+      width:                30px
+      height:               30px
+      color:                textColors.menu
+      &:hover
+          color:            textColors.menu-hover
+      &:active
+          color:            textColors.menu-active
+      .octicon
+          top: 0px
     
 // ____________________________________ button
 
@@ -176,7 +173,16 @@ a
         color:            colors.button-active-text
     &:hover *
         color:            colors.button-active-text
-    
+
+.context-menu .content .icon
+    padding-top: 2px
+    padding-left: 5px
+    padding-right: 4px
+
+.context-menu .button
+    text-align: left
+    padding-right: 9px
+ 
 // ____________________________________ toggle
 
 .toggle
