@@ -21,8 +21,8 @@ class Console extends Window
         cfg = _.def cfg,
             x:       Stage.size().width/2
             y:       30
-            width:   Stage.size().width/2
-            height:  Stage.size().height/2-30
+            width:   Stage.size().width/2-4
+            height:  Stage.size().height-30
 
         super cfg,
             title       : 'console'
@@ -32,17 +32,30 @@ class Console extends Window
             showClasses : Settings.get 'logClasses', true
             buttons     : \
             [
-                class   : 'window-button-right'
-                onClick : @clear
-                child   :
-                    type : 'icon'
-                    icon : 'octicon-trashcan'
-            ,
-                type    : "window-button-left"
-                onClick : @maximize
-                child   :
+                type     : "window-button-left"
+                onClick  : @maximize
+                child    :
                     type : 'icon'
                     icon : 'octicon-diff-added'
+            ,
+                type     : "window-button-left"
+                onClick  : @scrollToTop
+                child    :
+                    type : 'icon'
+                    icon : 'fa-arrow-circle-o-up'
+            ,
+                type     : "window-button-left"
+                onClick  : @scrollToBottom
+                child    :
+                    type : 'icon'
+                    icon : 'fa-arrow-circle-o-down'
+            ,
+                type     : 'window-button-right'
+                onClick  : @clear
+                keys     : ['k']
+                child    :
+                    type : 'icon'
+                    icon : 'octicon-trashcan'
             ]
             child:
                 class  : 'console'
@@ -190,7 +203,7 @@ class Console extends Window
             if @config.showMethods then t.show() else t.hide()
 
     clear: => @getChild('console').clear()
-    
+        
     # _________________________________________________________________________________________ static
 
     @setScopeTags: =>

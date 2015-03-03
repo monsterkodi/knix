@@ -103,12 +103,8 @@ class Range extends Window
 
     @menu: =>
 
-        knix.create
-            type    : 'button'
+        @menuButton
             tooltip : 'range'
-            id      : 'new_range'
             icon    : 'fa-sliders'
-            class   : 'tool-button'
-            parent  : 'menu'
-            onClick : -> new Range
+            action  : -> new Range
                             center: true

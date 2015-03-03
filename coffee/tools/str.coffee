@@ -38,7 +38,8 @@ str = (o,indent="",visited=[]) ->
             else
                 s = "<" + protoname + ">\n"
                 visited.push o
-                s += ( indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o) when not _.isFunction o[k] ).join("\n")
+                # s += ( indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o) when not _.isFunction o[k] ).join("\n")
+                s += ( indent+strIndent+k + ": " + str(o[k],indent+strIndent,visited) for k in Object.getOwnPropertyNames(o) ).join("\n")
         return s+"\n"
     else if t == 'function'
         return "->"

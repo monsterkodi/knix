@@ -114,6 +114,10 @@ class Window extends Widget
         content = $(@content)
         content.scrollTop = content.scrollHeight
 
+    scrollToTop: =>
+        content = $(@content)
+        content.scrollTop = 0
+
     # ____________________________________________________________________________ layout
 
     stretchWidth: =>
@@ -260,6 +264,15 @@ class Window extends Widget
         $(@content).scrollTop = scrolltop
         event?.stopPropagation()
 
+    popup: (event) =>
+        log 'popup', Stage.absPos event
+        if @elem?
+            @elem.show()
+            @setPos Stage.absPos event
+            @elem.raise()
+        else
+            warn 'no elem!'
+
     headerSize: (box="border-box-height") =>
         children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
         i = 0
@@ -299,11 +312,5 @@ class Window extends Widget
 
     @menuButton: (cfg) =>
 
-        knix.create
-            type    : 'button'
-            class   : 'tool-button'
-            parent  : 'menu'
-            id      : 'new_' + cfg.text
-            tooltip : cfg.text
-            icon    : cfg.icon
-            onClick : cfg.action
+        Menu.addButton _.def cfg,
+            menu    : 'menu'

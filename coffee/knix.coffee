@@ -31,7 +31,7 @@ class knix
         @initTools()
         @initAudio()
                 
-        Stage.initContextMenu()
+        Menu.initContextMenu()
         
         if config.loadLast then Files.loadLast()
         
@@ -61,56 +61,55 @@ class knix
 
     @initTools: =>
 
-        btn =
-            parent  : 'tool'
-            class   : 'tool-button'
+        btn = 
+            menu    : 'tool'
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'save'
             keys    : ['s']
             icon    : 'fa-floppy-o'
-            onClick : Files.saveWindows
+            action : Files.saveWindows
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'load'
             icon    : 'fa-folder-o'
-            onClick : Files.loadMenu
+            action  : Files.loadMenu
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'console'
             icon    : 'octicon-terminal'
-            onClick : -> new Console()
+            action  : -> new Console()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'fullscreen'
             icon    : 'octicon-device-desktop'
-            onClick : -> Stage.toggleFullscreen()
+            action  : -> Stage.toggleFullscreen()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'style'
             keys    : ['i']
             icon    : 'octicon-color-mode'
-            onClick : -> StyleSwitch.toggle()
+            action  : -> StyleSwitch.toggle()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'set key'
             icon    : 'fa-keyboard-o'
-            onClick : -> Keys.interactiveKey()
+            action  : -> Keys.interactiveKey()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'about'
             icon    : 'octicon-info'
-            onClick : -> About.show()
+            action  : -> About.show()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'shade all'
             icon    : 'octicon-dash'
-            onClick : -> knix.shadeWindows()
+            action  : -> knix.shadeWindows()
 
-        new Button btn,
+        Menu.addButton btn,
             tooltip : 'close all'
             icon    : 'octicon-x'
-            onClick : -> knix.closeWindows()
+            action  : -> knix.closeWindows()
 
     # ________________________________________________________________________________ element creation
 

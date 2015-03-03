@@ -10,41 +10,12 @@
 
 class Stage
 
-    @initContextMenu: =>
-
-        log 'initContextMenu'
-        $('stage_content').on 'mousedown', @showContextMenu
-
-        log $('menu')?
-        log $('menu')?.getWidget()?
-        log $('menu')?.getWidget()?.config.children?.length
-        children = []
-        # for b in 
-        # children.push child
-
-        @contextMenu = knix.get
-            id:    'context-menu'
-            type:  'context-menu'
-            title: 'context'
-            popup: true
-            children: children
-            style:
-                position: 'absolute'
-
-        @contextMenu.elem.hide()
-        @contextMenu
-
     @positionWindow: (win) =>
         # log win
         [p, w, h] = [win.absPos(), win.getWidth(), win.getHeight()]
         # log p, w, h
         if p.x + w > @width()
             win.setPos pos @width() - w, Math.max(p.y, $('menu').getHeight())
-
-    @showContextMenu: (event, e) =>
-        log 'showContextMenu', Stage.absPos event
-        @contextMenu.setPos Stage.absPos event
-        @contextMenu.elem.show()
 
     @width:  => @size().width
     @height: => @size().height

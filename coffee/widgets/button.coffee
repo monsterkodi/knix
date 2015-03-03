@@ -14,20 +14,28 @@ class Button extends Widget
 
         cfg = _.def cfg, defs
         
-        cfg = _.def cfg,
-            keys: []
-
+        children = []
+        
         if cfg.icon?
-            if cfg.text?
-                cfg.child =
-                    elem  : 'span'
-                    type  : 'octicon'
-                    class : cfg.icon
-            else
-                cfg.child =
-                    type : 'icon'
-                    icon : cfg.icon
+            # if cfg.text?
+            #     cfg.child =
+            #         elem  : 'span'
+            #         # type  : 'octicon'
+            #         # class : cfg.icon
+            # else
+            children.push
+                type : 'icon'
+                icon : cfg.icon
+            delete cfg.icon
+                
+        if cfg.text?
+            children.push
+                text : cfg.text
+            delete cfg.text
 
         super cfg,
-            type   : 'button'
-            noMove : true
+            onClick  : cfg.action
+            keys     : []
+            type     : 'button'
+            noMove   : true
+            children : children

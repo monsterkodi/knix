@@ -15,6 +15,8 @@ class Widget
     init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
+        
+        log cfg
 
         #__________________________________________________ initialization
 
@@ -394,8 +396,8 @@ class Widget
 
     addMovement: =>        
         if @config.isMovable
-            tag 'Drag'
-            log 'addMovement'
+            # tag 'Drag'
+            # log 'addMovement'
             Drag.create
                 target:  @elem
                 minPos:  pos(undefined,0)
