@@ -18,8 +18,7 @@ class Envelope extends Window
         cfg = _.def cfg,
             type        : 'envelope'
             valueFormat : "%0.3f"
-            numHandles  : 10
-            # vals      : [pos(0,0), pos(0.25,0.5), pos(0.5,1), pos(0.75,0.5), pos(1,0)]
+            numHandles  : 7
 
         super cfg,
             title    : 'envelope'

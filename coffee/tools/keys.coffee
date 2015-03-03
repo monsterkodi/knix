@@ -23,7 +23,7 @@ class Keys
         key = mods+e.key
         
         if not _.isEmpty @register
-            log 'register key %s for element %s'.fmt key, @register.elem.id
+            log 'register key [%s] for element %s'.fmt key, @register.elem.id
             if @register.elem?
                 @registerKeyForWidget key, @register.widget
                 @register.elem.removeClassName 'register-key'
@@ -51,7 +51,7 @@ class Keys
             if @shortcuts[key]?
                 for wid in @shortcuts[key]
                     if not wid.trigger?
-                        log 'trigger'
+                        # log 'trigger'
                         e = new MouseEvent "mouseup",
                                             bubbles    : true,
                                             cancelable : true,
