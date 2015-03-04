@@ -73,7 +73,7 @@ class Window extends Widget
             type:  'content'
             parent: @elem.id
 
-        @content = content.elem.id
+        @content = content
 
         if @config.content == 'scroll'
 
@@ -144,9 +144,8 @@ class Window extends Widget
     sizeWindow: =>
         log 'sizeWindow'
         if @config.content == 'scroll'
-            content = $(@content).widget
-            content.setWidth  @contentWidth()
-            content.setHeight @contentHeight()
+            @content.setWidth  @contentWidth()
+            @content.setHeight @contentHeight()
 
         for e in @elem.descendants()
             e.widget?.onWindowSize?()
@@ -270,6 +269,7 @@ class Window extends Widget
             @moveBy dx, dy
 
     maximize: =>
+        log @config.isMaximized
         if @config.isMaximized
             @setPos @config.pos
             @setSize @config.size
@@ -291,9 +291,9 @@ class Window extends Widget
     ###
 
     raise: (event) =>
-        scrolltop = $(@content).scrollTop
+        scrolltop = @content.elem.scrollTop
         @elem.parentElement.appendChild this.elem
-        $(@content).scrollTop = scrolltop
+        @content.elem.scrollTop = scrolltop
         event?.stopPropagation()
 
     popup: (event) =>
@@ -306,12 +306,10 @@ class Window extends Widget
             warn 'no elem!'
 
     scrollToBottom: =>
-        content = $(@content)
-        content.scrollTop = content.scrollHeight
+        @content.elem.scrollTop = content.scrollHeight
 
     scrollToTop: =>
-        content = $(@content)
-        content.scrollTop = 0
+        content.elem.scrollTop = 0
 
     contentWidth:  => @elem.getLayout().get('padding-box-width')
     contentHeight: => @elem.getLayout().get('padding-box-height') - @headerSize()
@@ -319,7 +317,7 @@ class Window extends Widget
     shade: =>
         if @config.isShaded
             @config.isShaded = false
-            $(@content).show()
+            @content.show()
             @setHeightNoEmit @config.height
             @elem.setStyle({'min-height': @minHeightShade})
         else
@@ -328,7 +326,7 @@ class Window extends Widget
             @elem.setStyle({'min-height': '0px'})
             @setHeightNoEmit @headerSize()
             @config.isShaded = true
-            $(@content).hide()
+            @content.hide()
 
         @emit 'shade',
             shaded: @config.isShaded

@@ -139,6 +139,7 @@ class Console extends Window
             ]
 
         event.preventDefault()
+        event.stop()
 
     trashSettings: =>
         Settings.set 'logTags', {}

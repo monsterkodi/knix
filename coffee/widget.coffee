@@ -261,7 +261,7 @@ class Widget
         if not p?
             error 'no p?'
             return this
-        parentElement = $(p.content) if p.content?
+        parentElement = p.content?.elem
         parentElement = p.elem unless parentElement
         parentElement = $(p) unless parentElement
         if not parentElement?

@@ -15,35 +15,32 @@ class Tracker extends Window
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            columns   : 10
-            rows      : 4
-            title     :'tracker'
+            columns : 10
+            rows    : 4
+            title   :'tracker'
 
         children = []
         for c in [0...cfg.columns]
             children.push
-                type: 'TrackColumn'
-                rows: cfg.rows
-                style: 
-                    display: 'table-cell'
+                type  : 'TrackColumn'
+                rows  : cfg.rows
+                style : 
+                    display : 'table-cell'
             
         super cfg,
-            type         : 'Tracker'
-            content      : 'scroll'
-            child: 
-                resize: true
-                style:
-                    display: 'table-row'
+            type    : 'Tracker'
+            content : 'scroll'
+            child   :
                 children : children
+                style    :
+                    display : 'table-row'
         
     layoutChildren: =>
         log 'layout', @config.content
         @
 
     sizeWindow: =>
-        log 'sizeWindow'
-        content = $(@content).widget
-        content.resize @contentWidth(), @contentHeight()
+        @content.resize @contentWidth(), @contentHeight()
             
     @menu: =>
 
