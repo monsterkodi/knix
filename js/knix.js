@@ -13,7 +13,7 @@ var knix,
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.5.1';
+  knix.version = '0.6';
 
   knix.init = function(config) {
     var c, s;
@@ -32,71 +32,134 @@ knix = (function() {
       "method": "init",
       "type": "@"
     }, s, 'knix', 'version:', knix.version);
+    Keys.init();
     StyleSwitch.init();
-    Stage.initContextMenu();
     knix.initSVG();
+    knix.initMenu();
     knix.initAnim();
     knix.initTools();
     knix.initAudio();
-    c.raise();
+    Menu.initContextMenu();
+    if (config.loadLast) {
+      Files.loadLast();
+    }
+    if (c != null) {
+      c.raise();
+    }
+    log({
+      "file": "./coffee/knix.coffee",
+      "class": "knix",
+      "line": 40,
+      "args": ["config"],
+      "method": "init",
+      "type": "@"
+    }, 'knix initialised');
     return knix;
   };
 
+  knix.initMenu = function() {
+    var mainMenu, toolMenu;
+    mainMenu = new Menu({
+      id: 'menu',
+      parent: 'stage',
+      style: {
+        top: '0px'
+      }
+    });
+    return toolMenu = new Menu({
+      id: 'tool',
+      parent: 'stage',
+      style: {
+        top: '0px',
+        right: '0px'
+      }
+    });
+  };
+
   knix.initTools = function() {
-    var btn;
+    var a, btn, m;
+    a = Menu.addButton({
+      menu: 'menu',
+      text: 'audio',
+      icon: 'fa-music',
+      action: function() {
+        return Menu.menu('audio').show();
+      }
+    });
+    m = new Menu({
+      id: 'audio',
+      "class": 'submenu',
+      parent: a
+    });
+    m.hide();
     btn = {
-      parent: 'tool',
-      "class": 'tool-button'
+      menu: 'tool'
     };
-    new Button(btn, {
+    Menu.addButton(btn, {
       tooltip: 'save',
-      icon: 'octicon-file-binary',
-      onClick: Files.saveWindows
+      keys: ['s'],
+      icon: 'fa-floppy-o',
+      action: Files.saveWindows
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
+      tooltip: 'reload',
+      keys: ['r'],
+      icon: 'fa-retweet',
+      action: Files.loadLast
+    });
+    Menu.addButton(btn, {
       tooltip: 'load',
-      icon: 'octicon-file-directory',
-      onClick: Files.loadMenu
+      icon: 'fa-folder-o',
+      action: Files.loadMenu
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
       tooltip: 'console',
       icon: 'octicon-terminal',
-      onClick: function() {
+      action: function() {
         return new Console();
       }
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
       tooltip: 'fullscreen',
       icon: 'octicon-device-desktop',
-      onClick: function() {
+      action: function() {
         return Stage.toggleFullscreen();
       }
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
       tooltip: 'style',
+      keys: ['i'],
       icon: 'octicon-color-mode',
-      onClick: function() {
+      action: function() {
         return StyleSwitch.toggle();
       }
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
+      tooltip: 'set key',
+      icon: 'fa-keyboard-o',
+      action: function() {
+        return Keys.interactiveKey();
+      }
+    });
+    Menu.addButton(btn, {
       tooltip: 'about',
       icon: 'octicon-info',
-      onClick: function() {
+      action: function() {
         return About.show();
       }
     });
-    new Button(btn, {
+    Menu.addButton(btn, {
       tooltip: 'shade all',
       icon: 'octicon-dash',
-      onClick: function() {
+      action: function() {
         return knix.shadeWindows();
       }
     });
-    return new Button(btn, {
+    return Menu.addButton(btn, {
       tooltip: 'close all',
       icon: 'octicon-x',
-      onClick: function() {
+      keys: ['x'],
+      action: function() {
         return knix.closeWindows();
       }
     });

@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000   000
 0000000    000   000  000   000   0000000
  */
-var Drag, Pos, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
+var Drag, Keys, Pos, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -68,8 +68,8 @@ Drag = (function() {
     if ((this.minPos != null) && (this.maxPos != null)) {
       _ref = [this.minPos.min(this.maxPos), this.minPos.max(this.maxPos)], this.minPos = _ref[0], this.maxPos = _ref[1];
     }
-    this.cursorStartPos = null;
-    this.targetStartPos = null;
+    this.lastPos = null;
+    this.startPos = null;
     this.dragging = false;
     this.listening = false;
     if (typeof this.handle === "string") {
@@ -101,10 +101,10 @@ Drag = (function() {
     if (this.onStart != null) {
       this.onStart(this, event);
     }
-    this.cursorStartPos = this.absPos(event);
+    this.lastPos = this.absPos(event);
     if (this.doMove) {
-      this.targetStartPos = this.target.relPos();
-      this.targetStartPos = this.targetStartPos.check();
+      this.startPos = this.target.relPos();
+      this.startPos = this.startPos.check();
     }
     document.addEventListener('mousemove', this.dragMove);
     return document.addEventListener('mouseup', this.dragUp);
@@ -115,15 +115,16 @@ Drag = (function() {
     if (!this.dragging) {
       return;
     }
+    this.pos = this.absPos(event);
+    this.delta = this.lastPos.to(this.pos);
     if (this.doMove) {
-      newPos = this.absPos(event);
-      newPos = this.targetStartPos.add(newPos.sub(this.cursorStartPos));
-      newPos = newPos.clamp(this.minPos, this.maxPos);
+      newPos = this.startPos.add(this.delta).clamp(this.minPos, this.maxPos);
       this.target.getWidget().setPos(newPos);
     }
     if (this.onMove != null) {
-      return this.onMove(this, event);
+      this.onMove(this, event);
     }
+    return this.lastPos = this.pos;
   };
 
   Drag.prototype.constrain = function(minX, minY, maxX, maxY) {
@@ -131,7 +132,7 @@ Drag = (function() {
     wp = this.target.getWidget().relPos();
     this.minPos = pos(minX, minY);
     this.maxPos = pos(maxX, maxY);
-    cp = wp.clamp(this.minPos, this.maxPos);
+    cp = wp.clamped(this.minPos, this.maxPos);
     if (wp.notSame(cp)) {
       if (this.doMove) {
         return this.target.getWidget().setPos(cp);
@@ -149,8 +150,8 @@ Drag = (function() {
     }
     document.removeEventListener('mousemove', this.dragMove);
     document.removeEventListener('mouseup', this.dragUp);
-    this.cursorStartPos = null;
-    this.targetStartPos = null;
+    this.lastPos = null;
+    this.startPos = null;
     if ((this.onStop != null) && (event != null)) {
       this.onStop(this, event);
     }
@@ -177,6 +178,209 @@ Drag = (function() {
   };
 
   return Drag;
+
+})();
+
+
+/*
+
+000   000  00000000  000   000   0000000
+000  000   000        000 000   000     
+0000000    0000000     00000    0000000 
+000  000   000          000          000
+000   000  00000000     000     0000000
+ */
+
+Keys = (function() {
+  function Keys() {}
+
+  Keys.pressed = [];
+
+  Keys.register = {};
+
+  Keys.shortcuts = {};
+
+  Keys.init = function() {
+    document.onkeypress = Keys.onKey;
+    return document.onkeyup = Keys.onKeyUp;
+  };
+
+  Keys.onKey = function(e) {
+    var key, mods, wid, _i, _len, _ref, _results;
+    mods = _.filter([e.shiftKey && '⇧', e.ctrlKey && '^', e.altKey && '⌥', e.metaKey && '⌘']).join('');
+    key = mods + e.key;
+    if (!_.isEmpty(Keys.register)) {
+      log({
+        "file": "./coffee/tools/keys.coffee",
+        "class": "Keys",
+        "line": 26,
+        "method": "onKey",
+        "type": "@",
+        "args": ["e"]
+      }, 'register key [%s] for element %s'.fmt(key, Keys.register.elem.id));
+      if (Keys.register.elem != null) {
+        Keys.registerKeyForWidget(key, Keys.register.widget);
+        Keys.register.elem.removeClassName('register-key');
+      }
+      document.removeEventListener('mousemove', Keys.onMove);
+      return Keys.register = {};
+    } else {
+      if (Keys.shortcuts[key] != null) {
+        _ref = Keys.shortcuts[key];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          wid = _ref[_i];
+          if (wid.trigger != null) {
+            _results.push(typeof wid.trigger === "function" ? wid.trigger() : void 0);
+          } else if (__indexOf.call(Keys.pressed, key) < 0) {
+            e = new MouseEvent("mousedown", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+            wid.elem.dispatchEvent(e);
+            _results.push(Keys.pressed.push(key));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    }
+  };
+
+  Keys.onKeyUp = function(e) {
+    var i, key, mods, wid, _i, _len, _ref, _results;
+    mods = _.filter([e.shiftKey && '⇧', e.ctrlKey && '^', e.altKey && '⌥', e.metaKey && '⌘']).join('');
+    key = mods + e.key;
+    i = Keys.pressed.indexOf(key);
+    if (i >= 0) {
+      Keys.pressed.splice(i, 1);
+    }
+    if (_.isEmpty(Keys.register) && i >= 0) {
+      if (Keys.shortcuts[key] != null) {
+        _ref = Keys.shortcuts[key];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          wid = _ref[_i];
+          if (wid.trigger == null) {
+            e = new MouseEvent("mouseup", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+            e = new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+            _results.push(wid.elem.dispatchEvent(e));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    }
+  };
+
+  Keys.interactiveKey = function() {
+    return document.addEventListener('mousemove', Keys.onMove);
+  };
+
+  Keys.registerKeyForWidget = function(key, wid) {
+    if (__indexOf.call(wid.config.keys, key) < 0) {
+      wid.config.keys.push(key);
+    }
+    if (Keys.shortcuts[key] == null) {
+      Keys.shortcuts[key] = [];
+    }
+    if (__indexOf.call(Keys.shortcuts[key], wid) < 0) {
+      return Keys.shortcuts[key].push(wid);
+    }
+  };
+
+  Keys.unregisterKeyForWidget = function(key, wid) {
+    var i;
+    log({
+      "file": "./coffee/tools/keys.coffee",
+      "class": "Keys",
+      "line": 74,
+      "method": "unregisterKeyForWidget",
+      "type": "@",
+      "args": ["key", "wid"]
+    }, key, wid.elem.id);
+    if (Keys.shortcuts[key] != null) {
+      i = Keys.shortcuts[key].indexOf(wid);
+      if (i >= 0) {
+        return Keys.shortcuts[key].splice(i, 1);
+      }
+    }
+  };
+
+  Keys.registerWidget = function(w) {
+    var key, _i, _len, _ref, _results;
+    if (w.config.keys != null) {
+      _ref = w.config.keys;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        _results.push(Keys.registerKeyForWidget(key, w));
+      }
+      return _results;
+    }
+  };
+
+  Keys.unregisterWidget = function(w) {
+    var c, cw, key, _i, _j, _len, _len1, _ref, _ref1, _results;
+    if (w.config.keys != null) {
+      _ref = w.config.keys;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        Keys.unregisterKeyForWidget(key, w);
+      }
+    }
+    if (w.config.children != null) {
+      _ref1 = w.config.children;
+      _results = [];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        c = _ref1[_j];
+        cw = $(c.id).getWidget();
+        if (cw != null) {
+          _results.push(Keys.unregisterWidget(cw));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    }
+  };
+
+  Keys.onMove = function(event) {
+    var e, wid;
+    e = document.elementFromPoint(event.clientX, event.clientY);
+    if (e != null) {
+      wid = e.getWidget().upWidgetWithConfigValue('keys');
+      if (wid != null) {
+        e = wid.elem;
+        if (e !== Keys.register.elem) {
+          if (Keys.register.elem != null) {
+            Keys.register.elem.removeClassName('register-key');
+          }
+          e.addClassName('register-key');
+          Keys.register.elem = e;
+          Keys.register.widget = wid;
+        }
+        return;
+      }
+    }
+    if (Keys.register.elem != null) {
+      Keys.register.elem.removeClassName('register-key');
+      return Keys.register.elem = void 0;
+    }
+  };
+
+  return Keys;
 
 })();
 
@@ -218,24 +422,27 @@ Pos = (function() {
   function Pos(x, y) {
     this.x = x;
     this.y = y;
+    this.clamp = __bind(this.clamp, this);
+    this.sub = __bind(this.sub, this);
+    this.add = __bind(this.add, this);
+    this.mul = __bind(this.mul, this);
+    this.scale = __bind(this.scale, this);
     this._str = __bind(this._str, this);
     this.check = __bind(this.check, this);
     this.notSame = __bind(this.notSame, this);
     this.same = __bind(this.same, this);
-    this.length = __bind(this.length, this);
     this.dist = __bind(this.dist, this);
     this.distSquare = __bind(this.distSquare, this);
     this.square = __bind(this.square, this);
-    this.clamp = __bind(this.clamp, this);
+    this.length = __bind(this.length, this);
     this.max = __bind(this.max, this);
     this.min = __bind(this.min, this);
     this.mid = __bind(this.mid, this);
-    this.mul = __bind(this.mul, this);
-    this.times = __bind(this.times, this);
-    this.scale = __bind(this.scale, this);
     this.to = __bind(this.to, this);
-    this.sub = __bind(this.sub, this);
-    this.add = __bind(this.add, this);
+    this.clamped = __bind(this.clamped, this);
+    this.times = __bind(this.times, this);
+    this.minus = __bind(this.minus, this);
+    this.plus = __bind(this.plus, this);
     this.copy = __bind(this.copy, this);
   }
 
@@ -243,7 +450,7 @@ Pos = (function() {
     return new Pos(this.x, this.y);
   };
 
-  Pos.prototype.add = function(val) {
+  Pos.prototype.plus = function(val) {
     var newPos;
     newPos = this.copy();
     if (val != null) {
@@ -257,7 +464,7 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.sub = function(val) {
+  Pos.prototype.minus = function(val) {
     var newPos;
     newPos = this.copy();
     if (val != null) {
@@ -271,28 +478,20 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.to = function(other) {
-    return other.sub(this);
-  };
-
-  Pos.prototype.scale = function(val) {
-    this.x *= val;
-    this.y *= val;
-    return this;
-  };
-
   Pos.prototype.times = function(val) {
     return this.copy().scale(val);
   };
 
-  Pos.prototype.mul = function(other) {
-    this.x *= other.x;
-    this.y *= other.y;
-    return this;
+  Pos.prototype.clamped = function(lower, upper) {
+    return this.copy().clamp(lower, upper);
+  };
+
+  Pos.prototype.to = function(other) {
+    return other.minus(this);
   };
 
   Pos.prototype.mid = function(other) {
-    return this.add(other).scale(0.5);
+    return this.plus(other).scale(0.5);
   };
 
   Pos.prototype.min = function(val) {
@@ -325,14 +524,8 @@ Pos = (function() {
     return newPos;
   };
 
-  Pos.prototype.clamp = function(lower, upper) {
-    var newPos;
-    newPos = this.copy();
-    if ((lower != null) && (upper != null)) {
-      newPos.x = _.clamp(lower.x, upper.x, this.x);
-      newPos.y = _.clamp(lower.y, upper.y, this.y);
-    }
-    return newPos;
+  Pos.prototype.length = function() {
+    return Math.sqrt(this.square());
   };
 
   Pos.prototype.square = function() {
@@ -340,15 +533,11 @@ Pos = (function() {
   };
 
   Pos.prototype.distSquare = function(o) {
-    return this.sub(o).square();
+    return this.minus(o).square();
   };
 
   Pos.prototype.dist = function(o) {
     return Math.sqrt(this.distSquare(o));
-  };
-
-  Pos.prototype.length = function() {
-    return Math.sqrt(this.square());
   };
 
   Pos.prototype.same = function(o) {
@@ -373,6 +562,38 @@ Pos = (function() {
 
   Pos.prototype._str = function() {
     return "<x:%2.2f y:%2.2f>".fmt(this.x, this.y);
+  };
+
+  Pos.prototype.scale = function(val) {
+    this.x *= val;
+    this.y *= val;
+    return this;
+  };
+
+  Pos.prototype.mul = function(other) {
+    this.x *= other.x;
+    this.y *= other.y;
+    return this;
+  };
+
+  Pos.prototype.add = function(other) {
+    this.x += other.x;
+    this.y += other.y;
+    return this;
+  };
+
+  Pos.prototype.sub = function(other) {
+    this.x -= other.x;
+    this.y -= other.y;
+    return this;
+  };
+
+  Pos.prototype.clamp = function(lower, upper) {
+    if ((lower != null) && (upper != null)) {
+      this.x = _.clamp(lower.x, upper.x, this.x);
+      this.y = _.clamp(lower.y, upper.y, this.y);
+    }
+    return this;
   };
 
   return Pos;
@@ -438,46 +659,11 @@ Settings = (function() {
 Stage = (function() {
   function Stage() {}
 
-  Stage.initContextMenu = function() {
-    log({
-      "file": "./coffee/tools/stage.coffee",
-      "class": "Stage",
-      "line": 15,
-      "method": "initContextMenu",
-      "type": "@"
-    }, 'initContextMenu');
-    $('stage_content').on('mousedown', Stage.showContextMenu);
-    Stage.contextMenu = knix.get({
-      id: 'context-menu',
-      type: 'context-menu',
-      title: 'context',
-      style: {
-        position: 'absolute'
-      }
-    });
-    Stage.contextMenu.elem.hide();
-    return Stage.contextMenu;
-  };
-
   Stage.positionWindow = function(win) {
     var h, p, w, _ref;
     _ref = [win.absPos(), win.getWidth(), win.getHeight()], p = _ref[0], w = _ref[1], h = _ref[2];
     if (p.x + w > Stage.width()) {
       return win.setPos(pos(Stage.width() - w, Math.max(p.y, $('menu').getHeight())));
-    }
-  };
-
-  Stage.showContextMenu = function(event, e) {
-    if ($('stage_content') === e) {
-      log({
-        "file": "./coffee/tools/stage.coffee",
-        "class": "Stage",
-        "line": 37,
-        "method": "showContextMenu",
-        "type": "@",
-        "args": ["event", "e"]
-      }, 'showContextMenu');
-      return Stage.contextMenu.elem.show();
     }
   };
 
@@ -611,9 +797,7 @@ str = function(o, indent, visited) {
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             k = _ref[_i];
-            if (!_.isFunction(o[k])) {
-              _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
-            }
+            _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
           }
           return _results;
         })()).join("\n");
@@ -748,12 +932,6 @@ SVGAnimatedLength.prototype._str = function() {
   return "<%0.2f>".fmt(this.baseVal.value);
 };
 
-_.del = function(l, e) {
-  return _.remove(l, function(n) {
-    return n === e;
-  });
-};
-
 _.def = function(c, d) {
   if (c != null) {
     return _.defaults(_.clone(c), d);
@@ -797,6 +975,12 @@ _.arg = function(arg, argname) {
     }
   }
   return arg;
+};
+
+_.del = function(l, e) {
+  return _.remove(l, function(n) {
+    return n === e;
+  });
 };
 
 _.value = function(arg) {

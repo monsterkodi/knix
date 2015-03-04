@@ -33,7 +33,7 @@ Audio = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       connection = _ref[_i];
-      _results.push(connection.config.target.getWindow().paramValuesAtConnector(paramValues, connection.config.target));
+      _results.push(connection.config.target.getWindow().paramValuesAtConnector(_.clone(paramValues), connection.config.target));
     }
     return _results;
   };
@@ -282,7 +282,7 @@ Analyser = (function(_super) {
   Analyser.menu = function() {
     return Analyser.menuButton({
       text: 'analyser',
-      icon: 'octicon-diff-modified',
+      icon: 'fa-area-chart',
       action: function() {
         return new Analyser({
           center: true
@@ -434,7 +434,7 @@ Envelope = (function(_super) {
     cfg = _.def(cfg, {
       type: 'envelope',
       valueFormat: "%0.3f",
-      numHandles: 10
+      numHandles: 7
     });
     Envelope.__super__.init.call(this, cfg, {
       title: 'envelope',
@@ -641,7 +641,7 @@ Filter = (function(_super) {
   Filter.menu = function() {
     return Filter.menuButton({
       text: 'filter',
-      icon: 'octicon-gear',
+      icon: 'fa-filter',
       action: function() {
         return new Filter({
           center: true
@@ -718,7 +718,7 @@ Gain = (function(_super) {
   Gain.menu = function() {
     Gain.menuButton({
       text: 'gain',
-      icon: 'octicon-dashboard',
+      icon: 'fa-volume-up',
       action: function() {
         return new Gain({
           center: true
@@ -727,8 +727,8 @@ Gain = (function(_super) {
     });
     return Gain.menuButton({
       text: 'master',
-      icon: 'octicon-unmute',
-      ection: function() {
+      icon: 'fa-sign-out',
+      action: function() {
         return new Gain({
           center: true,
           master: true
@@ -895,7 +895,7 @@ Oscillator = (function(_super) {
   Oscillator.menu = function() {
     return Oscillator.menuButton({
       text: 'oscillator',
-      icon: 'octicon-sync',
+      icon: 'fa-circle-o-notch',
       action: function() {
         return new Oscillator({
           center: true
@@ -937,7 +937,7 @@ Ramp = (function(_super) {
       minDuration: 0.01,
       maxDuration: 10.0,
       durationStep: 0.01,
-      valueFormat: "%0.3f",
+      valueFormat: "%1.3f",
       resize: 'horizontal'
     });
     Ramp.__super__.init.call(this, cfg, {
@@ -999,7 +999,7 @@ Ramp = (function(_super) {
   Ramp.menu = function() {
     return Ramp.menuButton({
       text: 'ramp',
-      icon: 'octicon-playback-play',
+      icon: 'fa-external-link-square',
       action: function() {
         return new Ramp({
           center: true

@@ -529,8 +529,8 @@ Test = (function() {
           ],
           connect: [
             {
-              signal: 'slider:onValue',
-              slot: 'value:setValue'
+              signal: 'slider :onValue',
+              slot: 'value  :setValue'
             }
           ]
         });
@@ -587,11 +587,11 @@ Test = (function() {
           ],
           connect: [
             {
-              signal: 'slider_2:onValue',
-              slot: 'value:setValue'
+              signal: 'slider_2 :onValue',
+              slot: 'value    :setValue'
             }, {
-              signal: 'value:onValue',
-              slot: 'slider_1:setValue'
+              signal: 'value    :onValue',
+              slot: 'slider_1 :setValue'
             }
           ]
         });
@@ -683,10 +683,11 @@ Test = (function() {
 
 document.observe("dom:loaded", function() {
   knix.init({
-    console: true
+    console: true,
+    loadLast: true
   });
   Test.audio();
-  return Files.loadLast();
+  return Settings.set('tooltips', false);
 });
 
 //# sourceMappingURL=main.js.map

@@ -29,6 +29,7 @@ Widget = (function() {
     this.innerWidth = __bind(this.innerWidth, this);
     this.getHeight = __bind(this.getHeight, this);
     this.getWidth = __bind(this.getWidth, this);
+    this.sizePos = __bind(this.sizePos, this);
     this.getSize = __bind(this.getSize, this);
     this.setSize = __bind(this.setSize, this);
     this.resize = __bind(this.resize, this);
@@ -37,15 +38,22 @@ Widget = (function() {
     this.setWidth = __bind(this.setWidth, this);
     this.moveBy = __bind(this.moveBy, this);
     this.moveTo = __bind(this.moveTo, this);
+    this.move = __bind(this.move, this);
     this.setPos = __bind(this.setPos, this);
     this.toggleDisplay = __bind(this.toggleDisplay, this);
+    this.hide = __bind(this.hide, this);
+    this.show = __bind(this.show, this);
     this.clear = __bind(this.clear, this);
     this.close = __bind(this.close, this);
     this.getChild = __bind(this.getChild, this);
     this.getWindow = __bind(this.getWindow, this);
     this.matchConfigValue = __bind(this.matchConfigValue, this);
+    this.upWidgetWithConfigValue = __bind(this.upWidgetWithConfigValue, this);
+    this.upWidgets = __bind(this.upWidgets, this);
     this.getAncestors = __bind(this.getAncestors, this);
+    this.getUp = __bind(this.getUp, this);
     this.getParent = __bind(this.getParent, this);
+    this.insertText = __bind(this.insertText, this);
     this.insertChildren = __bind(this.insertChildren, this);
     this.insertChild = __bind(this.insertChild, this);
     this.addToParent = __bind(this.addToParent, this);
@@ -134,9 +142,7 @@ Widget = (function() {
       this.addToParent(this.config.parent);
     }
     this.insertChildren();
-    if (this.config.text != null) {
-      this.elem.insert(this.config.text);
-    }
+    this.insertText();
     if (this.config.pos != null) {
       if (this.config.pos.x != null) {
         this.config.x = this.config.pos.x;
@@ -162,6 +168,7 @@ Widget = (function() {
     this.initSlots();
     this.initConnections();
     this.initEvents();
+    Keys.registerWidget(this);
     return this;
   };
 
@@ -229,7 +236,7 @@ Widget = (function() {
     error({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 135,
+      "line": 138,
       "args": ["name"],
       "method": "connector",
       "type": "."
@@ -258,7 +265,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 151,
+        "line": 154,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -268,7 +275,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 153,
+        "line": 156,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -278,7 +285,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 155,
+        "line": 158,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -332,7 +339,7 @@ Widget = (function() {
           error({
             "file": "./coffee/widget.coffee",
             "class": "Widget",
-            "line": 188,
+            "line": 191,
             "args": ["slot"],
             "method": "resolveSlot",
             "type": "."
@@ -343,7 +350,7 @@ Widget = (function() {
     error({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 190,
+      "line": 193,
       "args": ["slot"],
       "method": "resolveSlot",
       "type": "."
@@ -415,7 +422,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 244,
+        "line": 247,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -426,7 +433,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 247,
+        "line": 250,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -446,7 +453,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 253,
+        "line": 256,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -483,6 +490,13 @@ Widget = (function() {
     return this;
   };
 
+  Widget.prototype.insertText = function() {
+    var _ref;
+    if (this.config.text != null) {
+      return (_ref = this.elem) != null ? _ref.insert(this.config.text) : void 0;
+    }
+  };
+
   Widget.prototype.getParent = function() {
     var a, anc, args, _i, _len, _ref;
     args = $A(arguments);
@@ -508,9 +522,31 @@ Widget = (function() {
     return void 0;
   };
 
+  Widget.prototype.getUp = function() {
+    var args;
+    args = $A(arguments);
+    if (args.length) {
+      if (this.elem.match("#" + args[0]) || this.elem.match("." + args[0])) {
+        return this;
+      }
+    }
+    return this.getParent.apply(this, arguments);
+  };
+
   Widget.prototype.getAncestors = function() {
     var _ref;
-    return [this.getParent(), (_ref = this.getParent()) != null ? _ref.getAncestors() : void 0].flatten();
+    return _.filter([this.getParent(), (_ref = this.getParent()) != null ? _ref.getAncestors() : void 0].flatten());
+  };
+
+  Widget.prototype.upWidgets = function() {
+    return _.filter([this, this.getAncestors()].flatten());
+  };
+
+  Widget.prototype.upWidgetWithConfigValue = function(key) {
+    return _.find(this.upWidgets(), function(w) {
+      var _ref;
+      return (w != null ? (_ref = w.config) != null ? _ref[key] : void 0 : void 0) != null;
+    });
   };
 
   Widget.prototype.matchConfigValue = function(key, value, list) {
@@ -547,6 +583,7 @@ Widget = (function() {
   };
 
   Widget.prototype.close = function() {
+    Keys.unregisterWidget(this);
     this.emit('close');
     this.elem.remove();
     this.elem = null;
@@ -561,6 +598,17 @@ Widget = (function() {
     return this;
   };
 
+  Widget.prototype.show = function() {
+    this.elem.show();
+    this.elem.raise();
+    return this;
+  };
+
+  Widget.prototype.hide = function() {
+    this.elem.hide();
+    return this;
+  };
+
   Widget.prototype.toggleDisplay = function() {
     if (this.elem.visible()) {
       return this.elem.hide();
@@ -571,6 +619,10 @@ Widget = (function() {
 
   Widget.prototype.setPos = function(p) {
     return this.moveTo(p.x, p.y);
+  };
+
+  Widget.prototype.move = function(p) {
+    return this.moveBy(p.x, p.y);
   };
 
   Widget.prototype.moveTo = function(x, y) {
@@ -653,6 +705,10 @@ Widget = (function() {
     };
   };
 
+  Widget.prototype.sizePos = function() {
+    return pos(this.getWidth(), this.getHeight());
+  };
+
   Widget.prototype.getWidth = function() {
     return this.elem.getWidth();
   };
@@ -723,20 +779,11 @@ Widget = (function() {
   };
 
   Widget.prototype.absCenter = function() {
-    return this.absPos().add(pos(this.elem.getWidth(), this.elem.getHeight()).scale(0.5));
+    return this.absPos().plus(pos(this.elem.getWidth(), this.elem.getHeight()).scale(0.5));
   };
 
   Widget.prototype.addMovement = function() {
     if (this.config.isMovable) {
-      tag('Drag');
-      log({
-        "file": "./coffee/widget.coffee",
-        "class": "Widget",
-        "line": 393,
-        "args": ["s"],
-        "method": "addMovement",
-        "type": "."
-      }, 'addMovement');
       return Drag.create({
         target: this.elem,
         minPos: pos(void 0, 0),
@@ -758,7 +805,7 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 408,
+      "line": 434,
       "args": ["drag", "event"],
       "method": "moveStart",
       "type": "."
@@ -772,7 +819,7 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 413,
+      "line": 439,
       "args": ["drag", "event"],
       "method": "moveStop",
       "type": "."

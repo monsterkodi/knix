@@ -21,6 +21,7 @@ Window = (function(_super) {
     this.contentHeight = __bind(this.contentHeight, this);
     this.contentWidth = __bind(this.contentWidth, this);
     this.headerSize = __bind(this.headerSize, this);
+    this.popup = __bind(this.popup, this);
     this.raise = __bind(this.raise, this);
     this.maximize = __bind(this.maximize, this);
     this.sizeMove = __bind(this.sizeMove, this);
@@ -30,6 +31,7 @@ Window = (function(_super) {
     this.addMovement = __bind(this.addMovement, this);
     this.sizeWindow = __bind(this.sizeWindow, this);
     this.stretchWidth = __bind(this.stretchWidth, this);
+    this.scrollToTop = __bind(this.scrollToTop, this);
     this.scrollToBottom = __bind(this.scrollToBottom, this);
     this.addShadeButton = __bind(this.addShadeButton, this);
     this.addCloseButton = __bind(this.addCloseButton, this);
@@ -74,7 +76,7 @@ Window = (function(_super) {
       knix.addPopup(this);
     }
     if (this.config.center) {
-      this.moveTo(Math.max(0, Stage.size().width / 4 - this.getWidth() / 2), Math.max(0, Stage.size().height / 2 - this.getHeight() / 2));
+      this.moveTo(Math.max(0, Stage.size().width / 2 - this.getWidth() / 2), Math.max(0, Stage.size().height / 2 - this.getHeight() / 2));
       this.config.center = void 0;
     }
     return this;
@@ -160,20 +162,18 @@ Window = (function(_super) {
     return content.scrollTop = content.scrollHeight;
   };
 
+  Window.prototype.scrollToTop = function() {
+    var content;
+    content = $(this.content);
+    return content.scrollTop = 0;
+  };
+
   Window.prototype.stretchWidth = function() {
     return this;
   };
 
   Window.prototype.sizeWindow = function() {
     var content, e, _i, _len, _ref, _ref1, _results;
-    log({
-      "file": "./coffee/window.coffee",
-      "class": "Window",
-      "line": 123,
-      "args": ["cfg", "defs"],
-      "method": "sizeWindow",
-      "type": "."
-    }, 'sizeWindow');
     if (this.config.content === 'scroll') {
       content = $(this.content).widget;
       content.setWidth(this.contentWidth());
@@ -198,7 +198,7 @@ Window = (function(_super) {
   };
 
   Window.prototype.onHover = function(event, e) {
-    var a, action, border, cursor, d1, d2, eventPos, m, md, _ref;
+    var action, border, cursor, d1, d2, eventPos, m, md;
     if (this.sizeMoveDrag != null) {
       if (this.sizeMoveDrag.dragging) {
         return;
@@ -206,16 +206,15 @@ Window = (function(_super) {
       this.sizeMoveDrag.deactivate();
       this.sizeMoveDrag = null;
     }
-    if ((e != null ? typeof e.getWidget === "function" ? (_ref = e.getWidget()) != null ? _ref.getAncestors : void 0 : void 0 : void 0) != null) {
-      a = e.getWidget().getAncestors();
-      m = this.matchConfigValue('noMove', true, [e.getWidget(), a].flatten());
+    if ((e != null ? typeof e.getWidget === "function" ? e.getWidget() : void 0 : void 0) != null) {
+      m = this.matchConfigValue('noMove', true, e.getWidget().upWidgets());
       if (m.length) {
         return;
       }
     }
     eventPos = Stage.absPos(event);
-    d1 = eventPos.sub(this.absPos());
-    d2 = this.absPos().add(pos(this.getWidth(), this.getHeight())).sub(eventPos);
+    d1 = eventPos.minus(this.absPos());
+    d2 = this.absPos().plus(pos(this.getWidth(), this.getHeight())).minus(eventPos);
     md = 10;
     action = 'move';
     border = '';
@@ -285,7 +284,7 @@ Window = (function(_super) {
     if ((_ref = drag.border) === 'left' || _ref === 'topleft' || _ref === 'top') {
       wdt = wpos.x - spos.x + this.getWidth();
       hgt = wpos.y - spos.y + this.getHeight();
-      br = wpos.add(pos(this.getWidth(), this.getHeight()));
+      br = wpos.plus(pos(this.getWidth(), this.getHeight()));
     } else {
       wdt = spos.x - wpos.x;
       hgt = spos.y - wpos.y;
@@ -340,6 +339,31 @@ Window = (function(_super) {
     this.elem.parentElement.appendChild(this.elem);
     $(this.content).scrollTop = scrolltop;
     return event != null ? event.stopPropagation() : void 0;
+  };
+
+  Window.prototype.popup = function(event) {
+    log({
+      "file": "./coffee/window.coffee",
+      "class": "Window",
+      "line": 269,
+      "args": ["event"],
+      "method": "popup",
+      "type": "."
+    }, 'popup', Stage.absPos(event));
+    if (this.elem != null) {
+      this.elem.show();
+      this.setPos(Stage.absPos(event));
+      return this.elem.raise();
+    } else {
+      return warn({
+        "file": "./coffee/window.coffee",
+        "class": "Window",
+        "line": 275,
+        "args": ["event"],
+        "method": "popup",
+        "type": "."
+      }, 'no elem!');
+    }
   };
 
   Window.prototype.headerSize = function(box) {
@@ -398,15 +422,9 @@ Window = (function(_super) {
   };
 
   Window.menuButton = function(cfg) {
-    return knix.create({
-      type: 'button',
-      "class": 'tool-button',
-      parent: 'menu',
-      id: 'new_' + cfg.text,
-      tooltip: cfg.text,
-      icon: cfg.icon,
-      onClick: cfg.action
-    });
+    return Menu.addButton(_.def(cfg, {
+      menu: 'audio'
+    }));
   };
 
   return Window;
