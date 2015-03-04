@@ -22,14 +22,15 @@ module.exports = (grunt) ->
         salt:
             options:
                 dryrun  : false
-                verbose : true
+                verbose : false
                 refresh : false
-            knix:
+            coffee:
                 files:
                     'asciiHeader' : ['./coffee/**/*.coffee']
+                    'asciiText'   : ['./coffee/**/*.coffee']
             style: 
                 options:
-                    verbose     : true
+                    verbose     : false
                     textMarker  : '//!!'
                     textPrefix  : '/*'
                     textFill    : '*  '

@@ -12,8 +12,6 @@ class Window extends Widget
 
     constructor: (cfg, defs) -> super cfg, defs
 
-    #__________________________________________________ init
-
     init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
@@ -54,7 +52,13 @@ class Window extends Widget
             @config.center = undefined
         @
 
-    #__________________________________________________ init window
+    ###
+    000  000   000  000  000000000  000   000  000  000   000  0000000     0000000   000   000
+    000  0000  000  000     000     000 0 000  000  0000  000  000   000  000   000  000 0 000
+    000  000 0 000  000     000     000000000  000  000 0 000  000   000  000   000  000000000
+    000  000  0000  000     000     000   000  000  000  0000  000   000  000   000  000   000
+    000  000   000  000     000     00     00  000  000   000  0000000     0000000   00     00
+    ###
 
     initWindow: =>
 
@@ -82,7 +86,13 @@ class Window extends Widget
         @elem.on 'size', @sizeWindow
         @
 
-    #__________________________________________________ header
+    ###
+    000   000  00000000   0000000   0000000    00000000  00000000 
+    000   000  000       000   000  000   000  000       000   000
+    000000000  0000000   000000000  000   000  0000000   0000000  
+    000   000  000       000   000  000   000  000       000   000
+    000   000  00000000  000   000  0000000    00000000  000   000
+    ###
 
     addTitleBar: =>
         t = knix.create
@@ -111,15 +121,22 @@ class Window extends Widget
                 icon : 'octicon-dash'
             onClick  : @shade
 
-    scrollToBottom: =>
-        content = $(@content)
-        content.scrollTop = content.scrollHeight
+    headerSize: (box="border-box-height") =>
+        children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
+        i = 0
+        while i < children.length
+            height = children[i].getLayout().get(box)
+            return height if height
+            i++
+        0
 
-    scrollToTop: =>
-        content = $(@content)
-        content.scrollTop = 0
-
-    # ____________________________________________________________________________ layout
+    ###
+    000       0000000   000   000   0000000   000   000  000000000
+    000      000   000   000 000   000   000  000   000     000   
+    000      000000000    00000    000   000  000   000     000   
+    000      000   000     000     000   000  000   000     000   
+    0000000  000   000     000      0000000    0000000      000   
+    ###
 
     stretchWidth: =>
         @
@@ -134,7 +151,13 @@ class Window extends Widget
         for e in @elem.descendants()
             e.widget?.onWindowSize?()
 
-    # ____________________________________________________________________________ size and move
+    ###
+     0000000  000  0000000  00000000
+    000       000     000   000     
+    0000000   000    000    0000000 
+         000  000   000     000     
+    0000000   000  0000000  00000000
+    ###
 
     addMovement: =>
         if @config.resize
@@ -259,6 +282,14 @@ class Window extends Widget
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
 
+    ###
+    00     00  000   0000000   0000000
+    000   000  000  000       000     
+    000000000  000  0000000   000     
+    000 0 000  000       000  000     
+    000   000  000  0000000    0000000
+    ###
+
     raise: (event) =>
         scrolltop = $(@content).scrollTop
         @elem.parentElement.appendChild this.elem
@@ -274,14 +305,13 @@ class Window extends Widget
         else
             warn 'no elem!'
 
-    headerSize: (box="border-box-height") =>
-        children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
-        i = 0
-        while i < children.length
-            height = children[i].getLayout().get(box)
-            return height if height
-            i++
-        0
+    scrollToBottom: =>
+        content = $(@content)
+        content.scrollTop = content.scrollHeight
+
+    scrollToTop: =>
+        content = $(@content)
+        content.scrollTop = 0
 
     contentWidth:  => @elem.getLayout().get('padding-box-width')
     contentHeight: => @elem.getLayout().get('padding-box-height') - @headerSize()

@@ -18,8 +18,6 @@ class Widget
         
         # log cfg
 
-        #__________________________________________________ initialization
-
         if not cfg.type?
             console.warn "NO TYPE?"
             cfg.type = 'unknown'
@@ -89,19 +87,18 @@ class Widget
 
         @addMovement()
 
-        @initSlots()
         @initConnections()
         @initEvents()
         Keys.registerWidget @
         @
 
-    onTooltip: => @config.tooltip
-    
-    # ________________________________________________________________________________ dump
-    
-    dump: => @config
-
-    # ________________________________________________________________________________ event handling
+    ###
+    00000000  000   000  00000000  000   000  000000000   0000000
+    000       000   000  000       0000  000     000     000     
+    0000000    000 000   0000000   000 0 000     000     0000000 
+    000          000     000       000  0000     000          000
+    00000000      0      00000000  000   000     000     0000000 
+    ###
 
     initEvents: =>
         @elem.addEventListener "click",      @config.onClick  if @config.onClick?
@@ -113,30 +110,13 @@ class Widget
         @elem.addEventListener "ondblclick", @config.onDouble if @config.onDouble?
         @
 
-    # ____________________________________________________________________________ slots
-
-    initSlots: =>
-        slots = @config.slots
-        return if not slots?
-        for slot, func of slots
-            @[slot] = func
-        @
-
-    # ____________________________________________________________________________ connections
-
-    connector: (name) =>
-        # tag 'Connection'
-        # log name
-        for t in ['slot', 'signal', 'in', 'out']
-            for e in @elem.select('.'+t)
-                if e.hasClassName 'connector'
-                    # tag 'Connection'
-                    # log 'found connector element', t, e.widget.config[t]
-                    if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
-                        return e.widget
-            # warn 'no elem with class', name
-        error 'connector not found!', name
-        undefined
+    ###
+     0000000   0000000   000   000  000   000  00000000   0000000  000000000  000   0000000   000   000
+    000       000   000  0000  000  0000  000  000       000          000     000  000   000  0000  000
+    000       000   000  000 0 000  000 0 000  0000000   000          000     000  000   000  000 0 000
+    000       000   000  000  0000  000  0000  000       000          000     000  000   000  000  0000
+     0000000   0000000   000   000  000   000  00000000   0000000     000     000   0000000   000   000
+    ###
 
     initConnections: =>
         connections = @config.connect
@@ -160,6 +140,20 @@ class Widget
         sender:   signalSender
         event:    signalEvent
         receiver: slotFunction
+
+    connector: (name) =>
+        # tag 'Connection'
+        # log name
+        for t in ['slot', 'signal', 'in', 'out']
+            for e in @elem.select('.'+t)
+                if e.hasClassName 'connector'
+                    # tag 'Connection'
+                    # log 'found connector element', t, e.widget.config[t]
+                    if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
+                        return e.widget
+            # warn 'no elem with class', name
+        error 'connector not found!', name
+        undefined
 
     resolveSignal: (signal) =>
         [event, sender] = signal.split(':').reverse()
@@ -193,7 +187,13 @@ class Widget
         error 'cant resolve slot:', slot, typeof slot
         null
 
-    # ____________________________________________________________________________ signals
+    ###
+     0000000  000   0000000   000   000   0000000   000    
+    000       000  000        0000  000  000   000  000    
+    0000000   000  000  0000  000 0 000  000000000  000    
+         000  000  000   000  000  0000  000   000  000    
+    0000000   000   0000000   000   000  000   000  0000000
+    ###
 
     emit: (signal, args) =>
         event = new CustomEvent signal,
@@ -224,7 +224,13 @@ class Widget
             value: v
         @
 
-    # ____________________________________________________________________________ elements
+    ###
+    00000000  000      00000000  00     00
+    000       000      000       000   000
+    0000000   000      0000000   000000000
+    000       000      000       000 0 000
+    00000000  0000000  00000000  000   000
+    ###
 
     @elem: (type, clss) => # create element of <type> add class <clss> and assign a unique id
         e = new Element type
@@ -238,7 +244,13 @@ class Widget
         @elem.getParent     = @getParent
         @elem.toggleDisplay = @toggleDisplay        
         
-    # ____________________________________________________________________________ hierarchy
+    ###
+    000   000  000  00000000  00000000    0000000   00000000    0000000  000   000  000   000
+    000   000  000  000       000   000  000   000  000   000  000       000   000   000 000 
+    000000000  000  0000000   0000000    000000000  0000000    000       000000000    00000  
+    000   000  000  000       000   000  000   000  000   000  000       000   000     000   
+    000   000  000  00000000  000   000  000   000  000   000   0000000  000   000     000   
+    ###
 
     returnThis: => @
 
@@ -319,6 +331,14 @@ class Widget
         return c[0].widget if c.length
         undefined
 
+    ###
+    00     00  000   0000000   0000000
+    000   000  000  000       000     
+    000000000  000  0000000   000     
+    000 0 000  000       000  000     
+    000   000  000  0000000    0000000
+    ###
+    
     close: =>
         # log 'close', @elem.id
         Keys.unregisterWidget @
@@ -328,6 +348,10 @@ class Widget
         @elem = null
         @config = null
         undefined
+
+    onTooltip: => @config.tooltip
+        
+    dump: => @config
 
     clear: =>
         while @elem.hasChildNodes()
@@ -349,7 +373,13 @@ class Widget
         else
             @elem.show()
 
-    # ____________________________________________________________________________ geometry
+    ###
+     0000000   00000000   0000000   00     00  00000000  000000000  00000000   000   000
+    000        000       000   000  000   000  000          000     000   000   000 000 
+    000  0000  0000000   000   000  000000000  0000000      000     0000000      00000  
+    000   000  000       000   000  000 0 000  000          000     000   000     000   
+     0000000   00000000   0000000   000   000  00000000     000     000   000     000   
+    ###
 
     setPos: (p) => @moveTo p.x, p.y
     move:   (p) => @moveBy p.x, p.y
@@ -411,7 +441,13 @@ class Widget
     absPos      :     => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
     absCenter   :     => @absPos().plus(pos(@elem.getWidth(),@elem.getHeight()).scale(0.5))
 
-    # ____________________________________________________________________________ movement
+    ###
+    00     00   0000000   000   000  00000000
+    000   000  000   000  000   000  000     
+    000000000  000   000   000 000   0000000 
+    000 0 000  000   000     000     000     
+    000   000   0000000       0      00000000
+    ###
 
     addMovement: =>        
         if @config.isMovable
@@ -439,7 +475,13 @@ class Widget
         log 'stop', event.target?.id
         StyleSwitch.togglePathFilter()
 
-    # ____________________________________________________________________________ layout
+    ###
+    000       0000000   000   000   0000000   000   000  000000000
+    000      000   000   000 000   000   000  000   000     000   
+    000      000000000    00000    000   000  000   000     000   
+    000      000   000     000     000   000  000   000     000   
+    0000000  000   000     000      0000000    0000000      000   
+    ###
 
     stretchWidth: =>
         # tag 'layout'
