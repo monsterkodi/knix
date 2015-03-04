@@ -178,11 +178,11 @@ a
     padding-top: 2px
     padding-left: 5px
     padding-right: 4px
-
+ 
+.submenu .button
 .context-menu .button
     text-align: left
-    padding-right: 9px
- 
+    padding-right: 9px 
 // ____________________________________ toggle
 
 .toggle
@@ -237,7 +237,6 @@ a
     height:           menuHeight
     overflow:         hidden
     & > *
-        // noSelection()
         color:        textColors.menu
 
 #menu
@@ -258,6 +257,11 @@ a
         color: textColors.menu-hover
     &:active
         color: textColors.menu-active
+
+.submenu 
+    overflow: visible
+    & .button
+        float: none
 
 // ____________________________________ windows
 

@@ -61,6 +61,18 @@ class knix
 
     @initTools: =>
 
+        a = Menu.addButton
+            menu   : 'menu'
+            text   : 'audio'
+            icon   : 'fa-music'
+            action : -> Menu.menu('audio').show()
+
+        m = new Menu
+            id      : 'audio'
+            class   : 'submenu'
+            parent  : a
+        m.hide()
+
         btn = 
             menu    : 'tool'
 
@@ -68,13 +80,13 @@ class knix
             tooltip : 'save'
             keys    : ['s']
             icon    : 'fa-floppy-o'
-            action : Files.saveWindows
+            action  : Files.saveWindows
 
         Menu.addButton btn,
             tooltip : 'reload'
             keys    : ['r']
             icon    : 'fa-retweet'
-            action : Files.loadLast
+            action  : Files.loadLast
 
         Menu.addButton btn,
             tooltip : 'load'

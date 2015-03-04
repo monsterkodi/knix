@@ -314,4 +314,4 @@ class Window extends Widget
     @menuButton: (cfg) =>
 
         Menu.addButton _.def cfg,
-            menu    : 'menu'
+            menu    : 'audio'

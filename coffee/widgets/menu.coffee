@@ -16,14 +16,26 @@ class Menu extends Widget
         
         super cfg,
             type: 'menu'
-            
         @
+        
+    isSubmenu: => @elem.hasClassName 'submenu'
+        
+    show: =>
+        if @isSubmenu()
+            $('stage_content').appendChild @elem
+            @setPos @config.parent.absPos().plus pos 0, @config.parent.getHeight()
+        @elem.addEventListener 'click', @hide
+        super
+        
+    hide: =>
+        if @isSubmenu()
+            @elem.removeEventListener 'mousedown', @onSubmenuDown
+        super
         
     @menu: (id) => $(id)?.getWidget()
         
     @addButton: (cfg, defs) => 
         cfg = _.def cfg, defs
-        log 'add button'
         @menu(cfg.menu).insertChild cfg,
             type    : 'button'
             class   : 'tool-button'
@@ -31,7 +43,6 @@ class Menu extends Widget
             tooltip : cfg.text
 
     @initContextMenu: =>
-        log 'initContextMenu'
         stage = $('stage_content')
         stage.addEventListener 'contextmenu', Menu.showContextMenu
 
@@ -46,7 +57,7 @@ class Menu extends Widget
             return
             
         children = []
-        for e in $('menu')?.getWidget()?.elem.childNodes
+        for e in $('audio')?.getWidget()?.elem.childNodes
             btn         = _.clone e.widget.config
             btn.id      = undefined
             btn.parent  = 'context-menu'
@@ -69,7 +80,7 @@ class Menu extends Widget
                         
     @onContextAction: (event) =>
         log 'button action', event.target.getWidget()
-        w = event.target.getWidget().config.action()
+        w = event.target.getWidget().getUp('button').config.action()
         m = @menu('context-menu')
         w.setPos m.absPos()
         m.close()

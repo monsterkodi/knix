@@ -16,7 +16,7 @@ class Button extends Widget
         
         children = []
         
-        log 'init', cfg
+        # log 'init', cfg
         
         if cfg.icon?
             children.push

@@ -297,6 +297,12 @@ class Widget
         return @getWidget().getParent() if @getWidget?()?.getParent?
         return undefined
         
+    getUp: => 
+        args = $A(arguments)
+        if args.length
+            if @elem.match("#"+args[0]) or @elem.match("."+args[0]) then return @
+        @getParent.apply @, arguments
+            
     getAncestors: => _.filter [@getParent(), @getParent()?.getAncestors()].flatten()
     upWidgets:    => _.filter [@, @getAncestors()].flatten()
     upWidgetWithConfigValue: (key) => _.find @upWidgets(), (w) -> w?.config?[key]? 
@@ -326,6 +332,15 @@ class Widget
     clear: =>
         while @elem.hasChildNodes()
             @elem.removeChild @elem.lastChild
+        @
+
+    show: =>
+        @elem.show()
+        @elem.raise()
+        @
+        
+    hide: =>
+        @elem.hide()
         @
 
     toggleDisplay: =>
@@ -382,6 +397,7 @@ class Widget
 
     setSize     : (s) => @resize s.width, s.height
     getSize     :     => return { width : @getWidth(), height : @getHeight() }
+    sizePos     :     => return pos @getWidth(), @getHeight()
     getWidth    :     => @elem.getWidth()
     getHeight   :     => @elem.getHeight()
 
