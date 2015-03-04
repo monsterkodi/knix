@@ -20,10 +20,11 @@ class TrackColumn extends Widget
                 type: 'TrackCell'
                 
         super cfg,
+            type: 'TrackColumn'
             elem: 'span'
             style:
-                float: 'left'
-            type: 'TrackColumn'
+                # float: 'left'
+                display: 'table-cell'
             children: children
             
             
