@@ -21,25 +21,34 @@ module.exports = (grunt) ->
 
         salt:
             options:
-                dryrun:        false
-                verbose:       true
-                refresh:       false
+                dryrun  : false
+                verbose : true
+                refresh : false
             knix:
                 files:
-                    'asciiHeader': ['./coffee/**/*.coffee']
+                    'asciiHeader' : ['./coffee/**/*.coffee']
+            style: 
+                options:
+                    verbose     : true
+                    textMarker  : '//!!'
+                    textPrefix  : '/*'
+                    textFill    : '*  '
+                    textPostfix : '*/'
+                files:
+                    'asciiText' : ['./style/*.styl']
 
         coffee:
             options:
-                sourceMap: true
-                bare:      true
-                joinExt:   '.coffee'
+                sourceMap : true
+                bare      : true
+                joinExt   : '.coffee'
             knix:
-                expand:     true
-                flatten:    true
-                cwd:        '.pepper'
-                src:        ['*.coffee']
-                dest:       'js'
-                ext:        '.js'
+                expand  : true
+                flatten : true
+                cwd     : '.pepper'
+                src     : ['*.coffee']
+                dest    : 'js'
+                ext     : '.js'
 
         bower_concat:
             all:

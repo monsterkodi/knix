@@ -25,11 +25,13 @@ class Menu extends Widget
             $('stage_content').appendChild @elem
             @setPos @config.parent.absPos().plus pos 0, @config.parent.getHeight()
         @elem.addEventListener 'click', @hide
+        @elem.addEventListener 'mouseleave', @hide
         super
         
     hide: =>
         if @isSubmenu()
-            @elem.removeEventListener 'mousedown', @onSubmenuDown
+            @elem.removeEventListener 'mousedown', @hide
+            @elem.removeEventListener 'mouseleave', @hide
         super
         
     @menu: (id) => $(id)?.getWidget()
