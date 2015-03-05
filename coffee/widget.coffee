@@ -331,6 +331,8 @@ class Widget
         return c[0].widget if c.length
         undefined
         
+    getChildren: => ( c.getWidget() for c in @elem.childNodes )
+        
     ###
     00     00  000   0000000   0000000
     000   000  000  000       000     

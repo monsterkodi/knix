@@ -21,7 +21,7 @@ class TrackColumn extends Widget
         for r in [0...cfg.rows]
             children.push
                 type: cfg.cell
-                
+                                
         super cfg,
             type: 'TrackColumn'
             elem: 'span'
@@ -29,4 +29,8 @@ class TrackColumn extends Widget
                 display: 'table-cell'
             children: children
             
+        @rows = @getChildren()
+        # log @rows
+        # log @
+        @
             

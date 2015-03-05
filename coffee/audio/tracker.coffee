@@ -16,7 +16,7 @@ class Tracker extends Window
         
         cfg = _.def cfg,
             columns  : 10
-            rows     : 16
+            rows     : 64
             height   : 300
             width    : 600
             stepSecs : 10
@@ -51,6 +51,7 @@ class Tracker extends Window
                     icon : 'fa-stop'
             ]            
             child   :
+                class    : 'columns'
                 children : children
                 style    :
                     display : 'table-row'
@@ -58,19 +59,18 @@ class Tracker extends Window
         @connect 'playpause:click', @playPause
         @connect 'stop:click',      @stop
                     
+        @columns = @getChild('columns').getChildren()
+
         @stepDeltaSecs = 1.0 / @config.stepSecs
         @numSteps      = @config.rows
         @step = 
             index : -1
             secs  :  0
+            
+        log @columns.length
         
-    layoutChildren: =>
-        log 'layout', @config.content
         @
-
-    sizeWindow: =>
-        @content.resize @contentWidth(), @contentHeight()
-        
+                
     play: =>
         # log 'play'
         @playing = true
@@ -78,7 +78,7 @@ class Tracker extends Window
         knix.animate @
         
     pause: =>
-        log 'pause'
+        # log 'pause'
         @playing = false
         knix.deanimate @
         
@@ -86,21 +86,34 @@ class Tracker extends Window
 
     stop: =>
         log 'stop'
+        @cell 0, @step.index, 'off'
         @playing    = false
         @step.index = -1
         @step.secs  =  0
         knix.deanimate @
         
+    cell: (col, row, cb=null) =>
+        c = @columns[col].rows[row]
+        c?.resolveSlot(cb)?()
+        c
+        
     nextStep: =>
+        @cell 0, @step.index, 'off'
         @step.index = (@step.index+1) % @numSteps
         @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
-        log @step.index
+        @cell 0, @step.index, 'on'
         
     anim: (step) =>
-        # log 'step', step, @step, @stepDeltaSecs
         @step.secs += step.dsecs
         if @step.secs > @stepDeltaSecs
             @nextStep()
+            
+    layoutChildren: =>
+        # log 'layout', @config.content
+        @
+
+    sizeWindow: =>
+        @content.resize @contentWidth(), @contentHeight()
             
     @menu: =>
 
