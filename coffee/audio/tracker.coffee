@@ -69,23 +69,27 @@ class Tracker extends Window
             
         log @columns.length
         
+        for cell in @columns[0].rows
+            cell.connect 'mousedown', @onIndicatorDown
+        
         @
+        
+    onIndicatorDown: (event) =>
+        index = event.target.getWidget().config.index
+        @gotoStep index        
                 
     play: =>
-        # log 'play'
         @playing = true
         @nextStep()
         knix.animate @
         
     pause: =>
-        # log 'pause'
         @playing = false
         knix.deanimate @
         
     playPause: => if @playing then @pause() else @play()
 
     stop: =>
-        log 'stop'
         @cell 0, @step.index, 'off'
         @playing    = false
         @step.index = -1
@@ -97,9 +101,12 @@ class Tracker extends Window
         c?.resolveSlot(cb)?()
         c
         
-    nextStep: =>
-        @cell 0, @step.index, 'off'
-        @step.index = (@step.index+1) % @numSteps
+    nextStep: => @gotoStep @step.index+1
+        
+    gotoStep: (index) =>
+        @cell 0, @step.index, 'off' if @step.index >= 0
+        @step.index = (@numSteps+index) % @numSteps
+        # log index, @step.index
         @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
         @cell 0, @step.index, 'on'
         
@@ -108,9 +115,7 @@ class Tracker extends Window
         if @step.secs > @stepDeltaSecs
             @nextStep()
             
-    layoutChildren: =>
-        # log 'layout', @config.content
-        @
+    layoutChildren: => @
 
     sizeWindow: =>
         @content.resize @contentWidth(), @contentHeight()

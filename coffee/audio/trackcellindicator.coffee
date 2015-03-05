@@ -19,9 +19,7 @@ class TrackCellIndicator extends TrackCell
             class: 'TrackCell off'
             text:  '<i class="fa fa-circle-thin"></i>'
         @
-    
-    # setText: => @
-    
+        
     on: =>
         @elem.removeClassName 'off'
         @elem.addClassName 'on'
