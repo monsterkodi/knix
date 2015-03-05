@@ -30,6 +30,26 @@ class Tracker extends Window
         super cfg,
             type    : 'Tracker'
             content : 'scroll'
+            buttons : \
+            [
+                type     : "window-button-left"
+                onClick  : @start
+                child    :
+                    type : 'icon'
+                    icon : 'fa-play'
+            ,
+                type     : "window-button-left"
+                onClick  : @pause
+                child    :
+                    type : 'icon'
+                    icon : 'fa-pause'
+            ,
+                type     : "window-button-left"
+                onClick  : @stop
+                child    :
+                    type : 'icon'
+                    icon : 'fa-stop'
+            ]            
             child   :
                 children : children
                 style    :
@@ -41,6 +61,21 @@ class Tracker extends Window
 
     sizeWindow: =>
         @content.resize @contentWidth(), @contentHeight()
+        
+    start: =>
+        log 'start'
+        knix.animate @
+        
+    pause: =>
+        log 'pause'
+        knix.deanimate @
+
+    stop: =>
+        log 'stop'
+        knix.deanimate @
+        
+    anim: (step) =>
+        log 'step', step
             
     @menu: =>
 

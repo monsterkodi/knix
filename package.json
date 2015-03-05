@@ -1,6 +1,6 @@
 {
     "name": "knix",
-    "version": "0.6.106",
+    "version": "0.6.116",
     "private": true,
     "description": "small coffescript ui framework",
     "main": "index.html",
@@ -15,7 +15,7 @@
         "grunt-contrib-stylus": "^0.20.0",
         "grunt-contrib-watch": "^0.6.1",
         "grunt-open": "^0.2.3",
-        "grunt-pepper": "^0.4.0",
+        "grunt-pepper": "^0.4.1",
         "grunt-shell": "^1.1.1",
         "moment": "^2.9.0",
         "process": "^0.10.0"
