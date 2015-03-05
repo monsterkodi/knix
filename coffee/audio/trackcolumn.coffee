@@ -14,16 +14,18 @@ class TrackColumn extends Widget
         
         cfg = _.def cfg, defs
         
+        cfg = _.def cfg,
+            cell: 'TrackCell'
+        
         children = []
         for r in [0...cfg.rows]
             children.push
-                type: 'TrackCell'
+                type: cfg.cell
                 
         super cfg,
             type: 'TrackColumn'
             elem: 'span'
             style:
-                # float: 'left'
                 display: 'table-cell'
             children: children
             

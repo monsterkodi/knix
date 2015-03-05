@@ -19,12 +19,12 @@ class Drag
                 handle  : null
                 minPos  : null
                 maxPos  : null
-                cursor  : "move"
                 onStart : null
                 onMove  : null
                 onStop  : null
                 doMove  : true
                 active  : true
+                cursor  : "move"
 
         if typeof @target is "string"
             t = document.getElementById @target
@@ -37,8 +37,6 @@ class Drag
             return
         if @minPos? and @maxPos?
             [@minPos, @maxPos] = [@minPos.min(@maxPos), @minPos.max(@maxPos)]
-        @lastPos   = null
-        @startPos  = null
         @dragging  = false
         @listening = false
         @handle    = document.getElementById(@handle) if typeof (@handle) is "string"
@@ -101,8 +99,8 @@ class Drag
         return if not @dragging
         document.removeEventListener 'mousemove', @dragMove
         document.removeEventListener 'mouseup',   @dragUp
-        @lastPos = null
-        @startPos = null
+        delete @lastPos
+        delete @startPos
         @onStop this, event if @onStop? and event?
         @dragging = false
         return

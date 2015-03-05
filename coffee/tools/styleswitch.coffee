@@ -11,7 +11,6 @@
 class StyleSwitch
 
     @schemes = ['dark.css', 'bright.css']
-    @filter  = null
     @colors  = {}
 
     @init: =>
@@ -51,4 +50,4 @@ class StyleSwitch
         else
             for p in $$('.path')
                 p.instance.style({ filter: @filter })
-            @filter = null
+            delete @filter

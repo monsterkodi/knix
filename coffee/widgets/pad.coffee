@@ -160,10 +160,10 @@ class Pad extends Widget
     hideRuler: =>
         if @rulerx
             @rulerx.close()
-            @rulerx = null
+            delete @rulerx
         if @rulery
             @rulery.close()
-            @rulery = null
+            delete @rulery
                                         
     getWidth:  => @svg.elem.width    
     getHeight: => @svg.elem.height

@@ -27,7 +27,7 @@ class Tooltip
                 tooltip = e.widget.tooltip
                 if tooltip.window?
                     tooltip.window.close()
-                    tooltip.window = null
+                    delete tooltip.window
                 if tooltip.timer?
                     clearInterval tooltip.timer
                 popup = -> Tooltip.popup(e, Stage.absPos event)
@@ -38,7 +38,7 @@ class Tooltip
         tooltip = e.widget.tooltip
         if tooltip.timer?
             clearInterval tooltip.timer
-            tooltip.timer = null
+            delete tooltip.timer
         if tooltip.onTooltip?
             text = tooltip.onTooltip()
         else if tooltip.text?
@@ -61,7 +61,7 @@ class Tooltip
         if tooltip = e?.widget?.tooltip
             if tooltip.timer?
                 clearInterval tooltip.timer
-                tooltip.timer = null
+                delete tooltip.timer
             if w = tooltip.window
                 w.close()
-                e.widget.tooltip.window = null
+                delete e.widget.tooltip.window

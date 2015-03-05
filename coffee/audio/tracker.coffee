@@ -15,37 +15,37 @@ class Tracker extends Window
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            columns : 10
-            rows    : 4
-            title   :'tracker'
-
+            columns  : 10
+            rows     : 16
+            height   : 300
+            width    : 600
+            stepSecs : 10
+            title    :'tracker'
+            
         children = []
+        children.push
+            type  : 'TrackColumn'
+            rows  : cfg.rows
+            cell  : 'TrackCellIndicator' 
+            
         for c in [0...cfg.columns]
             children.push
                 type  : 'TrackColumn'
                 rows  : cfg.rows
-                style : 
-                    display : 'table-cell'
             
         super cfg,
             type    : 'Tracker'
             content : 'scroll'
             buttons : \
             [
-                type     : "window-button-left"
-                onClick  : @start
+                type     : 'window-button-left'
+                class    : 'playpause'
                 child    :
                     type : 'icon'
                     icon : 'fa-play'
             ,
-                type     : "window-button-left"
-                onClick  : @pause
-                child    :
-                    type : 'icon'
-                    icon : 'fa-pause'
-            ,
-                type     : "window-button-left"
-                onClick  : @stop
+                type     : 'window-button-left'
+                class    : 'stop'
                 child    :
                     type : 'icon'
                     icon : 'fa-stop'
@@ -54,6 +54,15 @@ class Tracker extends Window
                 children : children
                 style    :
                     display : 'table-row'
+                    
+        @connect 'playpause:click', @playPause
+        @connect 'stop:click',      @stop
+                    
+        @stepDeltaSecs = 1.0 / @config.stepSecs
+        @numSteps      = @config.rows
+        @step = 
+            index : -1
+            secs  :  0
         
     layoutChildren: =>
         log 'layout', @config.content
@@ -62,20 +71,36 @@ class Tracker extends Window
     sizeWindow: =>
         @content.resize @contentWidth(), @contentHeight()
         
-    start: =>
-        log 'start'
+    play: =>
+        # log 'play'
+        @playing = true
+        @nextStep()
         knix.animate @
         
     pause: =>
         log 'pause'
+        @playing = false
         knix.deanimate @
+        
+    playPause: => if @playing then @pause() else @play()
 
     stop: =>
         log 'stop'
+        @playing    = false
+        @step.index = -1
+        @step.secs  =  0
         knix.deanimate @
         
+    nextStep: =>
+        @step.index = (@step.index+1) % @numSteps
+        @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
+        log @step.index
+        
     anim: (step) =>
-        log 'step', step
+        # log 'step', step, @step, @stepDeltaSecs
+        @step.secs += step.dsecs
+        if @step.secs > @stepDeltaSecs
+            @nextStep()
             
     @menu: =>
 

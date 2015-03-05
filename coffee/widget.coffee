@@ -330,7 +330,7 @@ class Widget
         c = @elem.select('#'+classOrID, '.'+classOrID)
         return c[0].widget if c.length
         undefined
-
+        
     ###
     00     00  000   0000000   0000000
     000   000  000  000       000     
@@ -343,10 +343,9 @@ class Widget
         # log 'close', @elem.id
         Keys.unregisterWidget @
         @emit 'close'
-        # @elem.purge()
         @elem.remove()
-        @elem = null
-        @config = null
+        delete @elem
+        delete @config
         undefined
 
     onTooltip: => @config.tooltip

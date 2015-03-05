@@ -118,7 +118,7 @@ class Connector extends Widget
             @path.path.removeClass 'connectable'
             @path.setStartDir if @isOut() then pos(100,-10) else pos(-100,-10)
             @path.setEndDir pos(0,0)
-            if @conn then @conn.elem.removeClassName 'highlight'; @conn = null
+            if @conn? then @conn.elem.removeClassName 'highlight'; delete @conn
             @handle.elem.removeClassName 'highlight'
 
         @handle.setPos p

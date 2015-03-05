@@ -20,11 +20,12 @@ class Window extends Widget
         if cfg.child
             if not children? then children = []
             children.push cfg.child
-        cfg.children = null
-        cfg.child = null
+
+        delete cfg.children
+        delete cfg.child
 
         connect = cfg.connect
-        cfg.connect = null
+        delete cfg.connect
 
         super cfg,
             type      : 'window'
@@ -170,7 +171,7 @@ class Window extends Widget
         if @sizeMoveDrag? 
             if @sizeMoveDrag.dragging then return
             @sizeMoveDrag.deactivate() 
-            @sizeMoveDrag = null
+            delete @sizeMoveDrag
 
         if e?.getWidget?()?
             m = @matchConfigValue 'noMove', true, e.getWidget().upWidgets()
@@ -230,7 +231,7 @@ class Window extends Widget
     onLeave: (event) =>
         if @sizeMoveDrag? and not @sizeMoveDrag.dragging
             @sizeMoveDrag.deactivate() if @sizeMoveDrag
-            @sizeMoveDrag = null
+            delete @sizeMoveDrag
 
     sizeStart: (drag, event) =>
         @config.isMaximized = false
@@ -305,14 +306,11 @@ class Window extends Widget
         else
             warn 'no elem!'
 
-    scrollToBottom: =>
-        @content.elem.scrollTop = content.scrollHeight
+    scrollToBottom : => @content.elem.scrollTop = @content.elem.scrollHeight
+    scrollToTop    : => @content.elem.scrollTop = 0
 
-    scrollToTop: =>
-        content.elem.scrollTop = 0
-
-    contentWidth:  => @elem.getLayout().get('padding-box-width')
-    contentHeight: => @elem.getLayout().get('padding-box-height') - @headerSize()
+    contentWidth   : => @elem.getLayout().get('padding-box-width')
+    contentHeight  : => @elem.getLayout().get('padding-box-height') - @headerSize()
 
     shade: =>
         if @config.isShaded

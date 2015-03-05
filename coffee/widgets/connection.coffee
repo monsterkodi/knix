@@ -122,7 +122,7 @@ class Connection
         connection
 
     disconnect: =>
-        if @connection
+        if @connection?
             # log "disconnect", @connection.out.elem.id, @connection.in.elem.id #@path.path.id()
 
             @connection.out.emit 'onDisconnect', {source:@connection.out, target:@connection.in}
@@ -131,7 +131,7 @@ class Connection
             if @connection?.handler?
                 @connection.handler.stop()
 
-            @connection = null
+            delete @connection
 
     outInConnector: =>
         [
@@ -149,10 +149,10 @@ class Connection
         if @config?
             @config.source.delConnection @
             @config.target.delConnection @
-            @config = null
+            delete @config
         if @path?
             @path.close()
-            @path = null
+            delete @path
 
     shaded: (event) =>
         visible = not event.detail.shaded and

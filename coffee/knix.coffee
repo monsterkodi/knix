@@ -192,7 +192,7 @@ class knix
                 p.close() for p in @popups when e not in p.elem.descendants()
         if @popupHandler?
             @popupHandler.stop()
-            @popupHandler = null
+            delete @popupHandler
                         
     # ________________________________________________________________________________ animation
 

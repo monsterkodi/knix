@@ -27,7 +27,7 @@ class Spinner extends Spin
             onMove    : @sliderFunc
             onStart   : @sliderFunc
 
-        @input = null
+        delete @input
         @
 
     onWindowSize: => 
