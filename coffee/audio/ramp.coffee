@@ -41,6 +41,7 @@ class Ramp extends Window
             ,
                 type     : 'button'
                 text     : 'trigger'
+                id       : 'ramp_trigger'
             ]
     
         @connect 'ramp_duration:onValue', @setDuration

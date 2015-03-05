@@ -331,7 +331,18 @@ class Widget
         return c[0].widget if c.length
         undefined
         
-    getChildren: => ( c.getWidget() for c in @elem.childNodes )
+    getChildren: => _.filter ( c.getWidget?() for c in @elem.childNodes )
+    
+    getAllChildren: =>
+        children = @getChildren()
+        check = children.clone()
+        while check.length
+            c = check.splice(0,1)[0]
+            for cc in c.getChildren()
+                if cc not in children
+                    children.push cc
+                    check.push cc
+        return children
         
     ###
     00     00  000   0000000   0000000

@@ -49,6 +49,12 @@ class Tracker extends Window
                 child    :
                     type : 'icon'
                     icon : 'fa-stop'
+            ,
+                type     : 'window-button-left'
+                class    : 'record'
+                child    :
+                    type : 'icon'
+                    icon : 'fa-circle'
             ]            
             child   :
                 class    : 'columns'
@@ -58,6 +64,7 @@ class Tracker extends Window
                     
         @connect 'playpause:click', @playPause
         @connect 'stop:click',      @stop
+        @connect 'record:click',    @record
                     
         @columns = @getChild('columns').getChildren()
 
@@ -96,6 +103,14 @@ class Tracker extends Window
         @step.secs  =  0
         knix.deanimate @
         
+    record: =>
+        if @recorder?
+            @recorder.close()
+            delete @recorder
+        else
+            @recorder = new Recorder 
+                tracker: @elem.id
+        
     cell: (col, row, cb=null) =>
         c = @columns[col].rows[row]
         c?.resolveSlot(cb)?()
@@ -106,7 +121,6 @@ class Tracker extends Window
     gotoStep: (index) =>
         @cell 0, @step.index, 'off' if @step.index >= 0
         @step.index = (@numSteps+index) % @numSteps
-        # log index, @step.index
         @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
         @cell 0, @step.index, 'on'
         
@@ -115,15 +129,14 @@ class Tracker extends Window
         if @step.secs > @stepDeltaSecs
             @nextStep()
             
-    layoutChildren: => @
-
-    sizeWindow: =>
-        @content.resize @contentWidth(), @contentHeight()
+    layoutChildren : => @
+    sizeWindow     : => @content.resize @contentWidth(), @contentHeight()
             
     @menu: =>
 
         @menuButton
             text   : 'tracker'
             icon   : 'fa-volume-up'
+            keys   : ['t']
             action : -> new Tracker
                             center: true
