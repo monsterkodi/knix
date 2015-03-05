@@ -16,6 +16,6 @@ class TrackCell extends Widget
         
         super cfg,
             type: 'TrackCell'
-            text: 'cell'
+            text: '<i class="fa fa-square"></i>'
             
         @    

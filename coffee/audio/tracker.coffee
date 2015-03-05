@@ -15,10 +15,10 @@ class Tracker extends Window
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            columns  : 10
-            rows     : 64
-            height   : 300
-            width    : 600
+            columns  : 16
+            rows     : 32
+            height   : 32*22+40
+            width    : 32*22+40
             stepSecs : 10
             title    :'tracker'
             

@@ -24,12 +24,14 @@ class TrackColumn extends Widget
                                 
         super cfg,
             type: 'TrackColumn'
-            elem: 'span'
+            # elem: 'span'
             style:
                 display: 'table-cell'
             children: children
             
         @rows = @getChildren()
+        # for row in [0...@rows.length]
+        #     @rows[row].setText '%d'.fmt row
         # log @rows
         # log @
         @

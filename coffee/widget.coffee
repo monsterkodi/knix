@@ -287,8 +287,8 @@ class Widget
             @config.children = c
         @
 
-    insertText: =>
-        @elem?.insert(@config.text) if @config.text?
+    insertText: => @elem?.insert(@config.text) if @config.text?
+    setText: (t) => @elem.textContent=''; @config.text = t; @insertText()
         
     # returns first ancestor element that matches class or id of argument
     # with no argument: the element with config.parentId or the parent element

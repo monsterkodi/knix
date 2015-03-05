@@ -16,15 +16,18 @@ class TrackCellIndicator extends TrackCell
         
         super cfg,
             type:  'TrackCellIndicator'
-            text:  '.'
             class: 'TrackCell off'
-            
+            text:  '<i class="fa fa-circle-thin"></i>'
         @
+    
+    # setText: => @
     
     on: =>
         @elem.removeClassName 'off'
         @elem.addClassName 'on'
+        @setText '<i class="fa fa-circle"></i>'
 
     off: => 
         @elem.removeClassName 'on'
         @elem.addClassName 'off'
+        @setText '<i class="fa fa-circle-thin"></i>'
