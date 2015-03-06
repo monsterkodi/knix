@@ -45,12 +45,12 @@ class Ramp extends Window
             ]
     
         @connect 'ramp_duration:onValue',  @setDuration
-        @connect 'ramp_trigger:mousedown', @triggerDown
+        @connect 'ramp_trigger:trigger',   @trigger
         @
 
     setDuration: (v) => @config.duration = _.value v
 
-    triggerDown: =>
+    trigger: =>
         if @config.reltime != 0
             knix.deanimate @
         Audio.sendParamValuesFromConnector { duration: @config.duration }, @connector 'ramp:onValue'

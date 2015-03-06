@@ -86,7 +86,7 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'reload'
-            keys    : ['r']
+            keys    : ['u']
             icon    : 'fa-retweet'
             action  : Files.loadLast
 

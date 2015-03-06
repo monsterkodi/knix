@@ -31,5 +31,10 @@ class TrackColumn extends Widget
                 display : 'table-cell'
         
         @rows = @getChildren()
+        
+        if @config.winID? and @config.widID?
+            @rec = @getWindow(@config.winID).getChild @config.widID
+            log '@rec', @rec.elem.id
+        
         @
             

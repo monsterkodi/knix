@@ -320,7 +320,11 @@ class Widget
     upWidgetWithConfigValue: (key) => _.find @upWidgets(), (w) -> w?.config?[key]? 
     matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?
         
-    getWindow: => # returns this or first ancestor element with class 'window'
+    getWindow: => # without argument: returns this or first ancestor element with class 'window'
+                  # with argument: returns the window with id 
+        if arguments.length
+            log 'window id', $A(arguments)[0]
+            return $($A(arguments)[0]).widget
         if @elem.hasClassName 'window'
             return this
         # console.log '----', @elem.id

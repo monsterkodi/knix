@@ -238,6 +238,7 @@ class Test
         c = knix.get
             type    : 'button'
             text    : 'envelope'
+            keys    : ['e']
             parent  : 'menu'
             onClick : -> Test.envelope()
 

@@ -28,11 +28,13 @@ class Tracker extends Window
             type  : 'TrackColumn'
             rows  : cfg.rows
             cell  : 'TrackCellIndicator' 
+            index : 0
             
         for c in [0...cfg.columns]
             children.push
                 type  : 'TrackColumn'
                 rows  : cfg.rows
+                index : children.length
             
         super cfg,
             type    : 'Tracker'
@@ -41,12 +43,14 @@ class Tracker extends Window
             [
                 class    : 'playpause'
                 icon     : 'fa-play'
+                keys     : ['p']
             ,
                 class    : 'stop'
                 icon     : 'fa-stop'
             ,
                 type     : 'toggle'
                 class    : 'record'
+                keys     : ['r']
                 state    : 'off'
                 states   : ['off', 'on']
                 icon     : 'fa-circle-o'
@@ -64,6 +68,7 @@ class Tracker extends Window
                     
         @columns = @getChild('columns').getChildren()
         @columnSets = {}
+        @rowColumns = ([] for [0..@config.rows])
 
         @stepDeltaSecs = 1.0 / @config.stepSecs
         @numSteps      = @config.rows
@@ -78,27 +83,28 @@ class Tracker extends Window
     addValue: (event) =>    
         log 'value', event.target.id, _.value event   
 
-    addButton: (event) =>
-        log 'value', event.target.id
+    addTrigger: (event) =>
+        log 'trigger', event.target.id
         col = @columnFor event.target
         row = col.rows[@step.index]
-        # log row.elem.id
+        @rowColumns[@step.index].push(col.config.index) if col.config.index not in @rowColumns[@step.index]
         row.on()
         
     columnFor: (target) =>
         winKey = target.getWindow().elem.id
         widKey = target.id
         if not @columnSets[winKey]?
-            log 'new set', winKey
             @columnSets[winKey] = {}
         cs = @columnSets[winKey]
         if not cs[widKey]?
-            log 'new col', widKey
             cs[widKey] = new TrackColumn
                         rows   : @config.rows
                         parent : @getChild 'columns'
+                        index  : @columns.length
+                        winID  : winKey
+                        widID  : widKey
+                        
             @columns.push cs[widKey]
-        # log cs[widKey].elem.id            
         cs[widKey]
         
     onIndicatorDown: (event) =>
@@ -138,9 +144,11 @@ class Tracker extends Window
         super
         
     cell: (col, row, cb=null) =>
-        c = @columns[col].rows[row]
-        c?.resolveSlot(cb)?()
-        c
+        if typeof col == 'number'
+            col = @columns[col]
+        cell = col.rows[row]    
+        cell?.resolveSlot(cb)?()
+        cell
         
     nextStep: => @gotoStep @step.index+1
         
@@ -149,6 +157,14 @@ class Tracker extends Window
         @step.index = (@numSteps+index) % @numSteps
         @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
         @cell 0, @step.index, 'on'
+        @triggerRow @step.index
+        
+    triggerRow: (rowIndex) =>
+        # log 'rowIndex', rowIndex, @rowColumns[rowIndex] #, @rowColumns
+        for colIndex in @rowColumns[rowIndex]
+            # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
+            log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
+            @columns[colIndex].rec?.trigger()
         
     anim: (step) =>
         @step.secs += step.dsecs

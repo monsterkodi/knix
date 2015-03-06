@@ -22,12 +22,19 @@ class Button extends Widget
                 icon : cfg.icon
                 
         super cfg,
-            onClick  : cfg.action
+            # onClick  : cfg.action
             keys     : []
             type     : 'button'
             noMove   : true
             children : children
+            
+        @connect 'mousedown', @trigger
 
     insertText: =>
         if @config.menu != 'menu'
             super
+
+    trigger: =>
+        log 'trigger', @config.action?
+        @config.action?()
+        @emit 'trigger'

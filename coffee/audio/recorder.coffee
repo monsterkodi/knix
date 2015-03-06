@@ -38,7 +38,7 @@ class Recorder
         
     onButtonDown: (event) =>
         # log 'button down', event.target
-        @tracker.addButton event
+        @tracker.addTrigger event
     
     close: =>
         log @config.tracker
