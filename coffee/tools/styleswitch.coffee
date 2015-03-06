@@ -38,7 +38,6 @@ class StyleSwitch
         for cn in ['analyser', 'analyser_trace', 'analyser_trigger']
             colors.setAttribute 'class', cn
             @colors[cn] = window.getComputedStyle(colors).color
-        # log @colors
 
     @togglePathFilter: =>
 

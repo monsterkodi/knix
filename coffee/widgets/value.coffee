@@ -36,11 +36,8 @@ class Value extends Widget
         super
 
     setValue: (v) =>
-        # tag 'value'
         oldValue = @config.value
-        # log @clamp(_.value(v)), @config.minValue, @config.maxValue
         v = @clamp _.value v
-        
         if v != oldValue
             @config.value = v
             @emitValue v
@@ -69,6 +66,5 @@ class Value extends Widget
     round: (v) => # rounds v to multiples of valueStep
         if @config.valueStep
             d = - v + Math.round(v/@config.valueStep)*@config.valueStep
-            # log 'd', d
             v += d
         v

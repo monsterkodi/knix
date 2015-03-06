@@ -47,11 +47,8 @@ class Files
             children : children
             buttons  : \
             [
-                type    : "window-button-left"
                 onClick : @trashFiles
-                child   :
-                    type : 'icon'
-                    icon : 'octicon-trashcan'
+                icon    : 'octicon-trashcan'
             ]
 
     @trashFiles: =>

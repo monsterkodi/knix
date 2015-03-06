@@ -15,9 +15,7 @@ class Button extends Widget
         cfg = _.def cfg, defs
         
         children = []
-        
-        # log 'init', cfg
-        
+                
         if cfg.icon?
             children.push
                 type : 'icon'

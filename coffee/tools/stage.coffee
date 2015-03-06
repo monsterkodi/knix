@@ -11,9 +11,7 @@
 class Stage
 
     @positionWindow: (win) =>
-        # log win
         [p, w, h] = [win.absPos(), win.getWidth(), win.getHeight()]
-        # log p, w, h
         if p.x + w > @width()
             win.setPos pos @width() - w, Math.max(p.y, $('menu').getHeight())
 
@@ -55,5 +53,4 @@ class Stage
         event = if event? then event else window.event
         c = pos event.clientX, event.clientY
         t = event.target.getWidget().absPos()
-        # log c, t
         return c.sub t

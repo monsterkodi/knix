@@ -39,16 +39,14 @@ class Tracker extends Window
             content : 'scroll'
             buttons : \
             [
-                type     : 'button'
-                class    : 'playpause window-button-left'
+                class    : 'playpause'
                 icon     : 'fa-play'
             ,
-                type     : 'button'
-                class    : 'stop window-button-left'
+                class    : 'stop'
                 icon     : 'fa-stop'
             ,
                 type     : 'toggle'
-                class    : 'record window-button-left'
+                class    : 'record'
                 state    : 'off'
                 states   : ['off', 'on']
                 icon     : 'fa-circle-o'

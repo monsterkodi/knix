@@ -26,19 +26,15 @@ class Audio
 
     @sendParamValuesFromConnector: (paramValues, connector) =>
         for connection in connector.connections
-            # log connection.config.target.getWindow().elem.id
             connection.config.target.getWindow().paramValuesAtConnector _.clone(paramValues), connection.config.target
 
     @setValuesForParam: (paramValues, param) =>
-        # log 'paramValues', paramValues
         offset = paramValues.offset or 0
         range  = paramValues.range  or 1
         param.cancelScheduledValues @context.currentTime
-        # param.setValueAtTime param.value, @context.currentTime
         t = @context.currentTime + 0.04
         for i in [0...paramValues.values.length]
             value = offset + paramValues.values[i].value * range
-            # log i, value
             param.linearRampToValueAtTime value, t + paramValues.values[i].time
 
     @filter: (cfg) =>

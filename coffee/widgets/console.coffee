@@ -32,30 +32,19 @@ class Console extends Window
             showClasses : Settings.get 'logClasses', true
             buttons     : \
             [
-                type     : "window-button-left"
-                onClick  : @maximize
-                child    :
-                    type : 'icon'
-                    icon : 'octicon-diff-added'
+                onClick : @maximize
+                icon    : 'octicon-diff-added'
             ,
-                type     : "window-button-left"
-                onClick  : @scrollToTop
-                child    :
-                    type : 'icon'
-                    icon : 'fa-arrow-circle-o-up'
+                onClick : @scrollToTop
+                icon    : 'fa-arrow-circle-o-up'
             ,
-                type     : "window-button-left"
-                onClick  : @scrollToBottom
-                child    :
-                    type : 'icon'
-                    icon : 'fa-arrow-circle-o-down'
+                onClick : @scrollToBottom
+                icon    : 'fa-arrow-circle-o-down'
             ,
-                type     : 'window-button-right'
-                onClick  : @clear
-                keys     : ['k']
-                child    :
-                    type : 'icon'
-                    icon : 'octicon-trashcan'
+                align   : 'right'
+                onClick : @clear
+                keys    : ['k']
+                icon    : 'octicon-trashcan'
             ]
             child:
                 class  : 'console'
@@ -65,6 +54,14 @@ class Console extends Window
         @elem.addEventListener 'contextmenu', @onContextMenu
         @
 
+    ###
+     0000000   0000000   000   000  000000000  00000000  000   000  000000000  00     00  00000000  000   000  000   000
+    000       000   000  0000  000     000     000        000 000      000     000   000  000       0000  000  000   000
+    000       000   000  000 0 000     000     0000000     00000       000     000000000  0000000   000 0 000  000   000
+    000       000   000  000  0000     000     000        000 000      000     000 0 000  000       000  0000  000   000
+     0000000   0000000   000   000     000     00000000  000   000     000     000   000  00000000  000   000   0000000 
+    ###
+    
     onContextMenu: (event) =>
 
         children = []
@@ -95,51 +92,44 @@ class Console extends Window
             children : children
             buttons  : \
             [
-                type  : "window-button-left"
-                child :
-                    type : 'icon'
-                    icon : 'octicon-check'
+                icon    : 'octicon-check'
                 onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('on')
             ,
-                type  : "window-button-left"
-                child :
-                    type : 'icon'
-                    icon : 'octicon-dash'
+                icon    : 'octicon-dash'
                 onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('unset')
             ,
-                class : 'window-button-left'
-                child :
-                    type : 'icon'
-                    icon : 'octicon-x'
+                icon    : 'octicon-x'
                 onClick : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('off')
             ,
-                type    : "window-button-right"
                 onClick : @trashSettings
-                child   :
-                    type : 'icon'
-                    icon : 'octicon-trashcan'
+                align   : 'right'
+                icon    : 'octicon-trashcan'
             ,
-                type    : "window-button-right"
                 onClick : @toggleMethods
-                child   :
-                    type : 'icon'
-                    icon : 'octicon-list-unordered'
+                align   : 'right'
+                icon    : 'octicon-list-unordered'
             ,
-                class   : 'window-button-right'
                 onClick : @toggleClasses
-                child   :
-                    type : 'icon'
-                    icon : 'octicon-three-bars'
+                align   : 'right'
+                icon    : 'octicon-three-bars'
             ]
 
         event.preventDefault()
         event.stop()
+
+    ###
+    000       0000000    0000000 
+    000      000   000  000      
+    000      000   000  000  0000
+    000      000   000  000   000
+    0000000   0000000    0000000 
+    ###
 
     trashSettings: =>
         Settings.set 'logTags', {}
@@ -205,7 +195,13 @@ class Console extends Window
 
     clear: => @getChild('console').clear()
         
-    # _________________________________________________________________________________________ static
+    ###
+     0000000  000000000   0000000   000000000  000   0000000
+    000          000     000   000     000     000  000     
+    0000000      000     000000000     000     000  000     
+         000     000     000   000     000     000  000     
+    0000000      000     000   000     000     000   0000000
+    ###
 
     @setScopeTags: =>
         @scopeTags = Array.prototype.slice.call(arguments, 0)
