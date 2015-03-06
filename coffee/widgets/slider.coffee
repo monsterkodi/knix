@@ -12,13 +12,6 @@ class Slider extends Value
     
     init: (cfg, defs) =>
 
-        sliderFunc = (drag, event) ->
-            slider = drag.target.widget
-            pos    = slider.absPos()
-            width  = event.clientX-pos.x
-            v      = slider.size2value width
-            slider.setValue v
-
         super cfg,
             type     : 'slider'
             minWidth : 50
@@ -36,10 +29,16 @@ class Slider extends Value
             cursor  : 'ew-resize'
             target  : @elem
             doMove  : false
-            onMove  : sliderFunc
-            onStart : sliderFunc
+            onMove  : @onDrag
+            onStart : @onDrag
         @
 
+    onDrag: (drag) => 
+        oldValue = @config.value
+        @setValue @size2value drag.pos.x-@absPos().x
+        if oldValue != @config.value
+            @emit 'valueInput', value: @config.value
+        
     onWindowSize: => @setValue @config.value
 
     valueToPercentOfWidth: (value) => # returns the percentage of value v in the [minValue,maxValue] range

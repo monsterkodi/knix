@@ -52,6 +52,7 @@ class Drag
         return if @dragging or not @listening
         # log 'start', @target.id
         @dragging = true
+        @pos     = @absPos event
         @onStart @, event if @onStart?
         @lastPos = @absPos event
         

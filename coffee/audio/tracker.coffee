@@ -74,11 +74,10 @@ class Tracker extends Window
             index : -1
             secs  :  0
             
-        log @columns.length
+        # log @columns.length
         
         for cell in @columns[0].rows
             cell.connect 'mousedown', @onIndicatorDown
-        
         @
         
     onIndicatorDown: (event) =>
@@ -110,6 +109,12 @@ class Tracker extends Window
         else
             @recorder = new Recorder 
                 tracker: @elem.id
+        
+    close: =>        
+        if @recorder?
+            @recorder.close()
+            delete @recorder
+        super
         
     cell: (col, row, cb=null) =>
         c = @columns[col].rows[row]

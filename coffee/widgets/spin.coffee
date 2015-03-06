@@ -69,14 +69,18 @@ class Spin extends Value
         @setValue @config.value
         @
 
-    onInputChange: => @setValue @input.value
+    onInputChange: => 
+        oldValue = @config.value
+        @setValue @input.value
+        if @config.value != oldValue
+            @emit 'valueInput', value: @config.value
 
     onKey: (event, e) =>
         if event.key in ['Esc']
             @setValue @config.value
             return
         if event.key in ['Up', 'Down']
-            @onInputChange()
+            @setValue @input.value
             @incr event.key == 'Up' and '+' or '-'
             event.stop()
             return 
@@ -104,6 +108,7 @@ class Spin extends Value
         [@input.selectionStart, @input.selectionEnd] = [start, end]
 
     incr: (d=1) =>
+        oldValue = @config.value
         valueLength = @input.value.length
         [start, end] = [@input.selectionStart, @input.selectionEnd]
         [trats, dne] = [@input.selectionStart-valueLength, @input.selectionEnd-valueLength]
@@ -122,6 +127,9 @@ class Spin extends Value
         
         valueLength = @input.value.length
         [@input.selectionStart, @input.selectionEnd] = [valueLength+trats, valueLength+dne]
+        
+        if oldValue != @config.value
+            @emit 'valueInput', value: @config.value
 
     startIncr: => @incr(); @timer = setInterval(@incr, Math.max(80, 2000/@steps()))
     startDecr: => @decr(); @timer = setInterval(@decr, Math.max(80, 2000/@steps()))

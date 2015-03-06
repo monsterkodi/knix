@@ -29,32 +29,20 @@ class Spinner extends Spin
 
         delete @input
         @
-
-    onWindowSize: => 
-        # log 'onWindowSize'
-        @setValue @config.value
         
-    size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()
-
     sliderFunc: (drag, event) =>
-        pos    = @getChild('spin-content').absPos()
-        width  = event.clientX-pos.x
-        v      = @size2value width
+        oldValue = @config.value
+        pos      = @getChild('spin-content').absPos()
+        width    = event.clientX-pos.x
+        v        = @size2value width
         
         d = v - @range()/2
         i = @range()/2 + d * @config.valueStep  * @steps() / @range()
         i = @clamp @round(i)
 
         @setValue @config.values[i]
-
-    index: => @config.values.indexOf @config.value
-
-    incr: (d=1) =>
-        log d
-        if d in ['+', '++'] then d = 1
-        else if d in ['-', '--'] then d = -1
-        i = @clamp(@index() + d)
-        @setValue @config.values[i]
+        if oldValue != @config.value
+            @emit 'valueInput', value: @config.value
 
     setValue: (a) =>
         v = _.arg a
@@ -66,3 +54,18 @@ class Spinner extends Spin
         @config.value = @config.values[i]
         c.elem.insert String @config.value
         @emitValue @config.value
+
+    index: => @config.values.indexOf @config.value
+
+    incr: (d=1) =>
+        oldValue = @config.value
+        if d in ['+', '++'] then d = 1
+        else if d in ['-', '--'] then d = -1
+        i = @clamp(@index() + d)
+        @setValue @config.values[i]
+        if oldValue != @config.value
+            @emit 'valueInput', @config.value
+
+    onWindowSize: =>  @setValue @config.value
+    size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()
+

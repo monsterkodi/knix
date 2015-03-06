@@ -44,8 +44,8 @@ class Ramp extends Window
                 id       : 'ramp_trigger'
             ]
     
-        @connect 'ramp_duration:onValue', @setDuration
-        @connect 'button:mousedown',      @triggerDown
+        @connect 'ramp_duration:onValue',  @setDuration
+        @connect 'ramp_trigger:mousedown', @triggerDown
         @
 
     setDuration: (v) => @config.duration = _.value v
