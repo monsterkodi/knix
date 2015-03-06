@@ -302,7 +302,7 @@ class Window extends Widget
 
     raise: (event) =>
         scrolltop = @content.elem.scrollTop
-        @elem.parentElement.appendChild this.elem
+        @elem.parentElement.appendChild @elem
         @content.elem.scrollTop = scrolltop
         event?.stopPropagation()
 

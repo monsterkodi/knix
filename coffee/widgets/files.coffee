@@ -36,10 +36,10 @@ class Files
                 text    : file
                 action  : @fileSelected
 
-        knix.get
+        f = knix.get
+            title    : ' '
             hasClose : true
             hasMaxi  : false
-            title    : ' '
             resize   : false
             hasShade : false
             popup    : true

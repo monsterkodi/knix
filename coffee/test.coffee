@@ -25,7 +25,7 @@ class Test
         t = new Ramp
             x        : 200
             y        : 250
-            duration : 1
+            duration : .1
         
         e = new Envelope
             center   : true 
@@ -34,8 +34,8 @@ class Test
         r = new Range
             x        : 200
             y        : 50
-            low      : 100
-            high     : 400
+            low      : 0
+            high     : 100
 
         o = new Oscillator
             freq     : 200

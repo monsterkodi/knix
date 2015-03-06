@@ -12,8 +12,10 @@ class Stage
 
     @positionWindow: (win) =>
         [p, w, h] = [win.absPos(), win.getWidth(), win.getHeight()]
-        if p.x + w > @width()
-            win.setPos pos @width() - w, Math.max(p.y, $('menu').getHeight())
+        [x,y] = [p.x, p.y]
+        x = Math.min(x, @width() - w)
+        y = Math.max(y, $('menu').getHeight()+6)
+        win.setPos pos x, y
 
     @width:  => @size().width
     @height: => @size().height

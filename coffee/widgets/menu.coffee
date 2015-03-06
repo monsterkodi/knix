@@ -64,7 +64,7 @@ class Menu extends Widget
             btn.id      = undefined
             btn.parent  = 'context-menu'
             btn.menu    = 'context-menu'
-            btn.onClick = @onContextAction
+            btn.action  = @onContextAction
             btn.action  = e.widget.config.action
             # log btn
             children.push btn
@@ -82,7 +82,7 @@ class Menu extends Widget
                         
     @onContextAction: (event) =>
         # log 'button action', event.target.getWidget()
-        w = event.target.getWidget().getUp('button').config.action()
+        w = event.target.getWidget().getUp('button').config.action event
         m = @menu('context-menu')
         w.setPos m.absPos()
         m.close()

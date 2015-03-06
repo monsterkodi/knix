@@ -69,7 +69,7 @@ class Keys
         document.addEventListener 'mousemove', @onMove
 
     @registerKeyForWidget: (key, wid) =>
-        log key, wid.elem.id
+        # log key, wid.elem.id
         wid.config.keys.push key if key not in wid.config.keys
         @shortcuts[key] = [] unless @shortcuts[key]?
         @shortcuts[key].push wid unless wid in @shortcuts[key]

@@ -84,7 +84,7 @@ class Tracker extends Window
         log 'value', event.target.id, _.value event   
 
     addTrigger: (event) =>
-        log 'trigger', event.target.id
+        # log 'trigger', event.target.id
         col = @columnFor event.target
         row = col.rows[@step.index]
         @rowColumns[@step.index].push(col.config.index) if col.config.index not in @rowColumns[@step.index]
@@ -142,6 +142,7 @@ class Tracker extends Window
         if @recorder?
             @recorder.close()
             delete @recorder
+        @stop()
         super
         
     cell: (col, row, cb=null) =>

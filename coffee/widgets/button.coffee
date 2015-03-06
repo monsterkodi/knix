@@ -33,7 +33,9 @@ class Button extends Widget
         if @config.menu != 'menu'
             super
 
-    trigger: =>
+    trigger: (event) =>
         # log 'trigger', @config.action?
-        @config.action?()
+        @config.action? event
         @emit 'trigger'
+        event?.stop()
+        @
