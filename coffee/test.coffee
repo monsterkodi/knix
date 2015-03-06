@@ -412,25 +412,25 @@ class Test
             style :
                 backgroundColor: '#f00'
 
-        Drag.create
+        new Drag
             target : start.elem
             onMove : (drag, event) ->
                 p = drag.absPos(event)
                 pth.setStart [p.x, p.y]
 
-        Drag.create
+        new Drag
             target : startHead.elem
             onMove : (drag, event) ->
                 p = drag.absPos(event)
                 pth.setStartHead [p.x, p.y]
 
-        Drag.create
+        new Drag
             target : end.elem
             onMove : (drag, event) ->
                 p = drag.absPos(event)
                 pth.setEnd [p.x, p.y]
 
-        Drag.create
+        new Drag
             target : endHead.elem
             onMove : (drag, event) ->
                 p = drag.absPos(event)

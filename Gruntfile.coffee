@@ -115,7 +115,6 @@ module.exports = (grunt) ->
     # npm install --save-dev <nodepackage>          to add <nodepackage> to package.json devDependencies
 
     grunt.loadNpmTasks 'grunt-contrib-stylus'
-    grunt.loadNpmTasks 'grunt-contrib-concat'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-watch'

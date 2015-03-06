@@ -20,7 +20,7 @@ class Spinner extends Spin
             minValue  : 0
             maxValue  : cfg.values.length-1
 
-        Drag.create
+        new Drag
             cursor    : 'ew-resize'
             target    : @getChild('spin-content').elem
             doMove    : false
@@ -68,4 +68,3 @@ class Spinner extends Spin
 
     onWindowSize: =>  @setValue @config.value
     size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()
-

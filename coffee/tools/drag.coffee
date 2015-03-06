@@ -10,8 +10,6 @@
 
 class Drag
 
-    @create: (cfg) -> new Drag(cfg)
-
     constructor: (cfg) ->
         
         _.extend @, _.def cfg,

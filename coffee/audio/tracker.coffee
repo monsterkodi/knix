@@ -13,6 +13,8 @@ class Tracker extends Window
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
+
+        log cfg
         
         cfg = _.def cfg,
             columns  : 0

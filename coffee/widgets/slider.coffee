@@ -25,7 +25,7 @@ class Slider extends Value
 
         @setBarValue @config.value
 
-        Drag.create
+        new Drag
             cursor  : 'ew-resize'
             target  : @elem
             doMove  : false

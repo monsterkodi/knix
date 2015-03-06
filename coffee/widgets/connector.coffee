@@ -25,7 +25,7 @@ class Connector extends Widget
             onOut  : @onOut
             noMove : true
 
-        Drag.create
+        new Drag
             target  : @elem
             minPos  : pos(undefined,0)
             cursor  : 'grab'

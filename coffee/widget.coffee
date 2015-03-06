@@ -318,7 +318,7 @@ class Widget
     getAncestors: => _.filter [@getParent(), @getParent()?.getAncestors()].flatten()
     upWidgets:    => _.filter [@, @getAncestors()].flatten()
     upWidgetWithConfigValue: (key) => _.find @upWidgets(), (w) -> w?.config?[key]? 
-    matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value ), (e) -> e?
+    matchConfigValue: (key, value, list) => _.filter ( w for w in list when w?.config?[key] == value )
         
     getWindow: => # without argument: returns this or first ancestor element with class 'window'
                   # with argument: returns the window with id 
@@ -469,7 +469,7 @@ class Widget
         if @config.isMovable
             # tag 'Drag'
             # log 'addMovement'
-            Drag.create
+            new Drag
                 target:  @elem
                 minPos:  pos(undefined,0)
                 onMove:  @onMove

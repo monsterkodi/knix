@@ -220,7 +220,7 @@ class Window extends Widget
             else
                 cursor = 'nesw-resize'
 
-            @sizeMoveDrag = Drag.create
+            @sizeMoveDrag = new Drag
                 target  : @elem
                 onStart : @sizeStart
                 onMove  : @sizeMove
@@ -229,7 +229,7 @@ class Window extends Widget
 
             @sizeMoveDrag.border = border
         else
-            @sizeMoveDrag = Drag.create
+            @sizeMoveDrag = new Drag
                 target  : @elem
                 minPos  : pos undefined, 0
                 onMove  : @emitMove

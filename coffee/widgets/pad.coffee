@@ -62,7 +62,7 @@ class Pad extends Widget
             endHandle   : @handles[i+1]
         p.path.node.addEventListener 'dblclick', @pathDoubleClick
         p.path.back()   
-        Drag.create
+        new Drag
             target : p.path.node
             cursor : 'grab'
             doMove : false
