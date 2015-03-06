@@ -19,6 +19,7 @@ class Tracker extends Window
             rows     : 32
             height   : 32*22+40
             width    : 32*22+40
+            
             stepSecs : 10
             title    :'tracker'
             
@@ -38,23 +39,20 @@ class Tracker extends Window
             content : 'scroll'
             buttons : \
             [
-                type     : 'window-button-left'
-                class    : 'playpause'
-                child    :
-                    type : 'icon'
-                    icon : 'fa-play'
+                type     : 'button'
+                class    : 'playpause window-button-left'
+                icon     : 'fa-play'
             ,
-                type     : 'window-button-left'
-                class    : 'stop'
-                child    :
-                    type : 'icon'
-                    icon : 'fa-stop'
+                type     : 'button'
+                class    : 'stop window-button-left'
+                icon     : 'fa-stop'
             ,
-                type     : 'window-button-left'
-                class    : 'record'
-                child    :
-                    type : 'icon'
-                    icon : 'fa-circle'
+                type     : 'toggle'
+                class    : 'record window-button-left'
+                state    : 'off'
+                states   : ['off', 'on']
+                icon     : 'fa-circle-o'
+                icons    : ['fa-circle-o', 'fa-circle']
             ]            
             child   :
                 class    : 'columns'
@@ -74,8 +72,6 @@ class Tracker extends Window
             index : -1
             secs  :  0
             
-        # log @columns.length
-        
         for cell in @columns[0].rows
             cell.connect 'mousedown', @onIndicatorDown
         @

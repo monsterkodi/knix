@@ -66,7 +66,9 @@ class Window extends Widget
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
         if @config.buttons?
-            @insertChild(b, { noMove:true }) for b in @config.buttons
+            for b in @config.buttons
+                button = @insertChild b, noMove : true
+                button.elem.addClassName 'tool-button'
         @addTitleBar()     if @config.hasTitle or @config.title
 
         content = knix.create

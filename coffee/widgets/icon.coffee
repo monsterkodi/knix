@@ -23,8 +23,16 @@ class Icon extends Widget
                 class : 'octicon'
                 child :
                     elem  : 'i'
-                    class : 'fa '+cfg.icon
+                    class : 'fa ' + cfg.icon
         else
             super cfg,
                 class : 'octicon ' + cfg.icon
     
+    setIcon: (icon) =>
+        if icon.startsWith 'fa'
+            e = @getChild('fa').elem
+        else
+            e = @elem
+        e.removeClassName @config.icon
+        @config.icon = icon
+        e.addClassName @config.icon

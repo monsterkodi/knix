@@ -12,29 +12,31 @@ class Toggle extends Button
     
     init: (cfg, defs) =>
 
-        super cfg, _.def defs,
+        cfg = _.def cfg, defs
+
+        super cfg,
             class   : 'button'
-            onClick : @onClick
             state   : 'off'
             states  : ['on', 'off']
             icon    : 'octicon-check'
             icons   : ['octicon-check', 'octicon-x']
 
-        @elem.on 'onState', @config.onState if @config.onState?
+        @connect 'click', @onClick
+        @connect 'onState', @config.onState if @config.onState?
         @setState @config.state
         @
         
     setState: (state) =>
-        e = @getChild('octicon').elem
-        e.removeClassName @config.icons[@getIndex()]
+        # e = @getChild('icon').elem
+        # e.removeClassName @config.icons[@getIndex()]
         @elem.removeClassName @config.state
         @config.state = state
-        e.addClassName @config.icons[@getIndex()]
+        # e.addClassName @config.icons[@getIndex()]
         @elem.addClassName @config.state
+        @getChild('icon')?.setIcon @config.icons[@getIndex()]
         @emit 'onState',
             state: @config.state
 
-    getIndex: => @config.states.indexOf @config.state
-    toggle: => @setState @config.states[(@getIndex()+1)%@config.states.length]
-
-    onClick: => @toggle()
+    getIndex : => @config.states.indexOf @config.state
+    toggle   : => @setState @config.states[(@getIndex()+1)%@config.states.length]
+    onClick  : => @toggle()
