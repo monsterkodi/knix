@@ -31,10 +31,13 @@ class Keys
             @register = {}
         else
             if @shortcuts[key]?
+                log key
                 for wid in @shortcuts[key]
+                    log wid.elem.id, wid.trigger?
                     if wid.trigger?
                         wid.trigger?()
                     else if key not in @pressed
+                        log key, wid.elem.id
                         e = new MouseEvent "mousedown",
                                             bubbles    : true,
                                             cancelable : true,
@@ -66,6 +69,7 @@ class Keys
         document.addEventListener 'mousemove', @onMove
 
     @registerKeyForWidget: (key, wid) =>
+        log key, wid.elem.id
         wid.config.keys.push key if key not in wid.config.keys
         @shortcuts[key] = [] unless @shortcuts[key]?
         @shortcuts[key].push wid unless wid in @shortcuts[key]

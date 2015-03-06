@@ -62,9 +62,9 @@ class Tracker extends Window
                 style    :
                     display : 'table-row'
                     
-        @connect 'playpause:click', @playPause
-        @connect 'stop:click',      @stop
-        @connect 'record:click',    @record
+        @connect 'playpause:trigger', @playPause
+        @connect 'stop:trigger',      @stop
+        @connect 'record:trigger',    @record
                     
         @columns = @getChild('columns').getChildren()
         @columnSets = {}
@@ -130,6 +130,7 @@ class Tracker extends Window
         knix.deanimate @
         
     record: =>
+        log 'record'
         if @recorder?
             @recorder.close()
             delete @recorder

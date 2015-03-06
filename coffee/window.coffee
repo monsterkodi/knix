@@ -111,7 +111,8 @@ class Window extends Widget
 
     addCloseButton: =>
         knix.create
-            type     : 'close'
+            type     : 'button'
+            class    : 'close tool-button'
             noMove   : true
             parent   : this
             child    :
@@ -121,7 +122,8 @@ class Window extends Widget
 
     addShadeButton: =>
         knix.create
-            type     : "shade"
+            type     : 'button'
+            class    : 'shade tool-button'
             noMove   : true
             parent   : this
             child    :

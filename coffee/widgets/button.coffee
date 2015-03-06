@@ -34,6 +34,6 @@ class Button extends Widget
             super
 
     trigger: =>
-        log 'trigger', @config.action?
+        # log 'trigger', @config.action?
         @config.action?()
         @emit 'trigger'

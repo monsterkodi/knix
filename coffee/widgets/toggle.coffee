@@ -21,17 +21,14 @@ class Toggle extends Button
             icon    : 'octicon-check'
             icons   : ['octicon-check', 'octicon-x']
 
-        @connect 'click', @onClick
+        @connect 'trigger', @toggle
         @connect 'onState', @config.onState if @config.onState?
         @setState @config.state
         @
         
     setState: (state) =>
-        # e = @getChild('icon').elem
-        # e.removeClassName @config.icons[@getIndex()]
         @elem.removeClassName @config.state
         @config.state = state
-        # e.addClassName @config.icons[@getIndex()]
         @elem.addClassName @config.state
         @getChild('icon')?.setIcon @config.icons[@getIndex()]
         @emit 'onState',
@@ -39,4 +36,3 @@ class Toggle extends Button
 
     getIndex : => @config.states.indexOf @config.state
     toggle   : => @setState @config.states[(@getIndex()+1)%@config.states.length]
-    onClick  : => @toggle()
