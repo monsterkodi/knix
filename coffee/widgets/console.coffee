@@ -32,17 +32,17 @@ class Console extends Window
             showClasses : Settings.get 'logClasses', true
             buttons     : \
             [
-                onClick : @maximize
+                action  : @maximize
                 icon    : 'octicon-diff-added'
             ,
-                onClick : @scrollToTop
+                action  : @scrollToTop
                 icon    : 'fa-arrow-circle-o-up'
             ,
-                onClick : @scrollToBottom
+                action  : @scrollToBottom
                 icon    : 'fa-arrow-circle-o-down'
             ,
                 align   : 'right'
-                onClick : @clear
+                action  : @clear
                 keys    : ['k']
                 icon    : 'octicon-trashcan'
             ]
@@ -76,9 +76,9 @@ class Console extends Window
                     onState : @onTagState
 
         children.push
-            type    : 'button'
-            text    : 'ok'
-            onClick : -> _.win().close()
+            type   : 'button'
+            text   : 'ok'
+            action : -> _.win().close()
 
         knix.get
             hasClose : true
@@ -93,29 +93,29 @@ class Console extends Window
             buttons  : \
             [
                 icon    : 'octicon-check'
-                onClick : ->
+                action  : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('on')
             ,
                 icon    : 'octicon-dash'
-                onClick : ->
+                action  : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('unset')
             ,
                 icon    : 'octicon-x'
-                onClick : ->
+                action  : ->
                     for t in _.win().elem.select('.toggle')
                         t.widget.setState('off')
             ,
-                onClick : @trashSettings
+                action  : @trashSettings
                 align   : 'right'
                 icon    : 'octicon-trashcan'
             ,
-                onClick : @toggleMethods
+                action  : @toggleMethods
                 align   : 'right'
                 icon    : 'octicon-list-unordered'
             ,
-                onClick : @toggleClasses
+                action  : @toggleClasses
                 align   : 'right'
                 icon    : 'octicon-three-bars'
             ]

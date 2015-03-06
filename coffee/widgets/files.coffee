@@ -34,7 +34,7 @@ class Files
             children.push
                 type    : 'button'
                 text    : file
-                onClick : @fileSelected
+                action  : @fileSelected
 
         knix.get
             hasClose : true
@@ -47,8 +47,8 @@ class Files
             children : children
             buttons  : \
             [
-                onClick : @trashFiles
-                icon    : 'octicon-trashcan'
+                action : @trashFiles
+                icon   : 'octicon-trashcan'
             ]
 
     @trashFiles: =>

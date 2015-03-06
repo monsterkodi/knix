@@ -227,20 +227,20 @@ class Test
             type    : 'button'
             text    : 'oscillator'
             parent  : 'menu'
-            onClick : -> Test.oscillator()
+            action  : -> Test.oscillator()
 
         b = knix.get
             type    : 'button'
             text    : 'delay'
             parent  : 'menu'
-            onClick : -> Test.delay()
+            action  : -> Test.delay()
 
         c = knix.get
             type    : 'button'
             text    : 'envelope'
             keys    : ['e']
             parent  : 'menu'
-            onClick : -> Test.envelope()
+            action  : -> Test.envelope()
 
         #a.elem.click()
 
@@ -333,7 +333,7 @@ class Test
                 text      : '<i class="fa fa-cog fa-spin"></i> ok'
                 style     :
                     clear : 'both'
-                onClick   : (event, e) -> e.getWidget().getWindow().close()
+                action    : (event, e) -> e.getWidget().getWindow().close()
             ]
             connect: \
             [
@@ -356,7 +356,7 @@ class Test
             type    : 'button'
             text    : 'connectors'
             parent  : 'menu'
-            onClick : ->
+            action  : ->
 
                 a = Test.connectorBox()
                 b = Test.connectorBox().setPos pos(200,400)
@@ -452,7 +452,7 @@ class Test
             type    : 'button'
             text    : 'hello slider'
             parent  : 'menu'
-            onClick : ->
+            action  : ->
                 w = knix.get
                     title    : 'hello'
                     resize   : true
@@ -471,7 +471,7 @@ class Test
                     ,
                         type      : 'button'
                         text      : 'ok'
-                        onClick   : (event, e) -> e.getWidget().getWindow().close()
+                        action    : (event, e) -> e.getWidget().getWindow().close()
                     ]
                     connect   : \
                     [
@@ -499,7 +499,7 @@ class Test
             type    : 'button'
             text    : 'slider & value'
             parent  : 'menu'
-            onClick : ->
+            action  : ->
                 knix.get
                     y        : 30
                     minWidth : 200
@@ -524,7 +524,7 @@ class Test
                     ,
                         type    : 'button'
                         text    : 'ok'
-                        onClick : (event, e) -> e.getWidget().getWindow().close()
+                        action  : (event, e) -> e.getWidget().getWindow().close()
                     ]
                     connect: \
                     [
@@ -599,4 +599,4 @@ class Test
             width   : 200
             x       : 150
             y       : 150
-            onClick : knix.closeAll
+            action  : knix.closeAll

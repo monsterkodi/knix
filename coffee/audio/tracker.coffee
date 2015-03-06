@@ -163,7 +163,7 @@ class Tracker extends Window
         # log 'rowIndex', rowIndex, @rowColumns[rowIndex] #, @rowColumns
         for colIndex in @rowColumns[rowIndex]
             # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
-            log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
+            # log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
             @columns[colIndex].rec?.trigger()
         
     anim: (step) =>

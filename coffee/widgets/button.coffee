@@ -22,7 +22,6 @@ class Button extends Widget
                 icon : cfg.icon
                 
         super cfg,
-            # onClick  : cfg.action
             keys     : []
             type     : 'button'
             noMove   : true

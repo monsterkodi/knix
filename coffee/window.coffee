@@ -117,7 +117,7 @@ class Window extends Widget
             child    :
                 type : 'icon'
                 icon : 'octicon-x'
-            onClick  : @close
+            action   : @close
 
     addShadeButton: =>
         knix.create
@@ -127,7 +127,7 @@ class Window extends Widget
             child    :
                 type : 'icon'
                 icon : 'octicon-dash'
-            onClick  : @shade
+            action   : @shade
 
     headerSize: (box="border-box-height") =>
         children = Selector.findChildElements(@elem, [ '*.title', '*.close', '*.shade' ])
