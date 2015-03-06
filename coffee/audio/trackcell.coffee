@@ -18,4 +18,19 @@ class TrackCell extends Widget
             type: 'TrackCell'
             text: '<i class="fa fa-square"></i>'
             
+        @connect 'click', @toggle
         @    
+        
+    isOn   : => @elem.hasClassName 'on'
+    isOff  : => not @isOn
+    toggle : => if @isOn() then @off() else @on()
+        
+    on: =>
+        # log @elem.id
+        @elem.removeClassName 'off'
+        @elem.addClassName 'on'
+
+    off: => 
+        log @elem.id
+        @elem.removeClassName 'on'
+        @elem.addClassName 'off'

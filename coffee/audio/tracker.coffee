@@ -15,7 +15,7 @@ class Tracker extends Window
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            columns  : 16
+            columns  : 0
             rows     : 32
             height   : 32*22+40
             width    : 32*22+40
@@ -63,6 +63,7 @@ class Tracker extends Window
         @connect 'record:click',    @record
                     
         @columns = @getChild('columns').getChildren()
+        @columnSets = {}
 
         @stepDeltaSecs = 1.0 / @config.stepSecs
         @numSteps      = @config.rows
@@ -73,6 +74,32 @@ class Tracker extends Window
         for cell in @columns[0].rows
             cell.connect 'mousedown', @onIndicatorDown
         @
+    
+    addValue: (event) =>    
+        log 'value', event.target.id, _.value event   
+
+    addButton: (event) =>
+        log 'value', event.target.id
+        col = @columnFor event.target
+        row = col.rows[@step.index]
+        # log row.elem.id
+        row.on()
+        
+    columnFor: (target) =>
+        winKey = target.getWindow().elem.id
+        widKey = target.id
+        if not @columnSets[winKey]?
+            log 'new set', winKey
+            @columnSets[winKey] = {}
+        cs = @columnSets[winKey]
+        if not cs[widKey]?
+            log 'new col', widKey
+            cs[widKey] = new TrackColumn
+                        rows   : @config.rows
+                        parent : @getChild 'columns'
+            @columns.push cs[widKey]
+        # log cs[widKey].elem.id            
+        cs[widKey]
         
     onIndicatorDown: (event) =>
         index = event.target.getWidget().config.index

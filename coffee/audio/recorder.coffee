@@ -33,10 +33,12 @@ class Recorder
         @
         
     onValueInput: (event) =>
-        log 'value', event.target.id, _.value event
+        # log 'value', event.target.id, _.value event
+        @tracker.addValue event
         
     onButtonDown: (event) =>
-        log 'button down', event.target.id    
+        # log 'button down', event.target
+        @tracker.addButton event
     
     close: =>
         log @config.tracker

@@ -65,8 +65,8 @@ class Files
     @fileSelected: (event) => @loadFile event.target.getWidget().config.text
 
     @loadFile: (filename) =>
-        log filename
         if filename
+            log filename
             data = @allFiles()[filename]
             knix.closeWindows()
             state = JSON.parse data
