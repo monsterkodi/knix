@@ -104,16 +104,12 @@ a
 */
 
 .icon
-  width:                20px
-  height:               20px
   border:               0px
   background-color:     transparent
   text-align:           center
   color:                colors.bg
   & i
-    box-sizing:       border-box
     width:              20px
-    padding-top:        2px
   &:hover
       color:            colors.button-hover-text
   &:active
@@ -121,12 +117,12 @@ a
 
 .menu .icon
     & i
-        width:                30px
-    color:                textColors.menu
+        width:          30px
+    color:              textColors.menu
     &:hover
-        color:            textColors.menu-hover
+        color:          textColors.menu-hover
     &:active
-        color:            textColors.menu-active
+        color:          textColors.menu-active
     
 /*
 *  0000000    000   000  000000000  000000000   0000000   000   000
@@ -136,6 +132,7 @@ a
 *  0000000     0000000      000        000      0000000   000   000
 */
 
+.toggle
 .button
     handCursor()
     overflow:             hidden
@@ -143,7 +140,6 @@ a
     padding-left:         6px
     padding-right:        6px
     text-align:           center
-    // vertical-align:       middle
     font-size:            14px
     font-weight:          bold
     border-radius:        buttonRadius
@@ -198,8 +194,8 @@ a
     background-color:     colors.toggle
     color:                colors.toggle-text
 
-    & > .icon
-      padding-right:      6px
+    // & > .icon
+    //   padding-right:      6px
 
     &:hover
         background-color: colors.toggle-hover
@@ -669,6 +665,11 @@ a
   *     000     000   000  000   000   0000000  000   000  00000000  000   000
   */
 
+.record.on *
+.playpause.play *
+    color: red
+
+    
   /*
   *   0000000  00000000  000      000    
   *  000       000       000      000    

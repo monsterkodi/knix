@@ -32,6 +32,9 @@ class Spin extends Value
                         child :
                             type  : 'icon'
                             icon  : 'octicon-triangle-left'
+                            style :
+                                position: 'relative'
+                                top: '-1px'
                     ,
                         elem  : 'td'
                         type  : 'spin-content'
@@ -46,6 +49,9 @@ class Spin extends Value
                         child :
                             type  : 'icon'
                             icon  : 'octicon-triangle-right'
+                            style :
+                                position: 'relative'
+                                top: '-1px'
                     ]
 
         @connect 'decr:mousedown', @startDecr

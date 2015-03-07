@@ -14,13 +14,14 @@ class Recorder
 
     init: (cfg, defs) =>
         
-        @config  = _.def cfg, defs
-        @tracker = $(@config.tracker).getWidget()
-        @widgets = []
+        @config   = _.def cfg, defs
+        @tracker  = $(@config.tracker).getWidget()
+        @triggers = []
+        @values   = []
         for win in knix.allWindows()
             @registerWindow win
                     
-        log 'recording: %d elements'.fmt @widgets.length
+        log 'recording: %d triggers %d values'.fmt @triggers.length, @values.length
         @
         
     registerWindow: (win) =>
@@ -30,14 +31,16 @@ class Recorder
                 switch c.constructor.name
                     when 'Button'
                         if not c.elem.hasClassName 'tool-button'
-                            @widgets.push c
+                            @triggers.push c
                             c.connect 'mousedown', @onButtonDown
                     # when 'Pad'    then log 'todo:pad'
-                    else c.connect 'valueInput', @onValueInput 
+                    else
+                        @values.push c
+                        c.connect 'valueInput', @onValueInput 
                 
     onValueInput: (event) =>
         # log 'value', event.target.id, _.value event
-        @tracker.addValue event.target
+        @tracker.addValue event.target.getWidget()
         
     onButtonDown: (event) =>
         # log 'button down', event.target
@@ -45,3 +48,9 @@ class Recorder
     
     close: =>
         log @config.tracker
+        for trigger in @triggers
+            trigger.disconnect 'mousedown', @onButtonDown
+        @triggers.clear()        
+        for value in @values
+            value.disconnect 'valueInput', @onValueInput
+        @values.clear()

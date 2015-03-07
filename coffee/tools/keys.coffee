@@ -31,13 +31,11 @@ class Keys
             @register = {}
         else
             if @shortcuts[key]?
-                # log key
                 for wid in @shortcuts[key]
-                    # log wid.elem.id, wid.trigger?
-                    if wid.trigger?
-                        wid.trigger?()
-                    else if key not in @pressed
-                        # log key, wid.elem.id
+                    # if wid.trigger?
+                    #     wid.trigger?()
+                    # else 
+                    if key not in @pressed
                         e = new MouseEvent "mousedown",
                                             bubbles    : true,
                                             cancelable : true,

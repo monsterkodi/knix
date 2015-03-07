@@ -14,7 +14,7 @@ class Tracker extends Window
         
         cfg = _.def cfg, defs
 
-        log cfg
+        # log cfg
         
         cfg = _.def cfg,
             columns  : 0
@@ -43,9 +43,13 @@ class Tracker extends Window
             content : 'scroll'
             buttons : \
             [
+                type     : 'toggle'
                 class    : 'playpause'
-                icon     : 'fa-play'
                 keys     : ['p']
+                state    : 'pause'
+                states   : ['pause', 'play']
+                icon     : 'fa-play'
+                icons    : ['fa-play', 'fa-pause']
             ,
                 class    : 'stop'
                 icon     : 'fa-stop'
@@ -82,8 +86,19 @@ class Tracker extends Window
             cell.connect 'mousedown', @onIndicatorDown
         @
     
-    addValue: (target) =>    
-        log 'value', target.id, _.value event   
+    addValue: (valueWidget) =>    
+        # log 'value', valueWidget.elem.id, valueWidget.config.value
+        col = @columnFor valueWidget.elem
+        row = col.rows[@step.index]
+        @setValue row, valueWidget
+        row.on()
+        
+    setValue: (cell, valueWidget) =>
+        rowIndex = cell.config.index 
+        colIndex = cell.column().config.index
+        @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]   
+        cell.clear()
+        cell.insertChild valueWidget.config
 
     addTrigger: (target) =>
         col = @columnFor target
@@ -97,7 +112,6 @@ class Tracker extends Window
         @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]
         
     delTrigger: (cell) =>
-        # log cell.config.index, cell.column().config.index
         rowIndex = cell.config.index 
         colIndex = cell.column().config.index
         @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
@@ -139,22 +153,27 @@ class Tracker extends Window
     stop: =>
         log 'stop'
         @cell 0, @step.index, 'off'
+        @getChild('playpause').setState 'pause'
         @playing    = false
         @step.index = -1
         @step.secs  =  0
         knix.deanimate @
         
     record: =>
-        log 'record'
+        log 'record', @recorder?
         if @recorder?
+            log 'close rec'
             @recorder.close()
             delete @recorder
         else
-            @recorder = new Recorder 
-                tracker: @elem.id
+            if @elem?
+                @recorder = new Recorder 
+                    tracker: @elem.id
+            log 'new recorder', @elem?.id, @recorder?
         
     close: =>        
         if @recorder?
+            log 'close recorder'
             @recorder.close()
             delete @recorder
         @stop()
@@ -182,7 +201,7 @@ class Tracker extends Window
             # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
             # log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
             if @columns[colIndex].rows[rowIndex].isOn()
-                @columns[colIndex].rec?.trigger()
+                @columns[colIndex].rec?.trigger?()
         
     anim: (step) =>
         @step.secs += step.dsecs

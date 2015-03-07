@@ -136,10 +136,25 @@ class Widget
             error "event not found!"
         if not slotFunction?
             error "slot not found!"
-        handler:  signalSender.elem.on signalEvent, slotFunction
-        sender:   signalSender
-        event:    signalEvent
-        receiver: slotFunction
+        signalSender.elem.addEventListener signalEvent, slotFunction
+        # handler:  signalSender.elem.on signalEvent, slotFunction
+        # sender:   signalSender
+        # event:    signalEvent
+        # receiver: slotFunction
+        @
+
+    disconnect: (signal, slot) =>
+        [signalSender, signalEvent] = @resolveSignal signal
+        slotFunction = @resolveSlot slot
+        if not signalSender?
+            error "sender not found!"
+        if not signalEvent?
+            error "event not found!"
+        if not slotFunction?
+            error "slot not found!"
+        # log 'disconnect', signalSender.elem.id, signalEvent
+        signalSender.elem.removeEventListener signalEvent, slotFunction
+        @
 
     connector: (name) =>
         # tag 'Connection'
