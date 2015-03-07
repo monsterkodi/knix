@@ -18,27 +18,30 @@ class Recorder
         @tracker = $(@config.tracker).getWidget()
         @widgets = []
         for win in knix.allWindows()
-            if win.constructor.name in ['Tracker', 'Analyser'] then continue
-            for c in win.getAllChildren()
-                if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
-                    @widgets.push c
-                    switch c.constructor.name
-                        when 'Button' then c.connect 'mousedown', @onButtonDown
-                        # when 'Pad'    then log 'todo:pad'
-                        else c.connect 'valueInput', @onValueInput 
+            @registerWindow win
                     
-        log 'recording: %d elements'.fmt @widgets.length 
-        # for w in @widgets
-        #     log w.getWindow().elem.id, w.elem.id #, w.constructor.name
+        log 'recording: %d elements'.fmt @widgets.length
         @
         
+    registerWindow: (win) =>
+        if win.constructor.name in ['Tracker', 'Analyser'] then return
+        for c in win.getAllChildren()
+            if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
+                switch c.constructor.name
+                    when 'Button'
+                        if not c.elem.hasClassName 'tool-button'
+                            @widgets.push c
+                            c.connect 'mousedown', @onButtonDown
+                    # when 'Pad'    then log 'todo:pad'
+                    else c.connect 'valueInput', @onValueInput 
+                
     onValueInput: (event) =>
         # log 'value', event.target.id, _.value event
-        @tracker.addValue event
+        @tracker.addValue event.target
         
     onButtonDown: (event) =>
         # log 'button down', event.target
-        @tracker.addTrigger event
+        @tracker.addTrigger event.target
     
     close: =>
         log @config.tracker

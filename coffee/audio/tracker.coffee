@@ -82,15 +82,25 @@ class Tracker extends Window
             cell.connect 'mousedown', @onIndicatorDown
         @
     
-    addValue: (event) =>    
-        log 'value', event.target.id, _.value event   
+    addValue: (target) =>    
+        log 'value', target.id, _.value event   
 
-    addTrigger: (event) =>
-        # log 'trigger', event.target.id
-        col = @columnFor event.target
+    addTrigger: (target) =>
+        col = @columnFor target
         row = col.rows[@step.index]
-        @rowColumns[@step.index].push(col.config.index) if col.config.index not in @rowColumns[@step.index]
+        @setTrigger row
         row.on()
+        
+    setTrigger: (cell) =>
+        rowIndex = cell.config.index 
+        colIndex = cell.column().config.index
+        @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]
+        
+    delTrigger: (cell) =>
+        # log cell.config.index, cell.column().config.index
+        rowIndex = cell.config.index 
+        colIndex = cell.column().config.index
+        @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
         
     columnFor: (target) =>
         winKey = target.getWindow().elem.id
@@ -114,17 +124,20 @@ class Tracker extends Window
         @gotoStep index        
                 
     play: =>
+        log 'play'
         @playing = true
         @nextStep()
         knix.animate @
         
     pause: =>
+        log 'pause'
         @playing = false
         knix.deanimate @
         
     playPause: => if @playing then @pause() else @play()
 
     stop: =>
+        log 'stop'
         @cell 0, @step.index, 'off'
         @playing    = false
         @step.index = -1
@@ -168,7 +181,8 @@ class Tracker extends Window
         for colIndex in @rowColumns[rowIndex]
             # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
             # log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
-            @columns[colIndex].rec?.trigger()
+            if @columns[colIndex].rows[rowIndex].isOn()
+                @columns[colIndex].rec?.trigger()
         
     anim: (step) =>
         @step.secs += step.dsecs

@@ -34,7 +34,7 @@ class TrackColumn extends Widget
         
         if @config.winID? and @config.widID?
             @rec = @getWindow(@config.winID).getChild @config.widID
-            log '@rec', @rec.elem.id
+            log '@rec', @rec?.elem.id, @config.winID, @config.widID
         
         @
             

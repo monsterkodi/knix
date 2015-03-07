@@ -228,8 +228,11 @@ class knix
         window.requestAnimationFrame @anim
 
     @animObjects = []
-    @animate: (o) => @animObjects.push(o)
-    @deanimate: (o) => _.del @animObjects, o
+    @animate: (o) => @animObjects.push o
+    @deanimate: (o) => 
+        # log @animObjects.length
+        _.del @animObjects, o
+        # log @animObjects.length
     
     @anim: (timestamp) =>
         step = 
@@ -237,7 +240,7 @@ class knix
             delta: timestamp-@animTimeStamp
             dsecs: (timestamp-@animTimeStamp)*0.001
         for animObject in @animObjects
-            animObject.anim step
+            animObject?.anim? step
         @animTimeStamp = timestamp
         window.requestAnimationFrame @anim
 

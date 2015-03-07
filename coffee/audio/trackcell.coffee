@@ -25,12 +25,19 @@ class TrackCell extends Widget
     isOff  : => not @isOn
     toggle : => if @isOn() then @off() else @on()
         
+    column: => @getParent 'TrackColumn'
+    tracker: => @getParent 'Tracker'
+        
     on: =>
         # log @elem.id
         @elem.removeClassName 'off'
         @elem.addClassName 'on'
+        # log @tracker().elem.id
+        @tracker().setTrigger @
 
     off: => 
-        log @elem.id
+        # log @elem.id
         @elem.removeClassName 'on'
         @elem.addClassName 'off'
+        # log @tracker().elem.id
+        @tracker().delTrigger @

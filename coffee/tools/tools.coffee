@@ -52,7 +52,10 @@ _.arg = (arg, argname='') ->
             return parseFloat arg
     arg
 
-_.del   = (l,e) -> _.remove l, (n) -> n == e
+# _.del   = (l,e) -> _.remove l, (n) -> n == e
 _.value = (arg) -> _.arg arg, 'value'
 _.win   =       -> _.win.caller.arguments[0].target.getWidget().getWindow()
 _.wid   =       -> _.wid.caller.arguments[0].target.getWidget()
+_.del   = (l,e) -> 
+    while e in l 
+        l.splice l.indexOf(e), 1

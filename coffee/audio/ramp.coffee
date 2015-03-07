@@ -55,7 +55,7 @@ class Ramp extends Window
             knix.deanimate @
         Audio.sendParamValuesFromConnector { duration: @config.duration }, @connector 'ramp:onValue'
         @setRelTime 0
-        knix.animate @
+        # knix.animate @
                             
     anim: (step) =>
         @setRelTime @config.reltime + step.dsecs / @config.duration
