@@ -18,21 +18,13 @@ class Icon extends Widget
             type  : 'icon'
             elem  : 'span'
                 
-        if cfg.icon.startsWith 'fa'
-            super cfg,
-                class : 'octicon'
-                child :
-                    elem  : 'i'
-                    class : 'fa ' + cfg.icon
-        else
-            super cfg,
-                class : 'octicon ' + cfg.icon
-    
+        super cfg,
+            child : 
+                elem  : 'i'
+                class : (cfg.icon.startsWith('fa') and 'fa ' or 'octicon ') + cfg.icon
+        
     setIcon: (icon) =>
-        if icon.startsWith 'fa'
-            e = @getChild('fa').elem
-        else
-            e = @elem
+        e = @elem.firstChild
         e.removeClassName @config.icon
         @config.icon = icon
         e.addClassName @config.icon

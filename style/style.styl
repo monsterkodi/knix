@@ -109,24 +109,24 @@ a
   border:               0px
   background-color:     transparent
   text-align:           center
-  vertical-align:       top
-  padding-top:          2px
   color:                colors.bg
+  & i
+    box-sizing:       border-box
+    width:              20px
+    padding-top:        2px
   &:hover
       color:            colors.button-hover-text
   &:active
       color:            colors.button-active-text
 
 .menu .icon
-      width:                30px
-      height:               30px
-      color:                textColors.menu
-      &:hover
-          color:            textColors.menu-hover
-      &:active
-          color:            textColors.menu-active
-      .octicon
-          top: 0px
+    & i
+        width:                30px
+    color:                textColors.menu
+    &:hover
+        color:            textColors.menu-hover
+    &:active
+        color:            textColors.menu-active
     
 /*
 *  0000000    000   000  000000000  000000000   0000000   000   000
@@ -143,6 +143,7 @@ a
     padding-left:         6px
     padding-right:        6px
     text-align:           center
+    // vertical-align:       middle
     font-size:            14px
     font-weight:          bold
     border-radius:        buttonRadius
@@ -185,7 +186,6 @@ a
         color:            colors.button-active-text
 
 .context-menu .content .icon
-    padding-top: 2px
     padding-left: 5px
     padding-right: 4px
  
@@ -193,7 +193,7 @@ a
 .context-menu .button
     text-align: left
     padding-right: 9px 
-
+    
 .tool-button
     padding-left: 0
     padding-right: 0
@@ -212,7 +212,7 @@ a
     background-color:     colors.toggle
     color:                colors.toggle-text
 
-    & > .octicon
+    & > .icon
       padding-right:      6px
 
     &:hover
@@ -412,7 +412,7 @@ a
     display: inline-block
     min-width: 140px
 
-.console .octicon
+.console .icon
     color: textColors.console-punct
     font-size: 19px
     top: 2px;
