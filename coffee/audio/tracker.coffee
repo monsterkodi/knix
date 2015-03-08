@@ -17,13 +17,12 @@ class Tracker extends Window
         # log cfg
         
         cfg = _.def cfg,
-            columns  : 0
-            rows     : 32
-            height   : 32*22+40
-            width    : 32*22+40
-            
-            stepSecs : 10
-            title    :'tracker'
+            columns   : 0
+            rows      : 32
+            height    : 32*22+40
+            width     : 32*22+40
+            stepSecs  : 10
+            title     :'tracker'
             
         children = []
         children.push
@@ -67,12 +66,14 @@ class Tracker extends Window
                 children : children
                 style    :
                     display : 'table-row'
-                    
+                
+        @content.config.noMove = true    
         @connect 'playpause:trigger', @playPause
         @connect 'stop:trigger',      @stop
         @connect 'record:trigger',    @record
+        @content.connect 'mousedown', @startSelect
                     
-        @columns = @getChild('columns').getChildren()
+        @columns = @getChild('columns').children()
         @columnSets = {}
         @rowColumns = ([] for [0..@config.rows])
 
@@ -85,6 +86,11 @@ class Tracker extends Window
         for cell in @columns[0].rows
             cell.connect 'mousedown', @onIndicatorDown
         @
+    
+    startSelect: (event) =>
+        Selectangle.start @content
+        event.stop()
+        # event.stopPropagation()
     
     addValue: (valueWidget) =>    
         # log 'value', valueWidget.elem.id, valueWidget.config.value

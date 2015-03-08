@@ -668,7 +668,6 @@ a
 .record.on *
 .playpause.play *
     color: red
-
     
   /*
   *   0000000  00000000  000      000    
@@ -678,16 +677,18 @@ a
   *   0000000  00000000  0000000  0000000
   */
 
-  .TrackCell
-      min-height:    22px
-      height:        22px
-      padding-right: 4px
-      padding-left:  4px
-      color:         colors.slider
-      &.on
-          color:     colors.button
-      &:hover
-          color:     colors.button
+.TrackCell
+    min-height:    22px
+    height:        22px
+    padding-right: 4px
+    padding-left:  4px
+    color:         colors.slider
+    &.on
+        color:     colors.button
+    &:hover
+        color:     colors.button
+    &.selected
+        background-color: colors.trackcell-selected
 
   /*
   *  000  000   000  0000000    000   0000000   0000000   000000000   0000000   00000000 
@@ -713,8 +714,14 @@ a
 *  000   000  000  0000000    0000000
 */
 
+.selectangle
+    background-color: colors.selectangle
+
 .register-key
     border: 1px red solid
+
+.selected
+    border-color: colors.widget-selected
 
 .analyser 
     color: colors.analyser

@@ -30,7 +30,7 @@ class TrackColumn extends Widget
             style    :
                 display : 'table-cell'
         
-        @rows = @getChildren()
+        @rows = @children()
         
         if @config.winID? and @config.widID?
             @rec = @getWindow(@config.winID).getChild @config.widID

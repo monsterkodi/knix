@@ -48,7 +48,7 @@ class Tooltip
         tooltip.window = new Window
             class     : 'tooltip'
             parent    : 'stage_content'
-            isMovable : false
+            # isMovable : false
             x         : pos.x + 12
             y         : pos.y + 12
             hasClose  : false

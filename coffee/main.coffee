@@ -28,4 +28,4 @@ document.observe "dom:loaded", ->
     # StyleSwitch.toggle()
     # $('show_about').click()
     
-    Settings.set 'tooltips', false
+    Settings.set 'tooltips', true

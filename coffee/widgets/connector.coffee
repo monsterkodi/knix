@@ -66,7 +66,7 @@ class Connector extends Widget
 
     connectorAtPos: (p) =>
         @handle.elem.style.pointerEvents = 'none'
-        elem = document.elementFromPoint p.x, p.y
+        elem = Stage.elementAtPos p
         @handle.elem.style.pointerEvents = 'auto'
         if elem.getWidget()
             if elem.getWidget().constructor == Connector and @canConnectTo(elem.getWidget())

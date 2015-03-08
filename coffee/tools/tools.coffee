@@ -28,8 +28,10 @@ SVGAnimatedLength.prototype._str = -> "<%0.2f>".fmt @baseVal.value
 _.def = (c,d) ->
     if c?
         _.defaults(_.clone(c), d)
+    else if d?
+        _.clone(d)
     else
-        d
+        {}
 
 _.clamp = (r1, r2, v) ->
     if r1 > r2

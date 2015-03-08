@@ -34,6 +34,14 @@ class Menu extends Widget
             @elem.removeEventListener 'mouseleave', @hide
         super
         
+    ###
+     0000000  000000000   0000000   000000000  000   0000000
+    000          000     000   000     000     000  000     
+    0000000      000     000000000     000     000  000     
+         000     000     000   000     000     000  000     
+    0000000      000     000   000     000     000   0000000
+    ###
+        
     @menu: (id) => $(id)?.getWidget()
         
     @addButton: (cfg, defs) => 
@@ -43,10 +51,6 @@ class Menu extends Widget
             class   : 'tool-button'
             id      : cfg.menu+'_button_'+cfg.text
             tooltip : cfg.text
-
-    @initContextMenu: =>
-        stage = $('stage_content')
-        stage.addEventListener 'contextmenu', Menu.showContextMenu
 
     @showContextMenu: (event) =>
 

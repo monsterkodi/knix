@@ -26,7 +26,7 @@ class Recorder
         
     registerWindow: (win) =>
         if win.constructor.name in ['Tracker', 'Analyser'] then return
-        for c in win.getAllChildren()
+        for c in win.allChildren()
             if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
                 switch c.constructor.name
                     when 'Button'

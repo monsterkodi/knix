@@ -28,8 +28,7 @@ class knix
         @initAnim()
         @initTools()
         Audio.init()
-                
-        Menu.initContextMenu()
+        Stage.init()
         
         if config.loadLast then Files.loadLast()
         
@@ -80,13 +79,13 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'save'
-            keys    : ['s']
+            keys    : ['⌘s', '⌥s']
             icon    : 'fa-floppy-o'
             action  : Files.saveWindows
 
         Menu.addButton btn,
             tooltip : 'reload'
-            keys    : ['u']
+            keys    : ['u', '⌥r']
             icon    : 'fa-retweet'
             action  : Files.loadLast
 
@@ -103,34 +102,40 @@ class knix
         Menu.addButton btn,
             tooltip : 'fullscreen'
             icon    : 'octicon-device-desktop'
-            action  : -> Stage.toggleFullscreen()
+            action  : Stage.toggleFullscreen
 
         Menu.addButton btn,
             tooltip : 'style'
             keys    : ['i']
             icon    : 'octicon-color-mode'
-            action  : -> StyleSwitch.toggle()
+            action  : StyleSwitch.toggle
+
+        Menu.addButton btn,
+            tooltip : 'set key'
+            icon    : 'fa-th-large'
+            keys    : ['s']
+            action  : Selectangle.toggle
 
         Menu.addButton btn,
             tooltip : 'set key'
             icon    : 'fa-keyboard-o'
-            action  : -> Keys.interactiveKey()
+            action  : Keys.interactiveKey
 
         Menu.addButton btn,
             tooltip : 'about'
             icon    : 'octicon-info'
-            action  : -> About.show()
+            action  : About.show
 
         Menu.addButton btn,
             tooltip : 'shade all'
             icon    : 'octicon-dash'
-            action  : -> knix.shadeWindows()
+            action  : knix.shadeWindows
 
         Menu.addButton btn,
             tooltip : 'close all'
             icon    : 'octicon-x'
             keys    : ['x']
-            action  : -> knix.closeWindows()
+            action  : knix.closeWindows
 
     ###
      0000000  00000000   00000000   0000000   000000000  00000000

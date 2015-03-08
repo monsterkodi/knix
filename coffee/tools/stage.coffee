@@ -10,6 +10,17 @@
 
 class Stage
 
+    @mousePos = pos 0, 0
+    
+    @init: =>
+        stage = $('stage_content')
+        stage.addEventListener 'contextmenu', Menu.showContextMenu
+        stage.addEventListener 'mousemove',   Stage.onMove
+        stage.addEventListener 'mousedown',   -> Selectangle.start()
+
+    @onMove: (event) =>
+        @mousePos = @absPos event
+
     @positionWindow: (win) =>
         [p, w, h] = [win.absPos(), win.getWidth(), win.getHeight()]
         [x,y] = [p.x, p.y]
@@ -43,6 +54,14 @@ class Stage
             s.webkitRequestFullscreen?()
             s.requestFullscreen?()
 
+    @windowAtPos: (p) =>
+        e = @elementAtPos p
+        e?.getWidget?().getWindow()
+        
+    @elementAtPos: (p) =>
+        e = document.elementFromPoint p.x, p.y
+        e or $('stage_content')
+
     @absPos: (event) =>
         event = if event? then event else window.event
         if isNaN window.scrollX
@@ -56,3 +75,5 @@ class Stage
         c = pos event.clientX, event.clientY
         t = event.target.getWidget().absPos()
         return c.sub t
+
+        

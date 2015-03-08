@@ -34,7 +34,7 @@ class Window extends Widget
             hasClose  : true
             hasShade  : true
             resize    : true
-            isMovable : true
+            # isMovable : true
             isShaded  : false
             onDown    : @raise
 

@@ -77,7 +77,7 @@ class Widget
             @moveTo @config.x, @config.y
 
         @resize @config.width, @config.height if @config.width? or @config.height?
-
+        
         if @config.tooltip
            Tooltip.create
                target: @
@@ -227,9 +227,10 @@ class Widget
         @
 
     emitMove: =>
-        p = @absPos()
-        @config.x = p.x
-        @config.y = p.y
+        # p = @absPos()
+        # @config.x = p.x
+        # @config.y = p.y
+        p = pos @config.x, @config.y
         @emit 'move',
             pos: p
         @
@@ -350,14 +351,14 @@ class Widget
         return c[0].widget if c.length
         undefined
         
-    getChildren: => _.filter ( c.getWidget?() for c in @elem.childNodes )
+    children: => _.filter ( c.getWidget?() for c in @elem.childNodes )
     
-    getAllChildren: =>
-        children = @getChildren()
+    allChildren: =>
+        children = @children()
         check = children.clone()
         while check.length
             c = check.splice(0,1)[0]
-            for cc in c.getChildren()
+            for cc in c.children()
                 if cc not in children
                     children.push cc
                     check.push cc
@@ -416,17 +417,22 @@ class Widget
     move:   (p) => @moveBy p.x, p.y
 
     moveTo: (x, y) =>
+        @config.x = x if x?
+        @config.y = y if y?
         @elem.style.left = "%dpx".fmt(x) if x?
         @elem.style.top  = "%dpx".fmt(y) if y?
         @emitMove()
         @
 
     moveBy: (dx, dy) =>
-        p = @relPos()
-        @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
-        @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
-        @emitMove()
-        @
+        @moveTo @relPos() + pos dx, dy
+        # p = @relPos()
+        # @config.x += dx if dx?
+        # @config.y += dy if dy?
+        # @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
+        # @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
+        # @emitMove()
+        # @
 
     setWidth: (w) =>
         if w?
@@ -461,6 +467,7 @@ class Widget
     sizePos     :     => return pos @getWidth(), @getHeight()
     getWidth    :     => @elem.getWidth()
     getHeight   :     => @elem.getHeight()
+    absRect     :     => new Rect @absPos().x, @absPos().y, @getWidth(), @getHeight()
 
     innerWidth  :     => @elem.getLayout().get("padding-box-width")
     innerHeight :     => @elem.getLayout().get("padding-box-height")
@@ -483,7 +490,7 @@ class Widget
     addMovement: =>        
         if @config.isMovable
             # tag 'Drag'
-            # log 'addMovement'
+            log 'addMovement', @elem.id
             new Drag
                 target:  @elem
                 minPos:  pos(undefined,0)
@@ -493,7 +500,7 @@ class Widget
                 cursor: null
 
     onMove: (drag, event) =>
-        # log 'move', @elem?.id
+        log 'move', @elem?.id
         @emitMove()
         
     moveStart: (drag, event) =>
