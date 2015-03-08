@@ -13,10 +13,7 @@ class TrackColumn extends Widget
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
-        
-        # cfg = _.def cfg,    
-        #     cell : 'TrackCell'
-        
+                
         children = []
         for r in [0...cfg.rows]
             children.push

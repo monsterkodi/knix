@@ -35,8 +35,9 @@ class Recorder
                             c.connect 'mousedown', @onButtonDown
                     # when 'Pad'    then log 'todo:pad'
                     else
-                        @values.push c
-                        c.connect 'valueInput', @onValueInput 
+                        if c.config.recKey
+                            @values.push c
+                            c.connect 'valueInput', @onValueInput 
                 
     onValueInput: (event) =>
         # log 'value', event.target.id, _.value event

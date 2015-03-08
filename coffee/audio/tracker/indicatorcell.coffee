@@ -17,15 +17,16 @@ class IndicatorCell extends TrackCell
         super cfg,
             type:  'IndicatorCell'
             class: 'TrackCell off'
-            text:  '<i class="fa fa-circle-thin"></i>'
+        
+        icon = @config.index % 4 and 'circle-o' or @config.index % 8 and 'dot-circle-o' or 'circle'
+        @setText '<i class="fa fa-%s"></i>'.fmt icon
+        @off()
         @
         
     on: =>
         @elem.removeClassName 'off'
         @elem.addClassName 'on'
-        @setText '<i class="fa fa-circle"></i>'
 
     off: => 
         @elem.removeClassName 'on'
         @elem.addClassName 'off'
-        @setText '<i class="fa fa-circle-thin"></i>'

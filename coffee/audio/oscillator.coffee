@@ -33,6 +33,7 @@ class Oscillator extends AudioWindow
             ,
                 type     : 'spinner'
                 id       : 'shape'
+                recKey   : 'shape' 
                 value    : cfg.shape
                 values   : Oscillator.shapes
             ,

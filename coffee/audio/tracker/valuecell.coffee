@@ -21,3 +21,5 @@ class ValueCell extends TrackCell
             
     del: => @clear(); @setText '<i class="fa fa-angle-right"></i>'
             
+    hasValue: => @elem.firstChild.widget?
+    value: => @elem.firstChild.widget.config.value

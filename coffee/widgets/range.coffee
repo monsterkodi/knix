@@ -33,6 +33,7 @@ class Range extends Window
             [
                 type     : 'sliderspin'
                 id       : 'range_low'
+                recKey   : 'low'
                 value    : cfg.low
                 minValue : cfg.minLow
                 maxValue : cfg.maxLow
@@ -40,6 +41,7 @@ class Range extends Window
             ,
                 type     : 'sliderspin'
                 id       : 'range_high'
+                recKey   : 'high'
                 value    : cfg.high
                 minValue : cfg.minHigh
                 maxValue : cfg.maxHigh

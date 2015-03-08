@@ -34,6 +34,7 @@ class Ramp extends Window
             ,
                 type     : 'sliderspin'
                 id       : 'ramp_duration'
+                recKey   : 'duration'
                 value    : cfg.duration
                 minValue : cfg.minDuration
                 maxValue : cfg.maxDuration

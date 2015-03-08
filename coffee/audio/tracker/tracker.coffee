@@ -105,7 +105,6 @@ class Tracker extends Window
         @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]   
         cell.clear()
         cell.insertChild valueWidget.config
-        cell.type = 'value'
 
     addTrigger: (target) =>
         col = @columnFor target
@@ -130,11 +129,12 @@ class Tracker extends Window
             @columnSets[winKey] = {}
         cs = @columnSets[winKey]
         if not cs[widKey]?
+            cellType = target.getWidget().constructor.name == 'Button' and 'TriggerCell' or 'ValueCell'
             cs[widKey] = new TrackColumn
                         rows   : @config.rows
                         parent : @getChild 'columns'
                         index  : @columns.length
-                        cell   : target.getWidget().constructor.name == 'Button' and 'TriggerCell' or 'ValueCell'
+                        cell   : cellType
                         winID  : winKey
                         widID  : widKey
                         
@@ -204,12 +204,17 @@ class Tracker extends Window
         @triggerRow @step.index
         
     triggerRow: (rowIndex) =>
-        # log 'rowIndex', rowIndex, @rowColumns[rowIndex] #, @rowColumns
+        triggers = []
         for colIndex in @rowColumns[rowIndex]
-            # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
-            # log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
-            if @columns[colIndex].rows[rowIndex].isOn?()
-                @columns[colIndex].rec?.trigger?()
+            col = @columns[colIndex]
+            row = col.rows[rowIndex]
+            if row.isOn?()
+                triggers.push col.rec
+            else if row.hasValue?()
+                col.rec.getWindow().config[col.rec.config.recKey] = row.value()
+                # col.rec.getWindow().config.high = row.value()
+        for trigger in triggers
+            trigger.trigger()
         
     anim: (step) =>
         @step.secs += step.dsecs
