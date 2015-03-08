@@ -19,9 +19,6 @@ class Value extends Widget
             minValue : -Number.MAX_VALUE/2
             maxValue : +Number.MAX_VALUE/2
             noMove   : true
-            tooltip  : true
-
-    onTooltip: => @elem.id
 
     initEvents: =>
         if @config.onValue?

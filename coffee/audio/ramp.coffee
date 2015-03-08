@@ -28,12 +28,13 @@ class Ramp extends Window
             children : \
             [
                 type     : 'sliderspin'
-                id       : 'ramp'
+                class    : 'ramp'
                 minValue : 0.0
                 maxValue : 1.0
             ,
                 type     : 'sliderspin'
-                id       : 'ramp_duration'
+                class    : 'duration'
+                tooltip  : 'duration'
                 recKey   : 'duration'
                 value    : cfg.duration
                 minValue : cfg.minDuration
@@ -42,11 +43,11 @@ class Ramp extends Window
             ,
                 type     : 'button'
                 text     : 'trigger'
-                id       : 'ramp_trigger'
+                class    : 'trigger'
             ]
     
-        @connect 'ramp_duration:onValue',  @setDuration
-        @connect 'ramp_trigger:trigger',   @trigger
+        @connect 'duration:onValue',  @setDuration
+        @connect 'trigger:trigger',   @trigger
         @
 
     setDuration: (v) => @config.duration = _.value v
@@ -68,7 +69,7 @@ class Ramp extends Window
     setRelTime: (rel) =>
         @config.reltime = rel
         @config.value = @config.reltime
-        @getChild('ramp').setValue @config.value
+        @getChild('value').setValue @config.value
 
     @menu: =>
 

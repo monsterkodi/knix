@@ -30,14 +30,15 @@ class Analyser extends AudioWindow
             [
                 type       : 'jacks'
             ,
-                id         : 'analyser_canvas'
                 type       : 'canvas'
+                class      : 'analyser_canvas'
                 style      :
                     width  : '100%'
                     height : '100%'
             ,
                 type       : 'sliderspin'
-                id         : 'scaleX'
+                class      : 'scaleX'
+                tooltip    : 'horizontal scale'
                 value      : cfg.scaleX
                 minValue   : 1.0
                 maxValue   : 20.0

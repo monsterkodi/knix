@@ -27,7 +27,8 @@ class Gain extends AudioWindow
                 hasOutput : not cfg.master?
             ,
                 type      : 'sliderspin'
-                id        : 'gain'
+                class     : 'gain'
+                tooltip   : 'gain'
                 value     : cfg.gain
                 minValue  : 0.0
                 maxValue  : 1.0

@@ -26,7 +26,8 @@ class Delay extends AudioWindow
                 type:       'jacks'
             ,
                 type:       'sliderspin'
-                id:         'delay'
+                class:      'delay'
+                tooltip:    'delay'
                 value:      cfg.delay
                 minValue:   cfg.minDelay
                 maxValue:   cfg.maxDelay

@@ -25,8 +25,7 @@ class Spin extends Value
                     type     : 'spin-row'
                     children : \
                     [
-                        id    : 'decr'
-                        type  : 'spin-td'
+                        class : 'decr spin-td'
                         elem  : 'td'
                         keys  : []
                         child :
@@ -36,14 +35,13 @@ class Spin extends Value
                                 position: 'relative'
                                 top: '-1px'
                     ,
+                        class : 'spin-content'
                         elem  : 'td'
-                        type  : 'spin-content'
                         child :
                             type  : 'input'
                             class : 'spin-input'
                     ,
-                        id    : 'incr'
-                        type  : 'spin-td'
+                        class : 'incr spin-td'
                         elem  : 'td'
                         keys  : []
                         child :

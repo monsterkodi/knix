@@ -284,7 +284,7 @@ class Widget
             error 'no element?', p
             return this
         parentElement.insert @elem
-        @config.parentId = parentElement.id
+        @config.parentID = parentElement.id
         @
 
     insertChild: (config, defaults) =>
@@ -307,7 +307,7 @@ class Widget
     setText: (t) => @elem.textContent=''; @config.text = t; @insertText()
         
     # returns first ancestor element that matches class or id of argument
-    # with no argument: the element with config.parentId or the parent element
+    # with no argument: the element with config.parentID or the parent element
 
     getParent: =>
         args = $A(arguments)
@@ -320,7 +320,7 @@ class Widget
                     return a.widget
             # console.log '!!!'
             return
-        return $(@config.parentId).widget if @config.parentId
+        return $(@config.parentID).widget if @config.parentID
         return $(@parentElement.id).widget if @parentElement?
         return @getWidget().getParent() if @getWidget?()?.getParent?
         return undefined

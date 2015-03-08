@@ -18,10 +18,9 @@ class Sliderspin extends Hbox
             children : \
             [
                 type      : 'connector'
-                slot      : cfg.id+':setValue'
+                slot      : cfg.class+':setValue'
             ,
                 type      : 'slider'
-                id        : cfg.id+'_slider'
                 value     : cfg.value
                 minValue  : cfg.minValue
                 maxValue  : cfg.maxValue
@@ -31,7 +30,6 @@ class Sliderspin extends Hbox
                     width : '90%'
             ,
                 type      : 'spin'
-                id        : cfg.id+'_spin'
                 value     : cfg.value
                 recKey    : cfg.recKey
                 minValue  : cfg.minValue
@@ -43,17 +41,17 @@ class Sliderspin extends Hbox
                     width : '10%'
             ,
                 type      : 'connector'
-                signal    : cfg.id+':onValue'
+                signal    : cfg.class+':onValue'
             ]
 
-        @connect cfg.id+'_slider:onValue', cfg.id+'_spin:setValue'
-        @connect cfg.id+'_spin:onValue', cfg.id+'_slider:setValue'
-        @connect cfg.id+'_spin:onValue', @onSpinValue
+        @connect 'slider:onValue', 'spin:setValue'
+        @connect 'spin:onValue', 'slider:setValue'
+        @connect 'spin:onValue', @onSpinValue
         @
 
     onSpinValue: (v) => @emitValue _.value v
     
     setValue: (v) =>
         @config.value = _.value v
-        @getChild(@config.id+'_slider').setValue @config.value
+        @getChild('slider').setValue @config.value
         

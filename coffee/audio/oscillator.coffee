@@ -32,13 +32,15 @@ class Oscillator extends AudioWindow
                 hasInput : false
             ,
                 type     : 'spinner'
-                id       : 'shape'
+                class    : 'shape'
                 recKey   : 'shape' 
+                tooltip  : 'shape'
                 value    : cfg.shape
                 values   : Oscillator.shapes
             ,
                 type     : 'sliderspin'
-                id       : 'frequency'
+                class    : 'frequency'
+                tooltip  : 'frequency'
                 value    : cfg.freq
                 minValue : cfg.minFreq
                 maxValue : cfg.maxFreq

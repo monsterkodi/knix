@@ -30,24 +30,28 @@ class Filter extends AudioWindow
                 type     : 'jacks'
             ,
                 type     : 'spinner'
-                id       : 'filter'
+                class    : 'filter'
+                tooltip  : 'filter'
                 value    : cfg.filter
                 values   : Filter.filters
             ,
                 type     : 'sliderspin'
-                id       : 'frequency'
+                class    : 'frequency'
+                tooltip  : 'frequency'
                 value    : cfg.freq
                 minValue : cfg.minFreq
                 maxValue : cfg.maxFreq
             ,
                 type     : 'sliderspin'
-                id       : 'detune'
+                class    : 'detune'
+                tooltip  : 'detune'
                 value    : cfg.detune
                 minValue : cfg.minDetune
                 maxValue : cfg.maxDetune
             ,
                 type     : 'sliderspin'
-                id       : 'Q'
+                class    : 'Q'
+                tooltip  : 'Q'
                 value    : cfg.Q
                 minValue : cfg.minQ
                 maxValue : cfg.maxQ

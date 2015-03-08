@@ -32,15 +32,17 @@ class Range extends Window
             children : \
             [
                 type     : 'sliderspin'
-                id       : 'range_low'
+                class    : 'range_low'
                 recKey   : 'low'
+                tooltip  : 'minimum' 
                 value    : cfg.low
                 minValue : cfg.minLow
                 maxValue : cfg.maxLow
                 spinStep : cfg.lowStep
             ,
                 type     : 'sliderspin'
-                id       : 'range_high'
+                class    : 'range_high'
+                tooltip  : 'maximum' 
                 recKey   : 'high'
                 value    : cfg.high
                 minValue : cfg.minHigh
@@ -54,7 +56,8 @@ class Range extends Window
                     slot      : 'range_in:setValue'
                 ,
                     type      : 'spin'
-                    id        : 'range_in'
+                    class     : 'range_in'
+                    tooltip   : 'input'
                     valueStep : 0.001
                     minWidth  : 100
                     maxWidth  : 10000
@@ -63,7 +66,8 @@ class Range extends Window
                         width : '50%'
                 ,
                     type      : 'spin'
-                    id        : 'range_out'
+                    class     : 'range_out'
+                    tooltip   : 'output'
                     valueStep : 0.001
                     minWidth  : 100
                     maxWidth  : 10000

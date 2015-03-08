@@ -25,7 +25,7 @@ class Envelope extends Window
             children : \
             [
                 type       : 'pad'
-                id         : 'envelope_pad'
+                class      : 'envelope_pad'
                 numHandles : cfg.numHandles
                 vals       : cfg.vals
                 minHeight  : 50
@@ -38,7 +38,8 @@ class Envelope extends Window
                     slot      : 'envelope_in:setValue'
                 ,
                     type      : 'spin'
-                    id        : 'envelope_in'
+                    class     : 'envelope_in'
+                    tooltip   : 'input'
                     valueStep : 0.001
                     minWidth  : 100
                     maxWidth  : 10000
@@ -47,7 +48,8 @@ class Envelope extends Window
                         width : '50%'
                 ,
                     type      : 'spin'
-                    id        : 'envelope'
+                    class     : 'envelope'
+                    tooltip   : 'output'
                     valueStep : 0.00001
                     minWidth  : 100
                     maxWidth  : 10000
