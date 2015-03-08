@@ -8,14 +8,14 @@
 
 ###
 
-class TrackCellIndicator extends TrackCell
+class IndicatorCell extends TrackCell
 
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
         
         super cfg,
-            type:  'TrackCellIndicator'
+            type:  'IndicatorCell'
             class: 'TrackCell off'
             text:  '<i class="fa fa-circle-thin"></i>'
         @

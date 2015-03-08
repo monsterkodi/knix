@@ -14,8 +14,8 @@ class TrackColumn extends Widget
         
         cfg = _.def cfg, defs
         
-        cfg = _.def cfg,    
-            cell : 'TrackCell'
+        # cfg = _.def cfg,    
+        #     cell : 'TrackCell'
         
         children = []
         for r in [0...cfg.rows]
@@ -26,6 +26,7 @@ class TrackColumn extends Widget
         super cfg,
             type     : 'TrackColumn'
             noMove   : true
+            noSelect : true
             children : children
             style    :
                 display : 'table-cell'
@@ -34,7 +35,6 @@ class TrackColumn extends Widget
         
         if @config.winID? and @config.widID?
             @rec = @getWindow(@config.winID).getChild @config.widID
-            log '@rec', @rec?.elem.id, @config.winID, @config.widID
-        
+            log '@rec', @rec?.elem.id, @config.winID, @config.widID        
         @
             

@@ -58,7 +58,8 @@ class Selectangle extends Widget
         rect = @absRect()
         for wid in widgets
             if rect.contains wid.absCenter()
-                wid.elem.addClassName 'selected'
+                if not wid.config.noSelect
+                    wid.elem.addClassName 'selected'
             else if not event.shiftKey
                 wid.elem.removeClassName 'selected'
             

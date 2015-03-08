@@ -17,6 +17,7 @@ module.exports = (grunt) ->
                     'window':  ['./coffee/window.coffee']
                     'widgets': ['./coffee/widgets/value.coffee', './coffee/widgets/hbox.coffee', './coffee/widgets/*.coffee']
                     'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/audiowindow.coffee', './coffee/audio/*.coffee']
+                    'tracker': ['./coffee/audio/tracker/tracker.coffee', './coffee/audio/tracker/trackcell.coffee', './coffee/audio/tracker/*.coffee']
                     'main':    ['./coffee/test.coffee', './coffee/main.coffee']
 
         salt:

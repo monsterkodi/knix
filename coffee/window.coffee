@@ -348,6 +348,7 @@ class Window extends Widget
 
         return
 
+    del: => @close()
     close: =>
         # log 'close'
         if @config.popup?

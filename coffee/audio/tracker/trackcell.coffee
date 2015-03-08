@@ -15,29 +15,9 @@ class TrackCell extends Widget
         cfg = _.def cfg, defs
         
         super cfg,
-            type: 'TrackCell'
-            text: '<i class="fa fa-square"></i>'
-            
-        @connect 'click', @toggle
+            class: 'TrackCell'
         @    
-        
-    isOn   : => @elem.hasClassName 'on'
-    isOff  : => not @isOn
-    toggle : => if @isOn() then @off() else @on()
-        
-    column: => @getParent 'TrackColumn'
+                
+    column:  => @getParent 'TrackColumn'
     tracker: => @getParent 'Tracker'
         
-    on: =>
-        # log @elem.id
-        @elem.removeClassName 'off'
-        @elem.addClassName 'on'
-        # log @tracker().elem.id
-        @tracker().setTrigger @
-
-    off: => 
-        # log @elem.id
-        @elem.removeClassName 'on'
-        @elem.addClassName 'off'
-        # log @tracker().elem.id
-        @tracker().delTrigger @

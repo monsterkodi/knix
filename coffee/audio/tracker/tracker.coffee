@@ -28,7 +28,7 @@ class Tracker extends Window
         children.push
             type  : 'TrackColumn'
             rows  : cfg.rows
-            cell  : 'TrackCellIndicator' 
+            cell  : 'IndicatorCell' 
             index : 0
             
         for c in [0...cfg.columns]
@@ -105,6 +105,7 @@ class Tracker extends Window
         @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]   
         cell.clear()
         cell.insertChild valueWidget.config
+        cell.type = 'value'
 
     addTrigger: (target) =>
         col = @columnFor target
@@ -133,6 +134,7 @@ class Tracker extends Window
                         rows   : @config.rows
                         parent : @getChild 'columns'
                         index  : @columns.length
+                        cell   : target.getWidget().constructor.name == 'Button' and 'TriggerCell' or 'ValueCell'
                         winID  : winKey
                         widID  : widKey
                         
@@ -206,7 +208,7 @@ class Tracker extends Window
         for colIndex in @rowColumns[rowIndex]
             # log 'trigger', colIndex, @columns[colIndex].elem.id, rowIndex
             # log 'trigger', @columns[colIndex].rec, @columns[colIndex].rec.trigger?
-            if @columns[colIndex].rows[rowIndex].isOn()
+            if @columns[colIndex].rows[rowIndex].isOn?()
                 @columns[colIndex].rec?.trigger?()
         
     anim: (step) =>

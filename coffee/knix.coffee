@@ -132,7 +132,7 @@ class knix
             keys    : ['⌥∑']
             action  : knix.closeWindows
             
-        Keys.add 'Backspace',  knix.closeSelectedWindows
+        Keys.add 'Backspace',  knix.delSelection
         Keys.add '⇧S', Selectangle.toggle
         Keys.add 's',   Selectangle.toggle
 
@@ -176,13 +176,13 @@ class knix
     @shadeWindows     : => @allWindows().each (w) -> w.shade()
     @allWindows       : => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @selectedWindows  : => w.widget for w in $$('.window.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
+    @selectedWidgets  : => w.widget for w in $$('.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
     @closeConnections : => @allConnections().each (c) -> c.close()
+    @delSelection     : => @selectedWidgets().each (w) -> w.del?()
     @closeWindows     : => 
         @closeConnections()
         @allWindows().each (w) -> w.close()
-    @closeSelectedWindows : =>
-        @selectedWindows().each (w) -> w.close()
 
     @restore: (state) =>
         @restoreWindows     state.windows
