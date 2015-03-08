@@ -233,10 +233,17 @@ class Window extends Widget
             @sizeMoveDrag = new Drag
                 target  : @elem
                 minPos  : pos undefined, 0
-                onMove  : @emitMove
+                onMove  : @dragMove
                 onStart : StyleSwitch.togglePathFilter
                 onStop  : StyleSwitch.togglePathFilter
                 cursor  : 'grab'
+
+    dragMove: (drag) =>
+        @emitMove()
+        if @elem.hasClassName 'selected'
+            for w in knix.selectedWindows()
+                if w != @
+                    w.move drag.delta
 
     onLeave: (event) =>
         if @sizeMoveDrag? and not @sizeMoveDrag.dragging

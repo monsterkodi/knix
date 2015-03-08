@@ -415,7 +415,7 @@ class Widget
 
     setPos: (p) => @moveTo p.x, p.y
     move:   (p) => @moveBy p.x, p.y
-
+    moveBy: (dx, dy) => @setPos @relPos().plus pos(dx, dy)
     moveTo: (x, y) =>
         @config.x = x if x?
         @config.y = y if y?
@@ -423,16 +423,6 @@ class Widget
         @elem.style.top  = "%dpx".fmt(y) if y?
         @emitMove()
         @
-
-    moveBy: (dx, dy) =>
-        @moveTo @relPos() + pos dx, dy
-        # p = @relPos()
-        # @config.x += dx if dx?
-        # @config.y += dy if dy?
-        # @elem.style.left = "%dpx".fmt(p.x+dx) if dx?
-        # @elem.style.top  = "%dpx".fmt(p.y+dy) if dy?
-        # @emitMove()
-        # @
 
     setWidth: (w) =>
         if w?

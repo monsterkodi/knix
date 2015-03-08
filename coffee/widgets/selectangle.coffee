@@ -10,9 +10,9 @@
 
 class Selectangle extends Widget
 
-    @toggle : => if @selectangle? then @stop() else @start()
     @start  : (wid) => @selectangle = new Selectangle; @selectangle.wid = wid
     @stop   : => @selectangle?.close()
+    @toggle : => if @selectangle? then @stop() else @start()
 
     init: (cfg, defs) =>
         
@@ -26,18 +26,17 @@ class Selectangle extends Widget
             width  : 0
             height : 0
             
-        # log 'config', @config
         stage = $('stage_content')
         stage.addEventListener 'mousemove', @onMove
-        stage.addEventListener 'mouseup',   @done
-        stage.addEventListener 'mousedown', @done
+        stage.addEventListener 'mouseup',   @close
+        stage.addEventListener 'mousedown', @close
         @
-
-    done: (event) => @close()
     
-    close: =>
+    close: (event) =>
         delete Selectangle.selectangle
-        log 'close'
+        if @sizePos().square() == 0 and not event.shiftKey
+            for wid in @wid? and @wid.allChildren() or knix.allWindows()
+                wid.elem.removeClassName 'selected'
         stage = $('stage_content')
         stage.removeEventListener 'mousemove', @onMove
         stage.removeEventListener 'mouseup',   @done
