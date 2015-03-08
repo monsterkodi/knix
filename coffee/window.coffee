@@ -108,6 +108,15 @@ class Window extends Widget
             text   : @config.title
             parent : this
         t.elem.ondblclick = @maximize
+        t.elem.onclick    = @onTitleSelect
+        
+    onTitleSelect: (event) =>
+        if @elem.hasClassName 'selected'
+            @elem.removeClassName 'selected'
+            return
+        if not event.shiftKey
+            knix.deselectAll()
+        @elem.addClassName 'selected'
 
     addCloseButton: =>
         knix.create

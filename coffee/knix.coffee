@@ -133,6 +133,8 @@ class knix
             action  : knix.closeWindows
             
         Keys.add 'Backspace', knix.delSelection
+        Keys.add '⌥∂', knix.deselectAll
+        Keys.add '⌥å', knix.selectAll
         Keys.add '⌘x', knix.cutSelection
         Keys.add '⌘c', knix.copySelection
         Keys.add '⌘v', knix.pasteSelection
@@ -182,17 +184,20 @@ class knix
         cleanConfig = (cfg) ->
             delete cfg.parentID
             idmap[cfg.id] = "%s.%s".fmt (cfg.type or 'widget'), uuid.v4()
-            log cfg.id
-            log idmap[cfg.id]
             cfg.id = idmap[cfg.id]
             cleanConfig cfg.child if cfg.child?
             cfg.children?.each (c) -> cleanConfig c
         for cfg in configs
             cleanConfig cfg
-        log configs
+        # log configs
+        # log idmap
+        connections = ( [ c.config.source.elem.id, c.config.target.elem.id ] for c in @connectionsForWidgets widgets )
+        for c in connections
+            if idmap[c[0]]? then c[0] = idmap[c[0]]
+            if idmap[c[1]]? then c[1] = idmap[c[1]]
         JSON.stringify {
             'windows'     : configs
-            'connections' : @connectionsForWidgets widgets
+            'connections' : connections
             }, null, '    '
 
     @connectionsForWidgets : (widgets) => 
@@ -203,13 +208,18 @@ class knix
                 widgetConnections.push connection
         widgetConnections
 
-    @shadeWindows     : => @allWindows().each (w) -> w.shade()
     @allWindows       : => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @selectedWindows  : => w.widget for w in $$('.window.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
+    @selectedOrAllWindows : => 
+        w = @selectedWindows()
+        w = @allWindows() if _.isEmpty w
+        w
     @selectedWidgets  : => w.widget for w in $$('.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
     @closeConnections : => @allConnections().each (c) -> c.close()
     @delSelection     : => @selectedWidgets().each (w) -> w.del?()
+    @deselectAll      : => @selectedWidgets().each (w) -> w.elem.removeClassName 'selected'
+    @selectAll        : => @allWindows().each (w) -> w.elem.addClassName 'selected'
     @copySelection    : => 
         @copyBuffer = @stateForWidgets @selectedWidgets()
         log @copyBuffer
@@ -222,11 +232,11 @@ class knix
         # window.prompt "Copy to clipboard", JSON.stringify(@copyBuffer)
     @pasteSelection   : =>
         log 'paste', @copyBuffer
+        @deselectAll()
         @restore JSON.parse @copyBuffer
 
-    @closeWindows     : => 
-        @closeConnections()
-        @allWindows().each (w) -> w.close()
+    @shadeWindows     : => @selectedOrAllWindows().each (w) -> w.shade()
+    @closeWindows     : => @selectedWindows().each (w) -> w.close()
 
     @restore: (state) =>
         @restoreWindows     state.windows
@@ -234,7 +244,9 @@ class knix
 
     @restoreWindows: (windows) => 
         for w in windows
-            @get w
+            win = @get w
+            win.moveBy 10,10
+            win.elem.addClassName 'selected'
             
     @restoreConnections: (connections) =>
         log connections
