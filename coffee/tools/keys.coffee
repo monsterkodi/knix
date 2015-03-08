@@ -98,7 +98,7 @@ class Keys
                 @del key, w
         if w.config?.children?
             for c in w.config.children
-                cw = $(c.id).getWidget()
+                cw = $(c.id)?.getWidget()
                 @unregisterWidget cw if cw?
 
     @onMove: (event) => @updateAtPos Stage.absPos event

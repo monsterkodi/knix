@@ -69,7 +69,7 @@ class Ramp extends Window
     setRelTime: (rel) =>
         @config.reltime = rel
         @config.value = @config.reltime
-        @getChild('value').setValue @config.value
+        @getChild('ramp').setValue @config.value
 
     @menu: =>
 

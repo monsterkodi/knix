@@ -29,11 +29,11 @@ class knix
         @initTools()
         Audio.init()
         Stage.init()
-        
-        if config.loadLast then Files.loadLast()
-        
+    
         c?.raise()
-        
+    
+        if config.loadLast then Files.loadLast()
+            
         log 'knix initialised'
         @
     
@@ -178,27 +178,29 @@ class knix
     00     00  000  000   000  0000000     0000000   00     00  0000000 
     ###
 
-    @stateForWidgets : (widgets) =>
-        configs = (_.clone(w.config) for w in widgets)
+    @stateForWidgets : (widgets) => 
+        JSON.stringify {
+            'windows'     : (_.clone(w.config) for w in widgets)
+            'connections' : ( [ c.config.source.elem.id, c.config.target.elem.id ] for c in @connectionsForWidgets widgets )
+            }, null, '    '        
+        
+    @cleanState: (state) =>
         idmap = {}
         cleanConfig = (cfg) ->
             delete cfg.parentID
-            idmap[cfg.id] = "%s.%s".fmt (cfg.type or 'widget'), uuid.v4()
+            idmap[cfg.id] = Widget.newID(cfg.type or 'widget')
             cfg.id = idmap[cfg.id]
             cleanConfig cfg.child if cfg.child?
             cfg.children?.each (c) -> cleanConfig c
-        for cfg in configs
+            
+        for cfg in state.windows
             cleanConfig cfg
-        # log configs
-        # log idmap
-        connections = ( [ c.config.source.elem.id, c.config.target.elem.id ] for c in @connectionsForWidgets widgets )
-        for c in connections
+
+        for c in state.connections
             if idmap[c[0]]? then c[0] = idmap[c[0]]
             if idmap[c[1]]? then c[1] = idmap[c[1]]
-        JSON.stringify {
-            'windows'     : configs
-            'connections' : connections
-            }, null, '    '
+            
+        state
 
     @connectionsForWidgets : (widgets) => 
         widgetConnections = []
@@ -233,23 +235,25 @@ class knix
     @pasteSelection   : =>
         log 'paste', @copyBuffer
         @deselectAll()
-        @restore JSON.parse @copyBuffer
+        for win in @restore JSON.parse @copyBuffer
+            win.moveBy 10,10
+            win.elem.addClassName 'selected'
 
     @shadeWindows     : => @selectedOrAllWindows().each (w) -> w.shade()
     @closeWindows     : => @selectedWindows().each (w) -> w.close()
+    @closeAllWindows  : => @allWindows().each (w) -> w.close()
 
     @restore: (state) =>
-        @restoreWindows     state.windows
+        @cleanState state
+        # log state
+        windows = @restoreWindows state.windows
         @restoreConnections state.connections
+        windows
 
-    @restoreWindows: (windows) => 
-        for w in windows
-            win = @get w
-            win.moveBy 10,10
-            win.elem.addClassName 'selected'
-            
+    @restoreWindows: (windows) => ( @get(w) for w in windows )
+                    
     @restoreConnections: (connections) =>
-        log connections
+        # log connections
         for c in connections
             new Connection c
             

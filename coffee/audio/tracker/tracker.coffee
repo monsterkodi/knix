@@ -130,6 +130,7 @@ class Tracker extends Window
         cs = @columnSets[winKey]
         if not cs[widKey]?
             cellType = target.getWidget().constructor.name == 'Button' and 'TriggerCell' or 'ValueCell'
+            log '._', target.getWindow().getChild(widKey)
             cs[widKey] = new TrackColumn
                         rows   : @config.rows
                         parent : @getChild 'columns'
@@ -212,9 +213,8 @@ class Tracker extends Window
                 triggers.push col.rec
             else if row.hasValue?()
                 col.rec.getWindow().config[col.rec.config.recKey] = row.value()
-                # col.rec.getWindow().config.high = row.value()
         for trigger in triggers
-            trigger.trigger()
+            trigger.trigger?()
         
     anim: (step) =>
         @step.secs += step.dsecs

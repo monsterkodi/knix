@@ -250,16 +250,18 @@ class Widget
 
     @elem: (type, clss) => # create element of <type> add class <clss> and assign a unique id
         e = new Element type
-        e.id = "%s.%s".fmt clss, uuid.v4()
+        e.id = Widget.newID clss
         e.addClassName clss
         e
+
+    @newID: (clss) => "%s-%s".fmt clss, uuid.v4()    
         
     initElem: =>
         @elem.getWindow     = @getWindow
         @elem.getChild      = @getChild
         @elem.getParent     = @getParent
         @elem.toggleDisplay = @toggleDisplay        
-        
+                
     ###
     000   000  000  00000000  00000000    0000000   00000000    0000000  000   000  000   000
     000   000  000  000       000   000  000   000  000   000  000       000   000   000 000 
@@ -455,8 +457,8 @@ class Widget
     setSize     : (s) => @resize s.width, s.height
     getSize     :     => return { width : @getWidth(), height : @getHeight() }
     sizePos     :     => return pos @getWidth(), @getHeight()
-    getWidth    :     => @elem.getWidth()
-    getHeight   :     => @elem.getHeight()
+    getWidth    :     => @elem?.getWidth()
+    getHeight   :     => @elem?.getHeight()
     absRect     :     => new Rect @absPos().x, @absPos().y, @getWidth(), @getHeight()
 
     innerWidth  :     => @elem.getLayout().get("padding-box-width")

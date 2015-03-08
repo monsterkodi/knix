@@ -12,12 +12,11 @@ class Files
 
     @saveWindows: =>
         
-        windows = knix.allWindows()
+        windows = knix.selectedOrAllWindows()
         if _.isEmpty windows then return
-
-        json = JSON.stringify { 'windows': (w.config for w in windows), 'connections': knix.allConnections() }, null, '    '
+        json = knix.stateForWidgets windows
         
-        log json
+        # log json
         
         files = @allFiles()
         files[uuid.v4()] = json
@@ -68,8 +67,6 @@ class Files
         if filename
             log filename
             data = @allFiles()[filename]
-            knix.closeWindows()
-            state = JSON.parse data
-            # log state
-            knix.restore state
+            knix.closeAllWindows()
+            knix.restore JSON.parse data
         
