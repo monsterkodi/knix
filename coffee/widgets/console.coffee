@@ -43,7 +43,7 @@ class Console extends Window
             ,
                 align   : 'right'
                 action  : @clear
-                keys    : ['k']
+                keys    : ['⌥˚']
                 icon    : 'octicon-trashcan'
             ]
             child:

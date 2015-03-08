@@ -79,13 +79,13 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'save'
-            keys    : ['⌥s']
+            keys    : ['⌥ß']
             icon    : 'fa-floppy-o'
             action  : Files.saveWindows
 
         Menu.addButton btn,
             tooltip : 'reload'
-            keys    : ['u', '⌥r']
+            keys    : ['u', '⌥®']
             icon    : 'fa-retweet'
             action  : Files.loadLast
 
@@ -112,8 +112,9 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'set key'
+            keys    : ['k']
             icon    : 'fa-keyboard-o'
-            action  : Keys.interactiveKey
+            action  : Keys.startInteractive
 
         Menu.addButton btn,
             tooltip : 'about'

@@ -10,9 +10,10 @@
 
 class Keys
 
-    @pressed = []
-    @register = {}
-    @shortcuts = {}
+    @pressed     = []
+    @register    = {}
+    @shortcuts   = {}
+    @interactive = false
     
     @init: =>
         document.onkeypress = @onKey
@@ -22,13 +23,15 @@ class Keys
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
         log key
-        if not _.isEmpty @register
-            log 'register key [%s] for element %s'.fmt key, @register.elem.id
-            if @register.elem?
-                @registerKeyForWidget key, @register.widget
-                @register.elem.removeClassName 'register-key'
-            document.removeEventListener 'mousemove', @onMove
-            @register = {}
+        if @interactive
+            if key == 'Esc'
+                @stopInteractive()
+            else if not _.isEmpty @register
+                log 'register key [%s] for element %s'.fmt key, @register.elem.id
+                if @register.elem?
+                    @registerKeyForWidget key, @register.widget
+                    @register.elem.removeClassName 'register-key'
+                @stopInteractive()
         else
             if @shortcuts[key]?
                 for wid in @shortcuts[key]
@@ -48,7 +51,7 @@ class Keys
         key = mods+e.key
         i = @pressed.indexOf key
         @pressed.splice(i, 1) if i >= 0
-        if _.isEmpty(@register) and i >= 0 
+        if not @interactive and i >= 0 
             if @shortcuts[key]?
                 for wid in @shortcuts[key]
                     if not wid.trigger?
@@ -63,12 +66,20 @@ class Keys
                                             view       : window
                         wid.elem.dispatchEvent e
 
-    @interactiveKey: =>
+    @startInteractive: =>
+        @interactive = true
         document.addEventListener 'mousemove', @onMove
+        @updateAtPos Stage.mousePos
+        
+    @stopInteractive: =>
+        @interactive = false
+        document.removeEventListener 'mousemove', @onMove
+        @register.elem?.removeClassName 'register-key'
+        @register = {}
 
     @registerKeyForWidget: (key, wid) =>
         wid.config.keys.push key if key not in wid.config.keys
-        @add wid
+        @add key, wid
 
     @add: (key,funcOrWidget) => 
         @shortcuts[key] = [] unless @shortcuts[key]? 
@@ -90,8 +101,11 @@ class Keys
                 cw = $(c.id).getWidget()
                 @unregisterWidget cw if cw?
 
-    @onMove: (event) =>
-        e = document.elementFromPoint event.clientX, event.clientY
+    @onMove: (event) => @updateAtPos Stage.absPos event
+        
+    @updateAtPos: (p) =>
+        # e = document.elementFromPoint event.clientX, event.clientY
+        e = Stage.elementAtPos p
         if e?
             wid = e.getWidget().upWidgetWithConfigValue 'keys'
             if wid?
