@@ -22,9 +22,9 @@ class Drag
                 onStop  : null
                 doMove  : true
                 active  : true
-                cursor  : "move"
+                cursor  : 'move'
 
-        if typeof @target is "string"
+        if typeof @target is 'string'
             t = document.getElementById @target
             if not t?
                 error 'cant find drag target with id', @target
@@ -37,7 +37,7 @@ class Drag
             [@minPos, @maxPos] = [@minPos.min(@maxPos), @minPos.max(@maxPos)]
         @dragging  = false
         @listening = false
-        @handle    = document.getElementById(@handle) if typeof (@handle) is "string"
+        @handle    = document.getElementById(@handle) if typeof (@handle) is 'string'
         @handle    = @target unless @handle?
         @handle.style.cursor = @cursor
         @activate() if @active

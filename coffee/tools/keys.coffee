@@ -21,7 +21,7 @@ class Keys
     @onKey: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
-        
+        log key
         if not _.isEmpty @register
             log 'register key [%s] for element %s'.fmt key, @register.elem.id
             if @register.elem?
@@ -32,16 +32,16 @@ class Keys
         else
             if @shortcuts[key]?
                 for wid in @shortcuts[key]
-                    # if wid.trigger?
-                    #     wid.trigger?()
-                    # else 
-                    if key not in @pressed
-                        e = new MouseEvent "mousedown",
-                                            bubbles    : true,
-                                            cancelable : true,
-                                            view       : window
-                        wid.elem.dispatchEvent e
-                        @pressed.push key
+                    if _.isFunction wid
+                        wid key
+                    else
+                        if key not in @pressed
+                            e = new MouseEvent "mousedown",
+                                                bubbles    : true,
+                                                cancelable : true,
+                                                view       : window
+                            wid.elem.dispatchEvent e
+                            @pressed.push key
 
     @onKeyUp: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
@@ -67,28 +67,25 @@ class Keys
         document.addEventListener 'mousemove', @onMove
 
     @registerKeyForWidget: (key, wid) =>
-        # log key, wid.elem.id
         wid.config.keys.push key if key not in wid.config.keys
-        @shortcuts[key] = [] unless @shortcuts[key]?
-        @shortcuts[key].push wid unless wid in @shortcuts[key]
+        @add wid
 
-    @unregisterKeyForWidget: (key, wid) =>
-        log key, wid.elem.id
-        if @shortcuts[key]?
-            i = @shortcuts[key].indexOf wid
-            if i >= 0
-                @shortcuts[key].splice i, 1
+    @add: (key,funcOrWidget) => 
+        @shortcuts[key] = [] unless @shortcuts[key]? 
+        @shortcuts[key].push funcOrWidget if funcOrWidget not in @shortcuts[key]
+        
+    @del: (key,funcOrWidget) => @shortcuts[key]?.splice @shortcuts[key].indexOf funcOrWidget, 1
 
     @registerWidget: (w) =>
-        if w.config.keys?
+        if w.config?.keys?
             for key in w.config.keys
-                @registerKeyForWidget key, w
+                @add key, w
 
-    @unregisterWidget: (w) =>
-        if w.config.keys?
+    @unregisterWidget: (w) => 
+        if w.config?.keys?
             for key in w.config.keys
-                @unregisterKeyForWidget key, w
-        if w.config.children?
+                @del key, w
+        if w.config?.children?
             for c in w.config.children
                 cw = $(c.id).getWidget()
                 @unregisterWidget cw if cw?

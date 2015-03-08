@@ -70,10 +70,12 @@ colors.button-active-text = #fff
 colors.toggle-hover-text  = colors.button-hover-text
 colors.toggle-active-text = colors.button-active-text
 
-colors.analyser                 = colors.blueDark
-colors.analyser-trace           = white
-colors.analyser-trigger         = rgba(0,0,0,0.25)
-colors.trackcell-selected       = lighten(colors.blue, 4)
+colors.analyser             = colors.blueDark
+colors.analyser-trace       = white
+colors.analyser-trigger     = rgba(0,0,0,0.25)
+colors.trackcell-selected   = darken(colors.bg,8)
+colors.widget-selected      = black
+colors.tool-button-on       = white
 
 textColors                  = {}
 textColors.global           = black
@@ -104,7 +106,8 @@ borderColors.button         = borderColors.menu
 widgetHeaderSize        = 20px
 widgetTitleFontSize     = widgetHeaderSize - 6px
 
-widgetBorderWidth       = 0px
+widgetBorderWidth         = 0px
+widgetBorderWidthSelected = 2px
 sliderBorderWidth       = widgetBorderWidth
 scrollBorderWidth       = sliderBorderWidth
 widgetTopRadius         = (widgetHeaderSize) * 0.5 + widgetBorderWidth
@@ -117,6 +120,7 @@ borders.button          = 0px solid borderColors.button
 borders.slider          = sliderBorderWidth solid borderColors.widget
 borders.scroll          = borders.slider
 borders.spin            = 0px solid colors.spin-border
+borders.selectangle     = 1px solid rgba(0,0,0,0.2)
 
 borders.connector                   = 0px solid white
 borders.connector-signal-connected  = 2px solid colors.connector-signal-border-connected

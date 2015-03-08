@@ -215,7 +215,7 @@ class Widget
             bubbles    : true,
             cancelable : true,
             detail     : args
-        @elem.dispatchEvent event
+        @elem?.dispatchEvent event
         @
 
     emitSize: =>
@@ -376,7 +376,7 @@ class Widget
         # log 'close', @elem.id
         Keys.unregisterWidget @
         @emit 'close'
-        @elem.remove()
+        @elem?.remove()
         delete @elem
         delete @config
         undefined

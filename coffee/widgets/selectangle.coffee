@@ -12,13 +12,12 @@ class Selectangle extends Widget
 
     @toggle : => if @selectangle? then @stop() else @start()
     @start  : (wid) => @selectangle = new Selectangle; @selectangle.wid = wid
-    @stop   : =>
-        @selectangle?.close()
-        delete selectangle
+    @stop   : => @selectangle?.close()
 
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
+        window.document.documentElement.style.cursor = 'crosshair'
                                 
         super cfg,
             type   : 'selectangle'
@@ -34,15 +33,16 @@ class Selectangle extends Widget
         stage.addEventListener 'mousedown', @done
         @
 
-    done: (event) =>
-        log 'done'
-        @close()
+    done: (event) => @close()
     
     close: =>
+        delete Selectangle.selectangle
+        log 'close'
         stage = $('stage_content')
         stage.removeEventListener 'mousemove', @onMove
         stage.removeEventListener 'mouseup',   @done
-        stage.removeEventListener 'mousedown', @done        
+        stage.removeEventListener 'mousedown', @done     
+        window.document.documentElement.style.cursor = 'auto'   
         super
 
     onMove: (event) =>
@@ -52,17 +52,13 @@ class Selectangle extends Widget
         @setPos tl
         @resize br.x - tl.x, br.y - tl.y
         
-        if @wid?
-            widgets = @wid.allChildren()
-        else
-            widgets = knix.allWindows()
-                        
-        log widgets.length, event.shiftKey
+        widgets = @wid? and @wid.allChildren() or knix.allWindows()
+                    
+        window.document.documentElement.style.cursor = 'crosshair'        
+        
         rect = @absRect()
         for wid in widgets
-            # log wid.elem.id, wid.absRect()
             if rect.contains wid.absCenter()
-                # log '+', wid.elem.id
                 wid.elem.addClassName 'selected'
             else if not event.shiftKey
                 wid.elem.removeClassName 'selected'

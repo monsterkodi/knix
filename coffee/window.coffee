@@ -184,6 +184,7 @@ class Window extends Widget
 
         if e?.getWidget?()?
             m = @matchConfigValue 'noMove', true, e.getWidget().upWidgets()
+            @elem.style.cursor = 'default'
             if m.length
                 return
         
@@ -191,7 +192,7 @@ class Window extends Widget
         
         eventPos = Stage.absPos event
         d1 = eventPos.minus @absPos()
-        d2 = @absPos().plus(pos(@getWidth(), @getHeight())).minus eventPos
+        d2 = @absPos().plus(@sizePos()).minus eventPos
 
         md = 10
         action = 'move'

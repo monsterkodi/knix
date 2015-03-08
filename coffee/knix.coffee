@@ -79,7 +79,7 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'save'
-            keys    : ['⌘s', '⌥s']
+            keys    : ['⌥s']
             icon    : 'fa-floppy-o'
             action  : Files.saveWindows
 
@@ -112,12 +112,6 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'set key'
-            icon    : 'fa-th-large'
-            keys    : ['s']
-            action  : Selectangle.toggle
-
-        Menu.addButton btn,
-            tooltip : 'set key'
             icon    : 'fa-keyboard-o'
             action  : Keys.interactiveKey
 
@@ -134,8 +128,12 @@ class knix
         Menu.addButton btn,
             tooltip : 'close all'
             icon    : 'octicon-x'
-            keys    : ['x']
+            keys    : ['⌥∑']
             action  : knix.closeWindows
+            
+        Keys.add 'Backspace',  knix.closeSelectedWindows
+        Keys.add '⇧S', Selectangle.toggle
+        Keys.add 's',   Selectangle.toggle
 
     ###
      0000000  00000000   00000000   0000000   000000000  00000000
@@ -174,13 +172,16 @@ class knix
     00     00  000  000   000  0000000     0000000   00     00  0000000 
     ###
 
+    @shadeWindows     : => @allWindows().each (w) -> w.shade()
     @allWindows       : => w.widget for w in $$('.window') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
+    @selectedWindows  : => w.widget for w in $$('.window.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
     @closeConnections : => @allConnections().each (c) -> c.close()
     @closeWindows     : => 
         @closeConnections()
         @allWindows().each (w) -> w.close()
-    @shadeWindows: => @allWindows().each (w) -> w.shade()
+    @closeSelectedWindows : =>
+        @selectedWindows().each (w) -> w.close()
 
     @restore: (state) =>
         @restoreWindows     state.windows
