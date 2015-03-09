@@ -74,22 +74,22 @@ class Window extends Widget
                 button.elem.addClassName 'tool-button'
                 button.elem.addClassName 'window-button-'+button.config.align
                 
-        @addTitleBar()     if @config.hasTitle or @config.title
+        @addTitleBar() if @config.hasTitle or @config.title
 
         content = knix.create
-            elem:  'div',
-            type:  'content'
-            parent: @elem.id
+            elem   : 'div',
+            type   : 'content'
+            parent : @elem.id
 
         @content = content
 
         if @config.content == 'scroll'
 
             content.elem.setStyle
-                position:   'relative'
-                overflow:   'scroll'
-                width:      '100%'
-                height:     "%dpx".fmt(@contentHeight())
+                position : 'relative'
+                overflow : 'scroll'
+                width    : '100%'
+                height   : "%dpx".fmt @contentHeight()
 
         @elem.on 'size', @sizeWindow
         @

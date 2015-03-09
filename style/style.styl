@@ -119,7 +119,8 @@ a
       color:            colors.button-hover-text
   &:active
       color:            colors.button-active-text
-
+    
+.context-menu .content .button .icon
 .menu .icon
     & i
         width:          30px
@@ -242,6 +243,7 @@ a
 #tool
     border-bottom-left-radius: 6px
 
+.context-menu .content .button
 .menu .button
     overflow:         hidden
     float:            left
@@ -255,7 +257,17 @@ a
     &:active
         color: textColors.menu-active
 
+.context-menu .content .button
+    color:              textColors.menu
+    background-color:   colors.bg
+    padding-top: 5px
+    padding-bottom: 5px
+    height: 30px
+    border: 0px
+    box-shadow: none
+
 .submenu 
+.context-menu .content
     overflow: visible
     & .button
         float: none
@@ -269,8 +281,8 @@ a
     text-align: left
     padding-right: 9px 
     
-.context-menu .content .button
-    border-radius: buttonRadius
+// .context-menu .content .button
+//     border-radius: buttonRadius
     
 .tool-button
     padding-left: 0
@@ -285,11 +297,6 @@ a
 *  00     00  000  000   000  0000000     0000000   00     00
 */
 
-.content
-    padding-left:  10px
-    padding-right: 10px
-    padding-top:   10px
-
 .window
     position:         absolute
     overflow:         hidden
@@ -303,9 +310,19 @@ a
     &.tooltip
         border:           0px solid black
 
+.content
+    padding-left:  10px
+    padding-right: 10px
+    padding-top:   10px
+
 .content > div
     margin-bottom: 10px
 
+.context-menu .content 
+    padding-bottom: 10px
+    & > div
+        margin-bottom: 0px
+    
 .window .title
     color:            textColors.title
     height:           widgetHeaderSize

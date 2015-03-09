@@ -35,8 +35,11 @@ class Tooltip
                 return
 
     @popup: (e, pos) =>
-        if not e.widget.elem.visible or not e.widget.getWindow().elem.visible
-            log 'invisible?'
+        if not e.widget.getWindow()?.elem?.visible
+            if e.widget.tooltip?.timer?
+                clearInterval e.widget.tooltip.timer
+                delete e.widget.tooltip.timer
+            return
         tooltip = e.widget.tooltip
         if tooltip.timer?
             clearInterval tooltip.timer

@@ -68,21 +68,24 @@ class Menu extends Widget
             btn.id      = undefined
             btn.parent  = 'context-menu'
             btn.menu    = 'context-menu'
+            btn.class   = 'tool-button'
             btn.func    = e.widget.config.action
             btn.action  = @onContextAction
+            delete btn.tooltip
             children.push btn
 
         m = knix.get
             title    : 'audio'
             class    : 'context-menu'
             id       : 'context-menu'
+            isMovable: true
             hasClose : true
             hasMaxi  : false
             resize   : false
             hasShade : true 
             pos      : Stage.absPos event            
             children : children
-                        
+                                    
     @onContextAction: (event) =>
         w = event.target.getWidget().getUp('button').config.func event
         m = @menu('context-menu')
