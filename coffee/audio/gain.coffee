@@ -49,11 +49,13 @@ class Gain extends AudioWindow
             text   : 'gain'
             icon   : 'fa-volume-up'
             action : -> new Gain
-                            center: true
+                            center : true
+                            gain   : 0.5
 
         @menuButton
             text   : 'master'
             icon   : 'fa-sign-out'
             action : -> new Gain
-                            center: true
-                            master: true
+                            center : true
+                            master : true
+                            gain   : 0.1

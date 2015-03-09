@@ -127,12 +127,13 @@ class knix
             action  : knix.shadeWindows
 
         Menu.addButton btn,
-            tooltip : 'close all'
+            tooltip : 'close windows'
             icon    : 'octicon-x'
             keys    : ['⌥∑']
             action  : knix.closeWindows
             
         Keys.add 'Backspace', knix.delSelection
+        
         Keys.add '⌥∂', knix.deselectAll
         Keys.add '⌥å', knix.selectAll
         Keys.add '⌘x', knix.cutSelection
@@ -219,7 +220,7 @@ class knix
     @selectedWidgets  : => w.widget for w in $$('.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
     @closeConnections : => @allConnections().each (c) -> c.close()
-    @delSelection     : => @selectedWidgets().each (w) -> w.del?()
+    @delSelection     : => @selectedWidgets().each (w) -> w.del?() unless w.isWindow()
     @deselectAll      : => @selectedWidgets().each (w) -> w.elem.removeClassName 'selected'
     @selectAll        : => @allWindows().each (w) -> w.elem.addClassName 'selected'
     @copySelection    : => 

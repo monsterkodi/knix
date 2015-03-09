@@ -90,18 +90,18 @@ class Spin extends Value
             return 
         if event.key in ['Left', 'Right', ' ', 'Tab']
             if event.key == ' '
+                Keys.onKey event
                 event.stop()
             @onInputChange()
             return
-        # if event.key in ['Backspace']
-        #     setTimeout @onInputChange, 1
-        #     return
         if event.key not in '0123456789-.'
             if event.key.length == 1
+                Keys.onKey event
                 event.stop()
                 return
         if event.key in '-.'
             if @input.value.indexOf(event.key) > -1
+                Keys.onKey event
                 event.stop()
                 return
 

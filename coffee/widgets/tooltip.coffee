@@ -35,6 +35,8 @@ class Tooltip
                 return
 
     @popup: (e, pos) =>
+        if not e.widget.elem.visible or not e.widget.getWindow().elem.visible
+            log 'invisible?'
         tooltip = e.widget.tooltip
         if tooltip.timer?
             clearInterval tooltip.timer
@@ -48,7 +50,7 @@ class Tooltip
         tooltip.window = new Window
             class     : 'tooltip'
             parent    : 'stage_content'
-            # isMovable : false
+            isMovable : false
             x         : pos.x + 12
             y         : pos.y + 12
             hasClose  : false

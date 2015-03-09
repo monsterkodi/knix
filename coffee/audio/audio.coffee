@@ -88,7 +88,7 @@ class Audio
     @gain: (cfg) =>
 
         cfg = _.def cfg,
-            gain:    0        
+            gain : 0
 
         gain = @context.createGain()
         gain.gain.value = cfg.gain # [0.0, 1.0]

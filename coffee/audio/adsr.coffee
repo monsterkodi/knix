@@ -8,29 +8,33 @@
 
 ###
 
-class ADSR extends Window
+class ADSR extends AudioWindow
 
     init: (cfg, defs) =>        
     
         cfg = _.def cfg, defs
 
         cfg = _.def cfg,
-            type        : 'adsr'
-            shape       : Oscillator.shapes[0]
-            duration    : 0.2
-            minDuration : 0.0
-            maxDuration : 10.0
-            freqfactor  : 1.0
-            frequency   : 440
-            gain        : 1.0
-            numHandles  : 7
+            type         : 'adsr'
+            shape        : Oscillator.shapes[0]
+            duration     : 0.2
+            minDuration  : 0.0
+            maxDuration  : 10.0
+            freqFactor   : 1.0
+            maxFrequency : 10000
+            frequency    : 440
+            gain         : 0.5
+            numHandles   : 7
 
-        [ @gain,       cfg ] = Audio.gain cfg
-        [ @volume,     cfg ] = Audio.gain cfg
-        [ @oscillator, cfg ] = Audio.oscillator cfg
+        [@gain,       cfg] = Audio.gain cfg
+        [@volume,     cfg] = Audio.gain cfg
+        [@oscillator, cfg] = Audio.oscillator cfg
+
+        @volume.gain.value = 0
 
         @oscillator.connect @volume
         @volume.connect @gain
+        @audio = @gain
 
         super cfg,
             title    : 'adsr'
@@ -63,8 +67,8 @@ class ADSR extends Window
                 spinStep : cfg.durationStep
             ,
                 type     : 'sliderspin'
-                class    : 'freqfactor'
-                tooltip  : 'freqfactor'
+                class    : 'freqFactor'
+                tooltip  : 'freqency factor'
                 value    : cfg.freqFactor
                 minValue : 0
                 maxValue : 1.0
@@ -88,52 +92,43 @@ class ADSR extends Window
                 class    : 'trigger'                
             ]
 
-        log 1
-        @connect 'trigger:trigger',   @trigger
-        @connect 'duration:onValue',  @setDuration
-        log 2
+        @connect 'trigger:trigger',    @trigger
+        @connect 'gain:onValue',       @setGain
         @connect 'shape:onValue',      @setShape
-        log 4
-        @connect 'frequency:onValue',  @setFrequency
-        log 5
+        @connect 'duration:onValue',   @setDuration
         @connect 'freqFactor:onValue', @setFreqFactor
-        log 3
+        @connect 'frequency:onValue',  @setFrequency
+        
+        @setFreqFactor @config.freqFactor
         @setFrequency  @config.frequency
-        @setShape @config.shape
+        @setDuration   @config.duration
+        @setShape      @config.shape
+        @setGain       @config.gain
+        
         @pad = @getChild 'pad'
         @sizeWindow()
         @
             
-    # paramValuesAtConnector: (paramValues, connector) =>
-    #     if paramValues.duration? 
-    #         paramValues.values = [] 
-    #         for v in @pad.config.vals
-    #             paramValues.values.push
-    #                 time:  v.x * paramValues.duration
-    #                 value: v.y
-    #         Audio.sendParamValuesFromConnector paramValues, @connector "envelope:onValue"
-
-    setGain: (v)       => @config.gain       = _.value v; @gain.gain.value            = @config.gain
-    setFrequency: (v)  => @config.frequency  = _.value v; #@oscillator.frequency.value = @config.frequency
+    setGain:       (v) => @config.gain       = _.value v; @gain.gain.value = @config.gain
+    setDuration:   (v) => @config.duration   = _.value v
+    setFrequency:  (v) => @config.frequency  = _.value v
     setFreqFactor: (v) => @config.freqFactor = _.value v
-    setShape: (v) => 
+    setShape:      (v) => 
         @config.shape    = if _.isString v then v else _.value v 
         @oscillator.type = @config.shape
-
-    setDuration: (v) => @config.duration = _.value v
 
     trigger: (event) =>
         if @config.reltime != 0
             knix.deanimate @
 
-        @gain.gain.cancelScheduledValues Audio.context.currentTime
+        @volume.gain.cancelScheduledValues Audio.context.currentTime
         @oscillator.frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
         for v in @pad.config.vals
             time = v.x * @config.duration
-            value = (@config.freqfactor + (v.y*(1.0-@config.freqfactor))) * @config.frequency
+            value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
             @oscillator.frequency.linearRampToValueAtTime value, t + time
-            @gain.gain.linearRampToValueAtTime v.x, t + time
+            @volume.gain.linearRampToValueAtTime v.y, t + time
                         
         @setRelTime 0
         if event.detail? and event.detail.metaKey

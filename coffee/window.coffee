@@ -316,6 +316,8 @@ class Window extends Widget
     000 0 000  000       000  000     
     000   000  000  0000000    0000000
     ###
+    
+    isWindow: => true
 
     raise: (event) =>
         scrolltop = @content.elem.scrollTop
