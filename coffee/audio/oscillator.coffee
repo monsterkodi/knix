@@ -41,20 +41,20 @@ class Oscillator extends AudioWindow
                 type     : 'sliderspin'
                 class    : 'frequency'
                 tooltip  : 'frequency'
-                value    : cfg.freq
-                minValue : cfg.minFreq
-                maxValue : cfg.maxFreq
+                value    : cfg.frequency
+                minValue : cfg.minFrequency
+                maxValue : cfg.maxFrequency
             ]
 
         @connect 'shape:onValue',     @setShape
-        @connect 'frequency:onValue', @setFreq
+        @connect 'frequency:onValue', @setFrequency
 
-        @setFreq  @config.freq
-        @setShape @config.shape
+        @setFrequency @config.frequency
+        @setShape     @config.shape
         @sizeWindow()
         @
 
-    setFreq:  (v) => @config.freq  = _.value v; @audio.frequency.value = @config.freq
+    setFrequency: (v) => @config.frequency  = _.value v; @audio.frequency.value = @config.frequency
     setShape: (v) => 
         @config.shape = if _.isString v then v else _.value v 
         @audio.type   = @config.shape

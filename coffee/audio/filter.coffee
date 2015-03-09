@@ -38,9 +38,9 @@ class Filter extends AudioWindow
                 type     : 'sliderspin'
                 class    : 'frequency'
                 tooltip  : 'frequency'
-                value    : cfg.freq
-                minValue : cfg.minFreq
-                maxValue : cfg.maxFreq
+                value    : cfg.frequency
+                minValue : cfg.minFrequency
+                maxValue : cfg.maxFrequency
             ,
                 type     : 'sliderspin'
                 class    : 'detune'
@@ -59,20 +59,20 @@ class Filter extends AudioWindow
             ]
             
         @connect 'filter:onValue', @setFilter
-        @connect 'frequency:onValue', @setFreq
+        @connect 'frequency:onValue', @setFrequency
         @connect 'detune:onValue', @setDetune
         @connect 'Q:onValue', @setQ
 
-        @setQ      @config.Q
-        @setFreq   @config.freq
-        @setDetune @config.detune
-        @setFilter @config.filter
+        @setQ         @config.Q
+        @setFrequency @config.frequency
+        @setDetune    @config.detune
+        @setFilter    @config.filter
         @
 
-    setDetune: (v) => @config.detune = _.value v; @audio.detune.value    = @config.detune
-    setQ:      (v) => @config.Q      = _.value v; @audio.Q.value         = @config.Q
-    setFreq:   (v) => @config.freq   = _.value v; @audio.frequency.value = @config.freq
-    setFilter: (v) =>
+    setDetune:    (v) => @config.detune    = _.value v; @audio.detune.value    = @config.detune
+    setQ:         (v) => @config.Q         = _.value v; @audio.Q.value         = @config.Q
+    setFrequency: (v) => @config.frequency = _.value v; @audio.frequency.value = @config.frequency
+    setFilter:    (v) =>
         @config.filter = if _.isString v then v else _.value v 
         @audio.type    = @config.filter
         

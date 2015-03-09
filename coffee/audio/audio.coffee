@@ -41,22 +41,22 @@ class Audio
     @filter: (cfg) =>
 
         cfg = _.def cfg,
-            freq      : 440
-            minFreq   : 100
-            maxFreq   : 12000
-            detune    : 0
-            minDetune : -1000
-            maxDetune : 1000
-            gain      : 1
-            minGain   : 0
-            maxGain   : 1
-            Q         : 1
-            minQ      : 0.0
-            maxQ      : 50
-            filter    : 'bandpass'
+            frequency    : 440
+            minFrequency : 100
+            maxFrequency : 12000
+            detune       : 0
+            minDetune    : -1000
+            maxDetune    : 1000
+            gain         : 1
+            minGain      : 0
+            maxGain      : 1
+            Q            : 1
+            minQ         : 0.0
+            maxQ         : 50
+            filter       : 'bandpass'
 
         filter = @context.createBiquadFilter()
-        filter.frequency.value = cfg.freq   # in Hz
+        filter.frequency.value = cfg.frequency # in Hz
         filter.detune.value    = cfg.detune # in cnt
         filter.Q.value         = cfg.Q
         filter.type            = cfg.filter
@@ -76,12 +76,12 @@ class Audio
     @oscillator: (cfg) =>
 
         cfg = _.def cfg,
-            freq    : 0
-            minFreq : 0
-            maxFreq : 14000
+            frequency    : 0
+            minFrequency : 0
+            maxFrequency : 14000
 
         oscillator = @context.createOscillator()
-        oscillator.frequency.value = cfg.freq # in Hz
+        oscillator.frequency.value = cfg.frequency # in Hz
         oscillator.start 0
         [ oscillator, cfg ]
 

@@ -38,10 +38,10 @@ class Test
             high     : 100
 
         o = new Oscillator
-            freq     : 200
-            maxFreq  : 2000
-            x        : 500
-            y        : 50
+            frequency    : 200
+            maxFrequency : 2000
+            x            : 500
+            y            : 50
 
         m = new Gain
             master   : true
@@ -71,13 +71,13 @@ class Test
     @delay: ->
         
         o1 = new Oscillator
-            title    : 'low'
-            minFreq  : 1
-            maxFreq  : 1000
-            freq     : 333
-            shape    : 'sine'
-            x        : 20
-            y        : 50
+            title        : 'low'
+            minFrequency : 1
+            maxFrequency : 1000
+            frequency    : 333
+            shape        : 'sine'
+            x            : 20
+            y            : 50
 
         g1 = new Gain
             gain     : 0.5
@@ -136,27 +136,27 @@ class Test
     @oscillator: ->
         
         o1= new Oscillator
-            title   : 'high'
-            minFreq : 2000
-            x       : 10
-            y       : 40
+            title        : 'high'
+            minFrequency : 2000
+            x            : 10
+            y            : 40
 
         o2= new Oscillator
-            title   : 'mid'
-            minFreq : 400
-            maxFreq : 2000
-            freq    : 400
-            x       : 10
-            y       : 240
+            title        : 'mid'
+            minFrequency : 400
+            maxFrequency : 2000
+            freq         : 400
+            x            : 10
+            y            : 240
 
         o3= new Oscillator
-            title   : 'low'
-            minFreq : 0
-            maxFreq : 400
-            freq    : 333
-            shape   : 'square'
-            x       : 10
-            y       : 440
+            title        : 'low'
+            minFrequency : 0
+            maxFrequency : 400
+            freq         : 333
+            shape        : 'square'
+            x            : 10
+            y            : 440
 
         g1= new Gain
             gain    : 0.0
