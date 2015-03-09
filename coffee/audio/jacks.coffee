@@ -29,7 +29,8 @@ class Jacks extends Hbox
             style      :
                 width  : '100%'
                 height : '20px'
-            children   : cfg.children
+            children   : cfg.content if _.isArray cfg.content
+            child      : cfg.content if _.isObject cfg.content
 
         if not (cfg.hasOutput == false)
             children.push

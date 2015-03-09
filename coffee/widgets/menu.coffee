@@ -68,8 +68,8 @@ class Menu extends Widget
             btn.id      = undefined
             btn.parent  = 'context-menu'
             btn.menu    = 'context-menu'
+            btn.func    = e.widget.config.action
             btn.action  = @onContextAction
-            btn.action  = e.widget.config.action
             children.push btn
 
         m = knix.get
@@ -84,7 +84,7 @@ class Menu extends Widget
             children : children
                         
     @onContextAction: (event) =>
-        w = event.target.getWidget().getUp('button').config.action event
+        w = event.target.getWidget().getUp('button').config.func event
         m = @menu('context-menu')
         w.setPos m.absPos()
         m.close()
