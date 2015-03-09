@@ -234,7 +234,7 @@ class knix
         # log JSON.stringify c
         # window.prompt "Copy to clipboard", JSON.stringify(@copyBuffer)
     @pasteSelection   : =>
-        log 'paste', @copyBuffer
+        # log 'paste', @copyBuffer
         @deselectAll()
         for win in @restore JSON.parse @copyBuffer
             win.moveBy 10,10
@@ -246,6 +246,7 @@ class knix
 
     @restore: (state) =>
         @cleanState state
+        log 'restore', state
         # log state
         windows = @restoreWindows state.windows
         @restoreConnections state.connections

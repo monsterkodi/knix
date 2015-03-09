@@ -15,7 +15,7 @@ class ADSR extends AudioWindow
         cfg = _.def cfg, defs
 
         cfg = _.def cfg,
-            type         : 'adsr'
+            type         : 'ADSR'
             shape        : Oscillator.shapes[0]
             duration     : 0.2
             minDuration  : 0.0
