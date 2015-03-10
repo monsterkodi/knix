@@ -6,6 +6,11 @@
 *  0000000      000        000     0000000  00000000
 */
 
+@font-face
+    font-family: UbuntuMono
+    src: url('./font/Ubuntu-M.ttf')
+    
+
 shadow()
     -webkit-box-shadow: shadowDef
     box-shadow:         shadowDef
@@ -376,7 +381,7 @@ a
     padding-left:   8px
     padding-top:    6px
     & *
-      textCursor()
+        textCursor()
 
 .console-error
     color:          textColors.console-error
@@ -647,8 +652,8 @@ a
     background-color: transparent
     color:            colors.spin-active
     box-sizing:       border-box
-    font-weight:      bold
-    font-size:        16px
+    font-size:        15px
+    font-family:      UbuntuMono
     position:         absolute
     top:              0px
     height:           valueHeight
