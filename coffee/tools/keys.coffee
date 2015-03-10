@@ -26,6 +26,8 @@ class Keys
         if @interactive
             if key == 'Esc'
                 @stopInteractive()
+            else if key == 'Backspace'
+                wid.config.keys = []
             else if not _.isEmpty @register
                 log 'register key [%s] for element %s'.fmt key, @register.elem.id
                 if @register.elem?

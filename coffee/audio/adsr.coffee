@@ -22,9 +22,10 @@ class ADSR extends AudioWindow
             maxDuration  : 10.0
             freqFactor   : 1.0
             maxFrequency : 10000
-            frequency    : 440
+            frequency    : 2000
             gain         : 0.5
-            numHandles   : 7
+            numHandles   : 3
+            vals         : [pos(0,0), pos(.2,1), pos(1,0)]
 
         [@gain,       cfg] = Audio.gain cfg
         [@volume,     cfg] = Audio.gain cfg
