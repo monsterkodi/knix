@@ -24,6 +24,20 @@ class Keyboard extends Window
         As:   7458.62  
         H:    7902.13
 
+    @keys = 
+        C:    'z'
+        Cs:   's'
+        D:    'x'
+        Ds:   'd'
+        E:    'c'
+        F:    'v'
+        Fs:   'g'
+        G:    'b'
+        Gs:   'h'
+        A:    'n'
+        As:   'j'
+        H:    'm'
+
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
@@ -38,6 +52,7 @@ class Keyboard extends Window
                 type   : sharp and 'keyboard-key-sharp' or 'keyboard-key'
                 valign : sharp and 'top' or 'bottom'
                 text   : n
+                keys   : [Keyboard.keys[n]]
                 style  :
                     textAlign : 'center'
 
@@ -53,23 +68,36 @@ class Keyboard extends Window
                     type     : 'spin'
                     class    : 'octave'
                     tooltip  : 'octave'
-                    value    : cfg.ocatave
+                    value    : cfg.octave
                     minValue : 0
                     maxValue : 8
                     style      :
                         width  : '100%'
                 ,
                     type      : 'connector'
-                    signal    : 'onNote'
+                    signal    : 'onValue'
                 ]                
             ,
                 type     : 'hbox'
+                class    : 'keys'
                 noMove   : true
                 spacing  : 0
                 children : children
-            ]                
+            ]     
+            
+        for key in @getChild('keys').allChildren()
+            key.connect 'click', @onKeyPress
+            
+        @connect 'octave:onValue', @setOctave
         @
             
+    setOctave: (v) => @config.octave = _.value v
+            
+    onKeyPress: (event) =>    
+        key = event.target.widget
+        frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
+        @emitValue frequency
+        
     @menu: =>
 
         @menuButton

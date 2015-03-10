@@ -136,11 +136,8 @@ class Widget
             error "event not found!"
         if not slotFunction?
             error "slot not found!"
+        # log signalSender.elem.id
         signalSender.elem.addEventListener signalEvent, slotFunction
-        # handler:  signalSender.elem.on signalEvent, slotFunction
-        # sender:   signalSender
-        # event:    signalEvent
-        # receiver: slotFunction
         @
 
     disconnect: (signal, slot) =>
@@ -227,9 +224,6 @@ class Widget
         @
 
     emitMove: =>
-        # p = @absPos()
-        # @config.x = p.x
-        # @config.y = p.y
         p = pos @config.x, @config.y
         @emit 'move',
             pos: p
@@ -316,11 +310,8 @@ class Widget
         if args.length
             anc = @elem.ancestors()
             for a in anc
-                # console.log '--- a', a.id
                 if a.match("#"+args[0]) or a.match("."+args[0])
-                    # console.log 'match!'
                     return a.widget
-            # console.log '!!!'
             return
         return $(@config.parentID).widget if @config.parentID
         return $(@parentElement.id).widget if @parentElement?
@@ -341,11 +332,9 @@ class Widget
     getWindow: => # without argument: returns this or first ancestor element with class 'window'
                   # with argument: returns the window with id 
         if arguments.length
-            log 'window id', $A(arguments)[0]
             return $($A(arguments)[0]).widget
         if @elem.hasClassName 'window'
             return this
-        # console.log '----', @elem.id
         @getParent 'window'
 
     getChild: (classOrID) => # returns first child element that matches class or element id
@@ -503,10 +492,7 @@ class Widget
     0000000  000   000     000      0000000    0000000      000   
     ###
 
-    stretchWidth: =>
-        # tag 'layout'
-        # log @
-        @elem.style.width = '50%'
+    stretchWidth: => @elem.style.width = '50%'
 
     layoutChildren: =>
         e = @config.content? and $(@config.content) or @elem

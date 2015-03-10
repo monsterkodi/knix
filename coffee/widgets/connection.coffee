@@ -97,7 +97,7 @@ class Connection
     connect: =>
         [outConnector, inConnector] = @outInConnector()
 
-        # log 'connect', outConnector.config, inConnector.config
+        log 'connect', outConnector.config, inConnector.config
             
         outConnector.emit 'onConnect', {source:outConnector, target:inConnector}
         # inConnector.emit  'onConnect', {source:inConnector, target:outConnector}
@@ -110,15 +110,15 @@ class Connection
         slot   = inConnector.config.slot
 
         if signal? and slot?
-            [signalSender, signalEvent] = outConnector.resolveSignal(signal)
-            slotFunction                = inConnector.resolveSlot(slot)
+            [signalSender, signalEvent] = outConnector.getWindow().resolveSignal(signal)
+            slotFunction                = inConnector.getWindow().resolveSlot(slot)
             connection.handler  = signalSender.elem.on signalEvent, slotFunction
             connection.sender   = signalSender
             connection.event    = signalEvent
             connection.signal   = signal
             connection.slot     = slot
             connection.receiver = slotFunction
-            # log signal, slot
+            log signal, slot
         connection
 
     disconnect: =>
