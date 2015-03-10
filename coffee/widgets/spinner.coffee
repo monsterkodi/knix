@@ -66,5 +66,4 @@ class Spinner extends Spin
         if oldValue != @config.value
             @emit 'valueInput', @config.value
 
-    onWindowSize: =>  @setValue @config.value
     size2value: (s) => @config.minValue + @range() * s / @getChild('spin-content').getWidth()

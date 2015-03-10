@@ -37,9 +37,13 @@ class Spin extends Value
                     ,
                         class : 'spin-content'
                         elem  : 'td'
-                        child :
+                        children : \
+                        [
                             type  : 'input'
                             class : 'spin-input'
+                        ,
+                            type  : 'spin-knob'
+                        ]
                     ,
                         class : 'incr spin-td'
                         elem  : 'td'
@@ -58,7 +62,8 @@ class Spin extends Value
         @connect 'incr:mousedown', @startIncr
         @connect 'incr:mouseup',   @stopTimer
 
-        @connect 'input:mousedown', (event) -> event.stopPropagation()
+        @connect 'input:mousedown', @onInputDown
+        @connect 'input:click', @onInputDown
 
         if not @config.valueStep?
             @config.valueStep = @range() > 1 and 1 or @range()/100
@@ -79,6 +84,11 @@ class Spin extends Value
         if @config.value != oldValue
             @emit 'valueInput', value: @config.value
 
+    onInputDown: (event) => 
+        @config.knobIndex = -(@input.selectionStart-@input.value.length+1)
+        @updateKnob()
+        event.stopPropagation()
+
     onKey: (event, e) =>
         if event.key in ['Esc']
             @setValue @config.value
@@ -92,7 +102,12 @@ class Spin extends Value
             if event.key == ' '
                 Keys.onKey event
                 event.stop()
+            else if event.key == 'Left'
+                @config.knobIndex += 1
+            else if event.key == 'Right'
+                @config.knobIndex -= 1
             @onInputChange()
+            @updateKnob()
             return
         if event.key not in '0123456789-.'
             if event.key.length == 1
@@ -107,16 +122,24 @@ class Spin extends Value
 
     setValue: (a) =>
         super _.value a
-        [start, end] = [@input.selectionStart, @input.selectionEnd]
+        # [start, end] = [@input.selectionStart, @input.selectionEnd]
         @input.value = @format(@config.value) if @input?
-        [@input.selectionStart, @input.selectionEnd] = [start, end]
+        if not @config.knobIndex?
+            @config.knobIndex = if @config.maxValue <= 1 then 1 else 3
+        @updateKnob()        
+        # [@input.selectionStart, @input.selectionEnd] = [start, end]
+        
+    updateKnob: =>
+        @config.knobIndex = _.clamp @config.knobIndex, -1, @input.value.length-1
+        i = @config.knobIndex
+        i = 3 if i == 2
+        @getChild('spin-knob').moveTo @getChild('spin-content').getWidth() - ( 8 + i * 7.5 )
 
     incr: (d=1) =>
         oldValue = @config.value
         valueLength = @input.value.length
-        [start, end] = [@input.selectionStart, @input.selectionEnd]
-        [trats, dne] = [@input.selectionStart-valueLength, @input.selectionEnd-valueLength]
-        
+
+        start = @input.value.length - @config.knobIndex - 1
         dotindex = @input.value.indexOf '.'
         if dotindex >= 0 and start >= dotindex
             tempStep = 1.0 / (Math.pow 10, start - dotindex)
@@ -129,15 +152,16 @@ class Spin extends Value
         super 
         @config.valueStep = saveStep
         
-        valueLength = @input.value.length
-        [@input.selectionStart, @input.selectionEnd] = [valueLength+trats, valueLength+dne]
-        
         if oldValue != @config.value
             @emit 'valueInput', value: @config.value
+            
+        @updateKnob()
 
     startIncr: => @incr(); @timer = setInterval(@incr, Math.max(80, 2000/@steps()))
     startDecr: => @decr(); @timer = setInterval(@decr, Math.max(80, 2000/@steps()))
     stopTimer: => clearInterval @timer
+
+    onWindowSize: => @setValue @config.value
 
     format: (s) => return @config.format.fmt(s) if @config.format?; String(s)
     strip0: (s) => return s.replace(/(0+)$/,'').replace(/([\.]+)$/,'') if s.indexOf('.') > -1; String(s.strip())

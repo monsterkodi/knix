@@ -8,7 +8,7 @@
 
 @font-face
     font-family: UbuntuMono
-    src: url('./font/Ubuntu-M.ttf')
+    src: url('./font/UbuntuMono-R.ttf')
     
 
 shadow()
@@ -629,8 +629,8 @@ a
 .spin-row
 .spin-td
     border-collapse:  collapse
-    margin:   0
-    padding:  0
+    margin:           0
+    padding:          0
     max-height:       valueHeight
 
 .spin-content
@@ -642,24 +642,31 @@ a
     font-size:        12px
     background-color: colors.spin-input
     &:hover
-        background-color:   colors.spin-input-hover
+        background-color: colors.spin-input-hover
 
 .spinner .spin-content
     text-align:       center
     color:            colors.spin-active
 
-.spinner-knob
+.spin-knob
+    background-color: colors.spin-knob
     position:         absolute
-    top:              0
-    height:           spinnerKnobSize
+    height:           spinKnobHeight
+    width:            spinKnobWidth
+    bottom:           0
+    
+.spinner-knob
     background-color: colors.spinner-knob
+    position:         absolute
+    height:           spinnerKnobSize
+    top:              0
 
 .spin-input
     textCursor()
     padding:          0
     margin:           0
     border:           0
-    text-align:       center
+    text-align:       right
     background-color: transparent
     color:            colors.spin-active
     box-sizing:       border-box

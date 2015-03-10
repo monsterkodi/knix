@@ -50,6 +50,7 @@ colors.spin-border          = colors.grayMedium
 colors.spin-active          = colors.green
 colors.spin-input           = transparent
 colors.spin-input-hover     = colors.slider-hover
+colors.spin-knob            = colors.bg
 colors.console              = black
 colors.spinner-knob         = colors.blue
 colors.pad                  = colors.slider
@@ -151,6 +152,8 @@ menuHeight              = 24px
 valueHeight             = 20px
 knobSize                = valueHeight - sliderBorderWidth * 2
 spinnerKnobSize         = 4px
+spinKnobHeight          = 4px
+spinKnobWidth           = 8px
 shadowDef               = 2px 2px 10px rgba(0,0,0,0.4)
 shadowInnerDef          = inset 1px 1px 6px rgba(0,0,0,0.4)
 
@@ -173,5 +176,8 @@ shadowInnerDef          = inset 1px 1px 6px rgba(0,0,0,0.4)
     box-shadow:         shadowInnerDef
 
 .spinner-knob
-    border-bottom-left-radius: 4px
-    border-bottom-right-radius: 4px
+    border-bottom-left-radius:  spinnerKnobSize
+    border-bottom-right-radius: spinnerKnobSize
+.spin-knob
+    border-top-left-radius:  spinKnobHeight
+    border-top-right-radius: spinKnobHeight

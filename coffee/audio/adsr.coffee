@@ -150,6 +150,7 @@ class ADSR extends AudioWindow
             @pad.showRuler @config.reltime, @config.value
 
     sizeWindow: =>
+        super
         if @pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()

@@ -353,18 +353,8 @@ class Widget
         return c[0].widget if c.length
         undefined
         
-    children: => _.filter ( c.getWidget?() for c in @elem.childNodes )
-    
-    allChildren: =>
-        children = @children()
-        check = children.clone()
-        while check.length
-            c = check.splice(0,1)[0]
-            for cc in c.children()
-                if cc not in children
-                    children.push cc
-                    check.push cc
-        return children
+    children:    => _.filter ( c.getWidget?() for c in @elem.childNodes )
+    allChildren: => _.unique _.filter ( c.getWidget?() for c in $(@elem.id).descendants() )
         
     ###
     00     00  000   0000000   0000000
@@ -482,7 +472,7 @@ class Widget
     addMovement: =>        
         if @config.isMovable
             # tag 'Drag'
-            log 'addMovement', @elem.id
+            # log 'addMovement', @elem.id
             new Drag
                 target:  @elem
                 minPos:  pos(undefined,0)

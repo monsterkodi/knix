@@ -156,17 +156,15 @@ class Window extends Widget
     0000000  000   000     000      0000000    0000000      000   
     ###
 
-    stretchWidth: =>
-        @
+    stretchWidth: => @
 
     sizeWindow: =>
-        # log 'sizeWindow'
         if @config.content == 'scroll'
             @content.setWidth  @contentWidth()
             @content.setHeight @contentHeight()
 
-        for e in @elem.descendants()
-            e.widget?.onWindowSize?()
+        for w in @allChildren()
+            w.onWindowSize?()
 
     ###
      0000000  000  0000000  00000000
