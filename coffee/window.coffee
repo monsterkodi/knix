@@ -175,7 +175,7 @@ class Window extends Widget
     ###
 
     addMovement: =>
-        if @config.resize
+        if @config.resize or not @config.noMove
             @elem.on 'mousemove', @onHover
             @elem.on 'mouseleave', @onLeave
         else
@@ -203,18 +203,19 @@ class Window extends Widget
         md = 10
         action = 'move'
         border = ''
-        if d1.y < md
-            action = 'size'
-            border = 'top'
-        else if d2.y < md
-            action = 'size'
-            border = 'bottom'
-        if d1.x < md
-            action = 'size'
-            border+= 'left'
-        if d2.x < md
-            action = 'size'
-            border+= 'right'
+        if not @config.resize? or not @config.resize == false
+            if d1.y < md
+                action = 'size' if not @config.resize == 'horizontal'
+                border = 'top'
+            else if d2.y < md
+                action = 'size' if not @config.resize == 'horizontal'
+                border = 'bottom'
+            if d1.x < md
+                action = 'size' if not @config.resize == 'vertical'
+                border+= 'left'
+            if d2.x < md
+                action = 'size' if not @config.resize == 'vertical'
+                border+= 'right'
 
         if action == 'size' and not @config.isShaded
 
@@ -243,6 +244,7 @@ class Window extends Widget
                 onStart : StyleSwitch.togglePathFilter
                 onStop  : StyleSwitch.togglePathFilter
                 cursor  : 'grab'
+        return
 
     dragMove: (drag) =>
         @emitMove()

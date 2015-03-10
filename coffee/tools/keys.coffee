@@ -22,7 +22,7 @@ class Keys
     @onKey: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
-        log key
+        # log key
         if @interactive
             if key == 'Esc'
                 @stopInteractive()

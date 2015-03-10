@@ -14,6 +14,7 @@ class Audio
 
         @context = new (window.AudioContext || window.webkitAudioContext)()
 
+        Keyboard.menu()
         ADSR.menu()
         Tracker.menu()
         Ramp.menu()

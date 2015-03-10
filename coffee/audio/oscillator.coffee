@@ -30,13 +30,13 @@ class Oscillator extends AudioWindow
             [
                 type     : 'jacks'
                 hasInput : false
-            ,
-                type     : 'spinner'
-                class    : 'shape'
-                recKey   : 'shape' 
-                tooltip  : 'shape'
-                value    : cfg.shape
-                values   : Oscillator.shapes
+                content  : 
+                    type     : 'spinner'
+                    class    : 'shape'
+                    recKey   : 'shape' 
+                    tooltip  : 'shape'
+                    value    : cfg.shape
+                    values   : Oscillator.shapes
             ,
                 type     : 'sliderspin'
                 class    : 'frequency'

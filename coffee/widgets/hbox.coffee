@@ -13,14 +13,18 @@ class Hbox extends Widget
     init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
-        spacing = cfg.spacing? and cfg.spacing or 5
+        
+        cfg = _.def cfg, 
+            valign  : 'middle'
+            spacing : 5
+
         super cfg,
             type  : 'hbox'
             style :
                 display       : 'table'
-                borderSpacing : '%dpx 0px'.fmt spacing
-                marginRight   : '-%dpx'.fmt spacing
-                marginLeft    : '-%dpx'.fmt spacing
+                borderSpacing : '%dpx 0px'.fmt cfg.spacing
+                marginRight   : '-%dpx'.fmt cfg.spacing
+                marginLeft    : '-%dpx'.fmt cfg.spacing
         @
 
     insertChild: (cfg) =>
@@ -28,7 +32,6 @@ class Hbox extends Widget
         child = super cfg
 
         child.elem.style.display       = 'table-cell'
-        child.elem.style.marginLeft    = '10px'
-        child.elem.style.verticalAlign = 'middle'
+        child.elem.style.verticalAlign = cfg.valign? and cfg.valign or @config.valign
 
         child
