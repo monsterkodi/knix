@@ -75,7 +75,7 @@ class Keyboard extends Window
                         width  : '100%'
                 ,
                     type      : 'connector'
-                    signal    : 'onValue'
+                    signal    : 'note'
                 ]                
             ,
                 type     : 'hbox'
@@ -86,17 +86,28 @@ class Keyboard extends Window
             ]     
             
         for key in @getChild('keys').allChildren()
-            key.connect 'click', @onKeyPress
+            key.connect 'mousedown', @onKeyPress
             
+        Keys.add ',', @octaveDown
+        Keys.add '.', @octaveUp
         @connect 'octave:onValue', @setOctave
         @
             
     setOctave: (v) => @config.octave = _.value v
+    octaveUp: => @getChild('octave').incr '+'
+    octaveDown: => @getChild('octave').incr '-'
             
     onKeyPress: (event) =>    
         key = event.target.widget
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
-        @emitValue frequency
+        @emit 'note', value : frequency
+        c = @getChild 'connector'
+        # log c.elem.id
+        for cc in c.connections
+            w = cc.config.target?.getWindow()
+            # log w?.elem.id
+            t = w?.getChild 'trigger'
+            t?.trigger()
         
     @menu: =>
 

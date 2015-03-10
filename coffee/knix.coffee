@@ -112,7 +112,7 @@ class knix
 
         Menu.addButton btn,
             tooltip : 'set key'
-            keys    : ['k']
+            keys    : ['`']
             icon    : 'fa-keyboard-o'
             action  : Keys.startInteractive
 
@@ -140,7 +140,7 @@ class knix
         Keys.add '⌘c', knix.copySelection
         Keys.add '⌘v', knix.pasteSelection
         Keys.add '⇧S', Selectangle.toggle
-        Keys.add 's',   Selectangle.toggle
+        Keys.add '^s',  Selectangle.toggle
 
     ###
      0000000  00000000   00000000   0000000   000000000  00000000
