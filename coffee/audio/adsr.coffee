@@ -24,17 +24,22 @@ class ADSR extends AudioWindow
             maxFrequency : 10000
             frequency    : 2000
             gain         : 0.5
+            voices       : 6
             numHandles   : 3
+            sustainIndex : 1
             vals         : [pos(0,0), pos(.2,1), pos(1,0)]
 
         [@gain,       cfg] = Audio.gain cfg
-        [@volume,     cfg] = Audio.gain cfg
-        [@oscillator, cfg] = Audio.oscillator cfg
 
-        @volume.gain.value = 0
-
-        @oscillator.connect @volume
-        @volume.connect @gain
+        for i in [0...cfg.voices]
+            
+            [@volume[i],     cfg] = Audio.gain cfg
+            [@oscillator[i], cfg] = Audio.oscillator cfg
+            @volume[i].gain.value = 0
+            @oscillator[i].connect @volume[i]
+            @volume[i].connect @gain
+        
+        @voiceIndex = 0
         @audio = @gain
 
         super cfg,
@@ -51,12 +56,13 @@ class ADSR extends AudioWindow
                     value    : cfg.shape
                     values   : Oscillator.shapes
             ,
-                type       : 'pad'
-                class      : 'pad'
-                numHandles : cfg.numHandles
-                vals       : cfg.vals
-                minHeight  : 50
-                minWidth   : 150
+                type         : 'pad'
+                class        : 'pad'
+                numHandles   : cfg.numHandles
+                sustainIndex : cfg.sustainIndex
+                vals         : cfg.vals
+                minHeight    : 50
+                minWidth     : 150
             ,
                 type     : 'sliderspin'
                 class    : 'duration'
@@ -81,12 +87,12 @@ class ADSR extends AudioWindow
                 minValue : cfg.minFrequency
                 maxValue : cfg.maxFrequency
             ,
-                type      : 'sliderspin'
-                class     : 'gain'
-                tooltip   : 'gain'
-                value     : cfg.gain
-                minValue  : 0.0 
-                maxValue  : 1.0
+                type     : 'sliderspin'
+                class    : 'gain'
+                tooltip  : 'gain'
+                value    : cfg.gain
+                minValue : 0.0 
+                maxValue : 1.0
             ,
                 type     : 'button'
                 text     : 'trigger'
@@ -94,6 +100,7 @@ class ADSR extends AudioWindow
             ]
 
         @connect 'trigger:trigger',    @trigger
+        @connect 'trigger:release',    @release
         @connect 'gain:onValue',       @setGain
         @connect 'shape:onValue',      @setShape
         @connect 'duration:onValue',   @setDuration
@@ -119,36 +126,31 @@ class ADSR extends AudioWindow
         @oscillator.type = @config.shape
 
     trigger: (event) =>
-        if @config.reltime != 0
-            knix.deanimate @
-
-        @volume.gain.cancelScheduledValues Audio.context.currentTime
-        @oscillator.frequency.cancelScheduledValues Audio.context.currentTime
+        i = @voiceIndex
+        @voiceTrigger[i] = event.target
+        @volume[i].gain.cancelScheduledValues Audio.context.currentTime
+        @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
-        for v in @pad.config.vals
+        for vi in [0..@pad.config.sustainIndex]
+            v = @pad.config.vals[vi]
             time = v.x * @config.duration
             value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
-            @oscillator.frequency.linearRampToValueAtTime value, t + time
-            @volume.gain.linearRampToValueAtTime v.y, t + time
+            @oscillator[i].frequency.linearRampToValueAtTime value, t + time
+            @volume[i].gain.linearRampToValueAtTime v.y, t + time
+        @voiceIndex = @voiceIndex+1 % @config.voices        
                         
-        @setRelTime 0
-        if event.detail? and event.detail.metaKey
-            knix.animate @
+    release: (event) =>
+        i = @voiceIndex-1
+        @volume[i].gain.cancelScheduledValues Audio.context.currentTime
+        @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
+        t = Audio.context.currentTime + 0.01
+        for vi in [@pad.config.sustainIndex...@pad.config.vals.length]
+            v = @pad.config.vals[vi]
+            time = v.x * @config.duration
+            value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
+            @oscillator[i].frequency.linearRampToValueAtTime value, t + time
+            @volume[i].gain.linearRampToValueAtTime v.y, t + time
                             
-    anim: (step) =>
-        @setRelTime @config.reltime + step.dsecs / @config.duration
-        if @config.reltime > 1.0
-            knix.deanimate @
-            @setRelTime 0
-
-    setRelTime: (rel) =>
-        @config.reltime = rel
-        @config.value = @pad.valAtRel @config.reltime
-        if @config.reltime == 0
-            @pad.hideRuler()
-        else
-            @pad.showRuler @config.reltime, @config.value
-
     sizeWindow: =>
         super
         if @pad?

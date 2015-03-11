@@ -87,6 +87,7 @@ class Keyboard extends Window
             
         for key in @getChild('keys').allChildren()
             key.connect 'mousedown', @onKeyPress
+            key.connect 'mouseup',   @onKeyRelease
             
         Keys.add ',', @octaveDown
         Keys.add '.', @octaveUp
@@ -94,7 +95,7 @@ class Keyboard extends Window
         @
             
     setOctave: (v) => @config.octave = _.value v
-    octaveUp: => @getChild('octave').incr '+'
+    octaveUp:   => @getChild('octave').incr '+'
     octaveDown: => @getChild('octave').incr '-'
             
     onKeyPress: (event) =>    
@@ -102,12 +103,18 @@ class Keyboard extends Window
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
         @emit 'note', value : frequency
         c = @getChild 'connector'
-        # log c.elem.id
         for cc in c.connections
             w = cc.config.target?.getWindow()
-            # log w?.elem.id
             t = w?.getChild 'trigger'
-            t?.trigger()
+            t?.trigger event
+
+    onKeyRelease: (event) =>    
+        log 'keyrelease'
+        c = @getChild 'connector'
+        for cc in c.connections
+            w = cc.config.target?.getWindow()
+            t = w?.getChild 'trigger'
+            t?.release event
         
     @menu: =>
 

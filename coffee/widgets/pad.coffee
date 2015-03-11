@@ -22,13 +22,13 @@ class Pad extends Widget
         @o = 8 # offset from border
         
         super cfg,
-            type:   'pad'
-            noMove: true
-            minWidth:  cfg.minWidth
-            minHeight: cfg.minHeight
-            child:
-                type: 'svg'
-                noMove: true
+            type       : 'pad'
+            noMove     : true
+            minWidth   : cfg.minWidth
+            minHeight  : cfg.minHeight
+            child      :
+                type   : 'svg'
+                noMove : true
         
         @svg = @getChild 'svg'
         
@@ -43,7 +43,10 @@ class Pad extends Widget
         
         @handles = []
         for i in [0...@config.numHandles]
-            @handles.push @createHandle()
+            h = @createHandle()
+            @handles.push h
+            if i == @config.sustainIndex
+                h.circle.addClass 'sustain'
             
         if @config.hasPaths
             @paths = []
@@ -72,13 +75,14 @@ class Pad extends Widget
     createHandle: =>
         h = new Handle
             svg   : @svg.svg
-            class : 'pad_handle'
+            class : 'pad-handle'
             onPos : @onHandlePos
             onUp  : @onHandleUp
         h.elem.addEventListener 'dblclick', @handleDoubleClick
         h
 
     splitPathAtIndex: (i) =>
+        if i < @config.sustainIndex then @config.sustainIndex += 1
         @config.vals.splice i+1, 0, @config.vals[i].mid(@config.vals[i+1])
         h = @createHandle()
         @handles.splice i+1, 0, h
@@ -89,6 +93,7 @@ class Pad extends Widget
         @constrainHandles()
     
     removeHandleAtIndex: (i) =>
+        if i < @config.sustainIndex then @config.sustainIndex -= 1
         @paths[i].swapStartHandle @handles[i-1]
         @handles[i-1].circle.center -1, -1
         @config.vals.splice i, 1
@@ -106,7 +111,7 @@ class Pad extends Widget
     handleDoubleClick: (event) =>
         h = event.target.getWidget()
         i = @handles.indexOf h
-        if i > 0 and i < @handles.length-1
+        if i > 0 and i < @handles.length-1 and i != @config.sustainIndex
             @removeHandleAtIndex i
         
     pathDragMove: (drag) =>
@@ -143,16 +148,16 @@ class Pad extends Widget
         if x?
             if not @rulerx?
                 @rulerx = new Path
-                    svg:    @svg.svg
-                    class:  'pad-ruler'
+                    svg   : @svg.svg
+                    class : 'pad-ruler'
                 @rulerx.path.back()
             @rulerx.setStart pos x*w+@o, 0
             @rulerx.setEnd   pos x*w+@o, h+2*@o
         if y?
             if not @rulery?
                 @rulery = new Path
-                    svg:    @svg.svg
-                    class:  'pad-ruler'
+                    svg   : @svg.svg
+                    class : 'pad-ruler'
                 @rulery.path.back()
             @rulery.setStart pos      0, h-y*h+@o
             @rulery.setEnd   pos w+2*@o, h-y*h+@o

@@ -28,14 +28,18 @@ class Button extends Widget
             children : children
             
         @connect 'mousedown', @trigger
+        @connect 'mouseup',   @release
 
     insertText: =>
         if @config.menu != 'menu'
             super
 
     trigger: (event) =>
-        # log 'trigger', @config.action?
         @config.action? event
         @emit 'trigger', event
         event?.stop()
+        @
+        
+    release: (event) =>
+        @emit 'release', event
         @

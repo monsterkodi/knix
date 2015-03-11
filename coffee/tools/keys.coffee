@@ -54,17 +54,18 @@ class Keys
     @onKeyUp: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
+        log key
         i = @pressed.indexOf key
         @pressed.splice(i, 1) if i >= 0
         if not @interactive and i >= 0 
             if @shortcuts[key]?
                 for wid in @shortcuts[key]
-                    if not wid.trigger?
-                        # log 'trigger'
+                    if not _.isFunction wid
                         e = new MouseEvent "mouseup",
                                             bubbles    : true,
                                             cancelable : true,
                                             view       : window
+                        wid.elem.dispatchEvent e
                         e = new MouseEvent "click",
                                             bubbles    : true,
                                             cancelable : true,
