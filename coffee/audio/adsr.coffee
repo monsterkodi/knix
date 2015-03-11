@@ -24,22 +24,26 @@ class ADSR extends AudioWindow
             maxFrequency : 10000
             frequency    : 2000
             gain         : 0.5
-            voices       : 6
+            voices       : 16
             numHandles   : 3
             sustainIndex : 1
             vals         : [pos(0,0), pos(.2,1), pos(1,0)]
 
         [@gain,       cfg] = Audio.gain cfg
 
+        @voice = []
+        @volume = []
+        @oscillator = []
         for i in [0...cfg.voices]
-            
-            [@volume[i],     cfg] = Audio.gain cfg
-            [@oscillator[i], cfg] = Audio.oscillator cfg
-            @volume[i].gain.value = 0
-            @oscillator[i].connect @volume[i]
-            @volume[i].connect @gain
+            [volume,     cfg] = Audio.gain cfg
+            [oscillator, cfg] = Audio.oscillator cfg
+            @voice.push undefined
+            @volume.push volume
+            @oscillator.push oscillator
+            oscillator.connect volume
+            volume.gain.value = 0
+            volume.connect @gain
         
-        @voiceIndex = 0
         @audio = @gain
 
         super cfg,
@@ -122,12 +126,25 @@ class ADSR extends AudioWindow
     setFrequency:  (v) => @config.frequency  = _.value v
     setFreqFactor: (v) => @config.freqFactor = _.value v
     setShape:      (v) => 
-        @config.shape    = if _.isString v then v else _.value v 
-        @oscillator.type = @config.shape
+        @config.shape  = if _.isString v then v else _.value v 
+        for i in [0...@config.voices]
+            @oscillator[i].type = @config.shape
+
+    voiceIndex: (id) =>
+        for i in [0...@config.voices]
+            if @voice[i]?.id == id then return i
+        for i in [0...@config.voices]
+            if @voice[i] == undefined
+                @voice[i] = { id : id }
+                return i
+        warn 'no free voice'
+        @voice[0] = { id : id }
+        0
 
     trigger: (event) =>
-        i = @voiceIndex
-        @voiceTrigger[i] = event.target
+        # log event.detail
+        i = @voiceIndex event.detail
+        # log event.detail, i
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
@@ -137,12 +154,14 @@ class ADSR extends AudioWindow
             value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
             @oscillator[i].frequency.linearRampToValueAtTime value, t + time
             @volume[i].gain.linearRampToValueAtTime v.y, t + time
-        @voiceIndex = @voiceIndex+1 % @config.voices        
+            if vi == @pad.config.sustainIndex
+                @voice[i].done = t + time
                         
     release: (event) =>
-        i = @voiceIndex-1
-        @volume[i].gain.cancelScheduledValues Audio.context.currentTime
-        @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
+        i = @voiceIndex event.detail
+        # log event.detail, i        
+        # @volume[i].gain.cancelScheduledValues Audio.context.currentTime
+        # @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
         for vi in [@pad.config.sustainIndex...@pad.config.vals.length]
             v = @pad.config.vals[vi]
@@ -150,6 +169,14 @@ class ADSR extends AudioWindow
             value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
             @oscillator[i].frequency.linearRampToValueAtTime value, t + time
             @volume[i].gain.linearRampToValueAtTime v.y, t + time
+            if vi == @pad.config.vals.length-1
+                @voice[i].done = Math.max @voice[i].done, t + time
+                msec = (@voice[i].done-t)*1000
+                @voice[i].timeout = setTimeout @voiceDone, msec, i
+                
+    voiceDone: (i) =>
+        @voice[i] = undefined
+        # log i, @voice
                             
     sizeWindow: =>
         super

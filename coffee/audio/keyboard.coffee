@@ -98,23 +98,24 @@ class Keyboard extends Window
     octaveUp:   => @getChild('octave').incr '+'
     octaveDown: => @getChild('octave').incr '-'
             
-    onKeyPress: (event) =>    
+    onKeyPress: (event) =>
         key = event.target.widget
+        # log key.config.text
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
         @emit 'note', value : frequency
         c = @getChild 'connector'
         for cc in c.connections
             w = cc.config.target?.getWindow()
             t = w?.getChild 'trigger'
-            t?.trigger event
+            t?.trigger "%s%d".fmt key.config.text, @config.octave
 
     onKeyRelease: (event) =>    
-        log 'keyrelease'
+        key = event.target.widget
         c = @getChild 'connector'
         for cc in c.connections
             w = cc.config.target?.getWindow()
             t = w?.getChild 'trigger'
-            t?.release event
+            t?.release "%s%d".fmt key.config.text, @config.octave
         
     @menu: =>
 

@@ -35,11 +35,13 @@ class Button extends Widget
             super
 
     trigger: (event) =>
+        # log event.target.id
         @config.action? event
-        @emit 'trigger', event
+        @emit 'trigger', _.isString(event) and event or event.target.id
         event?.stop()
         @
         
     release: (event) =>
-        @emit 'release', event
+        # log event.target.id
+        @emit 'release', _.isString(event) and event or event.target.id
         @
