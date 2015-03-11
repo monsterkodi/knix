@@ -122,15 +122,15 @@ class Spin extends Value
 
     setValue: (a) =>
         super _.value a
-        # [start, end] = [@input.selectionStart, @input.selectionEnd]
+        [start, end] = [@input.selectionStart, @input.selectionEnd]
         @input.value = @format(@config.value) if @input?
         if not @config.knobIndex?
             @config.knobIndex = if @config.maxValue <= 1 then 1 else 3
         @updateKnob()        
-        # [@input.selectionStart, @input.selectionEnd] = [start, end]
+        [@input.selectionStart, @input.selectionEnd] = [start, end]
         
     updateKnob: =>
-        @config.knobIndex = _.clamp @config.knobIndex, -1, @input.value.length-1
+        @config.knobIndex = _.clamp @config.knobIndex, 0, @format(@config.maxValue).length-1
         i = @config.knobIndex
         i = 3 if i == 2
         @getChild('spin-knob').moveTo @getChild('spin-content').getWidth() - ( 8 + i * 7.5 )
