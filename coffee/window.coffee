@@ -149,24 +149,6 @@ class Window extends Widget
         0
 
     ###
-    000       0000000   000   000   0000000   000   000  000000000
-    000      000   000   000 000   000   000  000   000     000   
-    000      000000000    00000    000   000  000   000     000   
-    000      000   000     000     000   000  000   000     000   
-    0000000  000   000     000      0000000    0000000      000   
-    ###
-
-    stretchWidth: => @
-
-    sizeWindow: =>
-        if @config.content == 'scroll'
-            @content.setWidth  @contentWidth()
-            @content.setHeight @contentHeight()
-
-        for w in @allChildren()
-            w.onWindowSize?()
-
-    ###
      0000000  000  0000000  00000000
     000       000     000   000     
     0000000   000    000    0000000 
@@ -183,7 +165,7 @@ class Window extends Widget
 
     onHover: (event, e) =>
 
-        if @sizeMoveDrag? 
+        if @sizeMoveDrag?
             if @sizeMoveDrag.dragging then return
             @sizeMoveDrag.deactivate() 
             delete @sizeMoveDrag
@@ -203,18 +185,18 @@ class Window extends Widget
         md = 10
         action = 'move'
         border = ''
-        if not @config.resize? or not @config.resize == false
+        if not @config.resize? or not (@config.resize == false)
             if d1.y < md
-                action = 'size' if not @config.resize == 'horizontal'
+                action = 'size' if not (@config.resize == 'horizontal')
                 border = 'top'
             else if d2.y < md
-                action = 'size' if not @config.resize == 'horizontal'
+                action = 'size' if not (@config.resize == 'horizontal')
                 border = 'bottom'
             if d1.x < md
-                action = 'size' if not @config.resize == 'vertical'
+                action = 'size' if not (@config.resize == 'vertical')
                 border+= 'left'
             if d2.x < md
-                action = 'size' if not @config.resize == 'vertical'
+                action = 'size' if not (@config.resize == 'vertical')
                 border+= 'right'
 
         if action == 'size' and not @config.isShaded
@@ -307,6 +289,24 @@ class Window extends Widget
             @moveTo 0, menuHeight+2
             @resize Stage.size().width, Stage.size().height-menuHeight-2
             @config.isMaximized = true
+
+    ###
+    000       0000000   000   000   0000000   000   000  000000000
+    000      000   000   000 000   000   000  000   000     000   
+    000      000000000    00000    000   000  000   000     000   
+    000      000   000     000     000   000  000   000     000   
+    0000000  000   000     000      0000000    0000000      000   
+    ###
+
+    stretchWidth: => @
+
+    sizeWindow: =>
+        if @config.content == 'scroll'
+            @content.setWidth  @contentWidth()
+            @content.setHeight @contentHeight()
+
+        for w in @allChildren()
+            w.onWindowSize?()
 
     ###
     00     00  000   0000000   0000000
