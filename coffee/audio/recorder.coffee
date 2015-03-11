@@ -33,6 +33,7 @@ class Recorder
                         if not c.elem.hasClassName 'tool-button'
                             @triggers.push c
                             c.connect 'mousedown', @onButtonDown
+                            c.connect 'mouseup',   @onButtonUp
                     # when 'Pad'    then log 'todo:pad'
                     else
                         if c.config.recKey
@@ -46,6 +47,10 @@ class Recorder
     onButtonDown: (event) =>
         # log 'button down', event.target
         @tracker.addTrigger event.target
+
+    onButtonUp: (event) =>
+        # log 'button down', event.target
+        @tracker.addRelease event.target
     
     close: =>
         log @config.tracker

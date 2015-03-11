@@ -23,8 +23,8 @@ class TriggerCell extends TrackCell
             
     isOn   : => @elem.hasClassName 'on'
     isOff  : => not @isOn
-    toggle : => if @isOn() then @off() else @on()
     del    : => if @isOn() then @off() 
+    toggle : => if @isOn() then @off() else @on()
             
     on: =>
         # log @elem.id

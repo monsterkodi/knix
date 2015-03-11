@@ -49,9 +49,11 @@ class Keyboard extends Window
         for n, v of Keyboard.notes
             sharp = n.length == 2
             children.push
-                type   : sharp and 'keyboard-key-sharp' or 'keyboard-key'
+                type   : 'button'
+                class  : sharp and 'keyboard-key-sharp' or 'keyboard-key'
                 valign : sharp and 'top' or 'bottom'
                 text   : n
+                recKey : n
                 keys   : [Keyboard.keys[n]]
                 style  :
                     textAlign : 'center'
@@ -68,6 +70,7 @@ class Keyboard extends Window
                     type     : 'spin'
                     class    : 'octave'
                     tooltip  : 'octave'
+                    recKey   : 'octave'
                     value    : cfg.octave
                     minValue : 0
                     maxValue : 8
@@ -86,8 +89,8 @@ class Keyboard extends Window
             ]     
             
         for key in @getChild('keys').allChildren()
-            key.connect 'mousedown', @onKeyPress
-            key.connect 'mouseup',   @onKeyRelease
+            key.connect 'trigger',   @onKeyPress
+            key.connect 'release',   @onKeyRelease
             
         Keys.add ',', @octaveDown
         Keys.add '.', @octaveUp
@@ -100,7 +103,7 @@ class Keyboard extends Window
             
     onKeyPress: (event) =>
         key = event.target.widget
-        # log key.config.text
+        log key.config.text
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
         @emit 'note', value : frequency
         c = @getChild 'connector'

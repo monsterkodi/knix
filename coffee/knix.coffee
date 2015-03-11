@@ -220,7 +220,7 @@ class knix
     @selectedWidgets  : => w.widget for w in $$('.selected') when not (w.hasClassName('console-window') or w.hasClassName('tooltip'))
     @allConnections   : => _.uniq _.flatten ( c.widget.connections for c in $$('.connector') )
     @closeConnections : => @allConnections().each (c) -> c.close()
-    @delSelection     : => @selectedWidgets().each (w) -> w.del?() unless w.isWindow()
+    @delSelection     : => @selectedWidgets().each (w) -> w.del?() unless w?.isWindow?()
     @deselectAll      : => @selectedWidgets().each (w) -> w.elem.removeClassName 'selected'
     @selectAll        : => @allWindows().each (w) -> w.elem.addClassName 'selected'
     @copySelection    : => 

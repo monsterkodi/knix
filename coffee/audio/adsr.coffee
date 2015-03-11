@@ -142,9 +142,8 @@ class ADSR extends AudioWindow
         0
 
     trigger: (event) =>
-        # log event.detail
         i = @voiceIndex event.detail
-        # log event.detail, i
+        log event.detail, i
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
@@ -169,6 +168,7 @@ class ADSR extends AudioWindow
             value = (@config.freqFactor + (v.y*(1.0-@config.freqFactor))) * @config.frequency
             @oscillator[i].frequency.linearRampToValueAtTime value, t + time
             @volume[i].gain.linearRampToValueAtTime v.y, t + time
+            log v.y, t, t + time
             if vi == @pad.config.vals.length-1
                 @voice[i].done = Math.max @voice[i].done, t + time
                 msec = (@voice[i].done-t)*1000
