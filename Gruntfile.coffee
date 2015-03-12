@@ -6,20 +6,21 @@ module.exports = (grunt) ->
 
         pepper:
             options:
-                verbose:       false
-                quiet:         true
-                pepper:        ['log', 'warn', 'error']
+                verbose:        false
+                quiet:          true
+                pepper:         ['log', 'warn', 'error']
             knix:
                 files:
-                    'tools':   ['./coffee/tools/*.coffee']
-                    'knix':    ['./coffee/knix.coffee']
-                    'widget':  ['./coffee/widget.coffee']
-                    'window':  ['./coffee/window.coffee']
-                    'widgets': ['./coffee/widgets/value.coffee', './coffee/widgets/hbox.coffee', './coffee/widgets/*.coffee']
-                    'windows': ['./coffee/windows/*.coffee']
-                    'audio':   ['./coffee/audio/audio.coffee', './coffee/audio/audiowindow.coffee', './coffee/audio/*.coffee']
-                    'tracker': ['./coffee/audio/tracker/tracker.coffee', './coffee/audio/tracker/trackcell.coffee', './coffee/audio/tracker/*.coffee']
-                    'main':    ['./coffee/test.coffee', './coffee/main.coffee']
+                    'tools':    ['./coffee/tools/*.coffee']
+                    'knix':     ['./coffee/knix.coffee']
+                    'widget':   ['./coffee/widget.coffee']
+                    'window':   ['./coffee/window.coffee']
+                    'widgets':  ['./coffee/widgets/value.coffee', './coffee/widgets/hbox.coffee', './coffee/widgets/*.coffee']
+                    'windows':  ['./coffee/windows/*.coffee']
+                    'audio':    ['./coffee/audio/audio.coffee', './coffee/audio/audiowindow.coffee', './coffee/audio/*.coffee']
+                    'tracker':  ['./coffee/audio/tracker/tracker.coffee', './coffee/audio/tracker/trackcell.coffee', './coffee/audio/tracker/*.coffee']
+                    'timeline': ['./coffee/audio/timeline/timeline.coffee', './coffee/audio/timeline/*.coffee']
+                    'main':     ['./coffee/test.coffee', './coffee/main.coffee']
 
         salt:
             options:
