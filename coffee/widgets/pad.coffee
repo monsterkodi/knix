@@ -47,6 +47,8 @@ class Pad extends Widget
             @handles.push h
             if i == @config.sustainIndex
                 h.circle.addClass 'sustain'
+            else if i == 0 or i == @config.numHandles-1
+                h.circle.back()
             
         if @config.hasPaths
             @paths = []
