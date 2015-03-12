@@ -240,6 +240,11 @@ a
 #tool
     border-bottom-left-radius: 6px
 
+.context-menu .content 
+    padding: 0px
+    & > div
+        margin-bottom: 0px
+
 .context-menu .content .button
 .menu .button
     overflow:         hidden
@@ -311,11 +316,6 @@ a
 
 .content > div
     margin-bottom: 10px
-
-.context-menu .content 
-    padding-bottom: 10px
-    & > div
-        margin-bottom: 0px
     
 .window .title
     color:            textColors.title
@@ -682,54 +682,59 @@ a
       background:     colors.spin-active
       color:          black
 
-  /*
-  *  000000000  00000000    0000000    0000000  000   000  00000000  00000000 
-  *     000     000   000  000   000  000       000  000   000       000   000
-  *     000     0000000    000000000  000       0000000    0000000   0000000  
-  *     000     000   000  000   000  000       000  000   000       000   000
-  *     000     000   000  000   000   0000000  000   000  00000000  000   000
-  */
+/*
+*  000000000  000  00     00  00000000  000      000  000   000  00000000
+*     000     000  000   000  000       000      000  0000  000  000     
+*     000     000  000000000  0000000   000      000  000 0 000  0000000 
+*     000     000  000 0 000  000       000      000  000  0000  000     
+*     000     000  000   000  00000000  0000000  000  000   000  00000000
+*/
 
 .record.on *
 .playpause.play *
-    color: colors.tool-button-on
+    color : colors.tool-button-on
+
+.Timeline .content
+    padding        : 0px
+    padding-bottom : 3px
+
+/*
+*  00000000   000   000  000      00000000  00000000 
+*  000   000  000   000  000      000       000   000
+*  0000000    000   000  000      0000000   0000000  
+*  000   000  000   000  000      000       000   000
+*  000   000   0000000   0000000  00000000  000   000
+*/
+
+.TimeRuler
+    min-height:    23px
+    height:        23px
     
-  /*
-  *   0000000  00000000  000      000    
-  *  000       000       000      000    
-  *  000       0000000   000      000    
-  *  000       000       000      000    
-  *   0000000  00000000  0000000  0000000
-  */
-
-.TrackCell
-    min-height:    22px
-    height:        22px
-    padding-right: 4px
-    padding-left:  4px
-    color:         colors.slider
+.RulerCell
+    height:        23px
+    color : colors.tool-button-on    
     &.on
-        color:     colors.button
+        background-color: colors.slider-bar
+        color:            colors.slider-knob
     &:hover
-        color:     colors.button
-    &.selected
-        background-color: colors.trackcell-selected
+        background-color: colors.slider-bar
+    &.off
+        background-color: colors.bg
+        color:            colors.slider
+        
+.ruler-line
+    background-color: black
+        
+/*
+*  00000000  000   000  00000000  000   000  000000000   0000000   00000000   000  0000000  
+*  000       000   000  000       0000  000     000     000        000   000  000  000   000
+*  0000000    000 000   0000000   000 0 000     000     000  0000  0000000    000  000   000
+*  000          000     000       000  0000     000     000   000  000   000  000  000   000
+*  00000000      0      00000000  000   000     000      0000000   000   000  000  0000000  
+*/
 
-  /*
-  *  000  000   000  0000000    000   0000000   0000000   000000000   0000000   00000000 
-  *  000  0000  000  000   000  000  000       000   000     000     000   000  000   000
-  *  000  000 0 000  000   000  000  000       000000000     000     000   000  0000000  
-  *  000  000  0000  000   000  000  000       000   000     000     000   000  000   000
-  *  000  000   000  0000000    000   0000000  000   000     000      0000000   000   000
-  */
-
-  .IndicatorCell
-      &.on
-          background-color: colors.slider-bar
-          color:            colors.slider-knob
-      &.off
-          background-color: colors.bg
-          color:            colors.slider
+// .EventGrid
+//     background-color: colors.blue
 
 /*
 *  00     00  000   0000000   0000000

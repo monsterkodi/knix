@@ -15,14 +15,19 @@ class Timeline extends Window
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            title     :'Timeline'
+            title     : 'timeline'
             steps     : 32
-            stepSecs  : 10
+            stepWidth : 23
+            stepSecs  : 0.05
                         
         super cfg,
-            type    : 'Timeline'
-            content : 'scroll'
-            buttons : \
+            type      : 'Timeline' 
+            width     : 400
+            height    : 200
+            minWidth  : 200
+            minHeight : 200
+            content   : 'scroll'
+            buttons   : \
             [
                 type     : 'toggle'
                 class    : 'playpause'
@@ -43,72 +48,41 @@ class Timeline extends Window
                 icon     : 'fa-circle-o'
                 icons    : ['fa-circle-o', 'fa-circle']
             ]            
-            child :
-                class    : 'hbox'
-                children : \
-                [
-                    type : 'EventList'
-                ,
-                    type : 'timescroll'
-                    children : \
-                    [
-                        type : 'TimeRuler'
-                    ,
-                        type : 'eventscroll'
-                        child : 'EventGrid'
-                    ] 
-                ]
-                    
+            children : \
+            [
+                type      : 'TimeRuler' 
+                steps     : cfg.steps
+                stepWidth : cfg.stepWidth
+                stepSecs  : cfg.stepSecs
+            ,
+                type      : 'EventGrid'
+                steps     : cfg.steps
+                stepWidth : cfg.stepWidth
+                stepSecs  : cfg.stepSecs
+                height    : 200
+            ]
+        
+        @ruler = @getChild('TimeRuler')
+        @ruler.elem.setStyle
+            top: '%dpx'.fmt @headerSize()
                 
         @content.config.noMove = true    
         @connect 'playpause:trigger', @playPause
         @connect 'stop:trigger',      @stop
         @connect 'record:trigger',    @record
-        @content.connect 'mousedown', @startSelect
+        @connect 'content:scroll',    @onScroll
                     
-        @stepDeltaSecs = 1.0 / @config.stepSecs
-        @numSteps      = @config.steps
+        @numSteps = @config.steps
         @step = 
             index : -1
-            secs  :  0            
+            secs  :  0  
+            
+        @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 8)
+            
+        @sizeWindow()          
         @
             
-    ###
-    00000000   000       0000000   000   000
-    000   000  000      000   000   000 000 
-    00000000   000      000000000    00000  
-    000        000      000   000     000   
-    000        0000000  000   000     000   
-    ###
-                        
-    gotoStep: (index) =>
-        log 'index', index
-        # if @step.index >= 0
-        #     @cell 0, @step.index, 'off'
-        #     @releaseRow @step.index
-        # @step.index = (@numSteps+index) % @numSteps
-        # @step.secs  = Math.max 0, @step.secs-@stepDeltaSecs
-        # @cell 0, @step.index, 'on'
-        # @triggerRow @step.index
-                
-    play: =>
-        @playing = true
-        @nextStep()
-        knix.animate @
-        
-    pause: =>
-        @playing = false
-        knix.deanimate @
-        
-    playPause: => if @playing then @pause() else @play()
-
-    stop: =>
-        # @ruler @step.index, 'off'
-        @getChild('playpause').setState 'pause'
-        @playing    = false
-        @step.index = -1
-        @step.secs  =  0
-        knix.deanimate @
+    onScroll: (event) => @ruler.moveTo -event.target.scrollLeft     
 
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
@@ -118,7 +92,7 @@ class Timeline extends Window
     000   000  00000000   0000000   0000000   000   000  0000000  
     ###
         
-    record: =>
+    record: => 
         if @recorder?
             @recorder.close()
             delete @recorder
@@ -131,6 +105,54 @@ class Timeline extends Window
             delete @recorder
         @stop()
         super
+    
+    ###
+    00000000   000       0000000   000   000
+    000   000  000      000   000   000 000 
+    00000000   000      000000000    00000  
+    000        000      000   000     000   
+    000        0000000  000   000     000   
+    ###
+        
+    setStep: (index) =>
+        ct = Audio.context.currentTime
+        @startTime = ct - index * @config.stepSecs
+        @ruler.setLine ct - @startTime
+        @gotoStep index
+                        
+    gotoStep: (index) =>
+        # log 'index', index
+        # if @step.index >= 0
+            # @ruler.off @step.index
+            # @releaseRow @step.index
+        @step.index = (@numSteps+index) % @numSteps
+        @step.secs  = Math.max 0, @step.secs-@config.stepSecs
+        if @step.index == 0
+            @startTime = Audio.context.currentTime + @step.secs
+        # @ruler.on @step.index
+        # @triggerRow @step.index
+                
+    play: =>
+        @playing = true
+        @startTime = Audio.context.currentTime - (@step.index+1) * @config.stepSecs
+        @nextStep()
+        knix.animate @
+        
+    pause: =>
+        @playing = false
+        @ruler.setLine (@step.index+1) * @config.stepSecs
+        knix.deanimate @
+        
+    playPause: => if @playing then @pause() else @play()
+
+    stop: =>
+        # @ruler.off @step.index if @step.index >= 0
+        @getChild('playpause').setState 'pause'
+        @playing    = false
+        @ruler.setLine 0
+        @step.index = -1
+        @step.secs  =  0
+        knix.deanimate @
                 
     ###
      0000000   000   000  000  00     00
@@ -141,14 +163,15 @@ class Timeline extends Window
     ###
         
     anim: (step) =>
+        # log Audio.context.currentTime, @startTime
+        @ruler.setLine Audio.context.currentTime - @startTime
         @step.secs += step.dsecs
-        if @step.secs > @stepDeltaSecs
+        if @step.secs > @config.stepSecs
             @nextStep()
         
     nextStep: => @gotoStep @step.index+1
         
     layoutChildren : => @
-    sizeWindow     : => @content.resize @contentWidth(), @contentHeight()
             
     @menu: =>
 

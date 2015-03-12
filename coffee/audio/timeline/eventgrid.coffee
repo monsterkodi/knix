@@ -16,7 +16,12 @@ class EventGrid extends Widget
         
         super cfg,
             class: 'EventGrid'
+            noMove: true
+            
+        @connect 'mousedown', @startSelect            
         @    
+            
+    onWindowSize: => @setWidth @config.steps * @config.stepWidth
                 
     ###
      0000000  00000000  000      00000000   0000000  000000000
@@ -27,7 +32,8 @@ class EventGrid extends Widget
     ###
     
     startSelect: (event) =>
-        Selectangle.start @content
+        log 'start select'
+        Selectangle.start @
         event.stop()
 
     ###

@@ -86,9 +86,10 @@ class Window extends Widget
         if @config.content == 'scroll'
 
             content.elem.setStyle
-                position : 'relative'
+                # position : 'relative'
                 overflow : 'scroll'
                 width    : '100%'
+                height   : '100%'
                 height   : "%dpx".fmt @contentHeight()
 
         @elem.on 'size', @sizeWindow

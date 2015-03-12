@@ -4,20 +4,62 @@ class TimeRuler extends Widget
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
-                
+        cfg = _.def cfg,
+            stepWidth: 50
+            
         children = []
         for r in [0...cfg.steps]
             children.push
                 type  : cfg.cell
+                class : 'RulerCell off'
+                style :
+                    position  : 'absolute'
+                    left      : '%dpx'.fmt r * cfg.stepWidth
+                    top       : '0px'
+                    width     : '%dpx'.fmt cfg.stepWidth
+                    textAlign : 'center'
                 index : r
-                                
+                text  : '<i class="fa fa-%s"></i>'.fmt(r % 4 and 'circle-o' or r % 8 and 'dot-circle-o' or 'circle')
+            
+        children.push
+            type   : 'ruler-line'
+            height : 1000
+            width  : 1
+            style  :
+                position : 'absolute'
+                top      : '0px'
+
         super cfg,
             type     : 'TimeRuler'
             noMove   : true
             noSelect : true
             children : children
+            style    : 
+                position : 'absolute'
+
+        @cell = @children()
+        for c in @cell
+            c.elem.addEventListener 'mousedown', @onCellDown
+        @line = @getChild 'ruler-line'
+        @setWidth @config.steps * @config.stepWidth
         @
 
-    onIndicatorDown: (event) =>
-        index = event.target.getWidget().config.index
-        @gotoStep index        
+    on: (step) => 
+        e = @cell[step].elem
+        e.removeClassName 'off'
+        e.addClassName 'on'
+        
+    off: (step) =>
+        e = @cell[step].elem
+        e.removeClassName 'on'
+        e.addClassName 'off'
+
+    setLine: (time) =>
+        x = time * @config.stepWidth / @config.stepSecs
+        # log time, x
+        @line.moveTo x
+        # log @line.elem.style.left
+
+    onCellDown: (event) => 
+        @getWindow().setStep event.target.getWidget().config.index
+        event.stop()
