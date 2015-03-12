@@ -16,14 +16,14 @@ class Timeline extends Window
         
         cfg = _.def cfg,
             title     : 'timeline'
-            steps     : 32
+            steps     : 64
             stepWidth : 23
             stepSecs  : 0.05
                         
         super cfg,
             type      : 'Timeline' 
-            width     : 400
-            height    : 200
+            width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 8
+            height    : 300
             minWidth  : 200
             minHeight : 200
             content   : 'scroll'
@@ -32,9 +32,7 @@ class Timeline extends Window
                 type     : 'toggle'
                 class    : 'playpause'
                 keys     : ['p']
-                state    : 'pause'
                 states   : ['pause', 'play']
-                icon     : 'fa-play'
                 icons    : ['fa-play', 'fa-pause']
             ,
                 class    : 'stop'
@@ -43,10 +41,14 @@ class Timeline extends Window
                 type     : 'toggle'
                 class    : 'record'
                 keys     : ['r']
-                state    : 'off'
                 states   : ['off', 'on']
-                icon     : 'fa-circle-o'
                 icons    : ['fa-circle-o', 'fa-circle']
+            ,
+                type     : 'toggle'
+                align    : 'right'
+                class    : 'follow'
+                states   : ['off', 'on']
+                icons    : ['fa-unlink', 'fa-link']
             ]            
             children : \
             [
@@ -68,6 +70,7 @@ class Timeline extends Window
                 
         @content.config.noMove = true    
         @connect 'playpause:trigger', @playPause
+        @connect 'follow:onState',    @onFollowState
         @connect 'stop:trigger',      @stop
         @connect 'record:trigger',    @record
         @connect 'content:scroll',    @onScroll
@@ -82,7 +85,8 @@ class Timeline extends Window
         @sizeWindow()          
         @
             
-    onScroll: (event) => @ruler.moveTo -event.target.scrollLeft     
+    onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft     
+    onFollowState: (event) => @follow = (event.detail.state == 'on'); log @follow, event.detail.state
 
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
@@ -123,13 +127,11 @@ class Timeline extends Window
     gotoStep: (index) =>
         # log 'index', index
         # if @step.index >= 0
-            # @ruler.off @step.index
             # @releaseRow @step.index
         @step.index = (@numSteps+index) % @numSteps
         @step.secs  = Math.max 0, @step.secs-@config.stepSecs
         if @step.index == 0
             @startTime = Audio.context.currentTime + @step.secs
-        # @ruler.on @step.index
         # @triggerRow @step.index
                 
     play: =>
@@ -146,7 +148,6 @@ class Timeline extends Window
     playPause: => if @playing then @pause() else @play()
 
     stop: =>
-        # @ruler.off @step.index if @step.index >= 0
         @getChild('playpause').setState 'pause'
         @playing    = false
         @ruler.setLine 0
@@ -163,16 +164,16 @@ class Timeline extends Window
     ###
         
     anim: (step) =>
-        # log Audio.context.currentTime, @startTime
-        @ruler.setLine Audio.context.currentTime - @startTime
+        relTime = Audio.context.currentTime - @startTime
+        @ruler.setLine relTime
+        if @follow
+            @content.elem.scrollLeft = @ruler.line.relPos().x - 100
         @step.secs += step.dsecs
         if @step.secs > @config.stepSecs
             @nextStep()
         
     nextStep: => @gotoStep @step.index+1
-        
-    layoutChildren : => @
-            
+                    
     @menu: =>
 
         @menuButton
