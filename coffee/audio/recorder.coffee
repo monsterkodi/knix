@@ -15,7 +15,7 @@ class Recorder
     init: (cfg, defs) =>
         
         @config   = _.def cfg, defs
-        @tracker  = $(@config.tracker).getWidget()
+        @timeline = $(@config.timeline).getWidget()
         @triggers = []
         @values   = []
         for win in knix.allWindows()
@@ -25,7 +25,7 @@ class Recorder
         @
         
     registerWindow: (win) =>
-        if win.constructor.name in ['Tracker', 'Analyser'] then return
+        if win.constructor.name in ['Timeline', 'Analyser'] then return
         for c in win.allChildren()
             if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
                 switch c.constructor.name
@@ -42,18 +42,17 @@ class Recorder
                 
     onValueInput: (event) =>
         # log 'value', event.target.id, _.value event
-        @tracker.addValue event.target.getWidget()
+        @timeline.grid.addValue event.target.getWidget()
         
     onButtonDown: (event) =>
         # log 'button down', event.target
-        @tracker.addTrigger event.target
+        @timeline.grid.addTrigger event.target
 
     onButtonUp: (event) =>
         # log 'button down', event.target
-        @tracker.addRelease event.target
+        @timeline.grid.addRelease event.target
     
     close: =>
-        log @config.tracker
         for trigger in @triggers
             trigger.disconnect 'mousedown', @onButtonDown
         @triggers.clear()        

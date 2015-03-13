@@ -52,18 +52,20 @@ class Timeline extends Window
             ]            
             children : \
             [
-                type      : 'TimeRuler' 
-                steps     : cfg.steps
-                stepWidth : cfg.stepWidth
-                stepSecs  : cfg.stepSecs
-            ,
                 type      : 'EventGrid'
                 steps     : cfg.steps
                 stepWidth : cfg.stepWidth
                 stepSecs  : cfg.stepSecs
                 height    : 200
+            ,
+                type      : 'TimeRuler' 
+                steps     : cfg.steps
+                stepWidth : cfg.stepWidth
+                stepSecs  : cfg.stepSecs
             ]
         
+        @grid = @getChild('EventGrid')
+        @grid.timeline = @
         @ruler = @getChild('TimeRuler')
         @ruler.elem.setStyle
             top: '%dpx'.fmt @headerSize()
@@ -101,7 +103,7 @@ class Timeline extends Window
             @recorder.close()
             delete @recorder
         else if @elem?
-            @recorder = new Recorder tracker: @elem.id
+            @recorder = new Recorder timeline: @elem.id
         
     close: =>        
         if @recorder?
@@ -164,8 +166,8 @@ class Timeline extends Window
     ###
         
     anim: (step) =>
-        relTime = Audio.context.currentTime - @startTime
-        @ruler.setLine relTime
+        @relTime = Audio.context.currentTime - @startTime
+        @ruler.setLine @relTime
         if @follow
             @content.elem.scrollLeft = @ruler.line.relPos().x - 100
         @step.secs += step.dsecs

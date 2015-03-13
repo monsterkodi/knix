@@ -17,25 +17,21 @@ class EventGrid extends Widget
         super cfg,
             class: 'EventGrid'
             noMove: true
-            
+            child: 
+                type: 'cells'
+                style:
+                    position: 'relative'
+                    left: '0px'
+                    top: '20px'
+                    backgroundColor: 'black'
+
+        @timeline = undefined
+        @activeCells = []
         @connect 'mousedown', @startSelect            
         @    
             
     onWindowSize: => @setWidth @config.steps * @config.stepWidth
                 
-    ###
-     0000000  00000000  000      00000000   0000000  000000000
-    000       000       000      000       000          000   
-    0000000   0000000   000      0000000   000          000   
-         000  000       000      000       000          000   
-    0000000   00000000  0000000  00000000   0000000     000   
-    ###
-    
-    startSelect: (event) =>
-        log 'start select'
-        Selectangle.start @
-        event.stop()
-
     ###
     000000000  00000000   000   0000000    0000000   00000000  00000000 
        000     000   000  000  000        000        000       000   000
@@ -45,27 +41,22 @@ class EventGrid extends Widget
     ###
         
     addTrigger: (target) =>
-        col = @columnFor target
-        row = col.rows[@step.index]
-        @setTrigger row
-        row.on()
+        c = new EventCell
+            parent : @getChild 'cells'
+            winID  : target.getWindow().elem.id
+            widID  : target.id
+        log @timeline.ruler.linex
+        c.moveTo @timeline.ruler.linex
+        @activeCells.push c
 
     addRelease: (target) =>
-        col = @columnFor target
-        row = col.rows[@step.index]
-        @setRelease row
-        row.on()
+        winID = target.getWindow().elem.id
+        widID = target.id
         
-    setTrigger: (cell) =>
-        rowIndex = cell.config.index 
-        colIndex = cell.column().config.index
-        @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]
-
-    setRelease: (cell) =>
-        rowIndex = cell.config.index 
-        colIndex = cell.column().config.index
-        @releaseRowColumns[rowIndex].push(colIndex) if colIndex not in @releaseRowColumns[rowIndex]
-        
+        for c in @activeCells
+            if c.config.winID == winID and c.config.widID == widID
+                @activeCells.slice(@activeCells.indexOf c, 1)
+                
     delTrigger: (cell) =>
         rowIndex = cell.config.index 
         colIndex = cell.column().config.index
@@ -116,4 +107,16 @@ class EventGrid extends Widget
         cell.insertChild valueWidget.config
         
         
+    ###
+     0000000  00000000  000      00000000   0000000  000000000
+    000       000       000      000       000          000   
+    0000000   0000000   000      0000000   000          000   
+         000  000       000      000       000          000   
+    0000000   00000000  0000000  00000000   0000000     000   
+    ###
+    
+    startSelect: (event) =>
+        log 'start select'
+        Selectangle.start @
+        event.stop()
         

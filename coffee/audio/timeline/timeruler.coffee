@@ -37,10 +37,11 @@ class TimeRuler extends Widget
             style    : 
                 position : 'absolute'
 
+        @linex = 0
         @cell = @children()
         for c in @cell
             c.elem.addEventListener 'mousedown', @onCellDown
-        @line = @getChild 'ruler-line'
+        @line = @getChild('ruler-line')
         @setWidth @config.steps * @config.stepWidth
         @
 
@@ -54,11 +55,9 @@ class TimeRuler extends Widget
         e.removeClassName 'on'
         e.addClassName 'off'
 
-    setLine: (time) =>
-        x = time * @config.stepWidth / @config.stepSecs
-        # log time, x
-        @line.moveTo x
-        # log @line.elem.style.left
+    setLine: (time) => 
+        @linex = time * @config.stepWidth / @config.stepSecs
+        @line.moveTo @linex
 
     onCellDown: (event) => 
         @getWindow().setStep event.target.getWidget().config.index
