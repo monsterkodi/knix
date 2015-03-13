@@ -153,6 +153,8 @@ class Timeline extends Window
         @getChild('playpause').setState 'pause'
         @playing    = false
         @ruler.setLine 0
+        if @follow
+            @content.elem.scrollLeft = 0
         @step.index = -1
         @step.secs  =  0
         knix.deanimate @

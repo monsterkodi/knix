@@ -309,6 +309,24 @@ class Window extends Widget
         for w in @allChildren()
             w.onWindowSize?()
 
+    layoutChildren: =>
+        e = @config.content? and $(@config.content) or @elem
+        if not @config.width?
+            if e.widget.config.resize?
+                if e.widget.config.resize == 'horizontal' or e.widget.config.resize == true
+                    e.widget.stretchWidth()
+            else
+                @setWidth e.getWidth()
+        if not @config.height?
+            @setHeight e.getHeight()
+        if @config.resize
+            e.style.minWidth  = "%dpx".fmt(e.getWidth()) if not @config.minWidth?
+            e.style.minHeight = "%dpx".fmt(e.getHeight()) if not @config.minHeight?
+            if @config.resize == 'horizontal'
+                e.style.maxHeight = "%dpx".fmt(e.getHeight()) if not @config.maxHeight?
+            if @config.resize == 'vertical'
+                e.style.maxWidth = "%dpx".fmt(e.getWidth()) if not @config.maxWidth?
+
     ###
     00     00  000   0000000   0000000
     000   000  000  000       000     

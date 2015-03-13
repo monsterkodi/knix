@@ -449,6 +449,7 @@ class Widget
     relPos      :     => o = @elem.positionedOffset(); pos o.left, o.top
     absPos      :     => o = @elem.cumulativeOffset(); s = @elem.cumulativeScrollOffset(); pos o.left - s.left, o.top - s.top
     absCenter   :     => @absPos().plus(pos(@elem.getWidth(),@elem.getHeight()).scale(0.5))
+    stretchWidth:     => @elem.style.width = '50%'
 
     ###
     00     00   0000000   000   000  00000000
@@ -483,31 +484,3 @@ class Widget
         tag 'Drag'
         log 'stop', event.target?.id
         StyleSwitch.togglePathFilter()
-
-    ###
-    000       0000000   000   000   0000000   000   000  000000000
-    000      000   000   000 000   000   000  000   000     000   
-    000      000000000    00000    000   000  000   000     000   
-    000      000   000     000     000   000  000   000     000   
-    0000000  000   000     000      0000000    0000000      000   
-    ###
-
-    stretchWidth: => @elem.style.width = '50%'
-
-    layoutChildren: =>
-        e = @config.content? and $(@config.content) or @elem
-        if not @config.width?
-            if e.widget.config.resize?
-                if e.widget.config.resize == 'horizontal' or e.widget.config.resize == true
-                    e.widget.stretchWidth()
-            else
-                @setWidth e.getWidth()
-        if not @config.height?
-            @setHeight e.getHeight()
-        if @config.resize
-            e.style.minWidth  = "%dpx".fmt(e.getWidth()) if not @config.minWidth?
-            e.style.minHeight = "%dpx".fmt(e.getHeight()) if not @config.minHeight?
-            if @config.resize == 'horizontal'
-                e.style.maxHeight = "%dpx".fmt(e.getHeight()) if not @config.maxHeight?
-            if @config.resize == 'vertical'
-                e.style.maxWidth = "%dpx".fmt(e.getWidth()) if not @config.maxWidth?

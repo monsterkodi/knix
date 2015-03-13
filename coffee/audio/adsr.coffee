@@ -158,9 +158,6 @@ class ADSR extends AudioWindow
                         
     release: (event) =>
         i = @voiceIndex event.detail
-        # log event.detail, i        
-        # @volume[i].gain.cancelScheduledValues Audio.context.currentTime
-        # @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
         for vi in [@pad.config.sustainIndex...@pad.config.vals.length]
             v = @pad.config.vals[vi]
@@ -174,9 +171,7 @@ class ADSR extends AudioWindow
                 msec = (@voice[i].done-t)*1000
                 @voice[i].timeout = setTimeout @voiceDone, msec, i
                 
-    voiceDone: (i) =>
-        @voice[i] = undefined
-        # log i, @voice
+    voiceDone: (i) => @voice[i] = undefined
                             
     sizeWindow: =>
         super

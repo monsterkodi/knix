@@ -115,25 +115,25 @@ borderColors.button        = colors.grayMedium
 *  0000000   000  0000000  00000000
 */
 
-widgetHeaderSize        = 20px
-widgetTitleFontSize     = widgetHeaderSize - 6px
+widgetHeaderSize          = 20px
+widgetTitleFontSize       = widgetHeaderSize - 6px
 
 widgetBorderWidth         = 4px
 widgetBorderWidthSelected = 2px
-sliderBorderWidth       = widgetBorderWidth
-scrollBorderWidth       = sliderBorderWidth
-widgetTopRadius         = (widgetHeaderSize) * 0.5 + widgetBorderWidth
-widgetBotRadius         = widgetTopRadius
+sliderBorderWidth         = 2px
+scrollBorderWidth         = sliderBorderWidth
+widgetTopRadius           = (widgetHeaderSize) * 0.5 + widgetBorderWidth
+widgetBotRadius           = widgetTopRadius
 
-borders                 = {}
-borders.bg              = widgetBorderWidth solid borderColors.widget
-borders.title           = widgetBorderWidth solid borderColors.widget
+borders                   = {}
+borders.bg                = widgetBorderWidth solid borderColors.widget
+borders.title             = widgetBorderWidth solid borderColors.widget
 
-borders.menu            = 0px solid borderColors.menu
-borders.button          = 0px solid borderColors.button
-borders.slider          = sliderBorderWidth solid colors.slider
-borders.scroll          = scrollBorderWidth solid colors.scroll
-borders.spin            = 0px solid colors.spin-border
+borders.menu              = 0px solid borderColors.menu
+borders.button            = 0px solid borderColors.button
+borders.slider            = sliderBorderWidth solid colors.slider
+borders.scroll            = scrollBorderWidth solid colors.scroll
+borders.spin              = 0px solid colors.spin-border
 
 borders.connector                  = 0px solid colors.slider
 borders.connector-signal-connected = 1px solid colors.connector-signal-border-connected
