@@ -19,7 +19,7 @@ class EventCell extends Widget
             width  : 10
             height : 10
             style  :
-                backgroundColor : 'yellow'
+                # backgroundColor : 'yellow'
                 position        : 'absolute'
         
         @

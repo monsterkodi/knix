@@ -88,18 +88,24 @@ class Keyboard extends Window
                 children : children
             ]     
             
-        for key in @getChild('keys').allChildren()
+        @keys = @getChild('keys').allChildren()
+        for key in @keys
             key.connect 'trigger',   @onKeyPress
             key.connect 'release',   @onKeyRelease
             
         Keys.add ',', @octaveDown
         Keys.add '.', @octaveUp
         @connect 'octave:onValue', @setOctave
+        @setOctave @config.octave
         @
             
-    setOctave: (v) => @config.octave = _.value v
     octaveUp:   => @getChild('octave').incr '+'
     octaveDown: => @getChild('octave').incr '-'
+    setOctave: (v) => 
+        @config.octave = _.value v
+        for key in @keys
+            key.config.octave = @config.octave
+            key.config.recIndex = @config.octave * @keys.length + @keys.indexOf key
             
     onKeyPress: (event) =>
         key = event.target.widget

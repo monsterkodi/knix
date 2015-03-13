@@ -44,12 +44,12 @@ class EventGrid extends Widget
             c.setWidth @timeposx - c.relPos().x
         
     addTrigger: (target) =>
-        log target
+        # log target
         c = new EventCell
             parent : @
             winID  : target.getWindow().elem.id
             widID  : target.id
-        c.moveTo @timeposx, 50
+        c.moveTo @timeposx, target.widget.config.recIndex * 12
         @activeCells.push c
 
     addRelease: (target) =>
