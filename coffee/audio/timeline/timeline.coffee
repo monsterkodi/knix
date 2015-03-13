@@ -168,6 +168,7 @@ class Timeline extends Window
     anim: (step) =>
         @relTime = Audio.context.currentTime - @startTime
         @ruler.setLine @relTime
+        @grid.setTime @relTime
         if @follow
             @content.elem.scrollLeft = @ruler.line.relPos().x - 100
         @step.secs += step.dsecs

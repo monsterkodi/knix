@@ -34,6 +34,9 @@ class Recorder
                             @triggers.push c
                             c.connect 'mousedown', @onButtonDown
                             c.connect 'mouseup',   @onButtonUp
+                    when 'Keyboard'
+                        c.connect 'trigger', @onKeyboardTrigger
+                        c.connect 'release', @onKeyboardRelease
                     # when 'Pad'    then log 'todo:pad'
                     else
                         if c.config.recKey
@@ -43,6 +46,12 @@ class Recorder
     onValueInput: (event) =>
         # log 'value', event.target.id, _.value event
         @timeline.grid.addValue event.target.getWidget()
+        
+    onKeyboardTrigger: (event) =>
+        @timeline.grid.addTrigger event.target, event.detail
+
+    onKeyboardRelease: (event) =>
+        @timeline.grid.addRelease event.target, event.detail
         
     onButtonDown: (event) =>
         # log 'button down', event.target

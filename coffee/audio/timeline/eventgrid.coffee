@@ -17,18 +17,16 @@ class EventGrid extends Widget
         super cfg,
             class: 'EventGrid'
             noMove: true
-            child: 
-                type: 'cells'
-                style:
-                    position: 'relative'
-                    left: '0px'
-                    top: '20px'
-                    backgroundColor: 'black'
+            style:
+                position: 'relative'
+                left: '0px'
+                top:  '0px'
 
-        @timeline = undefined
+        @timeline    = undefined
+        @timeposx    = 0
         @activeCells = []
         @connect 'mousedown', @startSelect            
-        @    
+        @
             
     onWindowSize: => @setWidth @config.steps * @config.stepWidth
                 
@@ -40,13 +38,18 @@ class EventGrid extends Widget
        000     000   000  000   0000000    0000000   00000000  000   000
     ###
         
+    setTime: (time) =>
+        @timeposx = time * @config.stepWidth / @config.stepSecs
+        for c in @activeCells
+            c.setWidth @timeposx - c.relPos().x
+        
     addTrigger: (target) =>
+        log target
         c = new EventCell
-            parent : @getChild 'cells'
+            parent : @
             winID  : target.getWindow().elem.id
             widID  : target.id
-        log @timeline.ruler.linex
-        c.moveTo @timeline.ruler.linex
+        c.moveTo @timeposx, 50
         @activeCells.push c
 
     addRelease: (target) =>
@@ -55,7 +58,8 @@ class EventGrid extends Widget
         
         for c in @activeCells
             if c.config.winID == winID and c.config.widID == widID
-                @activeCells.slice(@activeCells.indexOf c, 1)
+                c.setWidth @timeposx - c.relPos().x
+                @activeCells.splice(@activeCells.indexOf c, 1)
                 
     delTrigger: (cell) =>
         rowIndex = cell.config.index 

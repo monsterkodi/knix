@@ -78,7 +78,7 @@ class Keyboard extends Window
                         width  : '100%'
                 ,
                     type      : 'connector'
-                    signal    : 'note'
+                    signal    : 'frequency'
                 ]                
             ,
                 type     : 'hbox'
@@ -105,20 +105,24 @@ class Keyboard extends Window
         key = event.target.widget
         log key.config.text
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
-        @emit 'note', value : frequency
+        @emit 'frequency', value : frequency
+        note = "%s%d".fmt key.config.text, @config.octave
+        @emit 'trigger', note
         c = @getChild 'connector'
         for cc in c.connections
             w = cc.config.target?.getWindow()
             t = w?.getChild 'trigger'
-            t?.trigger "%s%d".fmt key.config.text, @config.octave
+            t?.trigger note
 
     onKeyRelease: (event) =>    
         key = event.target.widget
         c = @getChild 'connector'
+        note = "%s%d".fmt key.config.text, @config.octave
+        @emit 'release', note
         for cc in c.connections
             w = cc.config.target?.getWindow()
             t = w?.getChild 'trigger'
-            t?.release "%s%d".fmt key.config.text, @config.octave
+            t?.release note
         
     @menu: =>
 
