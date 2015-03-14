@@ -130,6 +130,7 @@ class ADSR extends AudioWindow
         @connect 'duration:onValue',   @setDuration
         @connect 'freqFactor:onValue', @setFreqFactor
         @connect 'frequency:onValue',  @setFrequency
+        @connect 'note:onValue',       @onNoteValue
         
         @setFreqFactor @config.freqFactor
         @setFrequency  @config.frequency
@@ -161,6 +162,11 @@ class ADSR extends AudioWindow
         @voice[0] = { id : id }
         0
 
+    onNoteValue: (event) =>
+        note = _.value event
+        f = Keyboard.allNotes()[note]
+        @getChild('frequency').setValue f
+        
     note: (event) =>
         note = event.detail
         @getChild('note').setValue note.note

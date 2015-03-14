@@ -22,11 +22,10 @@ class Timeline extends Window
                         
         super cfg,
             type      : 'Timeline' 
-            width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 8
+            width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 38
             height    : 300
             minWidth  : 200
             minHeight : 200
-            content   : 'scroll'
             buttons   : \
             [
                 type     : 'toggle'
@@ -71,16 +70,18 @@ class Timeline extends Window
                     signal    : 'noteOut'
                 ]
             ,
-                type: 'vbox'
-                style: 
-                    position: 'absolute'
-                children: \
+                type    : 'vbox'
+                style   : 
+                    position : 'relative'
+                    overflow : 'scroll'
+                    left     : '0px'
+                    right    : '0px'
+                children : \
                 [
                     type      : 'EventGrid'
                     steps     : cfg.steps
                     stepWidth : cfg.stepWidth
                     stepSecs  : cfg.stepSecs
-                    height    : 200
                 ,
                     type      : 'TimeRuler' 
                     steps     : cfg.steps
@@ -92,16 +93,13 @@ class Timeline extends Window
         @grid = @getChild('EventGrid')
         @grid.timeline = @
         @ruler = @getChild('TimeRuler')
-        @ruler.elem.setStyle
-            top: '%dpx'.fmt 0
-            # top: '%dpx'.fmt @headerSize() + 24
                 
         @content.config.noMove = true    
         @connect 'playpause:trigger', @playPause
         @connect 'follow:onState',    @onFollowState
         @connect 'stop:trigger',      @stop
         @connect 'record:onState',    @record
-        @connect 'content:scroll',    @onScroll
+        @connect 'vbox:scroll',       @onScroll
         @connect 'trash:trigger',     @grid.removeAllCells
                     
         @numSteps = @config.steps
@@ -109,13 +107,24 @@ class Timeline extends Window
             index : -1
             secs  :  0  
             
-        @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 8)
+        @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)
             
         @sizeWindow()          
         @
             
-    onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft     
+    onScroll:      (event) => @ruler.moveTo 0, event.target.scrollTop-1
     onFollowState: (event) => @follow = (event.detail.state == 'on'); log @follow, event.detail.state
+
+    sizeWindow: =>
+        super
+        @content.setWidth  @contentWidth()
+        @content.setHeight @contentHeight()
+
+        height = @content.innerHeight() - 60
+        width  = @content.innerWidth() - 20
+
+        @getChild('vbox').resize width, height
+        @ruler.line.setHeight height
 
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
@@ -126,12 +135,9 @@ class Timeline extends Window
     ###
     
     noteIn: (event) => 
-        # log 'noteIn', event.detail
         if @config.recording == 'on'
-            log 'record'
             @grid.addNote event.detail
-        else
-            @emit 'noteOut', event.detail
+        @emit 'noteOut', event.detail
         
     record: (event) => 
         @config.recording = event.detail.state

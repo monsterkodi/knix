@@ -32,7 +32,7 @@ class TimeRuler extends Widget
             
         children.push
             type   : 'ruler-line'
-            height : 1000
+            # height : 1000
             width  : 1
             style  :
                 position : 'absolute'
@@ -45,13 +45,15 @@ class TimeRuler extends Widget
             children : children
             style    : 
                 position : 'absolute'
+                top      : '0px'
 
         @linex = 0
         @cell = @children()
         for c in @cell
             c.elem.addEventListener 'mousedown', @onCellDown
         @line = @getChild('ruler-line')
-        @setWidth @config.steps * @config.stepWidth
+        # log @config.steps * @config.stepWidth
+        # @setWidth @config.steps * @config.stepWidth
         @
 
     on: (step) => 

@@ -21,15 +21,19 @@ class EventGrid extends Widget
                 position: 'relative'
 
         @rowHeight   = 14
-        @minRecIndex = 9*12
-        @maxRecIndex = 0
+        @minNoteIndex = 9*12
+        @maxNoteIndex = 0
         @timeline    = undefined
         @timeposx    = 0
         @activeCells = []
         @connect 'mousedown', @startSelect            
         @
             
-    onWindowSize: => @setWidth @config.steps * @config.stepWidth
+    onWindowSize: => 
+        @setWidth @config.steps * @config.stepWidth
+        newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
+        log newHeight
+        @setHeight newHeight
                 
     ###
     000000000  00000000   000   0000000    0000000   00000000  00000000 
@@ -45,38 +49,39 @@ class EventGrid extends Widget
             c.setWidth @timeposx - c.relPos().x
         
     addNote: (note) =>
-        log note
+        # log note
         if note.type == 'trigger'
             @noteTrigger note.note
         else
             @noteRelease note.note
         
     noteTrigger: (noteName) =>
-        log noteName
+        # log noteName
         c = new EventCell
             parent   : @
             height   : @rowHeight-2
             noteName : noteName 
             
-        recIndex     = Keyboard.noteIndex noteName
-        oldMaxIndex  = @maxRecIndex
-        oldRange     = @maxRecIndex-@minRecIndex
-        @minRecIndex = Math.min(@minRecIndex, recIndex)
-        @maxRecIndex = Math.max(@maxRecIndex, recIndex)
-        newRange     = @maxRecIndex-@minRecIndex
-        if oldMaxIndex < @maxRecIndex
+        noteIndex    = Keyboard.noteIndex noteName
+        oldMaxIndex  = @maxNoteIndex
+        oldRange     = @maxNoteIndex-@minNoteIndex
+        @minNoteIndex = Math.min(@minNoteIndex, noteIndex)
+        @maxNoteIndex = Math.max(@maxNoteIndex, noteIndex)
+        newRange     = @maxNoteIndex-@minNoteIndex
+        if oldMaxIndex < @maxNoteIndex
             for c in @children()
-                c.moveBy 0, (@maxRecIndex-oldMaxIndex)*@rowHeight
+                c.moveBy 0, (@maxNoteIndex-oldMaxIndex)*@rowHeight
         if oldRange != newRange
+            log 'newHeight', (newRange+3)*@rowHeight
             @setHeight (newRange+3)*@rowHeight
-        relIndex = recIndex - @minRecIndex
+        relIndex = noteIndex - @minNoteIndex
         y = @rowHeight + (newRange-relIndex+1) * @rowHeight
-        log @timeposx, y
+        # log @timeposx, y
         c.moveTo @timeposx, y
         @activeCells.push c        
 
     noteRelease: (noteName) =>
-        log noteName
+        # log noteName
         for c in @activeCells
             if c.config.noteName == noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)

@@ -414,6 +414,7 @@ class Widget
 
             diff = @getWidth() - w
             @elem.style.width = "%dpx".fmt(w - diff) if diff
+            # log @elem.style.width
 
             @emitSize() if ow != @elem.style.width
         @
@@ -422,6 +423,7 @@ class Widget
         if h?
             oh = @elem.style.height
             @setHeightNoEmit h
+            # log @elem.id, @elem.style.height
             @emitSize() if oh != @elem.style.height
         @
 

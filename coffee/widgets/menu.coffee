@@ -23,7 +23,8 @@ class Menu extends Widget
     show: =>
         if @isSubmenu()
             $('stage_content').appendChild @elem
-            @setPos @config.parent.absPos().plus pos 0, @config.parent.getHeight()
+            parent = $(@config.parentID).widget
+            @setPos parent.absPos().plus pos 0, parent.getHeight()
         @elem.addEventListener 'click', @hide
         @elem.addEventListener 'mouseleave', @hide
         super
