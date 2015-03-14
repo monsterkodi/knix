@@ -56,29 +56,51 @@ class Timeline extends Window
             ]            
             children : \
             [
-                type      : 'EventGrid'
-                steps     : cfg.steps
-                stepWidth : cfg.stepWidth
-                stepSecs  : cfg.stepSecs
-                height    : 200
+                type: 'hbox'
+                children : \
+                [
+                    type      : 'connector'
+                    slot      : 'noteIn'
+                ,
+                    type      : 'box'
+                    style     :
+                        width : '100%'
+                        height: '20px'
+                ,
+                    type      : 'connector'
+                    signal    : 'noteOut'
+                ]
             ,
-                type      : 'TimeRuler' 
-                steps     : cfg.steps
-                stepWidth : cfg.stepWidth
-                stepSecs  : cfg.stepSecs
+                type: 'vbox'
+                style: 
+                    position: 'absolute'
+                children: \
+                [
+                    type      : 'EventGrid'
+                    steps     : cfg.steps
+                    stepWidth : cfg.stepWidth
+                    stepSecs  : cfg.stepSecs
+                    height    : 200
+                ,
+                    type      : 'TimeRuler' 
+                    steps     : cfg.steps
+                    stepWidth : cfg.stepWidth
+                    stepSecs  : cfg.stepSecs
+                ]
             ]
         
         @grid = @getChild('EventGrid')
         @grid.timeline = @
         @ruler = @getChild('TimeRuler')
         @ruler.elem.setStyle
-            top: '%dpx'.fmt @headerSize()
+            top: '%dpx'.fmt 0
+            # top: '%dpx'.fmt @headerSize() + 24
                 
         @content.config.noMove = true    
         @connect 'playpause:trigger', @playPause
         @connect 'follow:onState',    @onFollowState
         @connect 'stop:trigger',      @stop
-        @connect 'record:trigger',    @record
+        @connect 'record:onState',    @record
         @connect 'content:scroll',    @onScroll
         @connect 'trash:trigger',     @grid.removeAllCells
                     
@@ -102,18 +124,19 @@ class Timeline extends Window
     000   000  000       000       000   000  000   000  000   000
     000   000  00000000   0000000   0000000   000   000  0000000  
     ###
+    
+    noteIn: (event) => 
+        # log 'noteIn', event.detail
+        if @config.recording == 'on'
+            log 'record'
+            @grid.addNote event.detail
+        else
+            @emit 'noteOut', event.detail
         
-    record: => 
-        if @recorder?
-            @recorder.close()
-            delete @recorder
-        else if @elem?
-            @recorder = new Recorder timeline: @elem.id
+    record: (event) => 
+        @config.recording = event.detail.state
         
-    close: =>        
-        if @recorder?
-            @recorder.close()
-            delete @recorder
+    close: =>
         @stop()
         super
     
@@ -140,7 +163,6 @@ class Timeline extends Window
                         
     gotoStep: (index) =>
         @step.index = (@numSteps+index) % @numSteps
-        # log 'index', @step.index
         @step.secs  = Math.max 0, @step.secs-@config.stepSecs
         if @step.index == 0
             @startTime = Audio.context.currentTime + @step.secs
@@ -152,10 +174,10 @@ class Timeline extends Window
             p = c.relPos()
             ds = p.x - index * @config.stepWidth
             if  0 <= ds < @config.stepWidth
-                c.trigger()
+                @emit 'noteOut', { note: c.config.noteName, type: 'trigger' }
             de = p.x + c.getWidth() - index * @config.stepWidth
             if 0 <= de < @config.stepWidth
-                c.release()
+                @emit 'noteOut', { note: c.config.noteName, type: 'release' }
                 
     play: =>
         @playing = true
@@ -175,7 +197,6 @@ class Timeline extends Window
         @playing = false
         knix.deanimate @
         @setStep 0
-        # @step.index = -1
         if @follow
             @content.elem.scrollLeft = 0
                 

@@ -44,18 +44,21 @@ class EventGrid extends Widget
         for c in @activeCells
             c.setWidth @timeposx - c.relPos().x
         
-    addNote: (event) =>
-        log event.detail
+    addNote: (note) =>
+        log note
+        if note.type == 'trigger'
+            @noteTrigger note.note
+        else
+            @noteRelease note.note
         
-    addTrigger: (target) =>
-        
+    noteTrigger: (noteName) =>
+        log noteName
         c = new EventCell
-            parent : @
-            height : @rowHeight-2
-            winID  : target.getWindow().elem.id
-            widID  : target.id
+            parent   : @
+            height   : @rowHeight-2
+            noteName : noteName 
             
-        recIndex     = target.widget.config.recIndex
+        recIndex     = Keyboard.noteIndex noteName
         oldMaxIndex  = @maxRecIndex
         oldRange     = @maxRecIndex-@minRecIndex
         @minRecIndex = Math.min(@minRecIndex, recIndex)
@@ -70,48 +73,25 @@ class EventGrid extends Widget
         y = @rowHeight + (newRange-relIndex+1) * @rowHeight
         log @timeposx, y
         c.moveTo @timeposx, y
-        @activeCells.push c
+        @activeCells.push c        
 
-    addRelease: (target) =>
-        winID = target.getWindow().elem.id
-        widID = target.id
-        
+    noteRelease: (noteName) =>
+        log noteName
         for c in @activeCells
-            if c.config.winID == winID and c.config.widID == widID
+            if c.config.noteName == noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf c, 1)
-                
+        
     delTrigger: (cell) =>
         rowIndex = cell.config.index 
         colIndex = cell.column().config.index
         @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
         
-    triggerRow: (rowIndex) =>
-        triggers = []
-        for colIndex in @rowColumns[rowIndex]
-            col = @columns[colIndex]
-            row = col.rows[rowIndex]
-            if row.isOn?()
-                triggers.push col.rec
-            else if row.hasValue?()
-                col.rec.getWindow().config[col.rec.config.recKey] = row.value()
-        for trigger in triggers
-            trigger.trigger?()
-
-    releaseRow: (rowIndex) =>
-        releases = []
-        for colIndex in @releaseRowColumns[rowIndex]
-            col = @columns[colIndex]
-            row = col.rows[rowIndex]
-            if row.isOn?()
-                releases.push col.rec
-        for release in releases
-            release.release?()
-
     removeAllCells: =>
         log 'removeAllCells'
         @activeCells = []
         for c in @children()
+            log c.elem.id
             c.close()
         
     ###

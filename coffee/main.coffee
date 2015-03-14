@@ -56,6 +56,10 @@ document.observe "dom:loaded", ->
         
         new Connection
             source   : k.connector 'note'
+            target   : t.connector 'noteIn'
+
+        new Connection
+            source   : t.connector 'noteOut'
             target   : a.connector 'note'
 
         new Connection

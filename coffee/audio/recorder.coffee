@@ -18,6 +18,7 @@ class Recorder
         @timeline = $(@config.timeline).getWidget()
         @triggers = []
         @values   = []
+        
         for win in knix.allWindows()
             @registerWindow win
                     
@@ -27,7 +28,7 @@ class Recorder
     registerWindow: (win) =>
         if win.constructor.name in ['Timeline', 'Analyser'] then return
         for c in win.allChildren()
-            if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
+            if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'ADSR']
                 if c.config.recKey?
                     switch c.constructor.name
                         when 'Button'
@@ -36,9 +37,9 @@ class Recorder
                                 @triggers.push c
                                 c.connect 'mousedown', @onButtonDown
                                 c.connect 'mouseup',   @onButtonUp
-                        when 'Spinner'
-                            log 'Spinner'
-                            c.connect 'onValue', @onNote
+                        when 'ADSR'
+                            log 'ADSR'
+                            c.connect 'onNote', @onNote
                         else
                             @values.push c
                             c.connect 'valueInput', @onValueInput 

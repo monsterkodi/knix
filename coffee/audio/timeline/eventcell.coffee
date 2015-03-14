@@ -24,9 +24,7 @@ class EventCell extends Widget
         @
 
     trigger: =>
-        rec = @getWindow(@config.winID).getChild @config.widID
-        rec?.trigger?()
+        log @config.noteName
 
     release: =>
-        rec = @getWindow(@config.winID).getChild @config.widID
-        rec?.release?()
+        log @config.noteName

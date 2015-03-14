@@ -212,7 +212,7 @@ class Widget
 
     emit: (signal, args) =>
         event = new CustomEvent signal,
-            bubbles    : true,
+            bubbles    : false,
             cancelable : true,
             detail     : args
         @elem?.dispatchEvent event
@@ -224,18 +224,17 @@ class Widget
         @emit 'size',
             width  : @config.width
             height : @config.height
-        @
 
     emitMove: =>
         p = pos @config.x, @config.y
         @emit 'move',
             pos: p
-        @
 
     emitValue: (v) => 
         @emit 'onValue',
             value: v
-        @
+        
+    emitClose: => @emit 'close'
 
     ###
     00000000  000      00000000  00     00
@@ -359,7 +358,7 @@ class Widget
     close: =>
         # log 'close', @elem.id
         Keys.unregisterWidget @
-        @emit 'close'
+        @emitClose()
         @elem?.remove()
         delete @elem
         delete @config
