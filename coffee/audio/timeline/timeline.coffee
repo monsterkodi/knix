@@ -139,19 +139,30 @@ class Timeline extends Window
     nextStep: => @gotoStep @step.index+1
                         
     gotoStep: (index) =>
-        # log 'index', index
         # if @step.index >= 0
             # @releaseRow @step.index
         @step.index = (@numSteps+index) % @numSteps
+        # log 'index', @step.index
         @step.secs  = Math.max 0, @step.secs-@config.stepSecs
         if @step.index == 0
             @startTime = Audio.context.currentTime + @step.secs
-        # @triggerRow @step.index
+        if @playing
+            @execStep @step.index
+            
+    execStep: (index) =>
+        for c in @grid.children()
+            p = c.relPos()
+            ds = p.x - index * @config.stepWidth
+            if  0 <= ds < @config.stepWidth
+                c.trigger()
+            de = p.x + c.getWidth() - index * @config.stepWidth
+            if 0 <= de < @config.stepWidth
+                c.release()
                 
     play: =>
         @playing = true
         @startTime = Audio.context.currentTime - (@step.index+1) * @config.stepSecs
-        @nextStep()
+        @gotoStep @step.index
         knix.animate @
         
     pause: =>
@@ -164,12 +175,11 @@ class Timeline extends Window
     stop: =>
         @getChild('playpause').setState 'pause'
         @playing = false
-        @setTime 0
+        knix.deanimate @
+        @setStep 0
+        # @step.index = -1
         if @follow
             @content.elem.scrollLeft = 0
-        @step.index = -1
-        @step.secs  =  0
-        knix.deanimate @
                 
     ###
      0000000   000   000  000  00     00

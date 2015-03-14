@@ -62,7 +62,10 @@ class Widget
 
         #__________________________________________________ DOM setup
 
-        @addToParent(@config.parent) if @config.parent?
+        if @config.parent?
+            @addToParent(@config.parent) 
+            delete @config.parent
+        
         @insertChildren()
         @insertText()
 

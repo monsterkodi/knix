@@ -143,7 +143,7 @@ class ADSR extends AudioWindow
 
     trigger: (event) =>
         i = @voiceIndex event.detail
-        # log event.detail, i
+        log event.detail, i
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01

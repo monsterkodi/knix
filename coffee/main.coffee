@@ -39,9 +39,9 @@ document.observe "dom:loaded", ->
             x            : 400
             y            : 50
             duration     : 1.0
-            numHandles   : 3
+            # numHandles   : 4
             sustainIndex : 2
-            vals         : [pos(0,0), pos(.1,1), pos(1,0)] 
+            vals         : [pos(0,0), pos(.1,1), pos(1,0), pos(1,0)] 
             # shape : 'square'
 
         m = new Gain
