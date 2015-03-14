@@ -139,8 +139,6 @@ class Timeline extends Window
     nextStep: => @gotoStep @step.index+1
                         
     gotoStep: (index) =>
-        # if @step.index >= 0
-            # @releaseRow @step.index
         @step.index = (@numSteps+index) % @numSteps
         # log 'index', @step.index
         @step.secs  = Math.max 0, @step.secs-@config.stepSecs

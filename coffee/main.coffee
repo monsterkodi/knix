@@ -55,8 +55,8 @@ document.observe "dom:loaded", ->
             y : 430
         
         new Connection
-            source   : k.connector 'frequency'
-            target   : a.connector 'frequency:setValue'
+            source   : k.connector 'note'
+            target   : a.connector 'note'
 
         new Connection
             source   : a.connector 'audio:out'

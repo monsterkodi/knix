@@ -48,17 +48,37 @@ class ADSR extends AudioWindow
 
         super cfg,
             title    : 'adsr'
+            recKey   : 'adsr'
             children : \
             [
                 type     : 'jacks'
                 hasInput : false
                 content  :
-                    type     : 'spinner'
-                    class    : 'shape'
-                    recKey   : 'shape' 
-                    tooltip  : 'shape'
-                    value    : cfg.shape
-                    values   : Oscillator.shapes
+                    type: 'hbox'
+                    children: \
+                    [
+                        type      : 'connector'
+                        slot      : 'note'
+                    ,
+                        type     : 'spinner'
+                        class    : 'note'
+                        recKey   : 'note' 
+                        tooltip  : 'note'
+                        value    : 'C0'
+                        recKey   : 'note'
+                        values   : Keyboard.allNoteNames()
+                        style: 
+                            width: '50%'
+                    ,
+                        type     : 'spinner'
+                        class    : 'shape'
+                        recKey   : 'shape' 
+                        tooltip  : 'shape'
+                        value    : cfg.shape
+                        values   : Oscillator.shapes
+                        style: 
+                            width: '50%'
+                    ]
             ,
                 type         : 'pad'
                 class        : 'pad'
@@ -141,9 +161,21 @@ class ADSR extends AudioWindow
         @voice[0] = { id : id }
         0
 
+    note: (event) =>
+        note = event.detail
+        @getChild('note').setValue note.note
+        f = Keyboard.allNotes()[note.note]
+        # log note
+        @getChild('frequency').setValue f
+        if note.type == 'trigger'
+            @trigger { detail: note.note }
+        else
+            @release { detail: note.note }
+        @emit 'onNote'
+
     trigger: (event) =>
         i = @voiceIndex event.detail
-        log event.detail, i
+        # log event.detail, i
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01

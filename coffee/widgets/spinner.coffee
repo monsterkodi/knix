@@ -49,8 +49,9 @@ class Spinner extends Spin
         i = @config.values.indexOf v
         c = @getChild 'spin-content'
         c.clear()
-        w = c.getWidth()/@steps()
-        c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, i*w)
+        w = Math.max(3, c.getWidth()/@steps())
+        offset = i * @getChild('spin-content').getWidth() / @config.values.length
+        c.elem.insert '<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, offset)
         @config.value = @config.values[i]
         c.elem.insert String @config.value
         @emitValue @config.value

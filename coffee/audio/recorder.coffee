@@ -28,18 +28,18 @@ class Recorder
         if win.constructor.name in ['Timeline', 'Analyser'] then return
         for c in win.allChildren()
             if c.constructor.name in ['Spin', 'Slider', 'Spinner', 'Button', 'Pad']
-                switch c.constructor.name
-                    when 'Button'
-                        if not c.elem.hasClassName 'tool-button'
-                            @triggers.push c
-                            c.connect 'mousedown', @onButtonDown
-                            c.connect 'mouseup',   @onButtonUp
-                    when 'Keyboard'
-                        c.connect 'trigger', @onKeyboardTrigger
-                        c.connect 'release', @onKeyboardRelease
-                    # when 'Pad'    then log 'todo:pad'
-                    else
-                        if c.config.recKey
+                if c.config.recKey?
+                    switch c.constructor.name
+                        when 'Button'
+                            if not c.elem.hasClassName('tool-button')
+                                log c.config
+                                @triggers.push c
+                                c.connect 'mousedown', @onButtonDown
+                                c.connect 'mouseup',   @onButtonUp
+                        when 'Spinner'
+                            log 'Spinner'
+                            c.connect 'onValue', @onNote
+                        else
                             @values.push c
                             c.connect 'valueInput', @onValueInput 
                 
@@ -47,11 +47,7 @@ class Recorder
         # log 'value', event.target.id, _.value event
         @timeline.grid.addValue event.target.getWidget()
         
-    onKeyboardTrigger: (event) =>
-        @timeline.grid.addTrigger event.target, event.detail
-
-    onKeyboardRelease: (event) =>
-        @timeline.grid.addRelease event.target, event.detail
+    onNote: (event) => @timeline.grid.addNote event
         
     onButtonDown: (event) =>
         # log 'button down', event.target

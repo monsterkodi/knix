@@ -44,8 +44,11 @@ class EventGrid extends Widget
         for c in @activeCells
             c.setWidth @timeposx - c.relPos().x
         
+    addNote: (event) =>
+        log event.detail
+        
     addTrigger: (target) =>
-
+        
         c = new EventCell
             parent : @
             height : @rowHeight-2
@@ -65,7 +68,7 @@ class EventGrid extends Widget
             @setHeight (newRange+3)*@rowHeight
         relIndex = recIndex - @minRecIndex
         y = @rowHeight + (newRange-relIndex+1) * @rowHeight
-        # log @timeposx, y
+        log @timeposx, y
         c.moveTo @timeposx, y
         @activeCells.push c
 

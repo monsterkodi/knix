@@ -10,6 +10,8 @@
 
 class Keyboard extends Window
 
+    @noteNames = ['C', 'Cs', 'D', 'Ds', 'E', 'F', 'Fs', 'G', 'Gs', 'A', 'As', 'B']
+
     @notes = 
         C:    4186.01  
         Cs:   4434.92  
@@ -22,8 +24,8 @@ class Keyboard extends Window
         Gs:   6644.88  
         A:    7040.00  
         As:   7458.62  
-        H:    7902.13
-
+        B:    7902.13
+        
     @keys = 
         C:    'z'
         Cs:   's'
@@ -36,7 +38,25 @@ class Keyboard extends Window
         Gs:   'h'
         A:    'n'
         As:   'j'
-        H:    'm'
+        B:    'm'
+
+    @allNotes: =>
+        if not @_allNotes?
+            @_allNotes = {}            
+            for n in @allNoteNames()
+                nb = n.slice(0,-1)
+                o = Number(n.slice(-1))
+                frequency = @notes[nb] / Math.pow(2, (8-o))
+                @_allNotes[n] = frequency.toFixed(3)
+        @_allNotes
+        
+    @allNoteNames: =>
+        if not @_allNoteNames?
+            @_allNoteNames = []
+            for o in [0..8]
+                for n in @noteNames
+                    @_allNoteNames.push '%s%d'.fmt n, o
+        @_allNoteNames
 
     init: (cfg, defs) =>
         
@@ -53,7 +73,7 @@ class Keyboard extends Window
                 class  : sharp and 'keyboard-key-sharp' or 'keyboard-key'
                 valign : sharp and 'top' or 'bottom'
                 text   : n
-                recKey : n
+                # recKey : n
                 keys   : [Keyboard.keys[n]]
 
         super cfg,
@@ -68,7 +88,6 @@ class Keyboard extends Window
                     type     : 'spin'
                     class    : 'octave'
                     tooltip  : 'octave'
-                    # recKey   : 'octave'
                     value    : cfg.octave
                     minValue : 0
                     maxValue : 8
@@ -76,7 +95,7 @@ class Keyboard extends Window
                         width  : '100%'
                 ,
                     type      : 'connector'
-                    signal    : 'frequency'
+                    signal    : 'note'
                 ]                
             ,
                 type     : 'hbox'
@@ -103,30 +122,18 @@ class Keyboard extends Window
         @config.octave = _.value v
         for key in @keys
             key.config.octave = @config.octave
-            key.config.recIndex = @config.octave * @keys.length + @keys.indexOf key
             
     onKeyPress: (event) =>
         key = event.target.widget
-        # log key.config.text
-        frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
-        @emit 'frequency', value : frequency
         note = "%s%d".fmt key.config.text, @config.octave
-        @emit 'trigger', note
-        c = @getChild 'connector'
-        for cc in c.connections
-            w = cc.config.target?.getWindow()
-            t = w?.getChild 'trigger'
-            t?.trigger note
+        # log 'emit trigger', note
+        @emit 'note', { note: note, type: 'trigger' }
 
     onKeyRelease: (event) =>    
         key = event.target.widget
-        c = @getChild 'connector'
         note = "%s%d".fmt key.config.text, @config.octave
-        @emit 'release', note
-        for cc in c.connections
-            w = cc.config.target?.getWindow()
-            t = w?.getChild 'trigger'
-            t?.release note
+        # log 'emit release', note
+        @emit 'note', { note: note, type: 'release' }
         
     @menu: =>
 
