@@ -30,13 +30,12 @@ class TimeRuler extends Widget
                 index : r
                 text  : '<i class="fa fa-%s"></i>'.fmt(r % 4 and 'circle-o' or r % 8 and 'dot-circle-o' or 'circle')
             
-        children.push
-            type   : 'ruler-line'
-            # height : 1000
-            width  : 1
-            style  :
-                position : 'absolute'
-                top      : '0px'
+        # children.push
+        #     type   : 'ruler-line'
+        #     width  : 1
+        #     style  :
+        #         position : 'absolute'
+        #         top      : '0px'
 
         super cfg,
             type     : 'TimeRuler'
@@ -44,16 +43,13 @@ class TimeRuler extends Widget
             noSelect : true
             children : children
             style    : 
-                position : 'absolute'
-                top      : '0px'
+                position : 'relative'
 
         @linex = 0
         @cell = @children()
         for c in @cell
             c.elem.addEventListener 'mousedown', @onCellDown
-        @line = @getChild('ruler-line')
-        # log @config.steps * @config.stepWidth
-        # @setWidth @config.steps * @config.stepWidth
+        # @line = @getChild('ruler-line')
         @
 
     on: (step) => 
@@ -68,7 +64,7 @@ class TimeRuler extends Widget
 
     setTime: (time) => 
         @linex = time * @config.stepWidth / @config.stepSecs
-        @line.moveTo @linex
+        # @line.moveTo @linex
 
     onCellDown: (event) => 
         @getWindow().setStep event.target.getWidget().config.index

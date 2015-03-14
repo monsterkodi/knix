@@ -693,10 +693,6 @@ a
 .playpause.play *
     color : colors.tool-button-on
 
-// .Timeline .content
-//     padding        : 0px
-//     padding-bottom : 3px
-
 /*
 *  00000000   000   000  000      00000000  00000000 
 *  000   000  000   000  000      000       000   000
@@ -720,11 +716,7 @@ a
     &.off
         background-color: colors.bg
         color:            colors.slider
-        
-.ruler-line
-    background-color: colors.blueDark
-    opacity: 0.2
-        
+                
 /*
 *  00000000  000   000  00000000  000   000  000000000   0000000   00000000   000  0000000  
 *  000       000   000  000       0000  000     000     000        000   000  000  000   000
@@ -733,16 +725,14 @@ a
 *  00000000      0      00000000  000   000     000      0000000   000   000  000  0000000  
 */
 
-.EventGrid
-    background-color: colors.bg
+.EventGridBox
+    background-color: colors.pad
+    shadowInner()
+    border-radius:    buttonRadius
 
-/*
-*  00000000  000   000  00000000  000   000  000000000   0000000  00000000  000      000    
-*  000       000   000  000       0000  000     000     000       000       000      000    
-*  0000000    000 000   0000000   000 0 000     000     000       0000000   000      000    
-*  000          000     000       000  0000     000     000       000       000      000    
-*  00000000      0      00000000  000   000     000      0000000  00000000  0000000  0000000
-*/
+.EventLine
+    background-color: colors.blueDark
+    opacity: 0.2
 
 .EventCell
     background-color : colors.blue

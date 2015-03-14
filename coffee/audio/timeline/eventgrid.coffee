@@ -32,7 +32,7 @@ class EventGrid extends Widget
     onWindowSize: => 
         @setWidth @config.steps * @config.stepWidth
         newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
-        log newHeight
+        # log newHeight
         @setHeight newHeight
                 
     ###
@@ -49,14 +49,13 @@ class EventGrid extends Widget
             c.setWidth @timeposx - c.relPos().x
         
     addNote: (note) =>
-        # log note
         if note.type == 'trigger'
             @noteTrigger note.note
         else
             @noteRelease note.note
         
     noteTrigger: (noteName) =>
-        # log noteName
+        
         c = new EventCell
             parent   : @
             height   : @rowHeight-2
@@ -72,20 +71,21 @@ class EventGrid extends Widget
             for c in @children()
                 c.moveBy 0, (@maxNoteIndex-oldMaxIndex)*@rowHeight
         if oldRange != newRange
-            log 'newHeight', (newRange+3)*@rowHeight
+            # log 'newHeight', (newRange+3)*@rowHeight
             @setHeight (newRange+3)*@rowHeight
         relIndex = noteIndex - @minNoteIndex
         y = @rowHeight + (newRange-relIndex+1) * @rowHeight
-        # log @timeposx, y
         c.moveTo @timeposx, y
-        @activeCells.push c        
+        @activeCells.push c
+        # log @activeCells.length     
 
     noteRelease: (noteName) =>
         # log noteName
         for c in @activeCells
+            # log c.config.noteName, noteName
             if c.config.noteName == noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
-                @activeCells.splice(@activeCells.indexOf c, 1)
+                @activeCells.splice(@activeCells.indexOf(c), 1)
         
     delTrigger: (cell) =>
         rowIndex = cell.config.index 
@@ -93,10 +93,8 @@ class EventGrid extends Widget
         @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
         
     removeAllCells: =>
-        log 'removeAllCells'
         @activeCells = []
         for c in @children()
-            log c.elem.id
             c.close()
         
     ###

@@ -70,12 +70,18 @@ class Timeline extends Window
                     signal    : 'noteOut'
                 ]
             ,
-                type    : 'vbox'
+                type      : 'TimeRuler' 
+                steps     : cfg.steps
+                stepWidth : cfg.stepWidth
+                stepSecs  : cfg.stepSecs
+            ,
+                type    : 'EventGridBox'
                 style   : 
                     position : 'relative'
                     overflow : 'scroll'
                     left     : '0px'
                     right    : '0px'
+                    marginBottom: '0px'
                 children : \
                 [
                     type      : 'EventGrid'
@@ -83,24 +89,28 @@ class Timeline extends Window
                     stepWidth : cfg.stepWidth
                     stepSecs  : cfg.stepSecs
                 ,
-                    type      : 'TimeRuler' 
-                    steps     : cfg.steps
-                    stepWidth : cfg.stepWidth
-                    stepSecs  : cfg.stepSecs
+                    type      : 'EventLine'
+                    width     : 1
+                    style     :
+                        position : 'absolute'
+                        top      : '0px'
                 ]
             ]
         
         @grid = @getChild('EventGrid')
         @grid.timeline = @
         @ruler = @getChild('TimeRuler')
+        @line = @getChild('EventLine')
+        @box = @getChild('EventGridBox')
                 
         @content.config.noMove = true    
-        @connect 'playpause:trigger', @playPause
-        @connect 'follow:onState',    @onFollowState
-        @connect 'stop:trigger',      @stop
-        @connect 'record:onState',    @record
-        @connect 'vbox:scroll',       @onScroll
-        @connect 'trash:trigger',     @grid.removeAllCells
+        @connect 'playpause:trigger',   @playPause
+        @connect 'follow:onState',      @onFollowState
+        @connect 'stop:trigger',        @stop
+        @connect 'record:onState',      @record
+        @connect 'EventGridBox:scroll', @onScroll
+        @connect 'trash:trigger',       @trash
+        @connect 'EventGrid:size',      @onGridSize
                     
         @numSteps = @config.steps
         @step = 
@@ -112,19 +122,26 @@ class Timeline extends Window
         @sizeWindow()          
         @
             
-    onScroll:      (event) => @ruler.moveTo 0, event.target.scrollTop-1
+    onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
     onFollowState: (event) => @follow = (event.detail.state == 'on'); log @follow, event.detail.state
+    
+    trash: => 
+        if @playing
+            for c in @grid.children() # todo only cells crossing line
+                @releaseCell c
+        @grid.removeAllCells()
 
+    onGridSize:    (event) => @line.setHeight @grid.getHeight()
     sizeWindow: =>
         super
         @content.setWidth  @contentWidth()
         @content.setHeight @contentHeight()
 
-        height = @content.innerHeight() - 60
+        height = @content.innerHeight() - 84
         width  = @content.innerWidth() - 20
 
-        @getChild('vbox').resize width, height
-        @ruler.line.setHeight height
+        @box.resize width, height
+        @onGridSize()
 
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
@@ -158,6 +175,7 @@ class Timeline extends Window
         @relTime = time
         @ruler.setTime @relTime
         @grid.setTime @relTime
+        @line.moveTo @relTime * @config.stepWidth / @config.stepSecs
         
     setStep: (index) =>
         ct = Audio.context.currentTime
@@ -174,16 +192,19 @@ class Timeline extends Window
             @startTime = Audio.context.currentTime + @step.secs
         if @playing
             @execStep @step.index
-            
+        
+    triggerCell: (c) => @emit 'noteOut', { note: c.config.noteName, type: 'trigger' }    
+    releaseCell: (c) => @emit 'noteOut', { note: c.config.noteName, type: 'release' }    
+    
     execStep: (index) =>
         for c in @grid.children()
             p = c.relPos()
             ds = p.x - index * @config.stepWidth
             if  0 <= ds < @config.stepWidth
-                @emit 'noteOut', { note: c.config.noteName, type: 'trigger' }
+                @triggerCell c
             de = p.x + c.getWidth() - index * @config.stepWidth
             if 0 <= de < @config.stepWidth
-                @emit 'noteOut', { note: c.config.noteName, type: 'release' }
+                @releaseCell c
                 
     play: =>
         @playing = true
@@ -217,7 +238,7 @@ class Timeline extends Window
     anim: (step) =>
         @setTime Audio.context.currentTime - @startTime
         if @follow
-            @content.elem.scrollLeft = @ruler.line.relPos().x - 100
+            @box.elem.scrollLeft = @line.relPos().x - 100
         @step.secs += step.dsecs
         if @step.secs > @config.stepSecs
             @nextStep()

@@ -169,10 +169,11 @@ class ADSR extends AudioWindow
         
     note: (event) =>
         note = event.detail
-        @getChild('note').setValue note.note
+        # @getChild('note').setValue note.note
         f = Keyboard.allNotes()[note.note]
         # log note
-        @getChild('frequency').setValue f
+        # @getChild('frequency').setValue f
+        @config.frequency = f
         if note.type == 'trigger'
             @trigger { detail: note.note }
         else

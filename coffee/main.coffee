@@ -31,15 +31,25 @@ document.observe "dom:loaded", ->
     Settings.set 'tooltips', true
 
     keyboard = () -> 
-        k = new Keyboard
+        k1 = new Keyboard
             x : 20
             y : 50
+            octave: 6
+
+        k2 = new Keyboard
+            x : 20
+            y : 350
+            octave: 7
+
+        k3 = new Keyboard
+            x : 20
+            y : 650
+            octave: 8
         
         a = new ADSR
             x            : 400
             y            : 50
             duration     : 1.0
-            # numHandles   : 4
             sustainIndex : 2
             vals         : [pos(0,0), pos(.1,1), pos(1,0), pos(1,0)] 
             # shape : 'square'
@@ -51,11 +61,20 @@ document.observe "dom:loaded", ->
             y      : 50
 
         t = new Timeline
-            x : 10
-            y : 430
+            x      : 400
+            y      : 430
+            height : 500
         
         new Connection
-            source   : k.connector 'note'
+            source   : k1.connector 'note'
+            target   : t.connector 'noteIn'
+
+        new Connection
+            source   : k2.connector 'note'
+            target   : t.connector 'noteIn'
+
+        new Connection
+            source   : k3.connector 'note'
             target   : t.connector 'noteIn'
 
         new Connection
