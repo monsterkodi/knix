@@ -16,10 +16,12 @@ class EventCell extends Widget
         
         super cfg,
             type   : 'EventCell'
-            width  : 10
-            height : 10
+            width  : 1         
             style  :
-                # backgroundColor : 'yellow'
-                position        : 'absolute'
+                position : 'absolute'
+                borderRadius: '%dpx'.fmt cfg.height/2
         
         @
+
+    close: =>
+        super

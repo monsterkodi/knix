@@ -16,9 +16,9 @@ class Timeline extends Window
         
         cfg = _.def cfg,
             title     : 'timeline'
-            steps     : 64
+            steps     : 32
             stepWidth : 23
-            stepSecs  : 0.05
+            stepSecs  : 0.15
                         
         super cfg,
             type      : 'Timeline' 
@@ -43,6 +43,10 @@ class Timeline extends Window
                 keys     : ['r']
                 states   : ['off', 'on']
                 icons    : ['fa-circle-o', 'fa-circle']
+            ,
+                class   : 'trash'
+                align   : 'right'
+                icon    : 'octicon-trashcan'                
             ,
                 type     : 'toggle'
                 align    : 'right'
@@ -76,6 +80,7 @@ class Timeline extends Window
         @connect 'stop:trigger',      @stop
         @connect 'record:trigger',    @record
         @connect 'content:scroll',    @onScroll
+        @connect 'trash:trigger',     @grid.removeAllCells
                     
         @numSteps = @config.steps
         @step = 
@@ -120,11 +125,18 @@ class Timeline extends Window
     000        0000000  000   000     000   
     ###
         
+    setTime: (time) =>
+        @relTime = time
+        @ruler.setTime @relTime
+        @grid.setTime @relTime
+        
     setStep: (index) =>
         ct = Audio.context.currentTime
         @startTime = ct - index * @config.stepSecs
-        @ruler.setLine ct - @startTime
+        @setTime ct - @startTime
         @gotoStep index
+        
+    nextStep: => @gotoStep @step.index+1
                         
     gotoStep: (index) =>
         # log 'index', index
@@ -144,15 +156,15 @@ class Timeline extends Window
         
     pause: =>
         @playing = false
-        @ruler.setLine (@step.index+1) * @config.stepSecs
+        @setTime (@step.index+1) * @config.stepSecs
         knix.deanimate @
         
     playPause: => if @playing then @pause() else @play()
 
     stop: =>
         @getChild('playpause').setState 'pause'
-        @playing    = false
-        @ruler.setLine 0
+        @playing = false
+        @setTime 0
         if @follow
             @content.elem.scrollLeft = 0
         @step.index = -1
@@ -168,17 +180,13 @@ class Timeline extends Window
     ###
         
     anim: (step) =>
-        @relTime = Audio.context.currentTime - @startTime
-        @ruler.setLine @relTime
-        @grid.setTime @relTime
+        @setTime Audio.context.currentTime - @startTime
         if @follow
             @content.elem.scrollLeft = @ruler.line.relPos().x - 100
         @step.secs += step.dsecs
         if @step.secs > @config.stepSecs
             @nextStep()
-        
-    nextStep: => @gotoStep @step.index+1
-                    
+                            
     @menu: =>
 
         @menuButton

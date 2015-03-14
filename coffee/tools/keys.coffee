@@ -54,7 +54,7 @@ class Keys
     @onKeyUp: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
-        log key
+        # log key
         i = @pressed.indexOf key
         @pressed.splice(i, 1) if i >= 0
         if not @interactive and i >= 0 

@@ -64,7 +64,7 @@ class TimeRuler extends Widget
         e.removeClassName 'on'
         e.addClassName 'off'
 
-    setLine: (time) => 
+    setTime: (time) => 
         @linex = time * @config.stepWidth / @config.stepSecs
         @line.moveTo @linex
 

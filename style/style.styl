@@ -75,7 +75,6 @@ a
     height:           100%
     overflow:         hidden
     color:            textColors.global
-    // user-select:      none
 
 #stage_content
     position:         relative
@@ -88,7 +87,7 @@ a
     position:         absolute
     width:            100%
     height:           100%
-    background-color: rgba(0,0,0,0)
+    background-color: transparent
 
 #stage_canvas
     position:         absolute
@@ -109,26 +108,26 @@ a
 */
 
 .icon
-  border:               0px
-  background-color:     transparent
-  text-align:           center
-  color:                colors.bg
-  & i
-    width:              20px
-  &:hover
-      color:            colors.button-hover-text
-  &:active
-      color:            colors.button-active-text
+    border           : 0px
+    background-color : transparent
+    text-align       : center
+    color            : colors.bg
+    & i
+        width        : 20px
+    &:hover
+        color        : colors.button-hover-text
+    &:active
+        color        : colors.button-active-text
     
 .context-menu .content .button .icon
 .menu .icon
     & i
-        width:          30px
-    color:              textColors.menu
+        width : 30px
+    color     : textColors.menu
     &:hover
-        color:          textColors.menu-hover
+        color : textColors.menu-hover
     &:active
-        color:          textColors.menu-active
+        color : textColors.menu-active
     
 /*
 *  0000000    000   000  000000000  000000000   0000000   000   000
@@ -252,7 +251,7 @@ a
     font-weight:      normal
     height:           menuHeight
     padding-top:      2px
-    bgColorHover(     colors.menu )
+    bgColorHover(colors.menu)
     border-radius:    0
     &:hover
         color: textColors.menu-hover
@@ -443,7 +442,6 @@ a
 
 .scroll
     overflow:         hidden
-    // noSelection()
     border-radius:    widgetTopRadius
     border:           borders.scroll
     background-color: colors.scroll
@@ -723,7 +721,8 @@ a
         color:            colors.slider
         
 .ruler-line
-    background-color: black
+    background-color: colors.blueDark
+    opacity: 0.2
         
 /*
 *  00000000  000   000  00000000  000   000  000000000   0000000   00000000   000  0000000  
@@ -733,8 +732,8 @@ a
 *  00000000      0      00000000  000   000     000      0000000   000   000  000  0000000  
 */
 
-// .EventGrid
-//     background-color: colors.blue
+.EventGrid
+    background-color: colors.bg
 
 /*
 *  00000000  000   000  00000000  000   000  000000000   0000000  00000000  000      000    
@@ -746,7 +745,7 @@ a
 
 .EventCell
     background-color : colors.blue
-    border-radius : 5px
+    // border-radius : 6px
 
 /*
 *  00     00  000   0000000   0000000
@@ -789,35 +788,39 @@ a
 */
 
 .keyboard-key-sharp
-    background-color           : black
-    color                      : transparent
+    background-color : black
+    color            : transparent
+    position         : absolute
+    width            : 30px
+    height           : 60px
+    padding          : 0px
+    margin-left      : -15px
+    padding-top      : 6px
+    text-align       : center
+    border-top-right-radius : 0px
+    border-top-left-radius  : 0px
     &:hover
-        color                  : white
-    &:active
-        padding-top            : 7px
-    width                      : 30px
-    height                     : 60px
-    position                   : absolute
-    margin-left                : -15px
-    padding-top                : 6px
-    border-bottom-right-radius : 4px
-    border-bottom-left-radius  : 4px
+        color        : white
+        border       : 2px solid black
+
+.button.keyboard-key-sharp:active
+    padding-top  : 7px
+    background-color : yellow
 
 .keyboard-key
-    background-color           : white
-    color                      : transparent
-    box-sizing: border-box
+    background-color : white
+    color            : transparent
+    box-sizing       : border-box
+    border           : 2px solid black
+    width            : 40px
+    height           : 120px
+    padding-bottom   : 6px
+    text-align       : center
     &:hover
-        color                  : black
+        color            : black
     &:active
-        background-color       : rgb(240,240,240)
-        border                 : 3px solid black
-    width                      : 40px
-    height                     : 120px
-    border                     : 2px solid black
-    padding-bottom             : 6px
-    border-bottom-right-radius : 6px
-    border-bottom-left-radius  : 6px
+        background-color : rgb(240,240,240)
+        border           : 3px solid black
     
 /*
 *  00000000    0000000    0000000  000  000000000  000   0000000   000   000

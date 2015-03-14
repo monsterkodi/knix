@@ -19,9 +19,10 @@ class EventGrid extends Widget
             noMove: true
             style:
                 position: 'relative'
-                left: '0px'
-                top:  '0px'
 
+        @rowHeight   = 14
+        @minRecIndex = 9*12
+        @maxRecIndex = 0
         @timeline    = undefined
         @timeposx    = 0
         @activeCells = []
@@ -44,12 +45,28 @@ class EventGrid extends Widget
             c.setWidth @timeposx - c.relPos().x
         
     addTrigger: (target) =>
-        # log target
+
         c = new EventCell
             parent : @
+            height : @rowHeight-2
             winID  : target.getWindow().elem.id
             widID  : target.id
-        c.moveTo @timeposx, target.widget.config.recIndex * 12
+            
+        recIndex     = target.widget.config.recIndex
+        oldMaxIndex  = @maxRecIndex
+        oldRange     = @maxRecIndex-@minRecIndex
+        @minRecIndex = Math.min(@minRecIndex, recIndex)
+        @maxRecIndex = Math.max(@maxRecIndex, recIndex)
+        newRange     = @maxRecIndex-@minRecIndex
+        if oldMaxIndex < @maxRecIndex
+            for c in @children()
+                c.moveBy 0, (@maxRecIndex-oldMaxIndex)*@rowHeight
+        if oldRange != newRange
+            @setHeight (newRange+3)*@rowHeight
+        relIndex = recIndex - @minRecIndex
+        y = @rowHeight + (newRange-relIndex+1) * @rowHeight
+        # log @timeposx, y
+        c.moveTo @timeposx, y
         @activeCells.push c
 
     addRelease: (target) =>
@@ -58,7 +75,7 @@ class EventGrid extends Widget
         
         for c in @activeCells
             if c.config.winID == winID and c.config.widID == widID
-                c.setWidth @timeposx - c.relPos().x
+                c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf c, 1)
                 
     delTrigger: (cell) =>
@@ -88,6 +105,12 @@ class EventGrid extends Widget
         for release in releases
             release.release?()
 
+    removeAllCells: =>
+        log 'removeAllCells'
+        @activeCells = []
+        for c in @children()
+            c.close()
+        
     ###
     000   000   0000000   000      000   000  00000000
     000   000  000   000  000      000   000  000     
@@ -97,11 +120,11 @@ class EventGrid extends Widget
     ###
                 
     addValue: (valueWidget) =>
-        # log 'value', valueWidget.elem.id, valueWidget.config.value
-        col = @columnFor valueWidget.elem
-        row = col.rows[@step.index]
-        @setValue row, valueWidget
-        row.on()
+        log 'value', valueWidget.elem.id, valueWidget.config.value
+        # col = @columnFor valueWidget.elem
+        # row = col.rows[@step.index]
+        # @setValue row, valueWidget
+        # row.on()
         
     setValue: (cell, valueWidget) =>
         rowIndex = cell.config.index 
@@ -109,7 +132,6 @@ class EventGrid extends Widget
         @rowColumns[rowIndex].push(colIndex) if colIndex not in @rowColumns[rowIndex]   
         cell.clear()
         cell.insertChild valueWidget.config
-        
         
     ###
      0000000  00000000  000      00000000   0000000  000000000

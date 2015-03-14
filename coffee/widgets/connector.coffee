@@ -136,8 +136,6 @@ class Connector extends Widget
         else if @connections.length == 0
             @elem.removeClassName 'connected'
 
-        # tag 'Drag'
-        # log 'stop'
         @handle.close()
         @path.path.remove()
 

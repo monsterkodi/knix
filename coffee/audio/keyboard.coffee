@@ -55,8 +55,6 @@ class Keyboard extends Window
                 text   : n
                 recKey : n
                 keys   : [Keyboard.keys[n]]
-                style  :
-                    textAlign : 'center'
 
         super cfg,
             type  : 'keyboard'
@@ -70,7 +68,7 @@ class Keyboard extends Window
                     type     : 'spin'
                     class    : 'octave'
                     tooltip  : 'octave'
-                    recKey   : 'octave'
+                    # recKey   : 'octave'
                     value    : cfg.octave
                     minValue : 0
                     maxValue : 8
@@ -109,7 +107,7 @@ class Keyboard extends Window
             
     onKeyPress: (event) =>
         key = event.target.widget
-        log key.config.text
+        # log key.config.text
         frequency = Keyboard.notes[key.config.text] / Math.pow(2, (8-@config.octave))
         @emit 'frequency', value : frequency
         note = "%s%d".fmt key.config.text, @config.octave
