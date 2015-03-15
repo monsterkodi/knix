@@ -16,11 +16,25 @@ class EventCell extends Widget
         
         super cfg,
             type   : 'EventCell'
-            width  : 1         
+            resize : 'horizontal'
             style  :
-                position : 'absolute'
-                borderRadius: '%dpx'.fmt cfg.height/2        
+                position     : 'absolute'
+                borderRadius : '%dpx'.fmt cfg.height/2 
+
+        new DragSize
+            elem: @elem
+        
+        @elem.addEventListener 'mousedown', @onDown        
         @
+
+    minWidth: => return 1    
+
+    onDown: (event) =>
+        if event.shiftKey
+            if @elem.hasClassName 'selected'
+                @elem.removeClassName 'selected'
+                return
+            @elem.addClassName 'selected'
 
     trigger: =>
         log @config.noteName
