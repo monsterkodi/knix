@@ -22,12 +22,18 @@ class EventCell extends Widget
                 borderRadius : '%dpx'.fmt cfg.height/2 
 
         new DragSize
-            elem: @elem
+            moveStart : @onMoveStart
+            onMove    : @onDragMove
+            doMove    : false
+            elem      : @elem
         
         @elem.addEventListener 'mousedown', @onDown        
         @
 
     minWidth: => return 1    
+
+    onMoveStart: (drag) => @elem.addClassName 'selected'
+    onDragMove: (drag) => @getParent().moveSelectedCellsBy drag.delta.x, drag.delta.y
 
     onDown: (event) =>
         if event.shiftKey
@@ -36,10 +42,7 @@ class EventCell extends Widget
                 return
             @elem.addClassName 'selected'
 
-    trigger: =>
-        log @config.noteName
-
-    release: =>
-        log @config.noteName
+    trigger: => log @config.noteName
+    release: => log @config.noteName
 
     del: => @close()

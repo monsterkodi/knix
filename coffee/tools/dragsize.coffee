@@ -12,11 +12,11 @@ class DragSize
 
     constructor: (cfg) ->
 
-        _.extend @, _.def cfg,
+        @config = _.def cfg,
             elem  : null
-
-        @elem.on 'mousemove', @onHover
-        @elem.on 'mouseleave', @onLeave
+        
+        @config.elem.on 'mousemove', @onHover
+        @config.elem.on 'mouseleave', @onLeave
             
     onHover: (event, e) =>
 
@@ -66,7 +66,7 @@ class DragSize
                 cursor = 'nesw-resize'
 
             @sizeMoveDrag = new Drag
-                target  : @elem
+                target  : @config.elem
                 onStart : @sizeStart
                 onMove  : @sizeMove
                 doMove  : false
@@ -75,40 +75,43 @@ class DragSize
             @sizeMoveDrag.border = border
         else
             @sizeMoveDrag = new Drag
-                target  : @elem
+                target  : @config.elem
                 minPos  : pos undefined, 0
                 onMove  : @dragMove
                 onStart : @moveStart
                 onStop  : @moveStop
-                doMove  : not @elem.hasClassName 'selected'
+                doMove  : @config.doMove
                 cursor  : 'grab'
         return
 
+    moveStart: (drag, event) =>
+        @config.moveStart(drag, event) if @config.moveStart?
+        if drag.target.widget.isWindow()
+            StyleSwitch.togglePathFilter()
+        event.stop()
+
     dragMove: (drag, event) =>
-        if @elem.hasClassName 'selected'
-            for w in knix.selectedWidgets()
-                w.move drag.delta        
+        @config.onMove(drag, event) if @config.onMove?
         event.stop()
 
     onLeave: (event) =>
         if @sizeMoveDrag? and not @sizeMoveDrag.dragging
             @sizeMoveDrag.deactivate() if @sizeMoveDrag
             delete @sizeMoveDrag
-
-    moveStart: (drag, event) =>
-        if drag.target.widget.isWindow()
-            StyleSwitch.togglePathFilter()
-        event.stop()
         
     moveStop: (drag, event) =>
+        @config.moveStop(drag, event) if @config.moveStop?
         if drag.target.widget.isWindow()
             StyleSwitch.togglePathFilter()
         event.stop()
 
     sizeStart: (drag, event) =>
+        @config.sizeStart(drag) if @config.sizeStart?
         event.stop()
 
     sizeMove: (drag, event) =>
+        
+        @config.onSize(drag) if @config.onSize?
 
         w    = drag.target.widget
         wpos = w.absPos()
@@ -129,6 +132,7 @@ class DragSize
         event.stop()
 
     sizeWidget: (drag, w, dx, dy) =>
+        
         wpos = w.absPos()
         wdt = w.getWidth() + dx
         hgt = w.getHeight() + dy

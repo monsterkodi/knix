@@ -50,7 +50,8 @@ class Keyboard extends Window
                 @_allNotes[n] = frequency.toFixed(3)
         @_allNotes
     
-    @noteIndex: (noteName) => @allNoteNames().indexOf noteName    
+    @noteIndex: (noteName) => @allNoteNames().indexOf noteName  
+    @numNotes: => @noteNames.length * 9  
     @allNoteNames: =>
         if not @_allNoteNames?
             @_allNoteNames = []
