@@ -34,7 +34,7 @@ class knix
     
         if config.loadLast then Files.loadLast()
             
-        log 'knix initialised'
+        # log 'knix initialised'
         @
     
     ###

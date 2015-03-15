@@ -123,12 +123,10 @@ class Timeline extends Window
         @
             
     onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
-    onFollowState: (event) => @follow = (event.detail.state == 'on'); log @follow, event.detail.state
+    onFollowState: (event) => @follow = (event.detail.state == 'on') #; log @follow, event.detail.state
     
     trash: => 
-        if @playing
-            for c in @grid.children() # todo only cells crossing line
-                @releaseCell c
+        @stopCells()
         @grid.removeAllCells()
 
     onGridSize:    (event) => @line.setHeight @grid.getHeight()
@@ -143,6 +141,17 @@ class Timeline extends Window
         @box.resize width, height
         @onGridSize()
 
+    timeToX: (time) => time * @config.stepWidth / @config.stepSecs
+    xToTime:    (x) => x/@config.stepWidth * @config.stepSecs 
+
+    cellsAtTime: (time) => 
+        cells = []
+        x = @timeToX time
+        for c in @grid.children()
+            p = c.relPos()
+            cells.push(c) if p.x < x < p.x+c.getWidth()
+        cells
+        
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
     000   000  000       000       000   000  000   000  000   000
@@ -170,12 +179,12 @@ class Timeline extends Window
     000        000      000   000     000   
     000        0000000  000   000     000   
     ###
-        
+            
     setTime: (time) =>
         @relTime = time
         @ruler.setTime @relTime
         @grid.setTime @relTime
-        @line.moveTo @relTime * @config.stepWidth / @config.stepSecs
+        @line.moveTo @timeToX @relTime
         
     setStep: (index) =>
         ct = Audio.context.currentTime
@@ -219,7 +228,13 @@ class Timeline extends Window
         
     playPause: => if @playing then @pause() else @play()
 
+    stopCells: => 
+        if @playing
+            for c in @cellsAtTime @relTime
+                @releaseCell c
+        
     stop: =>
+        @stopCells()
         @getChild('playpause').setState 'pause'
         @playing = false
         knix.deanimate @

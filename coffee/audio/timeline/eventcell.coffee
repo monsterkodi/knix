@@ -19,8 +19,7 @@ class EventCell extends Widget
             width  : 1         
             style  :
                 position : 'absolute'
-                borderRadius: '%dpx'.fmt cfg.height/2
-        
+                borderRadius: '%dpx'.fmt cfg.height/2        
         @
 
     trigger: =>
@@ -28,3 +27,5 @@ class EventCell extends Widget
 
     release: =>
         log @config.noteName
+
+    del: => @close()

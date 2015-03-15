@@ -93,6 +93,8 @@ class EventGrid extends Widget
         @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
         
     removeAllCells: =>
+        @minNoteIndex = 9*12
+        @maxNoteIndex = 0
         @activeCells = []
         for c in @children()
             c.close()
@@ -128,7 +130,6 @@ class EventGrid extends Widget
     ###
     
     startSelect: (event) =>
-        log 'start select'
         Selectangle.start @
         event.stop()
         

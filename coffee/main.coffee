@@ -34,17 +34,17 @@ document.observe "dom:loaded", ->
         k1 = new Keyboard
             x : 20
             y : 50
-            octave: 6
+            octave: 4
 
         k2 = new Keyboard
             x : 20
             y : 350
-            octave: 7
+            octave: 5
 
         k3 = new Keyboard
             x : 20
             y : 650
-            octave: 8
+            octave: 6
         
         a = new ADSR
             x            : 400
@@ -56,7 +56,7 @@ document.observe "dom:loaded", ->
 
         m = new Gain
             master : true
-            gain   : 0.2
+            gain   : 0.1
             x      : 800
             y      : 50
 

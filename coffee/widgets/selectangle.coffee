@@ -35,7 +35,7 @@ class Selectangle extends Widget
     close: (event) =>
         delete Selectangle.selectangle
         if @sizePos().square() == 0 and not event.shiftKey
-            for wid in @wid? and @wid.allChildren() or knix.allWindows()
+            for wid in (@wid? and @wid.allChildren() or knix.allWindows())
                 wid.elem.removeClassName 'selected'
         stage = $('stage_content')
         stage.removeEventListener 'mousemove', @onMove
@@ -52,7 +52,6 @@ class Selectangle extends Widget
         @resize br.x - tl.x, br.y - tl.y
         
         widgets = @wid? and @wid.allChildren() or knix.allWindows()
-                    
         window.document.documentElement.style.cursor = 'crosshair'        
         
         rect = @absRect()
