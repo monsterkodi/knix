@@ -45,6 +45,7 @@ class EventGrid extends Widget
 
     moveSelectedCellsBy: (dx, dy) =>
         log dx, dy
+        dy = Math.round(dy/@rowHeight)*@rowHeight
         numNotes = Keyboard.numNotes()
         for c in @selectedCells()
             p = c.relPos()

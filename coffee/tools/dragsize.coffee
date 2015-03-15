@@ -106,12 +106,12 @@ class DragSize
         event.stop()
 
     sizeStart: (drag, event) =>
-        @config.sizeStart(drag) if @config.sizeStart?
+        @config.sizeStart(drag, event) if @config.sizeStart?
         event.stop()
 
     sizeMove: (drag, event) =>
         
-        @config.onSize(drag) if @config.onSize?
+        @config.onSize(drag, event) if @config.onSize?
 
         w    = drag.target.widget
         wpos = w.absPos()
@@ -124,7 +124,7 @@ class DragSize
             dx = spos.x - wpos.x - w.getWidth()
             dy = spos.y - wpos.y - w.getHeight()
 
-        if @elem.hasClassName 'selected'
+        if @config.elem.hasClassName 'selected'
             for sw in knix.selectedWidgets()
                 @sizeWidget drag, sw, dx, dy
         else
@@ -147,6 +147,7 @@ class DragSize
         hgt = null if drag.border == 'left' or drag.border == 'right'
         wdt = null if drag.border == 'top' or drag.border == 'bottom'
 
+        # log wdt, hgt
         w.resize wdt, hgt
 
         if drag.border in ['left', 'topleft', 'top']
