@@ -43,9 +43,25 @@ class EventGrid extends Widget
             dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
             @moveSelectedCellsBy dx, 0
 
+    selectedCellMaxima: =>
+        minpos = pos Number.MAX_VALUE, Number.MAX_VALUE
+        maxpos = pos 0,0
+        for c in @selectedCells()
+            p = c.relPos()
+            minpos = minpos.min(p)
+            maxpos = maxpos.max(p.plus(c.sizePos()))
+        [minpos, maxpos]
+            
     moveSelectedCellsBy: (dx, dy) =>
-        log dx, dy
+        
+        [minpos, maxpos] = @selectedCellMaxima()
+        
+        dx = Math.max(dx, -minpos.x)
+        dy = Math.max(dy, -minpos.y)
+        dx = Math.min(dx, @getWidth()-maxpos.x)
+        dy = Math.min(dy, @getHeight()-maxpos.y)
         dy = Math.round(dy/@rowHeight)*@rowHeight
+
         numNotes = Keyboard.numNotes()
         for c in @selectedCells()
             p = c.relPos()
@@ -61,12 +77,7 @@ class EventGrid extends Widget
         @scrollToSelectedCells()
         
     scrollToSelectedCells: =>
-        minpos = pos Number.MAX_VALUE, Number.MAX_VALUE
-        maxpos = pos 0,0
-        for c in @selectedCells()
-            p = c.relPos()
-            minpos = minpos.min(p)
-            maxpos = maxpos.max(p)
+        [minpos, maxpos] = @selectedCellMaxima()
         @elem.parentElement.scrollTop = Math.min(minpos.y, @elem.parentElement.scrollTop)
         @elem.parentElement.scrollTop = Math.max(maxpos.y-@elem.parentElement.widget.getHeight()+@rowHeight, @elem.parentElement.scrollTop)
         @elem.parentElement.scrollLeft = Math.min(minpos.x, @elem.parentElement.scrollLeft)
