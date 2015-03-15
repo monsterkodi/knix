@@ -93,6 +93,8 @@ class EventGrid extends Widget
             c.close()
         @onWindowSize()
         
+    prepareState: => @config.children = ( c.config for c in @children() )
+        
     ###
     000   000   0000000   000      000   000  00000000
     000   000  000   000  000      000   000  000     

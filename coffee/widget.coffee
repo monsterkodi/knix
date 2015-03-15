@@ -346,6 +346,12 @@ class Widget
         
     children:    => _.filter ( c.getWidget?() for c in @elem.childNodes )
     allChildren: => _.unique _.filter ( c.getWidget?() for c in $(@elem.id).descendants() )
+    
+    prepareState: => @
+    getState: => 
+        for c in @allChildren() 
+            c.prepareState()
+        _.clone @config
         
     ###
     00     00  000   0000000   0000000
@@ -367,6 +373,7 @@ class Widget
     onTooltip: => @config.tooltip
         
     dump: => @config
+    isWindow: => false
 
     clear: =>
         while @elem.hasChildNodes()
@@ -404,6 +411,7 @@ class Widget
         @config.y = y if y?
         @elem.style.left = "%dpx".fmt(x) if x?
         @elem.style.top  = "%dpx".fmt(y) if y?
+        # log @elem.style.left, @elem.style.top
         @emitMove()
         @
 

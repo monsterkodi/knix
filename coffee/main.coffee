@@ -13,9 +13,9 @@ document.observe "dom:loaded", ->
     # _________________________________________________________________________ init
 
     knix.init
-        # console:  true
+        console:  true
         # loadLast: true
-        console: 'shade'
+        # console: 'shade'
 
     # _________________________________________________________________________ widget test
 

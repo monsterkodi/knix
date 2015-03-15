@@ -46,7 +46,7 @@ class Test
 
         m = new Gain
             master : true
-            gain   : 0.1
+            gain   : 0.0
             x      : 800
             y      : 50
 
@@ -303,7 +303,7 @@ class Test
             parent  : 'menu'
             action  : -> Test.timeline()
 
-        #a.elem.click()
+        Test.timeline()
 
     ###
 

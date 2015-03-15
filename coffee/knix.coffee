@@ -169,7 +169,7 @@ class knix
         w = @create _.def cfg,
             type:   'window'
             parent: 'stage_content'
-        Stage.positionWindow w    
+        Stage.positionWindow(w) if w.isWindow?()
         w
         
     ###
@@ -182,14 +182,15 @@ class knix
 
     @stateForWidgets : (widgets) => 
         JSON.stringify {
-            'windows'     : (_.clone(w.config) for w in widgets)
+            'windows'     : (w.getState() for w in widgets)
             'connections' : ( [ c.config.source.elem.id, c.config.target.elem.id ] for c in @connectionsForWidgets widgets )
             }, null, '    '        
         
     @cleanState: (state) =>
         idmap = {}
         cleanConfig = (cfg) ->
-            delete cfg.parentID
+            # delete cfg.parentID
+            cfg.parent = cfg.parentID
             idmap[cfg.id] = Widget.newID(cfg.type or 'widget')
             cfg.id = idmap[cfg.id]
             cleanConfig cfg.child if cfg.child?
@@ -229,17 +230,13 @@ class knix
         log @copyBuffer
         # window.prompt "Copy to clipboard", JSON.stringify(@copyBuffer)
     @cutSelection     : =>
-        log 'cut'
         @copySelection()
         @delSelection()
-        # log JSON.stringify c
-        # window.prompt "Copy to clipboard", JSON.stringify(@copyBuffer)
     @pasteSelection   : =>
-        # log 'paste', @copyBuffer
         @deselectAll()
         for win in @restore JSON.parse @copyBuffer
-            win.moveBy 10,10
             win.elem.addClassName 'selected'
+            win.moveBy(10,10) if win.isWindow()
 
     @shadeWindows     : => @selectedOrAllWindows().each (w) -> w.shade()
     @closeWindows     : => @selectedWindows().each (w) -> w.close()
@@ -247,10 +244,10 @@ class knix
 
     @restore: (state) =>
         @cleanState state
-        log 'restore', state
-        # log state
+        # log 'restore', state
         windows = @restoreWindows state.windows
         @restoreConnections state.connections
+        # log 'restored'
         windows
 
     @restoreWindows: (windows) => ( @get(w) for w in windows )
