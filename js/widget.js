@@ -12,12 +12,11 @@ var Widget,
 
 Widget = (function() {
   function Widget(cfg, defs) {
-    this.layoutChildren = __bind(this.layoutChildren, this);
-    this.stretchWidth = __bind(this.stretchWidth, this);
     this.moveStop = __bind(this.moveStop, this);
     this.moveStart = __bind(this.moveStart, this);
     this.onMove = __bind(this.onMove, this);
     this.addMovement = __bind(this.addMovement, this);
+    this.stretchWidth = __bind(this.stretchWidth, this);
     this.absCenter = __bind(this.absCenter, this);
     this.absPos = __bind(this.absPos, this);
     this.relPos = __bind(this.relPos, this);
@@ -27,6 +26,7 @@ Widget = (function() {
     this.minWidth = __bind(this.minWidth, this);
     this.innerHeight = __bind(this.innerHeight, this);
     this.innerWidth = __bind(this.innerWidth, this);
+    this.absRect = __bind(this.absRect, this);
     this.getHeight = __bind(this.getHeight, this);
     this.getWidth = __bind(this.getWidth, this);
     this.sizePos = __bind(this.sizePos, this);
@@ -36,15 +36,19 @@ Widget = (function() {
     this.setHeightNoEmit = __bind(this.setHeightNoEmit, this);
     this.setHeight = __bind(this.setHeight, this);
     this.setWidth = __bind(this.setWidth, this);
-    this.moveBy = __bind(this.moveBy, this);
     this.moveTo = __bind(this.moveTo, this);
+    this.moveBy = __bind(this.moveBy, this);
     this.move = __bind(this.move, this);
     this.setPos = __bind(this.setPos, this);
     this.toggleDisplay = __bind(this.toggleDisplay, this);
     this.hide = __bind(this.hide, this);
     this.show = __bind(this.show, this);
     this.clear = __bind(this.clear, this);
+    this.dump = __bind(this.dump, this);
+    this.onTooltip = __bind(this.onTooltip, this);
     this.close = __bind(this.close, this);
+    this.allChildren = __bind(this.allChildren, this);
+    this.children = __bind(this.children, this);
     this.getChild = __bind(this.getChild, this);
     this.getWindow = __bind(this.getWindow, this);
     this.matchConfigValue = __bind(this.matchConfigValue, this);
@@ -53,25 +57,25 @@ Widget = (function() {
     this.getAncestors = __bind(this.getAncestors, this);
     this.getUp = __bind(this.getUp, this);
     this.getParent = __bind(this.getParent, this);
+    this.setText = __bind(this.setText, this);
     this.insertText = __bind(this.insertText, this);
     this.insertChildren = __bind(this.insertChildren, this);
     this.insertChild = __bind(this.insertChild, this);
     this.addToParent = __bind(this.addToParent, this);
     this.returnThis = __bind(this.returnThis, this);
     this.initElem = __bind(this.initElem, this);
+    this.emitClose = __bind(this.emitClose, this);
     this.emitValue = __bind(this.emitValue, this);
     this.emitMove = __bind(this.emitMove, this);
     this.emitSize = __bind(this.emitSize, this);
     this.emit = __bind(this.emit, this);
     this.resolveSlot = __bind(this.resolveSlot, this);
     this.resolveSignal = __bind(this.resolveSignal, this);
+    this.connector = __bind(this.connector, this);
+    this.disconnect = __bind(this.disconnect, this);
     this.connect = __bind(this.connect, this);
     this.initConnections = __bind(this.initConnections, this);
-    this.connector = __bind(this.connector, this);
-    this.initSlots = __bind(this.initSlots, this);
     this.initEvents = __bind(this.initEvents, this);
-    this.dump = __bind(this.dump, this);
-    this.onTooltip = __bind(this.onTooltip, this);
     this.init = __bind(this.init, this);
     this.init(cfg, defs);
   }
@@ -140,6 +144,7 @@ Widget = (function() {
     }
     if (this.config.parent != null) {
       this.addToParent(this.config.parent);
+      delete this.config.parent;
     }
     this.insertChildren();
     this.insertText();
@@ -165,20 +170,20 @@ Widget = (function() {
       });
     }
     this.addMovement();
-    this.initSlots();
     this.initConnections();
     this.initEvents();
     Keys.registerWidget(this);
     return this;
   };
 
-  Widget.prototype.onTooltip = function() {
-    return this.config.tooltip;
-  };
 
-  Widget.prototype.dump = function() {
-    return this.config;
-  };
+  /*
+  00000000  000   000  00000000  000   000  000000000   0000000
+  000       000   000  000       0000  000     000     000     
+  0000000    000 000   0000000   000 0 000     000     0000000 
+  000          000     000       000  0000     000          000
+  00000000      0      00000000  000   000     000     0000000
+   */
 
   Widget.prototype.initEvents = function() {
     if (this.config.onClick != null) {
@@ -205,44 +210,14 @@ Widget = (function() {
     return this;
   };
 
-  Widget.prototype.initSlots = function() {
-    var func, slot, slots;
-    slots = this.config.slots;
-    if (slots == null) {
-      return;
-    }
-    for (slot in slots) {
-      func = slots[slot];
-      this[slot] = func;
-    }
-    return this;
-  };
 
-  Widget.prototype.connector = function(name) {
-    var e, t, _i, _j, _len, _len1, _ref, _ref1;
-    _ref = ['slot', 'signal', 'in', 'out'];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      t = _ref[_i];
-      _ref1 = this.elem.select('.' + t);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        e = _ref1[_j];
-        if (e.hasClassName('connector')) {
-          if (e.widget.config[t] === name || e.widget.config[t] + ':' + t === name) {
-            return e.widget;
-          }
-        }
-      }
-    }
-    error({
-      "file": "./coffee/widget.coffee",
-      "class": "Widget",
-      "line": 138,
-      "args": ["name"],
-      "method": "connector",
-      "type": "."
-    }, 'connector not found!', name);
-    return void 0;
-  };
+  /*
+   0000000   0000000   000   000  000   000  00000000   0000000  000000000  000   0000000   000   000
+  000       000   000  0000  000  0000  000  000       000          000     000  000   000  0000  000
+  000       000   000  000 0 000  000 0 000  0000000   000          000     000  000   000  000 0 000
+  000       000   000  000  0000  000  0000  000       000          000     000  000   000  000  0000
+   0000000   0000000   000   000  000   000  00000000   0000000     000     000   0000000   000   000
+   */
 
   Widget.prototype.initConnections = function() {
     var connection, connections, _i, _len;
@@ -265,7 +240,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 154,
+        "line": 137,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -275,7 +250,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 156,
+        "line": 139,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -285,18 +260,78 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 158,
+        "line": 141,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
       }, "slot not found!");
     }
-    return {
-      handler: signalSender.elem.on(signalEvent, slotFunction),
-      sender: signalSender,
-      event: signalEvent,
-      receiver: slotFunction
-    };
+    signalSender.elem.addEventListener(signalEvent, slotFunction);
+    return this;
+  };
+
+  Widget.prototype.disconnect = function(signal, slot) {
+    var signalEvent, signalSender, slotFunction, _ref;
+    _ref = this.resolveSignal(signal), signalSender = _ref[0], signalEvent = _ref[1];
+    slotFunction = this.resolveSlot(slot);
+    if (signalSender == null) {
+      error({
+        "file": "./coffee/widget.coffee",
+        "class": "Widget",
+        "line": 150,
+        "args": ["signal", "slot"],
+        "method": "disconnect",
+        "type": "."
+      }, "sender not found!");
+    }
+    if (signalEvent == null) {
+      error({
+        "file": "./coffee/widget.coffee",
+        "class": "Widget",
+        "line": 152,
+        "args": ["signal", "slot"],
+        "method": "disconnect",
+        "type": "."
+      }, "event not found!");
+    }
+    if (slotFunction == null) {
+      error({
+        "file": "./coffee/widget.coffee",
+        "class": "Widget",
+        "line": 154,
+        "args": ["signal", "slot"],
+        "method": "disconnect",
+        "type": "."
+      }, "slot not found!");
+    }
+    signalSender.elem.removeEventListener(signalEvent, slotFunction);
+    return this;
+  };
+
+  Widget.prototype.connector = function(name) {
+    var e, t, _i, _j, _len, _len1, _ref, _ref1;
+    _ref = ['slot', 'signal', 'in', 'out'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      t = _ref[_i];
+      _ref1 = this.elem.select('.' + t);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        e = _ref1[_j];
+        if (e.hasClassName('connector')) {
+          if (e.widget.config[t] === name || e.widget.config[t] + ':' + t === name) {
+            return e.widget;
+          }
+        }
+      }
+    }
+    error({
+      "file": "./coffee/widget.coffee",
+      "class": "Widget",
+      "line": 170,
+      "args": ["name"],
+      "method": "connector",
+      "type": "."
+    }, 'connector not found!', name);
+    return void 0;
   };
 
   Widget.prototype.resolveSignal = function(signal) {
@@ -339,7 +374,7 @@ Widget = (function() {
           error({
             "file": "./coffee/widget.coffee",
             "class": "Widget",
-            "line": 191,
+            "line": 200,
             "args": ["slot"],
             "method": "resolveSlot",
             "type": "."
@@ -350,7 +385,7 @@ Widget = (function() {
     error({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 193,
+      "line": 202,
       "args": ["slot"],
       "method": "resolveSlot",
       "type": "."
@@ -358,51 +393,74 @@ Widget = (function() {
     return null;
   };
 
+
+  /*
+   0000000  000   0000000   000   000   0000000   000    
+  000       000  000        0000  000  000   000  000    
+  0000000   000  000  0000  000 0 000  000000000  000    
+       000  000  000   000  000  0000  000   000  000    
+  0000000   000   0000000   000   000  000   000  0000000
+   */
+
   Widget.prototype.emit = function(signal, args) {
-    var event;
+    var event, _ref;
     event = new CustomEvent(signal, {
-      bubbles: true,
+      bubbles: false,
       cancelable: true,
       detail: args
     });
-    this.elem.dispatchEvent(event);
+    if ((_ref = this.elem) != null) {
+      _ref.dispatchEvent(event);
+    }
     return this;
   };
 
   Widget.prototype.emitSize = function() {
     this.config.width = this.getWidth();
     this.config.height = this.getHeight();
-    this.emit('size', {
+    return this.emit('size', {
       width: this.config.width,
       height: this.config.height
     });
-    return this;
   };
 
   Widget.prototype.emitMove = function() {
     var p;
-    p = this.absPos();
-    this.config.x = p.x;
-    this.config.y = p.y;
-    this.emit('move', {
+    p = pos(this.config.x, this.config.y);
+    return this.emit('move', {
       pos: p
     });
-    return this;
   };
 
   Widget.prototype.emitValue = function(v) {
-    this.emit('onValue', {
+    return this.emit('onValue', {
       value: v
     });
-    return this;
   };
+
+  Widget.prototype.emitClose = function() {
+    return this.emit('close');
+  };
+
+
+  /*
+  00000000  000      00000000  00     00
+  000       000      000       000   000
+  0000000   000      0000000   000000000
+  000       000      000       000 0 000
+  00000000  0000000  00000000  000   000
+   */
 
   Widget.elem = function(type, clss) {
     var e;
     e = new Element(type);
-    e.id = "%s.%s".fmt(clss, uuid.v4());
+    e.id = Widget.newID(clss);
     e.addClassName(clss);
     return e;
+  };
+
+  Widget.newID = function(clss) {
+    return "%s-%s".fmt(clss, uuid.v4());
   };
 
   Widget.prototype.initElem = function() {
@@ -412,17 +470,26 @@ Widget = (function() {
     return this.elem.toggleDisplay = this.toggleDisplay;
   };
 
+
+  /*
+  000   000  000  00000000  00000000    0000000   00000000    0000000  000   000  000   000
+  000   000  000  000       000   000  000   000  000   000  000       000   000   000 000 
+  000000000  000  0000000   0000000    000000000  0000000    000       000000000    00000  
+  000   000  000  000       000   000  000   000  000   000  000       000   000     000   
+  000   000  000  00000000  000   000  000   000  000   000   0000000  000   000     000
+   */
+
   Widget.prototype.returnThis = function() {
     return this;
   };
 
   Widget.prototype.addToParent = function(p) {
-    var parentElement;
+    var parentElement, _ref;
     if (this.elem == null) {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 247,
+        "line": 273,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -433,16 +500,14 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 250,
+        "line": 276,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
       }, 'no p?');
       return this;
     }
-    if (p.content != null) {
-      parentElement = $(p.content);
-    }
+    parentElement = (_ref = p.content) != null ? _ref.elem : void 0;
     if (!parentElement) {
       parentElement = p.elem;
     }
@@ -453,7 +518,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 256,
+        "line": 282,
         "args": ["p"],
         "method": "addToParent",
         "type": "."
@@ -461,7 +526,7 @@ Widget = (function() {
       return this;
     }
     parentElement.insert(this.elem);
-    this.config.parentId = parentElement.id;
+    this.config.parentID = parentElement.id;
     return this;
   };
 
@@ -497,6 +562,12 @@ Widget = (function() {
     }
   };
 
+  Widget.prototype.setText = function(t) {
+    this.elem.textContent = '';
+    this.config.text = t;
+    return this.insertText();
+  };
+
   Widget.prototype.getParent = function() {
     var a, anc, args, _i, _len, _ref;
     args = $A(arguments);
@@ -510,8 +581,8 @@ Widget = (function() {
       }
       return;
     }
-    if (this.config.parentId) {
-      return $(this.config.parentId).widget;
+    if (this.config.parentID) {
+      return $(this.config.parentID).widget;
     }
     if (this.parentElement != null) {
       return $(this.parentElement.id).widget;
@@ -561,12 +632,13 @@ Widget = (function() {
         }
       }
       return _results;
-    })(), function(e) {
-      return e != null;
-    });
+    })());
   };
 
   Widget.prototype.getWindow = function() {
+    if (arguments.length) {
+      return $($A(arguments)[0]).widget;
+    }
     if (this.elem.hasClassName('window')) {
       return this;
     }
@@ -582,13 +654,61 @@ Widget = (function() {
     return void 0;
   };
 
+  Widget.prototype.children = function() {
+    var c;
+    return _.filter((function() {
+      var _i, _len, _ref, _results;
+      _ref = this.elem.childNodes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        c = _ref[_i];
+        _results.push(typeof c.getWidget === "function" ? c.getWidget() : void 0);
+      }
+      return _results;
+    }).call(this));
+  };
+
+  Widget.prototype.allChildren = function() {
+    var c;
+    return _.unique(_.filter((function() {
+      var _i, _len, _ref, _results;
+      _ref = $(this.elem.id).descendants();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        c = _ref[_i];
+        _results.push(typeof c.getWidget === "function" ? c.getWidget() : void 0);
+      }
+      return _results;
+    }).call(this)));
+  };
+
+
+  /*
+  00     00  000   0000000   0000000
+  000   000  000  000       000     
+  000000000  000  0000000   000     
+  000 0 000  000       000  000     
+  000   000  000  0000000    0000000
+   */
+
   Widget.prototype.close = function() {
+    var _ref;
     Keys.unregisterWidget(this);
-    this.emit('close');
-    this.elem.remove();
-    this.elem = null;
-    this.config = null;
+    this.emitClose();
+    if ((_ref = this.elem) != null) {
+      _ref.remove();
+    }
+    delete this.elem;
+    delete this.config;
     return void 0;
+  };
+
+  Widget.prototype.onTooltip = function() {
+    return this.config.tooltip;
+  };
+
+  Widget.prototype.dump = function() {
+    return this.config;
   };
 
   Widget.prototype.clear = function() {
@@ -617,6 +737,15 @@ Widget = (function() {
     }
   };
 
+
+  /*
+   0000000   00000000   0000000   00     00  00000000  000000000  00000000   000   000
+  000        000       000   000  000   000  000          000     000   000   000 000 
+  000  0000  0000000   000   000  000000000  0000000      000     0000000      00000  
+  000   000  000       000   000  000 0 000  000          000     000   000     000   
+   0000000   00000000   0000000   000   000  00000000     000     000   000     000
+   */
+
   Widget.prototype.setPos = function(p) {
     return this.moveTo(p.x, p.y);
   };
@@ -625,25 +754,22 @@ Widget = (function() {
     return this.moveBy(p.x, p.y);
   };
 
+  Widget.prototype.moveBy = function(dx, dy) {
+    return this.setPos(this.relPos().plus(pos(dx, dy)));
+  };
+
   Widget.prototype.moveTo = function(x, y) {
+    if (x != null) {
+      this.config.x = x;
+    }
+    if (y != null) {
+      this.config.y = y;
+    }
     if (x != null) {
       this.elem.style.left = "%dpx".fmt(x);
     }
     if (y != null) {
       this.elem.style.top = "%dpx".fmt(y);
-    }
-    this.emitMove();
-    return this;
-  };
-
-  Widget.prototype.moveBy = function(dx, dy) {
-    var p;
-    p = this.relPos();
-    if (dx != null) {
-      this.elem.style.left = "%dpx".fmt(p.x + dx);
-    }
-    if (dy != null) {
-      this.elem.style.top = "%dpx".fmt(p.y + dy);
     }
     this.emitMove();
     return this;
@@ -710,11 +836,17 @@ Widget = (function() {
   };
 
   Widget.prototype.getWidth = function() {
-    return this.elem.getWidth();
+    var _ref;
+    return (_ref = this.elem) != null ? _ref.getWidth() : void 0;
   };
 
   Widget.prototype.getHeight = function() {
-    return this.elem.getHeight();
+    var _ref;
+    return (_ref = this.elem) != null ? _ref.getHeight() : void 0;
+  };
+
+  Widget.prototype.absRect = function() {
+    return new Rect(this.absPos().x, this.absPos().y, this.getWidth(), this.getHeight());
   };
 
   Widget.prototype.innerWidth = function() {
@@ -782,9 +914,22 @@ Widget = (function() {
     return this.absPos().plus(pos(this.elem.getWidth(), this.elem.getHeight()).scale(0.5));
   };
 
+  Widget.prototype.stretchWidth = function() {
+    return this.elem.style.width = '50%';
+  };
+
+
+  /*
+  00     00   0000000   000   000  00000000
+  000   000  000   000  000   000  000     
+  000000000  000   000   000 000   0000000 
+  000 0 000  000   000     000     000     
+  000   000   0000000       0      00000000
+   */
+
   Widget.prototype.addMovement = function() {
     if (this.config.isMovable) {
-      return Drag.create({
+      return new Drag({
         target: this.elem,
         minPos: pos(void 0, 0),
         onMove: this.onMove,
@@ -796,6 +941,15 @@ Widget = (function() {
   };
 
   Widget.prototype.onMove = function(drag, event) {
+    var _ref;
+    log({
+      "file": "./coffee/widget.coffee",
+      "class": "Widget",
+      "line": 479,
+      "args": ["drag", "event"],
+      "method": "onMove",
+      "type": "."
+    }, 'move', (_ref = this.elem) != null ? _ref.id : void 0);
     return this.emitMove();
   };
 
@@ -805,7 +959,7 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 434,
+      "line": 484,
       "args": ["drag", "event"],
       "method": "moveStart",
       "type": "."
@@ -819,51 +973,12 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 439,
+      "line": 489,
       "args": ["drag", "event"],
       "method": "moveStop",
       "type": "."
     }, 'stop', (_ref = event.target) != null ? _ref.id : void 0);
     return StyleSwitch.togglePathFilter();
-  };
-
-  Widget.prototype.stretchWidth = function() {
-    return this.elem.style.width = '50%';
-  };
-
-  Widget.prototype.layoutChildren = function() {
-    var e;
-    e = (this.config.content != null) && $(this.config.content) || this.elem;
-    if (this.config.width == null) {
-      if (e.widget.config.resize != null) {
-        if (e.widget.config.resize === 'horizontal' || e.widget.config.resize === true) {
-          e.widget.stretchWidth();
-        }
-      } else {
-        this.setWidth(e.getWidth());
-      }
-    }
-    if (this.config.height == null) {
-      this.setHeight(e.getHeight());
-    }
-    if (this.config.resize) {
-      if (this.config.minWidth == null) {
-        e.style.minWidth = "%dpx".fmt(e.getWidth());
-      }
-      if (this.config.minHeight == null) {
-        e.style.minHeight = "%dpx".fmt(e.getHeight());
-      }
-      if (this.config.resize === 'horizontal') {
-        if (this.config.maxHeight == null) {
-          e.style.maxHeight = "%dpx".fmt(e.getHeight());
-        }
-      }
-      if (this.config.resize === 'vertical') {
-        if (this.config.maxWidth == null) {
-          return e.style.maxWidth = "%dpx".fmt(e.getWidth());
-        }
-      }
-    }
   };
 
   return Widget;

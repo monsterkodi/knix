@@ -7,15 +7,11 @@
 000   000  000   000  000   000  000   000
 0000000    000   000  000   000   0000000
  */
-var Drag, Keys, Pos, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
+var Drag, Keys, Pos, Rect, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Drag = (function() {
-  Drag.create = function(cfg) {
-    return new Drag(cfg);
-  };
-
   function Drag(cfg) {
     this.deactivate = __bind(this.deactivate, this);
     this.activate = __bind(this.activate, this);
@@ -32,20 +28,20 @@ Drag = (function() {
       handle: null,
       minPos: null,
       maxPos: null,
-      cursor: "move",
       onStart: null,
       onMove: null,
       onStop: null,
       doMove: true,
-      active: true
+      active: true,
+      cursor: 'move'
     }));
-    if (typeof this.target === "string") {
+    if (typeof this.target === 'string') {
       t = document.getElementById(this.target);
       if (t == null) {
         error({
           "file": "./coffee/tools/drag.coffee",
           "class": "Drag",
-          "line": 32,
+          "line": 30,
           "args": ["cfg"],
           "method": "constructor",
           "type": "."
@@ -58,7 +54,7 @@ Drag = (function() {
       error({
         "file": "./coffee/tools/drag.coffee",
         "class": "Drag",
-        "line": 36,
+        "line": 34,
         "args": ["cfg"],
         "method": "constructor",
         "type": "."
@@ -68,11 +64,9 @@ Drag = (function() {
     if ((this.minPos != null) && (this.maxPos != null)) {
       _ref = [this.minPos.min(this.maxPos), this.minPos.max(this.maxPos)], this.minPos = _ref[0], this.maxPos = _ref[1];
     }
-    this.lastPos = null;
-    this.startPos = null;
     this.dragging = false;
     this.listening = false;
-    if (typeof this.handle === "string") {
+    if (typeof this.handle === 'string') {
       this.handle = document.getElementById(this.handle);
     }
     if (this.handle == null) {
@@ -98,6 +92,7 @@ Drag = (function() {
       return;
     }
     this.dragging = true;
+    this.pos = this.absPos(event);
     if (this.onStart != null) {
       this.onStart(this, event);
     }
@@ -150,8 +145,8 @@ Drag = (function() {
     }
     document.removeEventListener('mousemove', this.dragMove);
     document.removeEventListener('mouseup', this.dragUp);
-    this.lastPos = null;
-    this.startPos = null;
+    delete this.lastPos;
+    delete this.startPos;
     if ((this.onStop != null) && (event != null)) {
       this.onStop(this, event);
     }
@@ -200,51 +195,68 @@ Keys = (function() {
 
   Keys.shortcuts = {};
 
+  Keys.interactive = false;
+
   Keys.init = function() {
     document.onkeypress = Keys.onKey;
     return document.onkeyup = Keys.onKeyUp;
   };
 
   Keys.onKey = function(e) {
-    var key, mods, wid, _i, _len, _ref, _results;
+    var key, mods, pressed, wid, _i, _len, _ref;
     mods = _.filter([e.shiftKey && '⇧', e.ctrlKey && '^', e.altKey && '⌥', e.metaKey && '⌘']).join('');
     key = mods + e.key;
-    if (!_.isEmpty(Keys.register)) {
-      log({
-        "file": "./coffee/tools/keys.coffee",
-        "class": "Keys",
-        "line": 26,
-        "method": "onKey",
-        "type": "@",
-        "args": ["e"]
-      }, 'register key [%s] for element %s'.fmt(key, Keys.register.elem.id));
-      if (Keys.register.elem != null) {
-        Keys.registerKeyForWidget(key, Keys.register.widget);
-        Keys.register.elem.removeClassName('register-key');
+    log({
+      "file": "./coffee/tools/keys.coffee",
+      "class": "Keys",
+      "line": 25,
+      "method": "onKey",
+      "type": "@",
+      "args": ["e"]
+    }, key);
+    if (Keys.interactive) {
+      if (key === 'Esc') {
+        return Keys.stopInteractive();
+      } else if (key === 'Backspace') {
+        return wid.config.keys = [];
+      } else if (!_.isEmpty(Keys.register)) {
+        log({
+          "file": "./coffee/tools/keys.coffee",
+          "class": "Keys",
+          "line": 32,
+          "method": "onKey",
+          "type": "@",
+          "args": ["e"]
+        }, 'register key [%s] for element %s'.fmt(key, Keys.register.elem.id));
+        if (Keys.register.elem != null) {
+          Keys.registerKeyForWidget(key, Keys.register.widget);
+          Keys.register.elem.removeClassName('register-key');
+        }
+        return Keys.stopInteractive();
       }
-      document.removeEventListener('mousemove', Keys.onMove);
-      return Keys.register = {};
     } else {
       if (Keys.shortcuts[key] != null) {
+        pressed = false;
         _ref = Keys.shortcuts[key];
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           wid = _ref[_i];
-          if (wid.trigger != null) {
-            _results.push(typeof wid.trigger === "function" ? wid.trigger() : void 0);
-          } else if (__indexOf.call(Keys.pressed, key) < 0) {
-            e = new MouseEvent("mousedown", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-            wid.elem.dispatchEvent(e);
-            _results.push(Keys.pressed.push(key));
+          if (_.isFunction(wid)) {
+            wid(key);
           } else {
-            _results.push(void 0);
+            if (__indexOf.call(Keys.pressed, key) < 0) {
+              e = new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                view: window
+              });
+              wid.elem.dispatchEvent(e);
+              pressed = true;
+            }
           }
         }
-        return _results;
+        if (pressed) {
+          return Keys.pressed.push(key);
+        }
       }
     }
   };
@@ -257,18 +269,19 @@ Keys = (function() {
     if (i >= 0) {
       Keys.pressed.splice(i, 1);
     }
-    if (_.isEmpty(Keys.register) && i >= 0) {
+    if (!Keys.interactive && i >= 0) {
       if (Keys.shortcuts[key] != null) {
         _ref = Keys.shortcuts[key];
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           wid = _ref[_i];
-          if (wid.trigger == null) {
+          if (!_.isFunction(wid)) {
             e = new MouseEvent("mouseup", {
               bubbles: true,
               cancelable: true,
               view: window
             });
+            wid.elem.dispatchEvent(e);
             e = new MouseEvent("click", {
               bubbles: true,
               cancelable: true,
@@ -284,68 +297,71 @@ Keys = (function() {
     }
   };
 
-  Keys.interactiveKey = function() {
-    return document.addEventListener('mousemove', Keys.onMove);
+  Keys.startInteractive = function() {
+    Keys.interactive = true;
+    document.addEventListener('mousemove', Keys.onMove);
+    return Keys.updateAtPos(Stage.mousePos);
+  };
+
+  Keys.stopInteractive = function() {
+    var _ref;
+    Keys.interactive = false;
+    document.removeEventListener('mousemove', Keys.onMove);
+    if ((_ref = Keys.register.elem) != null) {
+      _ref.removeClassName('register-key');
+    }
+    return Keys.register = {};
   };
 
   Keys.registerKeyForWidget = function(key, wid) {
     if (__indexOf.call(wid.config.keys, key) < 0) {
       wid.config.keys.push(key);
     }
+    return Keys.add(key, wid);
+  };
+
+  Keys.add = function(key, funcOrWidget) {
     if (Keys.shortcuts[key] == null) {
       Keys.shortcuts[key] = [];
     }
-    if (__indexOf.call(Keys.shortcuts[key], wid) < 0) {
-      return Keys.shortcuts[key].push(wid);
+    if (__indexOf.call(Keys.shortcuts[key], funcOrWidget) < 0) {
+      return Keys.shortcuts[key].push(funcOrWidget);
     }
   };
 
-  Keys.unregisterKeyForWidget = function(key, wid) {
-    var i;
-    log({
-      "file": "./coffee/tools/keys.coffee",
-      "class": "Keys",
-      "line": 74,
-      "method": "unregisterKeyForWidget",
-      "type": "@",
-      "args": ["key", "wid"]
-    }, key, wid.elem.id);
-    if (Keys.shortcuts[key] != null) {
-      i = Keys.shortcuts[key].indexOf(wid);
-      if (i >= 0) {
-        return Keys.shortcuts[key].splice(i, 1);
-      }
-    }
+  Keys.del = function(key, funcOrWidget) {
+    var _ref;
+    return (_ref = Keys.shortcuts[key]) != null ? _ref.splice(Keys.shortcuts[key].indexOf(funcOrWidget, 1)) : void 0;
   };
 
   Keys.registerWidget = function(w) {
-    var key, _i, _len, _ref, _results;
-    if (w.config.keys != null) {
-      _ref = w.config.keys;
+    var key, _i, _len, _ref, _ref1, _results;
+    if (((_ref = w.config) != null ? _ref.keys : void 0) != null) {
+      _ref1 = w.config.keys;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        key = _ref[_i];
-        _results.push(Keys.registerKeyForWidget(key, w));
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        key = _ref1[_i];
+        _results.push(Keys.add(key, w));
       }
       return _results;
     }
   };
 
   Keys.unregisterWidget = function(w) {
-    var c, cw, key, _i, _j, _len, _len1, _ref, _ref1, _results;
-    if (w.config.keys != null) {
-      _ref = w.config.keys;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        key = _ref[_i];
-        Keys.unregisterKeyForWidget(key, w);
+    var c, cw, key, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _results;
+    if (((_ref = w.config) != null ? _ref.keys : void 0) != null) {
+      _ref1 = w.config.keys;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        key = _ref1[_i];
+        Keys.del(key, w);
       }
     }
-    if (w.config.children != null) {
-      _ref1 = w.config.children;
+    if (((_ref2 = w.config) != null ? _ref2.children : void 0) != null) {
+      _ref3 = w.config.children;
       _results = [];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        c = _ref1[_j];
-        cw = $(c.id).getWidget();
+      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+        c = _ref3[_j];
+        cw = (_ref4 = $(c.id)) != null ? _ref4.getWidget() : void 0;
         if (cw != null) {
           _results.push(Keys.unregisterWidget(cw));
         } else {
@@ -357,8 +373,12 @@ Keys = (function() {
   };
 
   Keys.onMove = function(event) {
+    return Keys.updateAtPos(Stage.absPos(event));
+  };
+
+  Keys.updateAtPos = function(p) {
     var e, wid;
-    e = document.elementFromPoint(event.clientX, event.clientY);
+    e = Stage.elementAtPos(p);
     if (e != null) {
       wid = e.getWidget().upWidgetWithConfigValue('keys');
       if (wid != null) {
@@ -607,6 +627,36 @@ pos = function(x, y) {
 
 /*
 
+00000000   00000000   0000000  000000000
+000   000  000       000          000   
+0000000    0000000   000          000   
+000   000  000       000          000   
+000   000  00000000   0000000     000
+ */
+
+Rect = (function() {
+  function Rect(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.contains = __bind(this.contains, this);
+  }
+
+  Rect.prototype.contains = function(r) {
+    var h, w;
+    w = r.width || 0;
+    h = r.hight || 0;
+    return this.x <= r.x && this.y <= r.y && r.x + w <= this.x + this.width && r.y + h <= this.y + this.height;
+  };
+
+  return Rect;
+
+})();
+
+
+/*
+
  0000000  00000000  000000000  000000000  000  000   000   0000000    0000000
 000       000          000        000     000  0000  000  000        000     
 0000000   0000000      000        000     000  000 0 000  000  0000  0000000 
@@ -659,12 +709,29 @@ Settings = (function() {
 Stage = (function() {
   function Stage() {}
 
+  Stage.mousePos = pos(0, 0);
+
+  Stage.init = function() {
+    var stage;
+    stage = $('stage_content');
+    stage.addEventListener('contextmenu', Menu.showContextMenu);
+    stage.addEventListener('mousemove', Stage.onMove);
+    return stage.addEventListener('mousedown', function() {
+      return Selectangle.start();
+    });
+  };
+
+  Stage.onMove = function(event) {
+    return Stage.mousePos = Stage.absPos(event);
+  };
+
   Stage.positionWindow = function(win) {
-    var h, p, w, _ref;
+    var h, p, w, x, y, _ref, _ref1;
     _ref = [win.absPos(), win.getWidth(), win.getHeight()], p = _ref[0], w = _ref[1], h = _ref[2];
-    if (p.x + w > Stage.width()) {
-      return win.setPos(pos(Stage.width() - w, Math.max(p.y, $('menu').getHeight())));
-    }
+    _ref1 = [p.x, p.y], x = _ref1[0], y = _ref1[1];
+    x = Math.min(x, Stage.width() - w);
+    y = Math.max(y, $('menu').getHeight() + 6);
+    return win.setPos(pos(x, y));
   };
 
   Stage.width = function() {
@@ -708,6 +775,18 @@ Stage = (function() {
       }
       return typeof s.requestFullscreen === "function" ? s.requestFullscreen() : void 0;
     }
+  };
+
+  Stage.windowAtPos = function(p) {
+    var e;
+    e = Stage.elementAtPos(p);
+    return e != null ? typeof e.getWidget === "function" ? e.getWidget().getWindow() : void 0 : void 0;
+  };
+
+  Stage.elementAtPos = function(p) {
+    var e;
+    e = document.elementFromPoint(p.x, p.y);
+    return e || $('stage_content');
   };
 
   Stage.absPos = function(event) {
@@ -797,7 +876,9 @@ str = function(o, indent, visited) {
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             k = _ref[_i];
-            _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+            if (!_.isFunction(o[k])) {
+              _results.push(indent + strIndent + k + ": " + str(o[k], indent + strIndent, visited));
+            }
           }
           return _results;
         })()).join("\n");
@@ -830,8 +911,6 @@ StyleSwitch = (function() {
   function StyleSwitch() {}
 
   StyleSwitch.schemes = ['dark.css', 'bright.css'];
-
-  StyleSwitch.filter = null;
 
   StyleSwitch.colors = {};
 
@@ -887,7 +966,7 @@ StyleSwitch = (function() {
           filter: StyleSwitch.filter
         });
       }
-      return StyleSwitch.filter = null;
+      return delete StyleSwitch.filter;
     }
   };
 
@@ -904,13 +983,6 @@ StyleSwitch = (function() {
    000     000   000  000   000  000           000
    000      0000000    0000000   0000000  0000000
  */
-
-this.newElement = function(type) {
-  var e;
-  e = new Element(type);
-  e.identify();
-  return e;
-};
 
 Element.addMethods({
   raise: function(element) {
@@ -935,8 +1007,10 @@ SVGAnimatedLength.prototype._str = function() {
 _.def = function(c, d) {
   if (c != null) {
     return _.defaults(_.clone(c), d);
+  } else if (d != null) {
+    return _.clone(d);
   } else {
-    return d;
+    return {};
   }
 };
 
@@ -977,12 +1051,6 @@ _.arg = function(arg, argname) {
   return arg;
 };
 
-_.del = function(l, e) {
-  return _.remove(l, function(n) {
-    return n === e;
-  });
-};
-
 _.value = function(arg) {
   return _.arg(arg, 'value');
 };
@@ -993,6 +1061,12 @@ _.win = function() {
 
 _.wid = function() {
   return _.wid.caller["arguments"][0].target.getWidget();
+};
+
+_.del = function(l, e) {
+  return _.remove(l, function(n) {
+    return n === e;
+  });
 };
 
 //# sourceMappingURL=tools.js.map

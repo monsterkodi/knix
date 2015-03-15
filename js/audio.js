@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000  000   000
 000   000   0000000   0000000    000   0000000
  */
-var Analyser, Audio, AudioWindow, Delay, Envelope, Filter, Gain, Jacks, Oscillator, Ramp,
+var ADSR, Analyser, Audio, AudioWindow, Delay, Envelope, Filter, Gain, Jacks, Keyboard, Oscillator, Ramp, Recorder,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -17,6 +17,9 @@ Audio = (function() {
 
   Audio.init = function() {
     Audio.context = new (window.AudioContext || window.webkitAudioContext)();
+    Timeline.menu();
+    Keyboard.menu();
+    ADSR.menu();
     Ramp.menu();
     Envelope.menu();
     Range.menu();
@@ -55,9 +58,9 @@ Audio = (function() {
   Audio.filter = function(cfg) {
     var filter;
     cfg = _.def(cfg, {
-      freq: 440,
-      minFreq: 100,
-      maxFreq: 12000,
+      frequency: 440,
+      minFrequency: 100,
+      maxFrequency: 12000,
       detune: 0,
       minDetune: -1000,
       maxDetune: 1000,
@@ -70,7 +73,7 @@ Audio = (function() {
       filter: 'bandpass'
     });
     filter = Audio.context.createBiquadFilter();
-    filter.frequency.value = cfg.freq;
+    filter.frequency.value = cfg.frequency;
     filter.detune.value = cfg.detune;
     filter.Q.value = cfg.Q;
     filter.type = cfg.filter;
@@ -92,12 +95,12 @@ Audio = (function() {
   Audio.oscillator = function(cfg) {
     var oscillator;
     cfg = _.def(cfg, {
-      freq: 0,
-      minFreq: 0,
-      maxFreq: 14000
+      frequency: 0,
+      minFrequency: 0,
+      maxFrequency: 14000
     });
     oscillator = Audio.context.createOscillator();
-    oscillator.frequency.value = cfg.freq;
+    oscillator.frequency.value = cfg.frequency;
     oscillator.start(0);
     return [oscillator, cfg];
   };
@@ -173,6 +176,326 @@ AudioWindow = (function(_super) {
 
 /*
 
+ 0000000   0000000     0000000  00000000 
+000   000  000   000  000       000   000
+000000000  000   000  0000000   0000000  
+000   000  000   000       000  000   000
+000   000  0000000    0000000   000   000
+ */
+
+ADSR = (function(_super) {
+  __extends(ADSR, _super);
+
+  function ADSR() {
+    this.sizeWindow = __bind(this.sizeWindow, this);
+    this.voiceDone = __bind(this.voiceDone, this);
+    this.release = __bind(this.release, this);
+    this.trigger = __bind(this.trigger, this);
+    this.note = __bind(this.note, this);
+    this.onNoteValue = __bind(this.onNoteValue, this);
+    this.voiceIndex = __bind(this.voiceIndex, this);
+    this.setShape = __bind(this.setShape, this);
+    this.setFreqFactor = __bind(this.setFreqFactor, this);
+    this.setFrequency = __bind(this.setFrequency, this);
+    this.setDuration = __bind(this.setDuration, this);
+    this.setGain = __bind(this.setGain, this);
+    this.init = __bind(this.init, this);
+    return ADSR.__super__.constructor.apply(this, arguments);
+  }
+
+  ADSR.prototype.init = function(cfg, defs) {
+    var i, oscillator, volume, _i, _ref, _ref1, _ref2, _ref3;
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      type: 'ADSR',
+      shape: Oscillator.shapes[0],
+      duration: 0.2,
+      minDuration: 0.0,
+      maxDuration: 10.0,
+      freqFactor: 1.0,
+      maxFrequency: 10000,
+      frequency: 2000,
+      gain: 0.5,
+      voices: 16,
+      numHandles: 3,
+      sustainIndex: 1,
+      vals: [pos(0, 0), pos(.2, 1), pos(1, 0)]
+    });
+    _ref = Audio.gain(cfg), this.gain = _ref[0], cfg = _ref[1];
+    this.voice = [];
+    this.volume = [];
+    this.oscillator = [];
+    for (i = _i = 0, _ref1 = cfg.voices; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+      _ref2 = Audio.gain(cfg), volume = _ref2[0], cfg = _ref2[1];
+      _ref3 = Audio.oscillator(cfg), oscillator = _ref3[0], cfg = _ref3[1];
+      this.voice.push(void 0);
+      this.volume.push(volume);
+      this.oscillator.push(oscillator);
+      oscillator.connect(volume);
+      volume.gain.value = 0;
+      volume.connect(this.gain);
+    }
+    this.audio = this.gain;
+    ADSR.__super__.init.call(this, cfg, {
+      title: 'adsr',
+      recKey: 'adsr',
+      children: [
+        {
+          type: 'jacks',
+          hasInput: false,
+          content: {
+            type: 'hbox',
+            children: [
+              {
+                type: 'connector',
+                slot: 'note'
+              }, {
+                type: 'spinner',
+                "class": 'note',
+                recKey: 'note',
+                tooltip: 'note',
+                value: 'C0',
+                recKey: 'note',
+                values: Keyboard.allNoteNames(),
+                style: {
+                  width: '50%'
+                }
+              }, {
+                type: 'spinner',
+                "class": 'shape',
+                recKey: 'shape',
+                tooltip: 'shape',
+                value: cfg.shape,
+                values: Oscillator.shapes,
+                style: {
+                  width: '50%'
+                }
+              }
+            ]
+          }
+        }, {
+          type: 'pad',
+          "class": 'pad',
+          numHandles: cfg.numHandles,
+          sustainIndex: cfg.sustainIndex,
+          vals: cfg.vals,
+          minHeight: 50,
+          minWidth: 150
+        }, {
+          type: 'sliderspin',
+          "class": 'duration',
+          tooltip: 'duration',
+          recKey: 'duration',
+          value: cfg.duration,
+          minValue: cfg.minDuration,
+          maxValue: cfg.maxDuration,
+          spinStep: cfg.durationStep
+        }, {
+          type: 'sliderspin',
+          "class": 'freqFactor',
+          tooltip: 'freqency factor',
+          value: cfg.freqFactor,
+          minValue: 0,
+          maxValue: 1.0
+        }, {
+          type: 'sliderspin',
+          "class": 'frequency',
+          tooltip: 'frequency',
+          value: cfg.frequency,
+          minValue: cfg.minFrequency,
+          maxValue: cfg.maxFrequency
+        }, {
+          type: 'sliderspin',
+          "class": 'gain',
+          tooltip: 'gain',
+          value: cfg.gain,
+          minValue: 0.0,
+          maxValue: 1.0
+        }, {
+          type: 'button',
+          text: 'trigger',
+          "class": 'trigger'
+        }
+      ]
+    });
+    this.connect('trigger:trigger', this.trigger);
+    this.connect('trigger:release', this.release);
+    this.connect('gain:onValue', this.setGain);
+    this.connect('shape:onValue', this.setShape);
+    this.connect('duration:onValue', this.setDuration);
+    this.connect('freqFactor:onValue', this.setFreqFactor);
+    this.connect('frequency:onValue', this.setFrequency);
+    this.connect('note:onValue', this.onNoteValue);
+    this.setFreqFactor(this.config.freqFactor);
+    this.setFrequency(this.config.frequency);
+    this.setDuration(this.config.duration);
+    this.setShape(this.config.shape);
+    this.setGain(this.config.gain);
+    this.pad = this.getChild('pad');
+    this.sizeWindow();
+    return this;
+  };
+
+  ADSR.prototype.setGain = function(v) {
+    this.config.gain = _.value(v);
+    return this.gain.gain.value = this.config.gain;
+  };
+
+  ADSR.prototype.setDuration = function(v) {
+    return this.config.duration = _.value(v);
+  };
+
+  ADSR.prototype.setFrequency = function(v) {
+    return this.config.frequency = _.value(v);
+  };
+
+  ADSR.prototype.setFreqFactor = function(v) {
+    return this.config.freqFactor = _.value(v);
+  };
+
+  ADSR.prototype.setShape = function(v) {
+    var i, _i, _ref, _results;
+    this.config.shape = _.isString(v) ? v : _.value(v);
+    _results = [];
+    for (i = _i = 0, _ref = this.config.voices; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      _results.push(this.oscillator[i].type = this.config.shape);
+    }
+    return _results;
+  };
+
+  ADSR.prototype.voiceIndex = function(id) {
+    var i, _i, _j, _ref, _ref1, _ref2;
+    for (i = _i = 0, _ref = this.config.voices; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      if (((_ref1 = this.voice[i]) != null ? _ref1.id : void 0) === id) {
+        return i;
+      }
+    }
+    for (i = _j = 0, _ref2 = this.config.voices; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
+      if (this.voice[i] === void 0) {
+        this.voice[i] = {
+          id: id
+        };
+        return i;
+      }
+    }
+    warn({
+      "file": "./coffee/audio/adsr.coffee",
+      "class": "ADSR",
+      "line": 161,
+      "args": ["id"],
+      "method": "voiceIndex",
+      "type": "."
+    }, 'no free voice');
+    this.voice[0] = {
+      id: id
+    };
+    return 0;
+  };
+
+  ADSR.prototype.onNoteValue = function(event) {
+    var f, note;
+    note = _.value(event);
+    f = Keyboard.allNotes()[note];
+    return this.getChild('frequency').setValue(f);
+  };
+
+  ADSR.prototype.note = function(event) {
+    var f, note;
+    note = event.detail;
+    f = this.config.frequency;
+    this.config.frequency = Keyboard.allNotes()[note.note];
+    if (note.type === 'trigger') {
+      this.trigger({
+        detail: note.note
+      });
+    } else {
+      this.release({
+        detail: note.note
+      });
+    }
+    this.emit('onNote');
+    return this.config.frequency = f;
+  };
+
+  ADSR.prototype.trigger = function(event) {
+    var i, t, time, v, value, vi, _i, _ref, _results;
+    i = this.voiceIndex(event.detail);
+    this.volume[i].gain.cancelScheduledValues(Audio.context.currentTime);
+    this.oscillator[i].frequency.cancelScheduledValues(Audio.context.currentTime);
+    t = Audio.context.currentTime + 0.01;
+    _results = [];
+    for (vi = _i = 0, _ref = this.pad.config.sustainIndex; 0 <= _ref ? _i <= _ref : _i >= _ref; vi = 0 <= _ref ? ++_i : --_i) {
+      v = this.pad.config.vals[vi];
+      time = v.x * this.config.duration;
+      value = (this.config.freqFactor + (v.y * (1.0 - this.config.freqFactor))) * this.config.frequency;
+      this.oscillator[i].frequency.linearRampToValueAtTime(value, t + time);
+      this.volume[i].gain.linearRampToValueAtTime(v.y, t + time);
+      if (vi === this.pad.config.sustainIndex) {
+        _results.push(this.voice[i].done = t + time);
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  ADSR.prototype.release = function(event) {
+    var i, msec, t, time, v, value, vi, _i, _ref, _ref1, _results;
+    i = this.voiceIndex(event.detail);
+    t = Audio.context.currentTime + 0.01;
+    _results = [];
+    for (vi = _i = _ref = this.pad.config.sustainIndex, _ref1 = this.pad.config.vals.length; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; vi = _ref <= _ref1 ? ++_i : --_i) {
+      v = this.pad.config.vals[vi];
+      time = v.x * this.config.duration;
+      value = (this.config.freqFactor + (v.y * (1.0 - this.config.freqFactor))) * this.config.frequency;
+      this.oscillator[i].frequency.linearRampToValueAtTime(value, t + time);
+      this.volume[i].gain.linearRampToValueAtTime(v.y, t + time);
+      if (vi === this.pad.config.vals.length - 1) {
+        this.voice[i].done = Math.max(this.voice[i].done, t + time);
+        msec = (this.voice[i].done - t) * 1000;
+        _results.push(this.voice[i].timeout = setTimeout(this.voiceDone, msec, i));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  ADSR.prototype.voiceDone = function(i) {
+    return this.voice[i] = void 0;
+  };
+
+  ADSR.prototype.sizeWindow = function() {
+    var content, height, width;
+    ADSR.__super__.sizeWindow.apply(this, arguments);
+    if (this.pad != null) {
+      content = this.getChild('content');
+      content.setHeight(this.contentHeight());
+      height = content.innerHeight() - 200;
+      width = content.innerWidth() - 20;
+      return this.pad.setSize(width, height);
+    }
+  };
+
+  ADSR.menu = function() {
+    return ADSR.menuButton({
+      text: 'ADSR',
+      icon: 'fa-cogs',
+      action: function() {
+        return new ADSR({
+          center: true
+        });
+      }
+    });
+  };
+
+  return ADSR;
+
+})(AudioWindow);
+
+
+/*
+
  0000000   000   000   0000000   000      000   000   0000000  00000000  00000000 
 000   000  0000  000  000   000  000       000 000   000       000       000   000
 000000000  000 0 000  000000000  000        00000    0000000   0000000   0000000  
@@ -212,15 +535,16 @@ Analyser = (function(_super) {
         {
           type: 'jacks'
         }, {
-          id: 'analyser_canvas',
           type: 'canvas',
+          "class": 'analyser_canvas',
           style: {
             width: '100%',
             height: '100%'
           }
         }, {
           type: 'sliderspin',
-          id: 'scaleX',
+          "class": 'scaleX',
+          tooltip: 'horizontal scale',
           value: cfg.scaleX,
           minValue: 1.0,
           maxValue: 20.0,
@@ -374,7 +698,8 @@ Delay = (function(_super) {
           type: 'jacks'
         }, {
           type: 'sliderspin',
-          id: 'delay',
+          "class": 'delay',
+          tooltip: 'delay',
           value: cfg.delay,
           minValue: cfg.minDelay,
           maxValue: cfg.maxDelay,
@@ -441,7 +766,7 @@ Envelope = (function(_super) {
       children: [
         {
           type: 'pad',
-          id: 'envelope_pad',
+          "class": 'envelope_pad',
           numHandles: cfg.numHandles,
           vals: cfg.vals,
           minHeight: 50,
@@ -454,7 +779,8 @@ Envelope = (function(_super) {
               slot: 'envelope_in:setValue'
             }, {
               type: 'spin',
-              id: 'envelope_in',
+              "class": 'envelope_in',
+              tooltip: 'input',
               valueStep: 0.001,
               minWidth: 100,
               maxWidth: 10000,
@@ -464,7 +790,8 @@ Envelope = (function(_super) {
               }
             }, {
               type: 'spin',
-              id: 'envelope',
+              "class": 'envelope',
+              tooltip: 'output',
               valueStep: 0.00001,
               minWidth: 100,
               maxWidth: 10000,
@@ -556,7 +883,7 @@ Filter = (function(_super) {
 
   function Filter() {
     this.setFilter = __bind(this.setFilter, this);
-    this.setFreq = __bind(this.setFreq, this);
+    this.setFrequency = __bind(this.setFrequency, this);
     this.setQ = __bind(this.setQ, this);
     this.setDetune = __bind(this.setDetune, this);
     this.init = __bind(this.init, this);
@@ -582,24 +909,28 @@ Filter = (function(_super) {
           type: 'jacks'
         }, {
           type: 'spinner',
-          id: 'filter',
+          "class": 'filter',
+          tooltip: 'filter',
           value: cfg.filter,
           values: Filter.filters
         }, {
           type: 'sliderspin',
-          id: 'frequency',
-          value: cfg.freq,
-          minValue: cfg.minFreq,
-          maxValue: cfg.maxFreq
+          "class": 'frequency',
+          tooltip: 'frequency',
+          value: cfg.frequency,
+          minValue: cfg.minFrequency,
+          maxValue: cfg.maxFrequency
         }, {
           type: 'sliderspin',
-          id: 'detune',
+          "class": 'detune',
+          tooltip: 'detune',
           value: cfg.detune,
           minValue: cfg.minDetune,
           maxValue: cfg.maxDetune
         }, {
           type: 'sliderspin',
-          id: 'Q',
+          "class": 'Q',
+          tooltip: 'Q',
           value: cfg.Q,
           minValue: cfg.minQ,
           maxValue: cfg.maxQ,
@@ -608,11 +939,11 @@ Filter = (function(_super) {
       ]
     });
     this.connect('filter:onValue', this.setFilter);
-    this.connect('frequency:onValue', this.setFreq);
+    this.connect('frequency:onValue', this.setFrequency);
     this.connect('detune:onValue', this.setDetune);
     this.connect('Q:onValue', this.setQ);
     this.setQ(this.config.Q);
-    this.setFreq(this.config.freq);
+    this.setFrequency(this.config.frequency);
     this.setDetune(this.config.detune);
     this.setFilter(this.config.filter);
     return this;
@@ -628,9 +959,9 @@ Filter = (function(_super) {
     return this.audio.Q.value = this.config.Q;
   };
 
-  Filter.prototype.setFreq = function(v) {
-    this.config.freq = _.value(v);
-    return this.audio.frequency.value = this.config.freq;
+  Filter.prototype.setFrequency = function(v) {
+    this.config.frequency = _.value(v);
+    return this.audio.frequency.value = this.config.frequency;
   };
 
   Filter.prototype.setFilter = function(v) {
@@ -690,7 +1021,8 @@ Gain = (function(_super) {
           hasOutput: cfg.master == null
         }, {
           type: 'sliderspin',
-          id: 'gain',
+          "class": 'gain',
+          tooltip: 'gain',
           value: cfg.gain,
           minValue: 0.0,
           maxValue: 1.0
@@ -721,7 +1053,8 @@ Gain = (function(_super) {
       icon: 'fa-volume-up',
       action: function() {
         return new Gain({
-          center: true
+          center: true,
+          gain: 0.5
         });
       }
     });
@@ -731,7 +1064,8 @@ Gain = (function(_super) {
       action: function() {
         return new Gain({
           center: true,
-          master: true
+          master: true,
+          gain: 0.1
         });
       }
     });
@@ -780,7 +1114,8 @@ Jacks = (function(_super) {
         width: '100%',
         height: '20px'
       },
-      children: cfg.children
+      children: _.isArray(cfg.content) ? cfg.content : void 0,
+      child: _.isObject(cfg.content) ? cfg.content : void 0
     });
     if (!(cfg.hasOutput === false)) {
       children.push({
@@ -801,7 +1136,7 @@ Jacks = (function(_super) {
   };
 
   Jacks.prototype.onDisconnect = function(event) {
-    tag('Connection');
+    var _ref;
     log({
       "file": "./coffee/audio/jacks.coffee",
       "class": "Jacks",
@@ -810,12 +1145,223 @@ Jacks = (function(_super) {
       "method": "onDisconnect",
       "type": "."
     }, 'onDisconnect', event.detail);
-    return event.detail.source.getWindow().audio.disconnect(event.detail.target.getWindow().audio);
+    return (_ref = event.detail.source.getWindow().audio) != null ? _ref.disconnect(event.detail.target.getWindow().audio) : void 0;
   };
 
   return Jacks;
 
 })(Hbox);
+
+
+/*
+
+000   000  00000000  000   000  0000000     0000000    0000000   00000000   0000000  
+000  000   000        000 000   000   000  000   000  000   000  000   000  000   000
+0000000    0000000     00000    0000000    000   000  000000000  0000000    000   000
+000  000   000          000     000   000  000   000  000   000  000   000  000   000
+000   000  00000000     000     0000000     0000000   000   000  000   000  0000000
+ */
+
+Keyboard = (function(_super) {
+  __extends(Keyboard, _super);
+
+  function Keyboard() {
+    this.onKeyRelease = __bind(this.onKeyRelease, this);
+    this.onKeyPress = __bind(this.onKeyPress, this);
+    this.setOctave = __bind(this.setOctave, this);
+    this.octaveDown = __bind(this.octaveDown, this);
+    this.octaveUp = __bind(this.octaveUp, this);
+    this.init = __bind(this.init, this);
+    return Keyboard.__super__.constructor.apply(this, arguments);
+  }
+
+  Keyboard.noteNames = ['C', 'Cs', 'D', 'Ds', 'E', 'F', 'Fs', 'G', 'Gs', 'A', 'As', 'B'];
+
+  Keyboard.notes = {
+    C: 4186.01,
+    Cs: 4434.92,
+    D: 4698.63,
+    Ds: 4978.03,
+    E: 5274.04,
+    F: 5587.65,
+    Fs: 5919.91,
+    G: 6271.93,
+    Gs: 6644.88,
+    A: 7040.00,
+    As: 7458.62,
+    B: 7902.13
+  };
+
+  Keyboard.keys = {
+    C: 'z',
+    Cs: 's',
+    D: 'x',
+    Ds: 'd',
+    E: 'c',
+    F: 'v',
+    Fs: 'g',
+    G: 'b',
+    Gs: 'h',
+    A: 'n',
+    As: 'j',
+    B: 'm'
+  };
+
+  Keyboard.allNotes = function() {
+    var frequency, n, nb, o, _i, _len, _ref;
+    if (Keyboard._allNotes == null) {
+      Keyboard._allNotes = {};
+      _ref = Keyboard.allNoteNames();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        n = _ref[_i];
+        nb = n.slice(0, -1);
+        o = Number(n.slice(-1));
+        frequency = Keyboard.notes[nb] / Math.pow(2, 8 - o);
+        Keyboard._allNotes[n] = frequency.toFixed(3);
+      }
+    }
+    return Keyboard._allNotes;
+  };
+
+  Keyboard.noteIndex = function(noteName) {
+    return Keyboard.allNoteNames().indexOf(noteName);
+  };
+
+  Keyboard.allNoteNames = function() {
+    var n, o, _i, _j, _len, _ref;
+    if (Keyboard._allNoteNames == null) {
+      Keyboard._allNoteNames = [];
+      for (o = _i = 0; _i <= 8; o = ++_i) {
+        _ref = Keyboard.noteNames;
+        for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+          n = _ref[_j];
+          Keyboard._allNoteNames.push('%s%d'.fmt(n, o));
+        }
+      }
+    }
+    return Keyboard._allNoteNames;
+  };
+
+  Keyboard.prototype.init = function(cfg, defs) {
+    var children, key, n, sharp, v, _i, _len, _ref, _ref1;
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      octave: 4
+    });
+    children = [];
+    _ref = Keyboard.notes;
+    for (n in _ref) {
+      v = _ref[n];
+      sharp = n.length === 2;
+      children.push({
+        type: 'button',
+        "class": sharp && 'keyboard-key-sharp' || 'keyboard-key',
+        valign: sharp && 'top' || 'bottom',
+        text: n,
+        keys: [Keyboard.keys[n]]
+      });
+    }
+    Keyboard.__super__.init.call(this, cfg, {
+      type: 'keyboard',
+      title: 'keyboard',
+      resize: false,
+      children: [
+        {
+          type: 'hbox',
+          children: [
+            {
+              type: 'spin',
+              "class": 'octave',
+              tooltip: 'octave',
+              value: cfg.octave,
+              minValue: 0,
+              maxValue: 8,
+              style: {
+                width: '100%'
+              }
+            }, {
+              type: 'connector',
+              signal: 'note'
+            }
+          ]
+        }, {
+          type: 'hbox',
+          "class": 'keys',
+          noMove: true,
+          spacing: 0,
+          children: children
+        }
+      ]
+    });
+    this.keys = this.getChild('keys').allChildren();
+    _ref1 = this.keys;
+    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      key = _ref1[_i];
+      key.connect('trigger', this.onKeyPress);
+      key.connect('release', this.onKeyRelease);
+    }
+    Keys.add(',', this.octaveDown);
+    Keys.add('.', this.octaveUp);
+    this.connect('octave:onValue', this.setOctave);
+    this.setOctave(this.config.octave);
+    return this;
+  };
+
+  Keyboard.prototype.octaveUp = function() {
+    return this.getChild('octave').incr('+');
+  };
+
+  Keyboard.prototype.octaveDown = function() {
+    return this.getChild('octave').incr('-');
+  };
+
+  Keyboard.prototype.setOctave = function(v) {
+    var key, _i, _len, _ref, _results;
+    this.config.octave = _.value(v);
+    _ref = this.keys;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      key = _ref[_i];
+      _results.push(key.config.octave = this.config.octave);
+    }
+    return _results;
+  };
+
+  Keyboard.prototype.onKeyPress = function(event) {
+    var key, note;
+    key = event.target.widget;
+    note = "%s%d".fmt(key.config.text, this.config.octave);
+    return this.emit('note', {
+      note: note,
+      type: 'trigger'
+    });
+  };
+
+  Keyboard.prototype.onKeyRelease = function(event) {
+    var key, note;
+    key = event.target.widget;
+    note = "%s%d".fmt(key.config.text, this.config.octave);
+    return this.emit('note', {
+      note: note,
+      type: 'release'
+    });
+  };
+
+  Keyboard.menu = function() {
+    return Keyboard.menuButton({
+      text: 'Keyboard',
+      icon: 'fa-music',
+      action: function() {
+        return new Keyboard({
+          center: true
+        });
+      }
+    });
+  };
+
+  return Keyboard;
+
+})(Window);
 
 
 /*
@@ -833,7 +1379,7 @@ Oscillator = (function(_super) {
   function Oscillator() {
     this.paramValuesAtConnector = __bind(this.paramValuesAtConnector, this);
     this.setShape = __bind(this.setShape, this);
-    this.setFreq = __bind(this.setFreq, this);
+    this.setFrequency = __bind(this.setFrequency, this);
     this.init = __bind(this.init, this);
     return Oscillator.__super__.constructor.apply(this, arguments);
   }
@@ -855,32 +1401,36 @@ Oscillator = (function(_super) {
       children: [
         {
           type: 'jacks',
-          hasInput: false
-        }, {
-          type: 'spinner',
-          id: 'shape',
-          value: cfg.shape,
-          values: Oscillator.shapes
+          hasInput: false,
+          content: {
+            type: 'spinner',
+            "class": 'shape',
+            recKey: 'shape',
+            tooltip: 'shape',
+            value: cfg.shape,
+            values: Oscillator.shapes
+          }
         }, {
           type: 'sliderspin',
-          id: 'frequency',
-          value: cfg.freq,
-          minValue: cfg.minFreq,
-          maxValue: cfg.maxFreq
+          "class": 'frequency',
+          tooltip: 'frequency',
+          value: cfg.frequency,
+          minValue: cfg.minFrequency,
+          maxValue: cfg.maxFrequency
         }
       ]
     });
     this.connect('shape:onValue', this.setShape);
-    this.connect('frequency:onValue', this.setFreq);
-    this.setFreq(this.config.freq);
+    this.connect('frequency:onValue', this.setFrequency);
+    this.setFrequency(this.config.frequency);
     this.setShape(this.config.shape);
     this.sizeWindow();
     return this;
   };
 
-  Oscillator.prototype.setFreq = function(v) {
-    this.config.freq = _.value(v);
-    return this.audio.frequency.value = this.config.freq;
+  Oscillator.prototype.setFrequency = function(v) {
+    this.config.frequency = _.value(v);
+    return this.audio.frequency.value = this.config.frequency;
   };
 
   Oscillator.prototype.setShape = function(v) {
@@ -924,7 +1474,7 @@ Ramp = (function(_super) {
   function Ramp() {
     this.setRelTime = __bind(this.setRelTime, this);
     this.anim = __bind(this.anim, this);
-    this.triggerDown = __bind(this.triggerDown, this);
+    this.trigger = __bind(this.trigger, this);
     this.setDuration = __bind(this.setDuration, this);
     this.init = __bind(this.init, this);
     return Ramp.__super__.constructor.apply(this, arguments);
@@ -946,24 +1496,27 @@ Ramp = (function(_super) {
       children: [
         {
           type: 'sliderspin',
-          id: 'ramp',
+          "class": 'ramp',
           minValue: 0.0,
           maxValue: 1.0
         }, {
           type: 'sliderspin',
-          id: 'ramp_duration',
+          "class": 'duration',
+          tooltip: 'duration',
+          recKey: 'duration',
           value: cfg.duration,
           minValue: cfg.minDuration,
           maxValue: cfg.maxDuration,
           spinStep: cfg.durationStep
         }, {
           type: 'button',
-          text: 'trigger'
+          text: 'trigger',
+          "class": 'trigger'
         }
       ]
     });
-    this.connect('ramp_duration:onValue', this.setDuration);
-    this.connect('button:mousedown', this.triggerDown);
+    this.connect('duration:onValue', this.setDuration);
+    this.connect('trigger:trigger', this.trigger);
     return this;
   };
 
@@ -971,7 +1524,7 @@ Ramp = (function(_super) {
     return this.config.duration = _.value(v);
   };
 
-  Ramp.prototype.triggerDown = function() {
+  Ramp.prototype.trigger = function(event) {
     if (this.config.reltime !== 0) {
       knix.deanimate(this);
     }
@@ -979,7 +1532,9 @@ Ramp = (function(_super) {
       duration: this.config.duration
     }, this.connector('ramp:onValue'));
     this.setRelTime(0);
-    return knix.animate(this);
+    if ((event.detail != null) && event.detail.metaKey) {
+      return knix.animate(this);
+    }
   };
 
   Ramp.prototype.anim = function(step) {
@@ -1011,5 +1566,139 @@ Ramp = (function(_super) {
   return Ramp;
 
 })(Window);
+
+
+/*
+
+00000000   00000000   0000000   0000000   00000000   0000000    00000000  00000000 
+000   000  000       000       000   000  000   000  000   000  000       000   000
+0000000    0000000   000       000   000  0000000    000   000  0000000   0000000  
+000   000  000       000       000   000  000   000  000   000  000       000   000
+000   000  00000000   0000000   0000000   000   000  0000000    00000000  000   000
+ */
+
+Recorder = (function() {
+  function Recorder(cfg, defs) {
+    this.close = __bind(this.close, this);
+    this.onButtonUp = __bind(this.onButtonUp, this);
+    this.onButtonDown = __bind(this.onButtonDown, this);
+    this.onNote = __bind(this.onNote, this);
+    this.onValueInput = __bind(this.onValueInput, this);
+    this.registerWindow = __bind(this.registerWindow, this);
+    this.init = __bind(this.init, this);
+    this.init(cfg, defs);
+  }
+
+  Recorder.prototype.init = function(cfg, defs) {
+    var win, _i, _len, _ref;
+    this.config = _.def(cfg, defs);
+    this.timeline = $(this.config.timeline).getWidget();
+    this.triggers = [];
+    this.values = [];
+    _ref = knix.allWindows();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      win = _ref[_i];
+      this.registerWindow(win);
+    }
+    log({
+      "file": "./coffee/audio/recorder.coffee",
+      "class": "Recorder",
+      "line": 25,
+      "args": ["cfg", "defs"],
+      "method": "init",
+      "type": "."
+    }, 'recording: %d triggers %d values'.fmt(this.triggers.length, this.values.length));
+    return this;
+  };
+
+  Recorder.prototype.registerWindow = function(win) {
+    var c, _i, _len, _ref, _ref1, _ref2, _results;
+    if ((_ref = win.constructor.name) === 'Timeline' || _ref === 'Analyser') {
+      return;
+    }
+    _ref1 = win.allChildren();
+    _results = [];
+    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+      c = _ref1[_i];
+      if ((_ref2 = c.constructor.name) === 'Spin' || _ref2 === 'Slider' || _ref2 === 'Spinner' || _ref2 === 'Button' || _ref2 === 'ADSR') {
+        if (c.config.recKey != null) {
+          switch (c.constructor.name) {
+            case 'Button':
+              if (!c.elem.hasClassName('tool-button')) {
+                log({
+                  "file": "./coffee/audio/recorder.coffee",
+                  "class": "Recorder",
+                  "line": 36,
+                  "args": ["win"],
+                  "method": "registerWindow",
+                  "type": "."
+                }, c.config);
+                this.triggers.push(c);
+                c.connect('mousedown', this.onButtonDown);
+                _results.push(c.connect('mouseup', this.onButtonUp));
+              } else {
+                _results.push(void 0);
+              }
+              break;
+            case 'ADSR':
+              log({
+                "file": "./coffee/audio/recorder.coffee",
+                "class": "Recorder",
+                "line": 41,
+                "args": ["win"],
+                "method": "registerWindow",
+                "type": "."
+              }, 'ADSR');
+              _results.push(c.connect('onNote', this.onNote));
+              break;
+            default:
+              this.values.push(c);
+              _results.push(c.connect('valueInput', this.onValueInput));
+          }
+        } else {
+          _results.push(void 0);
+        }
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  Recorder.prototype.onValueInput = function(event) {
+    return this.timeline.grid.addValue(event.target.getWidget());
+  };
+
+  Recorder.prototype.onNote = function(event) {
+    return this.timeline.grid.addNote(event);
+  };
+
+  Recorder.prototype.onButtonDown = function(event) {
+    return this.timeline.grid.addTrigger(event.target);
+  };
+
+  Recorder.prototype.onButtonUp = function(event) {
+    return this.timeline.grid.addRelease(event.target);
+  };
+
+  Recorder.prototype.close = function() {
+    var trigger, value, _i, _j, _len, _len1, _ref, _ref1;
+    _ref = this.triggers;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      trigger = _ref[_i];
+      trigger.disconnect('mousedown', this.onButtonDown);
+    }
+    this.triggers.clear();
+    _ref1 = this.values;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      value = _ref1[_j];
+      value.disconnect('valueInput', this.onValueInput);
+    }
+    return this.values.clear();
+  };
+
+  return Recorder;
+
+})();
 
 //# sourceMappingURL=audio.js.map

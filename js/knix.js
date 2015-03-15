@@ -13,7 +13,7 @@ var knix,
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.6';
+  knix.version = '0.7.524';
 
   knix.init = function(config) {
     var c, s;
@@ -27,7 +27,7 @@ knix = (function() {
     log({
       "file": "./coffee/knix.coffee",
       "class": "knix",
-      "line": 23,
+      "line": 21,
       "args": ["config"],
       "method": "init",
       "type": "@"
@@ -38,24 +38,25 @@ knix = (function() {
     knix.initMenu();
     knix.initAnim();
     knix.initTools();
-    knix.initAudio();
-    Menu.initContextMenu();
-    if (config.loadLast) {
-      Files.loadLast();
-    }
+    Audio.init();
+    Stage.init();
     if (c != null) {
       c.raise();
     }
-    log({
-      "file": "./coffee/knix.coffee",
-      "class": "knix",
-      "line": 40,
-      "args": ["config"],
-      "method": "init",
-      "type": "@"
-    }, 'knix initialised');
+    if (config.loadLast) {
+      Files.loadLast();
+    }
     return knix;
   };
+
+
+  /*
+  00     00  00000000  000   000  000   000   0000000
+  000   000  000       0000  000  000   000  000     
+  000000000  0000000   000 0 000  000   000  0000000 
+  000 0 000  000       000  0000  000   000       000
+  000   000  00000000  000   000   0000000   0000000
+   */
 
   knix.initMenu = function() {
     var mainMenu, toolMenu;
@@ -97,13 +98,13 @@ knix = (function() {
     };
     Menu.addButton(btn, {
       tooltip: 'save',
-      keys: ['s'],
+      keys: ['⌥ß'],
       icon: 'fa-floppy-o',
       action: Files.saveWindows
     });
     Menu.addButton(btn, {
       tooltip: 'reload',
-      keys: ['r'],
+      keys: ['u', '⌥®'],
       icon: 'fa-retweet',
       action: Files.loadLast
     });
@@ -122,48 +123,55 @@ knix = (function() {
     Menu.addButton(btn, {
       tooltip: 'fullscreen',
       icon: 'octicon-device-desktop',
-      action: function() {
-        return Stage.toggleFullscreen();
-      }
+      action: Stage.toggleFullscreen
     });
     Menu.addButton(btn, {
       tooltip: 'style',
       keys: ['i'],
       icon: 'octicon-color-mode',
-      action: function() {
-        return StyleSwitch.toggle();
-      }
+      action: StyleSwitch.toggle
     });
     Menu.addButton(btn, {
       tooltip: 'set key',
+      keys: ['`'],
       icon: 'fa-keyboard-o',
-      action: function() {
-        return Keys.interactiveKey();
-      }
+      action: Keys.startInteractive
     });
     Menu.addButton(btn, {
       tooltip: 'about',
       icon: 'octicon-info',
-      action: function() {
-        return About.show();
-      }
+      action: About.show
     });
     Menu.addButton(btn, {
       tooltip: 'shade all',
       icon: 'octicon-dash',
-      action: function() {
-        return knix.shadeWindows();
-      }
+      action: knix.shadeWindows
     });
-    return Menu.addButton(btn, {
-      tooltip: 'close all',
+    Menu.addButton(btn, {
+      tooltip: 'close windows',
       icon: 'octicon-x',
-      keys: ['x'],
-      action: function() {
-        return knix.closeWindows();
-      }
+      keys: ['⇧⌥„'],
+      action: knix.closeAllWindows
     });
+    Keys.add('Backspace', knix.delSelection);
+    Keys.add('⌥∂', knix.deselectAll);
+    Keys.add('⌥å', knix.selectAll);
+    Keys.add('⌘x', knix.cutSelection);
+    Keys.add('⌘c', knix.copySelection);
+    Keys.add('⌘v', knix.pasteSelection);
+    Keys.add('⌥∑', knix.closeWindows);
+    Keys.add('⇧S', Selectangle.toggle);
+    return Keys.add('^s', Selectangle.toggle);
   };
+
+
+  /*
+   0000000  00000000   00000000   0000000   000000000  00000000
+  000       000   000  000       000   000     000     000     
+  000       0000000    0000000   000000000     000     0000000 
+  000       000   000  000       000   000     000     000     
+   0000000  000   000  00000000  000   000     000     00000000
+   */
 
   knix.create = function(cfg, defs) {
     cfg = _.def(cfg, defs);
@@ -187,9 +195,124 @@ knix = (function() {
     return w;
   };
 
+
+  /*
+  000   000  000  000   000  0000000     0000000   000   000   0000000
+  000 0 000  000  0000  000  000   000  000   000  000 0 000  000     
+  000000000  000  000 0 000  000   000  000   000  000000000  0000000 
+  000   000  000  000  0000  000   000  000   000  000   000       000
+  00     00  000  000   000  0000000     0000000   00     00  0000000
+   */
+
+  knix.stateForWidgets = function(widgets) {
+    var c, w;
+    return JSON.stringify({
+      'windows': (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = widgets.length; _i < _len; _i++) {
+          w = widgets[_i];
+          _results.push(_.clone(w.config));
+        }
+        return _results;
+      })(),
+      'connections': (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.connectionsForWidgets(widgets);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          c = _ref[_i];
+          _results.push([c.config.source.elem.id, c.config.target.elem.id]);
+        }
+        return _results;
+      }).call(knix)
+    }, null, '    ');
+  };
+
+  knix.cleanState = function(state) {
+    var c, cfg, cleanConfig, idmap, _i, _j, _len, _len1, _ref, _ref1;
+    idmap = {};
+    cleanConfig = function(cfg) {
+      var _ref;
+      delete cfg.parentID;
+      idmap[cfg.id] = Widget.newID(cfg.type || 'widget');
+      cfg.id = idmap[cfg.id];
+      if (cfg.child != null) {
+        cleanConfig(cfg.child);
+      }
+      return (_ref = cfg.children) != null ? _ref.each(function(c) {
+        return cleanConfig(c);
+      }) : void 0;
+    };
+    _ref = state.windows;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      cfg = _ref[_i];
+      cleanConfig(cfg);
+    }
+    _ref1 = state.connections;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      c = _ref1[_j];
+      if (idmap[c[0]] != null) {
+        c[0] = idmap[c[0]];
+      }
+      if (idmap[c[1]] != null) {
+        c[1] = idmap[c[1]];
+      }
+    }
+    return state;
+  };
+
+  knix.connectionsForWidgets = function(widgets) {
+    var connection, widgetConnections, _i, _len, _ref, _ref1, _ref2;
+    widgetConnections = [];
+    _ref = knix.allConnections();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      connection = _ref[_i];
+      if ((_ref1 = connection.config.target.getWindow(), __indexOf.call(widgets, _ref1) >= 0) && (_ref2 = connection.config.source.getWindow(), __indexOf.call(widgets, _ref2) >= 0)) {
+        widgetConnections.push(connection);
+      }
+    }
+    return widgetConnections;
+  };
+
   knix.allWindows = function() {
     var w, _i, _len, _ref, _results;
     _ref = $$('.window');
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      w = _ref[_i];
+      if (!(w.hasClassName('console-window') || w.hasClassName('tooltip'))) {
+        _results.push(w.widget);
+      }
+    }
+    return _results;
+  };
+
+  knix.selectedWindows = function() {
+    var w, _i, _len, _ref, _results;
+    _ref = $$('.window.selected');
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      w = _ref[_i];
+      if (!(w.hasClassName('console-window') || w.hasClassName('tooltip'))) {
+        _results.push(w.widget);
+      }
+    }
+    return _results;
+  };
+
+  knix.selectedOrAllWindows = function() {
+    var w;
+    w = knix.selectedWindows();
+    if (_.isEmpty(w)) {
+      w = knix.allWindows();
+    }
+    return w;
+  };
+
+  knix.selectedWidgets = function() {
+    var w, _i, _len, _ref, _results;
+    _ref = $$('.selected');
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       w = _ref[_i];
@@ -220,22 +343,96 @@ knix = (function() {
     });
   };
 
+  knix.delSelection = function() {
+    return knix.selectedWidgets().each(function(w) {
+      if (!(w != null ? typeof w.isWindow === "function" ? w.isWindow() : void 0 : void 0)) {
+        return typeof w.del === "function" ? w.del() : void 0;
+      }
+    });
+  };
+
+  knix.deselectAll = function() {
+    return knix.selectedWidgets().each(function(w) {
+      return w.elem.removeClassName('selected');
+    });
+  };
+
+  knix.selectAll = function() {
+    return knix.allWindows().each(function(w) {
+      return w.elem.addClassName('selected');
+    });
+  };
+
+  knix.copySelection = function() {
+    knix.copyBuffer = knix.stateForWidgets(knix.selectedWidgets());
+    return log({
+      "file": "./coffee/knix.coffee",
+      "class": "knix",
+      "line": 229,
+      "args": ["widgets"],
+      "method": "copySelection",
+      "type": "@"
+    }, knix.copyBuffer);
+  };
+
+  knix.cutSelection = function() {
+    log({
+      "file": "./coffee/knix.coffee",
+      "class": "knix",
+      "line": 232,
+      "args": ["widgets"],
+      "method": "cutSelection",
+      "type": "@"
+    }, 'cut');
+    knix.copySelection();
+    return knix.delSelection();
+  };
+
+  knix.pasteSelection = function() {
+    var win, _i, _len, _ref, _results;
+    knix.deselectAll();
+    _ref = knix.restore(JSON.parse(knix.copyBuffer));
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      win = _ref[_i];
+      win.moveBy(10, 10);
+      _results.push(win.elem.addClassName('selected'));
+    }
+    return _results;
+  };
+
+  knix.shadeWindows = function() {
+    return knix.selectedOrAllWindows().each(function(w) {
+      return w.shade();
+    });
+  };
+
   knix.closeWindows = function() {
-    knix.closeConnections();
+    return knix.selectedWindows().each(function(w) {
+      return w.close();
+    });
+  };
+
+  knix.closeAllWindows = function() {
     return knix.allWindows().each(function(w) {
       return w.close();
     });
   };
 
-  knix.shadeWindows = function() {
-    return knix.allWindows().each(function(w) {
-      return w.shade();
-    });
-  };
-
   knix.restore = function(state) {
-    knix.restoreWindows(state.windows);
-    return knix.restoreConnections(state.connections);
+    var windows;
+    knix.cleanState(state);
+    log({
+      "file": "./coffee/knix.coffee",
+      "class": "knix",
+      "line": 250,
+      "args": ["state"],
+      "method": "restore",
+      "type": "@"
+    }, 'restore', state);
+    windows = knix.restoreWindows(state.windows);
+    knix.restoreConnections(state.connections);
+    return windows;
   };
 
   knix.restoreWindows = function(windows) {
@@ -257,6 +454,15 @@ knix = (function() {
     }
     return _results;
   };
+
+
+  /*
+  000000000   0000000    0000000   000      000000000  000  00000000    0000000
+     000     000   000  000   000  000         000     000  000   000  000     
+     000     000   000  000   000  000         000     000  00000000   0000000 
+     000     000   000  000   000  000         000     000  000             000
+     000      0000000    0000000   0000000     000     000  000        0000000
+   */
 
   knix.addPopup = function(p) {
     if (knix.popups == null) {
@@ -290,9 +496,18 @@ knix = (function() {
     }
     if (knix.popupHandler != null) {
       knix.popupHandler.stop();
-      return knix.popupHandler = null;
+      return delete knix.popupHandler;
     }
   };
+
+
+  /*
+   0000000   000   000  000  00     00   0000000   000000000  000   0000000   000   000
+  000   000  0000  000  000  000   000  000   000     000     000  000   000  0000  000
+  000000000  000 0 000  000  000000000  000000000     000     000  000   000  000 0 000
+  000   000  000  0000  000  000 0 000  000   000     000     000  000   000  000  0000
+  000   000  000   000  000  000   000  000   000     000     000   0000000   000   000
+   */
 
   knix.initAnim = function() {
     knix.animTimeStamp = 0;
@@ -319,15 +534,24 @@ knix = (function() {
     _ref = knix.animObjects;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       animObject = _ref[_i];
-      animObject.anim(step);
+      if (animObject != null) {
+        if (typeof animObject.anim === "function") {
+          animObject.anim(step);
+        }
+      }
     }
     knix.animTimeStamp = timestamp;
     return window.requestAnimationFrame(knix.anim);
   };
 
-  knix.initAudio = function() {
-    return Audio.init();
-  };
+
+  /*
+   0000000  000   000   0000000 
+  000       000   000  000      
+  0000000    000 000   000  0000
+       000     000     000   000
+  0000000       0       0000000
+   */
 
   knix.initSVG = function() {
     var svg;

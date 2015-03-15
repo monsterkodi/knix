@@ -22,12 +22,69 @@ Test = (function() {
   000   000   0000000   0000000    000   0000000
    */
 
+  Test.timeline = function() {
+    var a, k1, k2, k3, m, t;
+    k1 = new Keyboard({
+      x: 20,
+      y: 50,
+      octave: 4
+    });
+    k2 = new Keyboard({
+      x: 20,
+      y: 350,
+      octave: 5
+    });
+    k3 = new Keyboard({
+      x: 20,
+      y: 650,
+      octave: 6
+    });
+    a = new ADSR({
+      x: 400,
+      y: 50,
+      duration: 0.2,
+      sustainIndex: 2,
+      vals: [pos(0, 0), pos(.1, 1), pos(0.2, 1), pos(1, 0)]
+    });
+    m = new Gain({
+      master: true,
+      gain: 0.1,
+      x: 800,
+      y: 50
+    });
+    t = new Timeline({
+      x: 400,
+      y: 430,
+      height: 500
+    });
+    new Connection({
+      source: k1.connector('note'),
+      target: t.connector('noteIn')
+    });
+    new Connection({
+      source: k2.connector('note'),
+      target: t.connector('noteIn')
+    });
+    new Connection({
+      source: k3.connector('note'),
+      target: t.connector('noteIn')
+    });
+    new Connection({
+      source: t.connector('noteOut'),
+      target: a.connector('note')
+    });
+    return new Connection({
+      source: a.connector('audio:out'),
+      target: m.connector('audio:in')
+    });
+  };
+
   Test.envelope = function() {
     var e, m, o, r, t;
     t = new Ramp({
       x: 200,
       y: 250,
-      duration: 1
+      duration: .1
     });
     e = new Envelope({
       center: true,
@@ -36,12 +93,12 @@ Test = (function() {
     r = new Range({
       x: 200,
       y: 50,
-      low: 100,
-      high: 400
+      low: 0,
+      high: 100
     });
     o = new Oscillator({
-      freq: 200,
-      maxFreq: 2000,
+      frequency: 200,
+      maxFrequency: 2000,
       x: 500,
       y: 50
     });
@@ -76,9 +133,9 @@ Test = (function() {
     var a1, a2, d1, g1, g2, gm, o1;
     o1 = new Oscillator({
       title: 'low',
-      minFreq: 1,
-      maxFreq: 1000,
-      freq: 333,
+      minFrequency: 1,
+      maxFrequency: 1000,
+      frequency: 333,
       shape: 'sine',
       x: 20,
       y: 50
@@ -147,22 +204,22 @@ Test = (function() {
     var a4, an, f4, g1, g2, g3, gm, o1, o2, o3;
     o1 = new Oscillator({
       title: 'high',
-      minFreq: 2000,
+      minFrequency: 2000,
       x: 10,
       y: 40
     });
     o2 = new Oscillator({
       title: 'mid',
-      minFreq: 400,
-      maxFreq: 2000,
+      minFrequency: 400,
+      maxFrequency: 2000,
       freq: 400,
       x: 10,
       y: 240
     });
     o3 = new Oscillator({
       title: 'low',
-      minFreq: 0,
-      maxFreq: 400,
+      minFrequency: 0,
+      maxFrequency: 400,
       freq: 333,
       shape: 'square',
       x: 10,
@@ -240,12 +297,12 @@ Test = (function() {
   };
 
   Test.audio = function() {
-    var a, b, c;
+    var a, b, c, d;
     a = knix.get({
       type: 'button',
       text: 'oscillator',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         return Test.oscillator();
       }
     });
@@ -253,16 +310,24 @@ Test = (function() {
       type: 'button',
       text: 'delay',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         return Test.delay();
       }
     });
-    return c = knix.get({
+    c = knix.get({
       type: 'button',
       text: 'envelope',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         return Test.envelope();
+      }
+    });
+    return d = knix.get({
+      type: 'button',
+      text: 'timeline',
+      parent: 'menu',
+      action: function() {
+        return Test.timeline();
       }
     });
   };
@@ -363,7 +428,7 @@ Test = (function() {
           style: {
             clear: 'both'
           },
-          onClick: function(event, e) {
+          action: function(event, e) {
             return e.getWidget().getWindow().close();
           }
         }
@@ -392,7 +457,7 @@ Test = (function() {
       type: 'button',
       text: 'connectors',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         var a, c, d;
         a = Test.connectorBox();
         b = Test.connectorBox().setPos(pos(200, 400));
@@ -452,7 +517,7 @@ Test = (function() {
         backgroundColor: '#f00'
       }
     });
-    Drag.create({
+    new Drag({
       target: start.elem,
       onMove: function(drag, event) {
         var p;
@@ -460,7 +525,7 @@ Test = (function() {
         return pth.setStart([p.x, p.y]);
       }
     });
-    Drag.create({
+    new Drag({
       target: startHead.elem,
       onMove: function(drag, event) {
         var p;
@@ -468,7 +533,7 @@ Test = (function() {
         return pth.setStartHead([p.x, p.y]);
       }
     });
-    Drag.create({
+    new Drag({
       target: end.elem,
       onMove: function(drag, event) {
         var p;
@@ -476,7 +541,7 @@ Test = (function() {
         return pth.setEnd([p.x, p.y]);
       }
     });
-    return Drag.create({
+    return new Drag({
       target: endHead.elem,
       onMove: function(drag, event) {
         var p;
@@ -502,7 +567,7 @@ Test = (function() {
       type: 'button',
       text: 'hello slider',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         var w;
         w = knix.get({
           title: 'hello',
@@ -522,7 +587,7 @@ Test = (function() {
             }, {
               type: 'button',
               text: 'ok',
-              onClick: function(event, e) {
+              action: function(event, e) {
                 return e.getWidget().getWindow().close();
               }
             }
@@ -555,7 +620,7 @@ Test = (function() {
       type: 'button',
       text: 'slider & value',
       parent: 'menu',
-      onClick: function() {
+      action: function() {
         return knix.get({
           y: 30,
           minWidth: 200,
@@ -580,7 +645,7 @@ Test = (function() {
             }, {
               type: 'button',
               text: 'ok',
-              onClick: function(event, e) {
+              action: function(event, e) {
                 return e.getWidget().getWindow().close();
               }
             }
@@ -663,7 +728,7 @@ Test = (function() {
       width: 200,
       x: 150,
       y: 150,
-      onClick: knix.closeAll
+      action: knix.closeAll
     });
   };
 
@@ -683,11 +748,10 @@ Test = (function() {
 
 document.observe("dom:loaded", function() {
   knix.init({
-    console: true,
-    loadLast: true
+    console: 'shade'
   });
   Test.audio();
-  return Settings.set('tooltips', false);
+  return Settings.set('tooltips', true);
 });
 
 //# sourceMappingURL=main.js.map

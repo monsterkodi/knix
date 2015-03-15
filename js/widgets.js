@@ -7,7 +7,7 @@
    000     000   000  000      000   000  000     
     0      000   000  0000000   0000000   00000000
  */
-var About, Button, Canvas, Connection, Connector, Console, Files, Handle, Hbox, Icon, Input, Menu, Pad, Path, Range, Slider, Sliderspin, Spin, Spinner, Svg, Toggle, Tooltip, Value, tag,
+var Button, Canvas, Connection, Connector, Handle, Hbox, Icon, Input, Menu, Pad, Path, Range, Selectangle, Slider, Sliderspin, Spin, Spinner, Svg, Toggle, Tooltip, Value,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -27,7 +27,6 @@ Value = (function(_super) {
     this.incr = __bind(this.incr, this);
     this.setValue = __bind(this.setValue, this);
     this.initEvents = __bind(this.initEvents, this);
-    this.onTooltip = __bind(this.onTooltip, this);
     this.init = __bind(this.init, this);
     return Value.__super__.constructor.apply(this, arguments);
   }
@@ -38,13 +37,8 @@ Value = (function(_super) {
       value: 0,
       minValue: -Number.MAX_VALUE / 2,
       maxValue: +Number.MAX_VALUE / 2,
-      noMove: true,
-      tooltip: true
+      noMove: true
     });
-  };
-
-  Value.prototype.onTooltip = function() {
-    return this.elem.id;
   };
 
   Value.prototype.initEvents = function() {
@@ -55,7 +49,7 @@ Value = (function(_super) {
         log({
           "file": "./coffee/widgets/value.coffee",
           "class": "Value",
-          "line": 30,
+          "line": 27,
           "args": ["cfg", "def"],
           "method": "initEvents",
           "type": "."
@@ -154,16 +148,18 @@ Hbox = (function(_super) {
   }
 
   Hbox.prototype.init = function(cfg, defs) {
-    var spacing;
     cfg = _.def(cfg, defs);
-    spacing = (cfg.spacing != null) && cfg.spacing || 5;
+    cfg = _.def(cfg, {
+      valign: 'middle',
+      spacing: 5
+    });
     Hbox.__super__.init.call(this, cfg, {
       type: 'hbox',
       style: {
         display: 'table',
-        borderSpacing: '%dpx 0px'.fmt(spacing),
-        marginRight: '-%dpx'.fmt(spacing),
-        marginLeft: '-%dpx'.fmt(spacing)
+        borderSpacing: '%dpx 0px'.fmt(cfg.spacing),
+        marginRight: '-%dpx'.fmt(cfg.spacing),
+        marginLeft: '-%dpx'.fmt(cfg.spacing)
       }
     });
     return this;
@@ -173,103 +169,13 @@ Hbox = (function(_super) {
     var child;
     child = Hbox.__super__.insertChild.call(this, cfg);
     child.elem.style.display = 'table-cell';
-    child.elem.style.marginLeft = '10px';
-    child.elem.style.verticalAlign = 'middle';
+    child.elem.style.verticalAlign = (cfg.valign != null) && cfg.valign || this.config.valign;
     return child;
   };
 
   return Hbox;
 
 })(Widget);
-
-
-/*
-
- 0000000   0000000     0000000   000   000  000000000
-000   000  000   000  000   000  000   000     000   
-000000000  0000000    000   000  000   000     000   
-000   000  000   000  000   000  000   000     000   
-000   000  0000000     0000000    0000000      000
- */
-
-About = (function(_super) {
-  __extends(About, _super);
-
-  function About() {
-    this.init = __bind(this.init, this);
-    return About.__super__.constructor.apply(this, arguments);
-  }
-
-  About.prototype.init = function(cfg, defs) {
-    cfg = _.def(cfg, defs);
-    this.url = 'http://monsterkodi.github.io/knix/';
-    return About.__super__.init.call(this, cfg, {
-      title: 'about',
-      id: 'about',
-      resize: 'horizontal',
-      width: 200,
-      center: true,
-      children: [
-        {
-          type: 'about-svg',
-          text: '<svg viewBox="0 100 1100 600" height="66px" width="100px"><path class="about-svg-path" d="M 671.97461 153.66602 C 647.84887 153.75842 623.84771 163.63166 606.41211 182.95312 C 573.5922 219.3229 576.45513 275.40809 612.80859 308.24609 C 620.53294 315.22348 629.15009 320.58419 638.24414 324.36133 L 637.97852 511.20117 C 560.81033 441.59202 488.03551 367.51834 414.76367 293.89258 C 409.06942 288.42247 401.85831 285.1368 394.32812 284.25586 C 382.9265 281.82062 370.57957 285.05653 361.77344 293.91211 C 291.50652 362.08056 204.76321 455.25847 139.13477 510.65234 L 138.86523 319.25977 C 138.99507 306.54933 132.3051 294.74291 121.33594 288.32031 C 110.36678 281.89771 96.79809 281.84212 85.777344 288.17578 C 74.756593 294.50944 67.97298 306.26158 68 318.97266 C 68.0096 413.80238 68.032028 508.63329 68.017578 603.46289 C 68.452293 617.45841 77.087108 629.88453 90.052734 635.17188 C 103.01836 640.45922 117.88262 637.61638 127.98047 627.91602 L 245.27539 510.05273 L 362.08789 627.66016 C 367.94368 633.40258 375.28804 636.69048 382.85156 637.55469 C 391.36493 639.36349 400.38626 638.016 408.11914 633.48828 C 419.0883 627.06568 425.77828 615.25927 425.64844 602.54883 L 425.91797 411.1543 L 649.13477 628.46289 C 656.19683 635.24697 665.58871 638.66377 675.0332 638.30469 C 684.64495 638.71483 694.38139 635.23573 701.68164 627.89453 C 738.19192 592.47458 779.14942 550.30282 818.46875 510.1875 C 857.78815 550.30282 898.74753 592.47458 935.25781 627.89453 C 948.81591 641.52869 970.77308 641.86325 984.73828 628.64648 C 998.70348 615.42971 999.57834 593.48695 986.71094 579.19922 L 868.2207 460.60352 L 985.25586 344.67969 C 999.17946 330.95449 999.35554 308.54496 985.64844 294.60352 C 971.94134 280.66208 949.53147 280.4575 935.57227 294.14648 L 818.46875 411.75586 L 722.62109 315.49414 C 728.17633 311.66183 733.38264 307.13532 738.10547 301.91211 L 738.22461 301.78125 C 771.0084 265.37887 768.08923 209.29599 731.70312 176.49414 C 714.64714 161.11826 693.26203 153.58449 671.97461 153.66602 z M 672.16406 206.9668 C 680.66456 206.9343 689.20287 209.94212 696.01367 216.08203 C 710.54339 229.18049 711.71038 251.57511 698.61914 266.11133 L 698.57031 266.16406 C 685.4502 280.67423 663.0538 281.80626 648.53711 268.69336 C 634.02042 255.58047 632.87674 233.18531 645.98242 218.66211 C 652.94481 210.94666 662.53015 207.0037 672.16406 206.9668 z M 354.79492 401.0918 C 354.7939 440.9569 354.79438 480.82238 354.78906 520.6875 L 294.73633 461.20508 L 354.79492 401.0918 z M 709.10938 401.56055 L 768.7168 460.60352 L 709.10156 520.27148 C 709.10264 480.70103 709.1041 441.13102 709.10938 401.56055 z "/></svg>'
-        }, {
-          type: 'button',
-          child: {
-            text: 'Home',
-            href: this.url
-          }
-        }, {
-          type: 'about-svg',
-          text: '<svg viewbox="48 15 27 27" height="80px" width="80px" class="about-svg-path"><path class="about-svg-path" d="M58,20.4c-0.3-0.2-0.8-0.3-1.5-0.3c-0.2,0-0.4,0-0.6,0.1c-0.2,0.1-0.3,0.2-0.3,0.4s0.1,0.3,0.4,0.4 c0.2,0.1,0.6,0.2,1,0.2c0.4,0,0.7,0,0.9-0.1c0.4-0.1,0.9-0.2,1.3-0.4l0.6-0.3c0.5-0.2,1.2-0.7,1.6-0.8c0.7-0.2,1.4-0.3,2.1-0.3 c1.3,0,2.4,0.2,3.1,0.6c0.7,0.3,0.8,1.1,0.8,1.6c0,0.6-0.5,1.1-1.5,1.3C65.4,22.9,65,23,64.5,23c-0.8,0-1.5-0.1-2-0.3 c-0.5-0.2-0.7-0.4-0.7-0.7c0-0.2,0.2-0.4,0.5-0.5c0.1,0,0.3-0.1,0.5-0.1c0,0.3,0.3,0.6,0.8,0.7c0.2,0,0.4,0.1,0.7,0.1 c0.5,0,0.8-0.1,1.1-0.2c0.3-0.1,0.5-0.3,0.5-0.5c0-0.2-0.2-0.4-0.6-0.5c-0.4-0.1-0.8-0.2-1.4-0.2c-0.6,0-1,0-1.4,0.1 c-0.4,0.1-0.7,0.2-1,0.3s-0.6,0.2-0.9,0.3c-0.3,0.1-0.6,0.2-0.9,0.3c-0.7,0.2-1.4,0.4-2,0.4c-0.8,0-1.5-0.1-2.1-0.4 s-0.8-0.7-0.8-1.1c0-0.5,0.4-0.9,1.2-1c0.2,0,0.5-0.1,0.9-0.1c0.4,0,0.7,0,1,0.1c0.3,0.1,0.5,0.2,0.5,0.4S58.3,20.3,58,20.4z"/> <path class="kitty" d="M61.4,26.6c-9.7,0-11-2.3-11-2.3c0,1.2,0.3,2.4,0.7,3.5c-0.6,0.5-2.2,2-2.2,4.2c0,2.8,3.3,4.5,5.5,3.1 c0,0-3.7-0.5-3.7-3.8c0-1.2,0.4-2,1-2.5c0.9,2,2.2,3.5,2.6,4.1c0.8,1,1,0.7,1.5,2.6c0.4,1.6,4,2.5,6,2.5v0c0,0,0,0,0,0 c0,0,0,0,0,0v0c2-0.1,5.3-0.9,5.7-2.5c0.5-2,0.5-1.6,1.3-2.6c0.8-1,3.8-4.7,3.8-8.7C72.4,24.3,71.2,26.6,61.4,26.6z"/> <path class="kitty" d="M61.7,25.2v1.5c0,0-0.4,0-0.4,0s0.4,0,0.4,0V25.2c11,0,11-3,11-3l-1.3-1.3c2.7,2.7-8.6,3-9.9,3c-1.3,0-12.7-0.3-9.9-3 l-1,1.3C50.4,22.2,49.7,25.1,61.7,25.2z"/></svg>'
-        }, {
-          type: 'button',
-          child: {
-            text: 'Credits',
-            href: this.url + 'credits.html'
-          }
-        }, {
-          type: 'about-svg',
-          text: '<svg viewbox="0 0 16 16" width="80px" height="80px" class="kitty-svg"><path class="about-svg-path" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>'
-        }, {
-          type: 'button',
-          child: {
-            text: 'GitHub',
-            href: 'https://github.com/monsterkodi/knix'
-          }
-        }, {
-          style: {
-            textAlign: 'center'
-          },
-          child: {
-            elem: 'span',
-            type: 'tiny-text',
-            text: 'version %s'.fmt(knix.version)
-          }
-        }
-      ]
-    });
-  };
-
-  About.show = function() {
-    log({
-      "file": "./coffee/widgets/about.coffee",
-      "class": "About",
-      "line": 60,
-      "args": ["cfg", "defs"],
-      "method": "show",
-      "type": "@"
-    }, "about...");
-    if ($('about')) {
-      return $('about').raise();
-    } else {
-      return new About;
-    }
-  };
-
-  return About;
-
-})(Window);
 
 
 /*
@@ -285,6 +191,8 @@ Button = (function(_super) {
   __extends(Button, _super);
 
   function Button() {
+    this.release = __bind(this.release, this);
+    this.trigger = __bind(this.trigger, this);
     this.insertText = __bind(this.insertText, this);
     this.init = __bind(this.init, this);
     return Button.__super__.constructor.apply(this, arguments);
@@ -300,19 +208,42 @@ Button = (function(_super) {
         icon: cfg.icon
       });
     }
-    return Button.__super__.init.call(this, cfg, {
-      onClick: cfg.action,
+    Button.__super__.init.call(this, cfg, {
       keys: [],
       type: 'button',
       noMove: true,
       children: children
     });
+    this.connect('mousedown', this.trigger);
+    return this.connect('mouseup', this.release);
   };
 
   Button.prototype.insertText = function() {
     if (this.config.menu !== 'menu') {
       return Button.__super__.insertText.apply(this, arguments);
     }
+  };
+
+  Button.prototype.trigger = function(event) {
+    var id, _base, _ref;
+    id = _.isString(event) && event || (event != null ? (_ref = event.target) != null ? _ref.id : void 0 : void 0) || this.config.recKey;
+    if (typeof (_base = this.config).action === "function") {
+      _base.action(event);
+    }
+    this.emit('trigger', id);
+    if (event != null) {
+      if (typeof event.stop === "function") {
+        event.stop();
+      }
+    }
+    return this;
+  };
+
+  Button.prototype.release = function(event) {
+    var id, _ref;
+    id = _.isString(event) && event || (event != null ? (_ref = event.target) != null ? _ref.id : void 0 : void 0) || this.config.recKey;
+    this.emit('release', id);
+    return this;
   };
 
   return Button;
@@ -413,7 +344,7 @@ Connection = (function() {
       onMove: this.onMove
     });
     this.path.connection = this;
-    this.drag = Drag.create({
+    this.drag = new Drag({
       target: this.path.path.node,
       cursor: 'grab',
       doMove: false,
@@ -500,8 +431,8 @@ Connection = (function() {
     signal = outConnector.config.signal;
     slot = inConnector.config.slot;
     if ((signal != null) && (slot != null)) {
-      _ref1 = outConnector.resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
-      slotFunction = inConnector.resolveSlot(slot);
+      _ref1 = outConnector.getWindow().resolveSignal(signal), signalSender = _ref1[0], signalEvent = _ref1[1];
+      slotFunction = inConnector.getWindow().resolveSlot(slot);
       connection.handler = signalSender.elem.on(signalEvent, slotFunction);
       connection.sender = signalSender;
       connection.event = signalEvent;
@@ -514,7 +445,7 @@ Connection = (function() {
 
   Connection.prototype.disconnect = function() {
     var _ref;
-    if (this.connection) {
+    if (this.connection != null) {
       this.connection.out.emit('onDisconnect', {
         source: this.connection.out,
         target: this.connection["in"]
@@ -522,7 +453,7 @@ Connection = (function() {
       if (((_ref = this.connection) != null ? _ref.handler : void 0) != null) {
         this.connection.handler.stop();
       }
-      return this.connection = null;
+      return delete this.connection;
     }
   };
 
@@ -542,11 +473,11 @@ Connection = (function() {
     if (this.config != null) {
       this.config.source.delConnection(this);
       this.config.target.delConnection(this);
-      this.config = null;
+      delete this.config;
     }
     if (this.path != null) {
       this.path.close();
-      return this.path = null;
+      return delete this.path;
     }
   };
 
@@ -618,7 +549,7 @@ Connector = (function(_super) {
       onOut: this.onOut,
       noMove: true
     });
-    Drag.create({
+    new Drag({
       target: this.elem,
       minPos: pos(void 0, 0),
       cursor: 'grab',
@@ -685,7 +616,7 @@ Connector = (function(_super) {
   Connector.prototype.connectorAtPos = function(p) {
     var elem;
     this.handle.elem.style.pointerEvents = 'none';
-    elem = document.elementFromPoint(p.x, p.y);
+    elem = Stage.elementAtPos(p);
     this.handle.elem.style.pointerEvents = 'auto';
     if (elem.getWidget()) {
       if (elem.getWidget().constructor === Connector && this.canConnectTo(elem.getWidget())) {
@@ -710,7 +641,7 @@ Connector = (function(_super) {
   Connector.prototype.dragStart = function(drag, event) {
     var p;
     p = drag.absPos(event);
-    this.handle = new Window({
+    this.handle = new Widget({
       type: 'connector-handle',
       parent: 'stage_content',
       style: {
@@ -743,9 +674,9 @@ Connector = (function(_super) {
       this.path.path.removeClass('connectable');
       this.path.setStartDir(this.isOut() ? pos(100, -10) : pos(-100, -10));
       this.path.setEndDir(pos(0, 0));
-      if (this.conn) {
+      if (this.conn != null) {
         this.conn.elem.removeClassName('highlight');
-        this.conn = null;
+        delete this.conn;
       }
       this.handle.elem.removeClassName('highlight');
     }
@@ -765,15 +696,6 @@ Connector = (function(_super) {
     } else if (this.connections.length === 0) {
       this.elem.removeClassName('connected');
     }
-    tag('Drag');
-    log({
-      "file": "./coffee/widgets/connector.coffee",
-      "class": "Connector",
-      "line": 140,
-      "args": ["drag", "event"],
-      "method": "dragStop",
-      "type": "."
-    }, 'stop');
     this.handle.close();
     return this.path.path.remove();
   };
@@ -799,513 +721,6 @@ Connector = (function(_super) {
   return Connector;
 
 })(Widget);
-
-
-/*
-
- 0000000   0000000   000   000   0000000   0000000   000      00000000
-000       000   000  0000  000  000       000   000  000      000     
-000       000   000  000 0 000  0000000   000   000  000      0000000 
-000       000   000  000  0000       000  000   000  000      000     
- 0000000   0000000   000   000  0000000    0000000   0000000  00000000
- */
-
-Console = (function(_super) {
-  __extends(Console, _super);
-
-  function Console() {
-    this.clear = __bind(this.clear, this);
-    this.toggleMethods = __bind(this.toggleMethods, this);
-    this.toggleClasses = __bind(this.toggleClasses, this);
-    this.addLogTag = __bind(this.addLogTag, this);
-    this.updateTags = __bind(this.updateTags, this);
-    this.logInfo = __bind(this.logInfo, this);
-    this.insert = __bind(this.insert, this);
-    this.onTagState = __bind(this.onTagState, this);
-    this.trashSettings = __bind(this.trashSettings, this);
-    this.onContextMenu = __bind(this.onContextMenu, this);
-    this.init = __bind(this.init, this);
-    return Console.__super__.constructor.apply(this, arguments);
-  }
-
-  Console.scopeTags = [];
-
-  Console.prototype.init = function(cfg, defs) {
-    cfg = _.def(cfg, defs);
-    this.logTags = Settings.get('logTags', {});
-    cfg = _.def(cfg, {
-      x: Stage.size().width / 2,
-      y: 30,
-      width: Stage.size().width / 2 - 4,
-      height: Stage.size().height - 30
-    });
-    Console.__super__.init.call(this, cfg, {
-      title: 'console',
-      "class": 'console-window',
-      content: 'scroll',
-      showMethods: Settings.get('logMethods', true),
-      showClasses: Settings.get('logClasses', true),
-      buttons: [
-        {
-          type: "window-button-left",
-          onClick: this.maximize,
-          child: {
-            type: 'icon',
-            icon: 'octicon-diff-added'
-          }
-        }, {
-          type: "window-button-left",
-          onClick: this.scrollToTop,
-          child: {
-            type: 'icon',
-            icon: 'fa-arrow-circle-o-up'
-          }
-        }, {
-          type: "window-button-left",
-          onClick: this.scrollToBottom,
-          child: {
-            type: 'icon',
-            icon: 'fa-arrow-circle-o-down'
-          }
-        }, {
-          type: 'window-button-right',
-          onClick: this.clear,
-          keys: ['k'],
-          child: {
-            type: 'icon',
-            icon: 'octicon-trashcan'
-          }
-        }
-      ],
-      child: {
-        "class": 'console',
-        text: '<span class="tiny-text" style="vertical-align:top">console - knix version ' + knix.version + '</span>',
-        noMove: true
-      }
-    });
-    this.elem.addEventListener('contextmenu', this.onContextMenu);
-    return this;
-  };
-
-  Console.prototype.onContextMenu = function(event) {
-    var children, tag;
-    children = [];
-    for (tag in this.logTags) {
-      if (!tag.startsWith('@') && !tag.startsWith('.')) {
-        children.push({
-          type: 'toggle',
-          text: tag,
-          states: ['on', 'unset', 'off'],
-          icons: ['octicon-check', 'octicon-dash', 'octicon-x'],
-          state: this.logTags[tag],
-          onState: this.onTagState
-        });
-      }
-    }
-    children.push({
-      type: 'button',
-      text: 'ok',
-      onClick: function() {
-        return _.win().close();
-      }
-    });
-    knix.get({
-      hasClose: true,
-      hasMaxi: false,
-      title: ' ',
-      resize: false,
-      hasShade: false,
-      popup: true,
-      pos: Stage.absPos(event),
-      console: this,
-      children: children,
-      buttons: [
-        {
-          type: "window-button-left",
-          child: {
-            type: 'icon',
-            icon: 'octicon-check'
-          },
-          onClick: function() {
-            var t, _i, _len, _ref, _results;
-            _ref = _.win().elem.select('.toggle');
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              t = _ref[_i];
-              _results.push(t.widget.setState('on'));
-            }
-            return _results;
-          }
-        }, {
-          type: "window-button-left",
-          child: {
-            type: 'icon',
-            icon: 'octicon-dash'
-          },
-          onClick: function() {
-            var t, _i, _len, _ref, _results;
-            _ref = _.win().elem.select('.toggle');
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              t = _ref[_i];
-              _results.push(t.widget.setState('unset'));
-            }
-            return _results;
-          }
-        }, {
-          "class": 'window-button-left',
-          child: {
-            type: 'icon',
-            icon: 'octicon-x'
-          },
-          onClick: function() {
-            var t, _i, _len, _ref, _results;
-            _ref = _.win().elem.select('.toggle');
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              t = _ref[_i];
-              _results.push(t.widget.setState('off'));
-            }
-            return _results;
-          }
-        }, {
-          type: "window-button-right",
-          onClick: this.trashSettings,
-          child: {
-            type: 'icon',
-            icon: 'octicon-trashcan'
-          }
-        }, {
-          type: "window-button-right",
-          onClick: this.toggleMethods,
-          child: {
-            type: 'icon',
-            icon: 'octicon-list-unordered'
-          }
-        }, {
-          "class": 'window-button-right',
-          onClick: this.toggleClasses,
-          child: {
-            type: 'icon',
-            icon: 'octicon-three-bars'
-          }
-        }
-      ]
-    });
-    return event.preventDefault();
-  };
-
-  Console.prototype.trashSettings = function() {
-    Settings.set('logTags', {});
-    Settings.set('logMethods', void 0);
-    return Settings.set('logClasses', void 0);
-  };
-
-  Console.prototype.onTagState = function(event) {
-    var tag;
-    tag = _.wid().config.text;
-    this.logTags[tag] = event.detail.state;
-    Settings.set('logTags', this.logTags);
-    return this.updateTags();
-  };
-
-  Console.prototype.insert = function(s) {
-    this.getChild('console').elem.insert(s);
-    return this.scrollToBottom();
-  };
-
-  Console.prototype.logInfo = function(info, url, s) {
-    var infoStr, styles, t, tags;
-    this.addLogTag(info["class"]);
-    if ((info["class"] != null) && (info.type != null) && (info.method != null)) {
-      infoStr = info["class"] + info.type + info.method;
-    } else {
-      infoStr = '';
-    }
-    tags = [info["class"]].concat(Console.scopeTags);
-    styles = ((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = tags.length; _i < _len; _i++) {
-        t = tags[_i];
-        if (t != null) {
-          _results.push("log_" + t.replace(/[\/@]/g, '_'));
-        }
-      }
-      return _results;
-    })()).join(' ');
-    this.insert('<pre class="' + styles + '">' + '<a onClick=\'' + url + '\' class="console-link" title="' + infoStr + ' ' + tags.join(' ') + '">' + '<span class="console-class" ' + (!this.config.showClasses && 'style="display:none;"' || '') + '>' + ((info["class"] != null) && info["class"] || '') + '</span>' + '<span class="console-method-type" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + ((info.type != null) && info.type || '') + '</span>' + '<span class="console-method" ' + (!this.config.showMethods && 'style="display:none;"' || '') + '>' + ((info.method != null) && info.method || '') + '</span>' + '<span class="octicon octicon-playback-play"></span>' + '</a> ' + s + '</pre>');
-    return this.updateTags();
-  };
-
-  Console.prototype.updateTags = function() {
-    var show, tag, tagElem, tagElems, tclass, v, _i, _len, _ref, _results;
-    tagElems = this.elem.select('pre');
-    _results = [];
-    for (_i = 0, _len = tagElems.length; _i < _len; _i++) {
-      tagElem = tagElems[_i];
-      show = -1;
-      _ref = this.logTags;
-      for (tag in _ref) {
-        v = _ref[tag];
-        tclass = 'log_' + tag.replace(/[\/@]/g, '_');
-        if (__indexOf.call(tagElem.classList, tclass) >= 0) {
-          if (v === 'off') {
-            show = 0;
-          } else if (v === 'on' && show !== 0) {
-            show = 1;
-          }
-        }
-      }
-      _results.push(tagElem.style.display = show === 0 && 'none' || '');
-    }
-    return _results;
-  };
-
-  Console.prototype.addLogTag = function(tag) {
-    if (this.logTags[tag] == null) {
-      return this.logTags[tag] = 'unset';
-    }
-  };
-
-  Console.prototype.toggleClasses = function() {
-    var t, _i, _len, _ref, _results;
-    this.config.showClasses = !this.config.showClasses;
-    Settings.set('logClasses', this.config.showClasses);
-    _ref = this.elem.select('.console-class');
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      t = _ref[_i];
-      if (this.config.showClasses) {
-        _results.push(t.show());
-      } else {
-        _results.push(t.hide());
-      }
-    }
-    return _results;
-  };
-
-  Console.prototype.toggleMethods = function() {
-    var t, _i, _len, _ref, _results;
-    this.config.showMethods = !this.config.showMethods;
-    Settings.set('logMethods', this.config.showMethods);
-    _ref = this.elem.select('.console-method', '.console-method-type');
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      t = _ref[_i];
-      if (this.config.showMethods) {
-        _results.push(t.show());
-      } else {
-        _results.push(t.hide());
-      }
-    }
-    return _results;
-  };
-
-  Console.prototype.clear = function() {
-    return this.getChild('console').clear();
-  };
-
-  Console.setScopeTags = function() {
-    var t, _i, _len, _ref, _results;
-    Console.scopeTags = Array.prototype.slice.call(arguments, 0);
-    _ref = Console.scopeTags;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      t = _ref[_i];
-      _results.push(Console.allConsoles().each(function(c) {
-        return c.addLogTag(t);
-      }));
-    }
-    return _results;
-  };
-
-  Console.logInfo = function(info) {
-    var args, s, url;
-    args = Array.prototype.slice.call(arguments, 1);
-    if (__indexOf.call(Console.scopeTags, 'error') >= 0) {
-      s = '<span class="console-error">%s</span> '.fmt(str(args[0])) + Console.toHtml.apply(Console, args.slice(1));
-    } else if (__indexOf.call(Console.scopeTags, 'warning') >= 0) {
-      s = '<span class="console-warning">%s</span> '.fmt(str(args[0])) + Console.toHtml.apply(Console, args.slice(1));
-    } else {
-      s = Console.toHtml.apply(Console, args);
-    }
-    if ((info.file != null) && (info.line != null)) {
-      url = 'window.open("https://github.com/monsterkodi/knix/blob/master/%s#L%d");'.fmt(info.file, info.line);
-      info.file = info.file.slice(9, -7);
-    }
-    Console.allConsoles().each(function(c) {
-      return c.logInfo(info, url, s);
-    });
-    return Console.scopeTags = [];
-  };
-
-  Console.allConsoles = function() {
-    var e, _i, _len, _ref, _results;
-    _ref = $$(".console");
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      e = _ref[_i];
-      _results.push(e.getWindow());
-    }
-    return _results;
-  };
-
-  Console.log = function() {
-    return Console.allConsoles().each(function(c) {
-      return c.insert(Console.toHtml.apply(Console, Array.prototype.slice.call(arguments, 0)));
-    });
-  };
-
-  Console.toHtml = function() {
-    var arg, html;
-    html = ((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-        arg = arguments[_i];
-        _results.push(str(arg));
-      }
-      return _results;
-    }).apply(Console, arguments)).join(" ");
-    return html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>').replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>').replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>');
-  };
-
-  return Console;
-
-})(Window);
-
-tag = Console.setScopeTags;
-
-
-/*
-
-00000000  000  000      00000000   0000000
-000       000  000      000       000     
-000000    000  000      0000000   0000000 
-000       000  000      000            000
-000       000  0000000  00000000  0000000
- */
-
-Files = (function() {
-  function Files() {}
-
-  Files.saveWindows = function() {
-    var files, json, w, windows;
-    windows = knix.allWindows();
-    if (_.isEmpty(windows)) {
-      return;
-    }
-    json = JSON.stringify({
-      'windows': (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = windows.length; _i < _len; _i++) {
-          w = windows[_i];
-          _results.push(w.config);
-        }
-        return _results;
-      })(),
-      'connections': knix.allConnections()
-    }, null, '    ');
-    log({
-      "file": "./coffee/widgets/files.coffee",
-      "class": "Files",
-      "line": 20,
-      "method": "saveWindows",
-      "type": "@"
-    }, json);
-    files = Files.allFiles();
-    files[uuid.v4()] = json;
-    return localStorage.setItem('files', JSON.stringify(files));
-  };
-
-  Files.loadMenu = function(event) {
-    var children, data, file, files;
-    files = Files.allFiles();
-    if (_.isEmpty(files)) {
-      return;
-    }
-    children = [];
-    for (file in files) {
-      data = files[file];
-      log({
-        "file": "./coffee/widgets/files.coffee",
-        "class": "Files",
-        "line": 33,
-        "method": "loadMenu",
-        "type": "@",
-        "args": ["event"]
-      }, 'file', file, data.length);
-      children.push({
-        type: 'button',
-        text: file,
-        onClick: Files.fileSelected
-      });
-    }
-    return knix.get({
-      hasClose: true,
-      hasMaxi: false,
-      title: ' ',
-      resize: false,
-      hasShade: false,
-      popup: true,
-      pos: Stage.absPos(event),
-      children: children,
-      buttons: [
-        {
-          type: "window-button-left",
-          onClick: Files.trashFiles,
-          child: {
-            type: 'icon',
-            icon: 'octicon-trashcan'
-          }
-        }
-      ]
-    });
-  };
-
-  Files.trashFiles = function() {
-    localStorage.setItem('files', "{}");
-    return knix.closePopups();
-  };
-
-  Files.allFiles = function() {
-    if (localStorage.getItem('files') != null) {
-      return JSON.parse(localStorage.getItem('files'));
-    }
-    return {};
-  };
-
-  Files.loadLast = function() {
-    return Files.loadFile(_.keys(Files.allFiles()).last());
-  };
-
-  Files.fileSelected = function(event) {
-    return Files.loadFile(event.target.getWidget().config.text);
-  };
-
-  Files.loadFile = function(filename) {
-    var data, state;
-    log({
-      "file": "./coffee/widgets/files.coffee",
-      "class": "Files",
-      "line": 71,
-      "method": "loadFile",
-      "type": "@",
-      "args": ["filename"]
-    }, filename);
-    if (filename) {
-      data = Files.allFiles()[filename];
-      knix.closeWindows();
-      state = JSON.parse(data);
-      return knix.restore(state);
-    }
-  };
-
-  return Files;
-
-})();
 
 
 /*
@@ -1413,6 +828,7 @@ Icon = (function(_super) {
   __extends(Icon, _super);
 
   function Icon() {
+    this.setIcon = __bind(this.setIcon, this);
     this.init = __bind(this.init, this);
     return Icon.__super__.constructor.apply(this, arguments);
   }
@@ -1423,19 +839,20 @@ Icon = (function(_super) {
       type: 'icon',
       elem: 'span'
     });
-    if (cfg.icon.startsWith('fa')) {
-      return Icon.__super__.init.call(this, cfg, {
-        "class": 'octicon',
-        child: {
-          elem: 'i',
-          "class": 'fa ' + cfg.icon
-        }
-      });
-    } else {
-      return Icon.__super__.init.call(this, cfg, {
-        "class": 'octicon ' + cfg.icon
-      });
-    }
+    return Icon.__super__.init.call(this, cfg, {
+      child: {
+        elem: 'i',
+        "class": (cfg.icon.startsWith('fa') && 'fa ' || 'octicon ') + cfg.icon
+      }
+    });
+  };
+
+  Icon.prototype.setIcon = function(icon) {
+    var e;
+    e = this.elem.firstChild;
+    e.removeClassName(this.config.icon);
+    this.config.icon = icon;
+    return e.addClassName(this.config.icon);
   };
 
   return Icon;
@@ -1513,20 +930,33 @@ Menu = (function(_super) {
   };
 
   Menu.prototype.show = function() {
+    var parent;
     if (this.isSubmenu()) {
       $('stage_content').appendChild(this.elem);
-      this.setPos(this.config.parent.absPos().plus(pos(0, this.config.parent.getHeight())));
+      parent = $(this.config.parentID).widget;
+      this.setPos(parent.absPos().plus(pos(0, parent.getHeight())));
     }
     this.elem.addEventListener('click', this.hide);
+    this.elem.addEventListener('mouseleave', this.hide);
     return Menu.__super__.show.apply(this, arguments);
   };
 
   Menu.prototype.hide = function() {
     if (this.isSubmenu()) {
-      this.elem.removeEventListener('mousedown', this.onSubmenuDown);
+      this.elem.removeEventListener('mousedown', this.hide);
+      this.elem.removeEventListener('mouseleave', this.hide);
     }
     return Menu.__super__.hide.apply(this, arguments);
   };
+
+
+  /*
+   0000000  000000000   0000000   000000000  000   0000000
+  000          000     000   000     000     000  000     
+  0000000      000     000000000     000     000  000     
+       000     000     000   000     000     000  000     
+  0000000      000     000   000     000     000   0000000
+   */
 
   Menu.menu = function(id) {
     var _ref;
@@ -1541,12 +971,6 @@ Menu = (function(_super) {
       id: cfg.menu + '_button_' + cfg.text,
       tooltip: cfg.text
     });
-  };
-
-  Menu.initContextMenu = function() {
-    var stage;
-    stage = $('stage_content');
-    return stage.addEventListener('contextmenu', Menu.showContextMenu);
   };
 
   Menu.showContextMenu = function(event) {
@@ -1565,22 +989,17 @@ Menu = (function(_super) {
       btn.id = void 0;
       btn.parent = 'context-menu';
       btn.menu = 'context-menu';
-      btn.onClick = Menu.onContextAction;
-      btn.action = e.widget.config.action;
-      log({
-        "file": "./coffee/widgets/menu.coffee",
-        "class": "Menu",
-        "line": 67,
-        "args": ["event"],
-        "method": "showContextMenu",
-        "type": "@"
-      }, btn);
+      btn["class"] = 'tool-button';
+      btn.func = e.widget.config.action;
+      btn.action = Menu.onContextAction;
+      delete btn.tooltip;
       children.push(btn);
     }
     return m = knix.get({
       title: 'audio',
       "class": 'context-menu',
       id: 'context-menu',
+      isMovable: true,
       hasClose: true,
       hasMaxi: false,
       resize: false,
@@ -1592,15 +1011,7 @@ Menu = (function(_super) {
 
   Menu.onContextAction = function(event) {
     var m, w;
-    log({
-      "file": "./coffee/widgets/menu.coffee",
-      "class": "Menu",
-      "line": 82,
-      "args": ["event"],
-      "method": "onContextAction",
-      "type": "@"
-    }, 'button action', event.target.getWidget());
-    w = event.target.getWidget().getUp('button').config.action();
+    w = event.target.getWidget().getUp('button').config.func(event);
     m = Menu.menu('context-menu');
     w.setPos(m.absPos());
     return m.close();
@@ -1647,7 +1058,7 @@ Pad = (function(_super) {
   }
 
   Pad.prototype.init = function(cfg, defs) {
-    var hp, i, v, _i, _j, _k, _ref, _ref1, _ref2;
+    var h, hp, i, v, _i, _j, _k, _ref, _ref1, _ref2;
     cfg = _.def(cfg, defs);
     cfg = _.def(cfg, {
       minWidth: 100,
@@ -1688,7 +1099,13 @@ Pad = (function(_super) {
     }
     this.handles = [];
     for (i = _j = 0, _ref1 = this.config.numHandles; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-      this.handles.push(this.createHandle());
+      h = this.createHandle();
+      this.handles.push(h);
+      if (i === this.config.sustainIndex) {
+        h.circle.addClass('sustain');
+      } else if (i === 0 || i === this.config.numHandles - 1) {
+        h.circle.back();
+      }
     }
     if (this.config.hasPaths) {
       this.paths = [];
@@ -1711,7 +1128,7 @@ Pad = (function(_super) {
     });
     p.path.node.addEventListener('dblclick', this.pathDoubleClick);
     p.path.back();
-    Drag.create({
+    new Drag({
       target: p.path.node,
       cursor: 'grab',
       doMove: false,
@@ -1724,7 +1141,7 @@ Pad = (function(_super) {
     var h;
     h = new Handle({
       svg: this.svg.svg,
-      "class": 'pad_handle',
+      "class": 'pad-handle',
       onPos: this.onHandlePos,
       onUp: this.onHandleUp
     });
@@ -1734,6 +1151,9 @@ Pad = (function(_super) {
 
   Pad.prototype.splitPathAtIndex = function(i) {
     var h;
+    if (i < this.config.sustainIndex) {
+      this.config.sustainIndex += 1;
+    }
     this.config.vals.splice(i + 1, 0, this.config.vals[i].mid(this.config.vals[i + 1]));
     h = this.createHandle();
     this.handles.splice(i + 1, 0, h);
@@ -1745,6 +1165,9 @@ Pad = (function(_super) {
   };
 
   Pad.prototype.removeHandleAtIndex = function(i) {
+    if (i < this.config.sustainIndex) {
+      this.config.sustainIndex -= 1;
+    }
     this.paths[i].swapStartHandle(this.handles[i - 1]);
     this.handles[i - 1].circle.center(-1, -1);
     this.config.vals.splice(i, 1);
@@ -1766,7 +1189,7 @@ Pad = (function(_super) {
     var h, i;
     h = event.target.getWidget();
     i = this.handles.indexOf(h);
-    if (i > 0 && i < this.handles.length - 1) {
+    if (i > 0 && i < this.handles.length - 1 && i !== this.config.sustainIndex) {
       return this.removeHandleAtIndex(i);
     }
   };
@@ -1805,7 +1228,7 @@ Pad = (function(_super) {
       log({
         "file": "./coffee/widgets/pad.coffee",
         "class": "Pad",
-        "line": 135,
+        "line": 142,
         "args": ["rel"],
         "method": "valAtRel",
         "type": "."
@@ -1847,11 +1270,11 @@ Pad = (function(_super) {
   Pad.prototype.hideRuler = function() {
     if (this.rulerx) {
       this.rulerx.close();
-      this.rulerx = null;
+      delete this.rulerx;
     }
     if (this.rulery) {
       this.rulery.close();
-      return this.rulery = null;
+      return delete this.rulery;
     }
   };
 
@@ -2135,14 +1558,18 @@ Range = (function(_super) {
       children: [
         {
           type: 'sliderspin',
-          id: 'range_low',
+          "class": 'range_low',
+          recKey: 'low',
+          tooltip: 'minimum',
           value: cfg.low,
           minValue: cfg.minLow,
           maxValue: cfg.maxLow,
           spinStep: cfg.lowStep
         }, {
           type: 'sliderspin',
-          id: 'range_high',
+          "class": 'range_high',
+          tooltip: 'maximum',
+          recKey: 'high',
           value: cfg.high,
           minValue: cfg.minHigh,
           maxValue: cfg.maxHigh,
@@ -2155,7 +1582,8 @@ Range = (function(_super) {
               slot: 'range_in:setValue'
             }, {
               type: 'spin',
-              id: 'range_in',
+              "class": 'range_in',
+              tooltip: 'input',
               valueStep: 0.001,
               minWidth: 100,
               maxWidth: 10000,
@@ -2165,7 +1593,8 @@ Range = (function(_super) {
               }
             }, {
               type: 'spin',
-              id: 'range_out',
+              "class": 'range_out',
+              tooltip: 'output',
               valueStep: 0.001,
               minWidth: 100,
               maxWidth: 10000,
@@ -2233,6 +1662,112 @@ Range = (function(_super) {
 
 /*
 
+ 0000000  00000000  000      00000000   0000000  000000000   0000000   000   000   0000000   000      00000000
+000       000       000      000       000          000     000   000  0000  000  000        000      000     
+0000000   0000000   000      0000000   000          000     000000000  000 0 000  000  0000  000      0000000 
+     000  000       000      000       000          000     000   000  000  0000  000   000  000      000     
+0000000   00000000  0000000  00000000   0000000     000     000   000  000   000   0000000   0000000  00000000
+ */
+
+Selectangle = (function(_super) {
+  __extends(Selectangle, _super);
+
+  function Selectangle() {
+    this.onMove = __bind(this.onMove, this);
+    this.close = __bind(this.close, this);
+    this.init = __bind(this.init, this);
+    return Selectangle.__super__.constructor.apply(this, arguments);
+  }
+
+  Selectangle.start = function(wid) {
+    Selectangle.selectangle = new Selectangle;
+    return Selectangle.selectangle.wid = wid;
+  };
+
+  Selectangle.stop = function() {
+    var _ref;
+    return (_ref = Selectangle.selectangle) != null ? _ref.close() : void 0;
+  };
+
+  Selectangle.toggle = function() {
+    if (Selectangle.selectangle != null) {
+      return Selectangle.stop();
+    } else {
+      return Selectangle.start();
+    }
+  };
+
+  Selectangle.prototype.init = function(cfg, defs) {
+    var stage;
+    cfg = _.def(cfg, defs);
+    window.document.documentElement.style.cursor = 'crosshair';
+    Selectangle.__super__.init.call(this, cfg, {
+      type: 'selectangle',
+      parent: 'stage_content',
+      pos: Stage.mousePos,
+      width: 0,
+      height: 0
+    });
+    stage = $('stage_content');
+    stage.addEventListener('mousemove', this.onMove);
+    stage.addEventListener('mouseup', this.close);
+    stage.addEventListener('mousedown', this.close);
+    return this;
+  };
+
+  Selectangle.prototype.close = function(event) {
+    var stage, wid, _i, _len, _ref;
+    delete Selectangle.selectangle;
+    if (this.sizePos().square() === 0 && !event.shiftKey) {
+      _ref = (this.wid != null) && this.wid.allChildren() || knix.allWindows();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        wid = _ref[_i];
+        wid.elem.removeClassName('selected');
+      }
+    }
+    stage = $('stage_content');
+    stage.removeEventListener('mousemove', this.onMove);
+    stage.removeEventListener('mouseup', this.done);
+    stage.removeEventListener('mousedown', this.done);
+    window.document.documentElement.style.cursor = 'auto';
+    return Selectangle.__super__.close.apply(this, arguments);
+  };
+
+  Selectangle.prototype.onMove = function(event) {
+    var br, ep, rect, tl, wid, widgets, _i, _len, _results;
+    ep = Stage.absPos(event);
+    tl = ep.min(this.config.pos);
+    br = ep.max(this.config.pos);
+    this.setPos(tl);
+    this.resize(br.x - tl.x, br.y - tl.y);
+    widgets = (this.wid != null) && this.wid.allChildren() || knix.allWindows();
+    window.document.documentElement.style.cursor = 'crosshair';
+    rect = this.absRect();
+    _results = [];
+    for (_i = 0, _len = widgets.length; _i < _len; _i++) {
+      wid = widgets[_i];
+      if (rect.contains(wid.absCenter())) {
+        if (!wid.config.noSelect) {
+          _results.push(wid.elem.addClassName('selected'));
+        } else {
+          _results.push(void 0);
+        }
+      } else if (!event.shiftKey) {
+        _results.push(wid.elem.removeClassName('selected'));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  return Selectangle;
+
+})(Widget);
+
+
+/*
+
  0000000  000      000  0000000    00000000  00000000 
 000       000      000  000   000  000       000   000
 0000000   000      000  000   000  0000000   0000000  
@@ -2248,20 +1783,12 @@ Slider = (function(_super) {
     this.setValue = __bind(this.setValue, this);
     this.valueToPercentOfWidth = __bind(this.valueToPercentOfWidth, this);
     this.onWindowSize = __bind(this.onWindowSize, this);
+    this.onDrag = __bind(this.onDrag, this);
     this.init = __bind(this.init, this);
     return Slider.__super__.constructor.apply(this, arguments);
   }
 
   Slider.prototype.init = function(cfg, defs) {
-    var sliderFunc;
-    sliderFunc = function(drag, event) {
-      var pos, slider, v, width;
-      slider = drag.target.widget;
-      pos = slider.absPos();
-      width = event.clientX - pos.x;
-      v = slider.size2value(width);
-      return slider.setValue(v);
-    };
     Slider.__super__.init.call(this, cfg, {
       type: 'slider',
       minWidth: 50,
@@ -2276,14 +1803,25 @@ Slider = (function(_super) {
       this.getChild('slider-knob').elem.hide();
     }
     this.setBarValue(this.config.value);
-    Drag.create({
+    new Drag({
       cursor: 'ew-resize',
       target: this.elem,
       doMove: false,
-      onMove: sliderFunc,
-      onStart: sliderFunc
+      onMove: this.onDrag,
+      onStart: this.onDrag
     });
     return this;
+  };
+
+  Slider.prototype.onDrag = function(drag) {
+    var oldValue;
+    oldValue = this.config.value;
+    this.setValue(this.size2value(drag.pos.x - this.absPos().x));
+    if (oldValue !== this.config.value) {
+      return this.emit('valueInput', {
+        value: this.config.value
+      });
+    }
   };
 
   Slider.prototype.onWindowSize = function() {
@@ -2342,10 +1880,9 @@ Sliderspin = (function(_super) {
       children: [
         {
           type: 'connector',
-          slot: cfg.id + ':setValue'
+          slot: cfg["class"] + ':setValue'
         }, {
           type: 'slider',
-          id: cfg.id + '_slider',
           value: cfg.value,
           minValue: cfg.minValue,
           maxValue: cfg.maxValue,
@@ -2356,8 +1893,8 @@ Sliderspin = (function(_super) {
           }
         }, {
           type: 'spin',
-          id: cfg.id + '_spin',
           value: cfg.value,
+          recKey: cfg.recKey,
           minValue: cfg.minValue,
           maxValue: cfg.maxValue,
           valueStep: cfg.spinStep,
@@ -2368,13 +1905,13 @@ Sliderspin = (function(_super) {
           }
         }, {
           type: 'connector',
-          signal: cfg.id + ':onValue'
+          signal: cfg["class"] + ':onValue'
         }
       ]
     });
-    this.connect(cfg.id + '_slider:onValue', cfg.id + '_spin:setValue');
-    this.connect(cfg.id + '_spin:onValue', cfg.id + '_slider:setValue');
-    this.connect(cfg.id + '_spin:onValue', this.onSpinValue);
+    this.connect('slider:onValue', 'spin:setValue');
+    this.connect('spin:onValue', 'slider:setValue');
+    this.connect('spin:onValue', this.onSpinValue);
     return this;
   };
 
@@ -2384,7 +1921,7 @@ Sliderspin = (function(_super) {
 
   Sliderspin.prototype.setValue = function(v) {
     this.config.value = _.value(v);
-    return this.getChild(this.config.id + '_slider').setValue(this.config.value);
+    return this.getChild('slider').setValue(this.config.value);
   };
 
   return Sliderspin;
@@ -2407,12 +1944,15 @@ Spin = (function(_super) {
   function Spin() {
     this.strip0 = __bind(this.strip0, this);
     this.format = __bind(this.format, this);
+    this.onWindowSize = __bind(this.onWindowSize, this);
     this.stopTimer = __bind(this.stopTimer, this);
     this.startDecr = __bind(this.startDecr, this);
     this.startIncr = __bind(this.startIncr, this);
     this.incr = __bind(this.incr, this);
+    this.updateKnob = __bind(this.updateKnob, this);
     this.setValue = __bind(this.setValue, this);
     this.onKey = __bind(this.onKey, this);
+    this.onInputDown = __bind(this.onInputDown, this);
     this.onInputChange = __bind(this.onInputChange, this);
     this.init = __bind(this.init, this);
     return Spin.__super__.constructor.apply(this, arguments);
@@ -2431,29 +1971,39 @@ Spin = (function(_super) {
           type: 'spin-row',
           children: [
             {
-              id: 'decr',
-              type: 'spin-td',
+              "class": 'decr spin-td',
               elem: 'td',
               keys: [],
               child: {
                 type: 'icon',
-                icon: 'octicon-triangle-left'
+                icon: 'octicon-triangle-left',
+                style: {
+                  position: 'relative',
+                  top: '-1px'
+                }
               }
             }, {
+              "class": 'spin-content',
               elem: 'td',
-              type: 'spin-content',
-              child: {
-                type: 'input',
-                "class": 'spin-input'
-              }
+              children: [
+                {
+                  type: 'input',
+                  "class": 'spin-input'
+                }, {
+                  type: 'spin-knob'
+                }
+              ]
             }, {
-              id: 'incr',
-              type: 'spin-td',
+              "class": 'incr spin-td',
               elem: 'td',
               keys: [],
               child: {
                 type: 'icon',
-                icon: 'octicon-triangle-right'
+                icon: 'octicon-triangle-right',
+                style: {
+                  position: 'relative',
+                  top: '-1px'
+                }
               }
             }
           ]
@@ -2464,9 +2014,8 @@ Spin = (function(_super) {
     this.connect('decr:mouseup', this.stopTimer);
     this.connect('incr:mousedown', this.startIncr);
     this.connect('incr:mouseup', this.stopTimer);
-    this.connect('input:mousedown', function(event) {
-      return event.stopPropagation();
-    });
+    this.connect('input:mousedown', this.onInputDown);
+    this.connect('input:click', this.onInputDown);
     if (this.config.valueStep == null) {
       this.config.valueStep = this.range() > 1 && 1 || this.range() / 100;
     }
@@ -2479,7 +2028,20 @@ Spin = (function(_super) {
   };
 
   Spin.prototype.onInputChange = function() {
-    return this.setValue(this.input.value);
+    var oldValue;
+    oldValue = this.config.value;
+    this.setValue(this.input.value);
+    if (this.config.value !== oldValue) {
+      return this.emit('valueInput', {
+        value: this.config.value
+      });
+    }
+  };
+
+  Spin.prototype.onInputDown = function(event) {
+    this.config.knobIndex = -(this.input.selectionStart - this.input.value.length + 1);
+    this.updateKnob();
+    return event.stopPropagation();
   };
 
   Spin.prototype.onKey = function(event, e) {
@@ -2489,26 +2051,34 @@ Spin = (function(_super) {
       return;
     }
     if ((_ref1 = event.key) === 'Up' || _ref1 === 'Down') {
-      this.onInputChange();
+      this.setValue(this.input.value);
       this.incr(event.key === 'Up' && '+' || '-');
       event.stop();
       return;
     }
     if ((_ref2 = event.key) === 'Left' || _ref2 === 'Right' || _ref2 === ' ' || _ref2 === 'Tab') {
       if (event.key === ' ') {
+        Keys.onKey(event);
         event.stop();
+      } else if (event.key === 'Left') {
+        this.config.knobIndex += 1;
+      } else if (event.key === 'Right') {
+        this.config.knobIndex -= 1;
       }
       this.onInputChange();
+      this.updateKnob();
       return;
     }
     if (_ref3 = event.key, __indexOf.call('0123456789-.', _ref3) < 0) {
       if (event.key.length === 1) {
+        Keys.onKey(event);
         event.stop();
         return;
       }
     }
     if (_ref4 = event.key, __indexOf.call('-.', _ref4) >= 0) {
       if (this.input.value.indexOf(event.key) > -1) {
+        Keys.onKey(event);
         event.stop();
       }
     }
@@ -2521,17 +2091,31 @@ Spin = (function(_super) {
     if (this.input != null) {
       this.input.value = this.format(this.config.value);
     }
+    if (this.config.knobIndex == null) {
+      this.config.knobIndex = this.config.maxValue <= 1 ? 1 : 3;
+    }
+    this.updateKnob();
     return _ref1 = [start, end], this.input.selectionStart = _ref1[0], this.input.selectionEnd = _ref1[1], _ref1;
   };
 
+  Spin.prototype.updateKnob = function() {
+    var i;
+    this.config.knobIndex = _.clamp(this.config.knobIndex, 0, this.format(this.config.maxValue).length - 1);
+    i = this.config.knobIndex;
+    if (i === 2) {
+      i = 3;
+    }
+    return this.getChild('spin-knob').moveTo(this.getChild('spin-content').getWidth() - (8 + i * 7.5));
+  };
+
   Spin.prototype.incr = function(d) {
-    var dne, dotindex, end, saveStep, start, tempStep, trats, valueLength, _ref, _ref1, _ref2, _ref3;
+    var dotindex, oldValue, saveStep, start, tempStep, valueLength, _ref;
     if (d == null) {
       d = 1;
     }
+    oldValue = this.config.value;
     valueLength = this.input.value.length;
-    _ref = [this.input.selectionStart, this.input.selectionEnd], start = _ref[0], end = _ref[1];
-    _ref1 = [this.input.selectionStart - valueLength, this.input.selectionEnd - valueLength], trats = _ref1[0], dne = _ref1[1];
+    start = this.input.value.length - this.config.knobIndex - 1;
     dotindex = this.input.value.indexOf('.');
     if (dotindex >= 0 && start >= dotindex) {
       tempStep = 1.0 / (Math.pow(10, start - dotindex));
@@ -2541,11 +2125,15 @@ Spin = (function(_super) {
       }
       tempStep = Math.pow(10, valueLength - start - 1);
     }
-    _ref2 = [this.config.valueStep, tempStep], saveStep = _ref2[0], this.config.valueStep = _ref2[1];
+    _ref = [this.config.valueStep, tempStep], saveStep = _ref[0], this.config.valueStep = _ref[1];
     Spin.__super__.incr.apply(this, arguments);
     this.config.valueStep = saveStep;
-    valueLength = this.input.value.length;
-    return _ref3 = [valueLength + trats, valueLength + dne], this.input.selectionStart = _ref3[0], this.input.selectionEnd = _ref3[1], _ref3;
+    if (oldValue !== this.config.value) {
+      this.emit('valueInput', {
+        value: this.config.value
+      });
+    }
+    return this.updateKnob();
   };
 
   Spin.prototype.startIncr = function() {
@@ -2560,6 +2148,10 @@ Spin = (function(_super) {
 
   Spin.prototype.stopTimer = function() {
     return clearInterval(this.timer);
+  };
+
+  Spin.prototype.onWindowSize = function() {
+    return this.setValue(this.config.value);
   };
 
   Spin.prototype.format = function(s) {
@@ -2594,12 +2186,11 @@ Spinner = (function(_super) {
   __extends(Spinner, _super);
 
   function Spinner() {
-    this.setValue = __bind(this.setValue, this);
+    this.size2value = __bind(this.size2value, this);
     this.incr = __bind(this.incr, this);
     this.index = __bind(this.index, this);
+    this.setValue = __bind(this.setValue, this);
     this.sliderFunc = __bind(this.sliderFunc, this);
-    this.size2value = __bind(this.size2value, this);
-    this.onWindowSize = __bind(this.onWindowSize, this);
     this.init = __bind(this.init, this);
     return Spinner.__super__.constructor.apply(this, arguments);
   }
@@ -2612,34 +2203,46 @@ Spinner = (function(_super) {
       minValue: 0,
       maxValue: cfg.values.length - 1
     });
-    Drag.create({
+    new Drag({
       cursor: 'ew-resize',
       target: this.getChild('spin-content').elem,
       doMove: false,
       onMove: this.sliderFunc,
       onStart: this.sliderFunc
     });
-    this.input = null;
+    delete this.input;
     return this;
   };
 
-  Spinner.prototype.onWindowSize = function() {
-    return this.setValue(this.config.value);
-  };
-
-  Spinner.prototype.size2value = function(s) {
-    return this.config.minValue + this.range() * s / this.getChild('spin-content').getWidth();
-  };
-
   Spinner.prototype.sliderFunc = function(drag, event) {
-    var d, i, pos, v, width;
+    var d, i, oldValue, pos, v, width;
+    oldValue = this.config.value;
     pos = this.getChild('spin-content').absPos();
     width = event.clientX - pos.x;
     v = this.size2value(width);
     d = v - this.range() / 2;
     i = this.range() / 2 + d * this.config.valueStep * this.steps() / this.range();
     i = this.clamp(this.round(i));
-    return this.setValue(this.config.values[i]);
+    this.setValue(this.config.values[i]);
+    if (oldValue !== this.config.value) {
+      return this.emit('valueInput', {
+        value: this.config.value
+      });
+    }
+  };
+
+  Spinner.prototype.setValue = function(a) {
+    var c, i, offset, v, w;
+    v = _.arg(a);
+    i = this.config.values.indexOf(v);
+    c = this.getChild('spin-content');
+    c.clear();
+    w = Math.max(3, c.getWidth() / this.steps());
+    offset = i * this.getChild('spin-content').getWidth() / this.config.values.length;
+    c.elem.insert('<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, offset));
+    this.config.value = this.config.values[i];
+    c.elem.insert(String(this.config.value));
+    return this.emitValue(this.config.value);
   };
 
   Spinner.prototype.index = function() {
@@ -2647,38 +2250,25 @@ Spinner = (function(_super) {
   };
 
   Spinner.prototype.incr = function(d) {
-    var i;
+    var i, oldValue;
     if (d == null) {
       d = 1;
     }
-    log({
-      "file": "./coffee/widgets/spinner.coffee",
-      "class": "Spinner",
-      "line": 53,
-      "args": ["d=1"],
-      "method": "incr",
-      "type": "."
-    }, d);
+    oldValue = this.config.value;
     if (d === '+' || d === '++') {
       d = 1;
     } else if (d === '-' || d === '--') {
       d = -1;
     }
     i = this.clamp(this.index() + d);
-    return this.setValue(this.config.values[i]);
+    this.setValue(this.config.values[i]);
+    if (oldValue !== this.config.value) {
+      return this.emit('valueInput', this.config.value);
+    }
   };
 
-  Spinner.prototype.setValue = function(a) {
-    var c, i, v, w;
-    v = _.arg(a);
-    i = this.config.values.indexOf(v);
-    c = this.getChild('spin-content');
-    c.clear();
-    w = c.getWidth() / this.steps();
-    c.elem.insert('<div class="spinner-knob" style="width:%dpx; left:%dpx"/>'.fmt(w, i * w));
-    this.config.value = this.config.values[i];
-    c.elem.insert(String(this.config.value));
-    return this.emitValue(this.config.value);
+  Spinner.prototype.size2value = function(s) {
+    return this.config.minValue + this.range() * s / this.getChild('spin-content').getWidth();
   };
 
   return Spinner;
@@ -2731,7 +2321,6 @@ Toggle = (function(_super) {
   __extends(Toggle, _super);
 
   function Toggle() {
-    this.onClick = __bind(this.onClick, this);
     this.toggle = __bind(this.toggle, this);
     this.getIndex = __bind(this.getIndex, this);
     this.setState = __bind(this.setState, this);
@@ -2740,29 +2329,36 @@ Toggle = (function(_super) {
   }
 
   Toggle.prototype.init = function(cfg, defs) {
-    Toggle.__super__.init.call(this, cfg, _.def(defs, {
-      "class": 'button',
-      onClick: this.onClick,
-      state: 'off',
-      states: ['on', 'off'],
-      icon: 'octicon-check',
-      icons: ['octicon-check', 'octicon-x']
-    }));
+    cfg = _.def(cfg, defs);
+    cfg = _.def(cfg, {
+      states: ['off', 'on'],
+      icons: ['octicon-x', 'octicon-check']
+    });
+    if (cfg.state == null) {
+      cfg.state = cfg.states[0];
+    }
+    if (cfg.icon == null) {
+      cfg.icon = cfg.icons[cfg.states.indexOf(cfg.state)];
+    }
+    Toggle.__super__.init.call(this, cfg, {
+      "class": 'button'
+    });
+    this.connect('trigger', this.toggle);
     if (this.config.onState != null) {
-      this.elem.on('onState', this.config.onState);
+      this.connect('onState', this.config.onState);
     }
     this.setState(this.config.state);
     return this;
   };
 
   Toggle.prototype.setState = function(state) {
-    var e;
-    e = this.getChild('octicon').elem;
-    e.removeClassName(this.config.icons[this.getIndex()]);
+    var _ref;
     this.elem.removeClassName(this.config.state);
     this.config.state = state;
-    e.addClassName(this.config.icons[this.getIndex()]);
     this.elem.addClassName(this.config.state);
+    if ((_ref = this.getChild('icon')) != null) {
+      _ref.setIcon(this.config.icons[this.getIndex()]);
+    }
     return this.emit('onState', {
       state: this.config.state
     });
@@ -2774,10 +2370,6 @@ Toggle = (function(_super) {
 
   Toggle.prototype.toggle = function() {
     return this.setState(this.config.states[(this.getIndex() + 1) % this.config.states.length]);
-  };
-
-  Toggle.prototype.onClick = function() {
-    return this.toggle();
   };
 
   return Toggle;
@@ -2817,7 +2409,7 @@ Tooltip = (function() {
         tooltip = e.widget.tooltip;
         if (tooltip.window != null) {
           tooltip.window.close();
-          tooltip.window = null;
+          delete tooltip.window;
         }
         if (tooltip.timer != null) {
           clearInterval(tooltip.timer);
@@ -2832,11 +2424,18 @@ Tooltip = (function() {
   };
 
   Tooltip.popup = function(e, pos) {
-    var text, tooltip;
+    var text, tooltip, _ref, _ref1, _ref2;
+    if (!((_ref = e.widget.getWindow()) != null ? (_ref1 = _ref.elem) != null ? _ref1.visible : void 0 : void 0)) {
+      if (((_ref2 = e.widget.tooltip) != null ? _ref2.timer : void 0) != null) {
+        clearInterval(e.widget.tooltip.timer);
+        delete e.widget.tooltip.timer;
+      }
+      return;
+    }
     tooltip = e.widget.tooltip;
     if (tooltip.timer != null) {
       clearInterval(tooltip.timer);
-      tooltip.timer = null;
+      delete tooltip.timer;
     }
     if (tooltip.onTooltip != null) {
       text = tooltip.onTooltip();
@@ -2865,11 +2464,11 @@ Tooltip = (function() {
     if (tooltip = e != null ? (_ref = e.widget) != null ? _ref.tooltip : void 0 : void 0) {
       if (tooltip.timer != null) {
         clearInterval(tooltip.timer);
-        tooltip.timer = null;
+        delete tooltip.timer;
       }
       if (w = tooltip.window) {
         w.close();
-        return e.widget.tooltip.window = null;
+        return delete e.widget.tooltip.window;
       }
     }
   };
