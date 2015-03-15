@@ -32,7 +32,6 @@ class EventGrid extends Widget
     onWindowSize: => 
         @setWidth @config.steps * @config.stepWidth
         newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
-        # log newHeight
         @setHeight newHeight
                 
     ###
@@ -71,33 +70,28 @@ class EventGrid extends Widget
             for c in @children()
                 c.moveBy 0, (@maxNoteIndex-oldMaxIndex)*@rowHeight
         if oldRange != newRange
-            # log 'newHeight', (newRange+3)*@rowHeight
             @setHeight (newRange+3)*@rowHeight
         relIndex = noteIndex - @minNoteIndex
-        y = @rowHeight + (newRange-relIndex+1) * @rowHeight
+        y = (newRange-relIndex+1) * @rowHeight
         c.moveTo @timeposx, y
         @activeCells.push c
-        # log @activeCells.length     
+        # log (c.config.noteName for c in @activeCells)
 
     noteRelease: (noteName) =>
-        # log noteName
         for c in @activeCells
-            # log c.config.noteName, noteName
             if c.config.noteName == noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)
-        
-    delTrigger: (cell) =>
-        rowIndex = cell.config.index 
-        colIndex = cell.column().config.index
-        @rowColumns[rowIndex].splice(@rowColumns[rowIndex].indexOf(colIndex),1) if colIndex in @rowColumns[rowIndex]
-        
+                # log c.config.noteName, (c.config.noteName for c in @activeCells)
+                return
+                
     removeAllCells: =>
         @minNoteIndex = 9*12
         @maxNoteIndex = 0
         @activeCells = []
         for c in @children()
             c.close()
+        @onWindowSize()
         
     ###
     000   000   0000000   000      000   000  00000000

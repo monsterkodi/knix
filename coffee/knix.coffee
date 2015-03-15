@@ -129,8 +129,8 @@ class knix
         Menu.addButton btn,
             tooltip : 'close windows'
             icon    : 'octicon-x'
-            keys    : ['⌥∑']
-            action  : knix.closeWindows
+            keys    : ['⇧⌥„']
+            action  : knix.closeAllWindows
             
         Keys.add 'Backspace', knix.delSelection
         
@@ -139,6 +139,7 @@ class knix
         Keys.add '⌘x', knix.cutSelection
         Keys.add '⌘c', knix.copySelection
         Keys.add '⌘v', knix.pasteSelection
+        Keys.add '⌥∑', knix.closeWindows
         Keys.add '⇧S', Selectangle.toggle
         Keys.add '^s',  Selectangle.toggle
 

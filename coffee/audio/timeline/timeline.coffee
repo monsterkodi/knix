@@ -140,6 +140,14 @@ class Timeline extends Window
 
         @box.resize width, height
         @onGridSize()
+        
+    ###
+    000000000  000  00     00  00000000
+       000     000  000   000  000     
+       000     000  000000000  0000000 
+       000     000  000 0 000  000     
+       000     000  000   000  00000000
+    ###
 
     timeToX: (time) => time * @config.stepWidth / @config.stepSecs
     xToTime:    (x) => x/@config.stepWidth * @config.stepSecs 
@@ -151,6 +159,12 @@ class Timeline extends Window
             p = c.relPos()
             cells.push(c) if p.x < x < p.x+c.getWidth()
         cells
+
+    setTime: (time) =>
+        @relTime = time
+        @ruler.setTime @relTime
+        @grid.setTime @relTime
+        @line.moveTo @timeToX @relTime
         
     ###
     00000000   00000000   0000000   0000000   00000000   0000000  
@@ -161,6 +175,7 @@ class Timeline extends Window
     ###
     
     noteIn: (event) => 
+        # log event.detail
         if @config.recording == 'on'
             @grid.addNote event.detail
         @emit 'noteOut', event.detail
@@ -179,13 +194,7 @@ class Timeline extends Window
     000        000      000   000     000   
     000        0000000  000   000     000   
     ###
-            
-    setTime: (time) =>
-        @relTime = time
-        @ruler.setTime @relTime
-        @grid.setTime @relTime
-        @line.moveTo @timeToX @relTime
-        
+                    
     setStep: (index) =>
         ct = Audio.context.currentTime
         @startTime = ct - index * @config.stepSecs
@@ -213,7 +222,8 @@ class Timeline extends Window
                 @triggerCell c
             de = p.x + c.getWidth() - index * @config.stepWidth
             if 0 <= de < @config.stepWidth
-                @releaseCell c
+                if c not in @grid.activeCells
+                    @releaseCell c
                 
     play: =>
         @playing = true
@@ -222,6 +232,7 @@ class Timeline extends Window
         knix.animate @
         
     pause: =>
+        @stopCells()
         @playing = false
         @setTime (@step.index+1) * @config.stepSecs
         knix.deanimate @

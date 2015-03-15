@@ -169,20 +169,18 @@ class ADSR extends AudioWindow
         
     note: (event) =>
         note = event.detail
-        # @getChild('note').setValue note.note
-        f = Keyboard.allNotes()[note.note]
-        # log note
-        # @getChild('frequency').setValue f
-        @config.frequency = f
+        f = @config.frequency
+        @config.frequency = Keyboard.allNotes()[note.note]
         if note.type == 'trigger'
             @trigger { detail: note.note }
         else
             @release { detail: note.note }
         @emit 'onNote'
+        @config.frequency = f
 
     trigger: (event) =>
+        # log event.detail
         i = @voiceIndex event.detail
-        # log event.detail, i
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
@@ -196,6 +194,7 @@ class ADSR extends AudioWindow
                 @voice[i].done = t + time
                         
     release: (event) =>
+        # log event.detail
         i = @voiceIndex event.detail
         t = Audio.context.currentTime + 0.01
         for vi in [@pad.config.sustainIndex...@pad.config.vals.length]
