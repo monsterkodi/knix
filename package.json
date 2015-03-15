@@ -1,6 +1,6 @@
 {
     "name": "knix",
-    "version": "0.7.561",
+    "version": "0.7.579",
     "private": true,
     "description": "small coffescript ui framework",
     "main": "index.html",

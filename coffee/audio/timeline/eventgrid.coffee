@@ -20,19 +20,37 @@ class EventGrid extends Widget
             style:
                 position: 'relative'
 
-        @rowHeight   = 14
+        @rowHeight    = 14
         @minNoteIndex = 9*12
         @maxNoteIndex = 0
-        @timeline    = undefined
-        @timeposx    = 0
-        @activeCells = []
-        @connect 'mousedown', @startSelect            
+        @timeline     = undefined
+        @timeposx     = 0
+        @activeCells  = []
+        @connect 'mousedown', @startSelect    
+        document.addEventListener 'keypress', @onKey
         @
             
     onWindowSize: => 
         @setWidth @config.steps * @config.stepWidth
         newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
         @setHeight newHeight
+        
+    onKey: (event, e) =>
+        if event.key in ['Up', 'Down']
+            dy = event.key == 'Up' and -@rowHeight or @rowHeight
+            for c in @selectedCells()
+                c.moveBy 0, dy
+                noteIndex = Keyboard.noteIndex c.config.noteName
+                noteNames = Keyboard.allNoteNames()
+                newNoteIndex = _.clamp(0, noteNames.length-1, noteIndex + (event.key == 'Up' and 1 or -1))
+                c.config.noteName = noteNames[newNoteIndex]
+                # log c.config.noteName
+        if event.key in ['Left', 'Right']
+            dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
+            for c in @selectedCells()
+                c.moveBy dx, 0
+            
+    selectedCells: => (s.widget for s in @elem.select('.selected'))
                 
     ###
     000000000  00000000   000   0000000    0000000   00000000  00000000 

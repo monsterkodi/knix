@@ -189,8 +189,9 @@ class knix
     @cleanState: (state) =>
         idmap = {}
         cleanConfig = (cfg) ->
-            # delete cfg.parentID
+            # delete cfg.parentID # ATTENTION! this should be fixed again
             cfg.parent = cfg.parentID
+            
             idmap[cfg.id] = Widget.newID(cfg.type or 'widget')
             cfg.id = idmap[cfg.id]
             cleanConfig cfg.child if cfg.child?
@@ -227,7 +228,7 @@ class knix
     @selectAll        : => @allWindows().each (w) -> w.elem.addClassName 'selected'
     @copySelection    : => 
         @copyBuffer = @stateForWidgets @selectedWidgets()
-        log @copyBuffer
+        # log @copyBuffer
         # window.prompt "Copy to clipboard", JSON.stringify(@copyBuffer)
     @cutSelection     : =>
         @copySelection()
