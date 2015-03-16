@@ -10,7 +10,10 @@
 
 class Selectangle extends Widget
 
-    @start  : (wid) => @selectangle = new Selectangle; @selectangle.wid = wid
+    @start  : (wid) => 
+        @selectangle = new Selectangle
+                                parent : wid
+        @selectangle.wid = wid
     @stop   : => @selectangle?.close()
     @toggle : => if @selectangle? then @stop() else @start()
 
@@ -18,11 +21,13 @@ class Selectangle extends Widget
         
         cfg = _.def cfg, defs
         window.document.documentElement.style.cursor = 'crosshair'
-                                
+                
+        pos = if cfg.parent?.absPos? then cfg.parent.absPos().to(Stage.mousePos) else Stage.mousePos
+        
         super cfg,
             type   : 'selectangle'
             parent : 'stage_content'
-            pos    : Stage.mousePos  
+            pos    : pos
             width  : 0
             height : 0
             
@@ -46,6 +51,7 @@ class Selectangle extends Widget
 
     onMove: (event) =>
         ep  = Stage.absPos event
+        if @wid?.absPos? then ep = @wid.absPos().to(ep)
         tl  = ep.min @config.pos
         br  = ep.max @config.pos
         @setPos tl

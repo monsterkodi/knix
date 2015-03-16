@@ -128,6 +128,7 @@ class Timeline extends Window
     trash: => 
         @stopCells()
         @grid.removeAllCells()
+        @onGridSize()
     
     sizeWindow: =>
         super

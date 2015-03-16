@@ -32,10 +32,9 @@ class EventGrid extends Widget
         document.addEventListener 'keypress', @onKey
         @
             
-    onWindowSize: => 
+    onWindowSize: =>
         @setWidth @config.steps * @config.stepWidth
-        newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
-        @setHeight newHeight
+        @setHeight @rowHeight * @noteRange
         
     ###
     00     00   0000000   000   000  00000000
@@ -165,6 +164,7 @@ class EventGrid extends Widget
     removeAllCells: =>
         @minNoteIndex = 9*12
         @maxNoteIndex = 0
+        @noteRange = 1
         @activeCells = []
         for c in @children()
             c.close()
