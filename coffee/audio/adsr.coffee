@@ -17,6 +17,7 @@ class ADSR extends AudioWindow
         cfg = _.def cfg,
             type         : 'ADSR'
             shape        : Oscillator.shapes[0]
+            height       : 330 
             duration     : 0.2
             minDuration  : 0.0
             maxDuration  : 10.0
@@ -216,7 +217,7 @@ class ADSR extends AudioWindow
         if @pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()
-            height = content.innerHeight() - 200
+            height = content.innerHeight() - 214
             width  = content.innerWidth() - 20
             @pad.setSize width, height
 

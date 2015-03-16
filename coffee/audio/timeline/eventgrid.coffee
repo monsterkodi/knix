@@ -35,6 +35,14 @@ class EventGrid extends Widget
         newHeight = Math.max(@getParent().getHeight(), @rowHeight * (@maxNoteIndex - @minNoteIndex + 3))
         @setHeight newHeight
         
+    ###
+    00     00   0000000   000   000  00000000
+    000   000  000   000  000   000  000     
+    000000000  000   000   000 000   0000000 
+    000 0 000  000   000     000     000     
+    000   000   0000000       0      00000000
+    ###
+    
     onKey: (event, e) =>
         if event.key in ['Up', 'Down']
             dy = event.key == 'Up' and -@rowHeight or @rowHeight

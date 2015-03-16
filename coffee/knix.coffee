@@ -190,7 +190,7 @@ class knix
         idmap = {}
         cleanConfig = (cfg) ->
             # delete cfg.parentID # ATTENTION! this should be fixed again
-            cfg.parent = cfg.parentID
+            # cfg.parent = cfg.parentID
             
             idmap[cfg.id] = Widget.newID(cfg.type or 'widget')
             cfg.id = idmap[cfg.id]
@@ -245,7 +245,7 @@ class knix
 
     @restore: (state) =>
         @cleanState state
-        # log 'restore', state
+        log 'restore', state
         windows = @restoreWindows state.windows
         @restoreConnections state.connections
         # log 'restored'

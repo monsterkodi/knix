@@ -16,7 +16,7 @@ class Files
         if _.isEmpty windows then return
         json = knix.stateForWidgets windows
         
-        # log json
+        log json
         
         files = @allFiles()
         files[uuid.v4()] = json

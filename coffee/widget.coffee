@@ -219,8 +219,6 @@ class Widget
         @
 
     emitSize: =>
-        @config.width  = @getWidth()
-        @config.height = @getHeight()       
         @emit 'size',
             width  : @config.width
             height : @config.height
@@ -417,28 +415,36 @@ class Widget
 
     setWidth: (w) =>
         if w?
-            ow = @elem.style.width
-            @elem.style.width = "%dpx".fmt(w)
+            @config.width = w
+            if @getWidth() != w
+                ow = @elem.style.width
+                @elem.style.width = "%dpx".fmt(w)
 
-            diff = @getWidth() - w
-            @elem.style.width = "%dpx".fmt(w - diff) if diff
-            # log @elem.style.width
+                if newWidth = @getWidth() and diff = newWidth - w
+                    @elem.style.width = "%dpx".fmt(w - diff)
+                    log 'adjusted', diff, @elem.id, @elem.style.width, w
 
-            @emitSize() if ow != @elem.style.width
+                @emitSize() if ow != @elem.style.width
         @
 
     setHeight: (h) =>
         if h?
             oh = @elem.style.height
             @setHeightNoEmit h
-            # log @elem.id, @elem.style.height
+            # log @elem.id, @elem.style.height, h
             @emitSize() if oh != @elem.style.height
         @
 
     setHeightNoEmit: (h) =>
-        @elem.style.height = "%dpx".fmt(h) if h?
-        diff = @getHeight() - h
-        @elem.style.height = "%dpx".fmt(h - diff) if diff
+        if h? 
+            @config.height = h
+            if @getHeight() != h
+                # log @elem.id, @getHeight(), h
+                @elem.style.height = "%dpx".fmt(h)
+                # log @elem.id, @elem.style.height, h
+                if newHeight = @getHeight() and diff = newHeight - h
+                    @elem.style.height = "%dpx".fmt(h - diff)
+                    log 'adjusted', diff, @elem.id, @elem.style.height, h
 
     resize: (w, h) =>
         @setWidth w

@@ -103,7 +103,7 @@ class Timeline extends Window
         @line = @getChild('EventLine')
         @box = @getChild('EventGridBox')
                 
-        @content.config.noMove = true    
+        @box.config.noMove = true    
         @connect 'playpause:trigger',   @playPause
         @connect 'follow:onState',      @onFollowState
         @connect 'stop:trigger',        @stop
@@ -124,20 +124,19 @@ class Timeline extends Window
             
     onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
     onFollowState: (event) => @follow = (event.detail.state == 'on') #; log @follow, event.detail.state
+    onGridSize:    (event) => @line.setHeight @grid.getHeight()
     
     trash: => 
         @stopCells()
         @grid.removeAllCells()
-
-    onGridSize:    (event) => @line.setHeight @grid.getHeight()
+    
     sizeWindow: =>
         super
         @content.setWidth  @contentWidth()
         @content.setHeight @contentHeight()
-
-        height = @content.innerHeight() - 84
-        width  = @content.innerWidth() - 20
-
+        @getChild('hbox').setWidth @contentWidth()-10
+        height = @content.innerHeight() - 96
+        width  = @content.innerWidth() - 40
         @box.resize width, height
         @onGridSize()
         

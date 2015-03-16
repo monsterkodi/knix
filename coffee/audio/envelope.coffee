@@ -19,6 +19,7 @@ class Envelope extends Window
             type        : 'envelope'
             valueFormat : "%0.3f"
             numHandles  : 7
+            height: 220
 
         super cfg,
             title    : 'envelope'
@@ -87,12 +88,11 @@ class Envelope extends Window
         @getChild('envelope').setValue @config.value
 
     sizeWindow: =>
-        # log 'sizeWindow'
         pad = @getChild 'pad'
         if pad?
             content = @getChild 'content'
             content.setHeight @contentHeight()
-            height = content.innerHeight() - 50
+            height = content.innerHeight() - 60
             width  = content.innerWidth() - 20
             pad.setSize width, height
 

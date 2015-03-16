@@ -18,6 +18,7 @@ class Analyser extends AudioWindow
             scaleX   : 1.0
             scaleY   : 1.0
             triggerY : 0.0
+            height   : 240 
 
         [ @audio, cfg ] = Audio.analyser cfg
         
@@ -35,6 +36,7 @@ class Analyser extends AudioWindow
                 style      :
                     width  : '100%'
                     height : '100%'
+                    marginBottom: '5px'
             ,
                 type       : 'sliderspin'
                 class      : 'scaleX'
@@ -78,7 +80,7 @@ class Analyser extends AudioWindow
         height     = @contentHeight()
         content    = @getChild 'content'
         content.setHeight height
-        height     = content.innerHeight() - 70
+        height     = content.innerHeight() - 90
         width      = content.innerWidth() - 20
         @canvas?.resize width, height
         @dataArray = new Uint8Array 2*width

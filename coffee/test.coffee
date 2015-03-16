@@ -46,7 +46,7 @@ class Test
 
         m = new Gain
             master : true
-            gain   : 0.0
+            gain   : 0.04
             x      : 800
             y      : 50
 
