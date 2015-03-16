@@ -28,7 +28,7 @@ class EventGrid extends Widget
         @timeline     = undefined
         @timeposx     = 0
         @activeCells  = []
-        @connect 'mousedown', @startSelect    
+        @connect 'mousedown', @startSelect
         document.addEventListener 'keypress', @onKey
         @
             

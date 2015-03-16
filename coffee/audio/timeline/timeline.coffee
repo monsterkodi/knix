@@ -101,6 +101,7 @@ class Timeline extends Window
         @ruler = @getChild('TimeRuler')
         @line = @getChild('EventLine')
         @box = @getChild('EventGridBox')
+        @box.connect 'mousedown', @grid.startSelect
                 
         @box.config.noMove = true    
         @connect 'playpause:trigger',   @playPause
