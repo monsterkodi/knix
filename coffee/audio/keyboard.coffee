@@ -75,13 +75,12 @@ class Keyboard extends Window
                 class  : sharp and 'keyboard-key-sharp' or 'keyboard-key'
                 valign : sharp and 'top' or 'bottom'
                 text   : n
-                # recKey : n
                 keys   : [Keyboard.keys[n]]
 
         super cfg,
-            type  : 'keyboard'
-            title : 'keyboard'
-            resize: false
+            type   : 'keyboard'
+            title  : 'keyboard'
+            resize : false
             children : \
             [
                 type     : 'hbox'

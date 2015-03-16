@@ -24,7 +24,6 @@ class Timeline extends Window
             type      : 'Timeline' 
             width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 38
             height    : 300
-            minWidth  : 200
             minHeight : 200
             buttons   : \
             [

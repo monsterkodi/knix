@@ -19,7 +19,6 @@ class Gain extends AudioWindow
         super cfg,
             type     : 'gain'
             title    : cfg.master and 'master' or 'gain'
-            minWidth : 240
             resize   : 'horizontal'
             children : \
             [

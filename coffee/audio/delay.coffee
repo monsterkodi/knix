@@ -19,7 +19,6 @@ class Delay extends AudioWindow
         super cfg,
             type:      'delay'
             title:     'delay'
-            minWidth:  240
             resize:    'horizontal'
             children:  \
             [

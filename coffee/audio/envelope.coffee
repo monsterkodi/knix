@@ -19,7 +19,9 @@ class Envelope extends Window
             type        : 'envelope'
             valueFormat : "%0.3f"
             numHandles  : 7
-            height: 220
+            height      : 220
+            width       : 300
+            minWidth    : 240
 
         super cfg,
             title    : 'envelope'

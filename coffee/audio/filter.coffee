@@ -23,7 +23,6 @@ class Filter extends AudioWindow
         super cfg,
             type     : 'filter'
             title    : 'filter'
-            minWidth : 240
             resize   : 'horizontal'
             children : \
             [

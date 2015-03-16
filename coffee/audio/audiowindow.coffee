@@ -9,6 +9,15 @@
 ###
 
 class AudioWindow extends Window
+
+    init: (cfg, defs) =>
+         
+        cfg = _.def cfg, defs
+         
+        super cfg, 
+            minWidth : 240
+            width    : 300            
+        @
         
     close: =>
         @audio = Audio.destroy @audio

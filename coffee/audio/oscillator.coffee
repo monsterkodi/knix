@@ -24,7 +24,6 @@ class Oscillator extends AudioWindow
         super cfg,
             type     : 'oscillator'
             title    : 'oscillator'
-            minWidth : 220
             resize   : 'horizontal'
             children : \
             [

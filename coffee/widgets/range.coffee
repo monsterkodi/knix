@@ -20,6 +20,8 @@ class Range extends Window
             maxLow      : 10000
             lowStep     : 0.1
             high        : 1.0
+            width       : 300
+            minWidth    : 240
             minHigh     : -10000
             maxHigh     : 10000
             highStep    : 0.1
