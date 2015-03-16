@@ -33,7 +33,9 @@ class EventCell extends Widget
     minWidth: => return 1    
 
     onMoveStart: (drag) => @elem.addClassName 'selected'
-    onDragMove: (drag) => @getParent().moveSelectedCellsBy drag.delta.x, drag.delta.y
+    onDragMove:  (drag) => 
+        delta = @getParent().moveSelectedCellsBy drag.deltaSum.x, drag.deltaSum.y
+        drag.startPos.add delta
 
     onDown: (event) =>
         if event.shiftKey

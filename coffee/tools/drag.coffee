@@ -50,6 +50,7 @@ class Drag
         return if @dragging or not @listening
         # log 'start', @target.id
         @dragging = true
+        @startPos = @absPos event
         @pos     = @absPos event
         @onStart @, event if @onStart?
         @lastPos = @absPos event
@@ -67,6 +68,7 @@ class Drag
 
         @pos   = @absPos event
         @delta = @lastPos.to @pos
+        @deltaSum = @startPos.to @pos
         
         if @doMove
             newPos = @startPos.add(@delta).clamp @minPos, @maxPos

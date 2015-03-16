@@ -11,8 +11,12 @@
 strIndent = "    "
 
 str = (o,indent="",visited=[]) ->
-    if o == null
-        return "<null>"
+    if not o? 
+        if o == null
+            return "<null>"
+        if o == undefined
+            return "<undefined>"
+        return "<0>"
     t = typeof o
     if t == 'string'
         return o

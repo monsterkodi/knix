@@ -10,7 +10,7 @@
 
 class Pos
 
-    constructor: (@x, @y) ->
+    constructor: (@x, @y) -> 
         
     copy: => new Pos @x, @y
 
@@ -62,7 +62,9 @@ class Pos
         newPos.y = 0 if isNaN(newPos.y)
         newPos
 
-    _str: => "<x:%2.2f y:%2.2f>".fmt @x, @y
+    _str: => 
+        s  = ("<x:%2.2f ".fmt @x if @x?) or "<NaN "
+        s += ("y:%2.2f>".fmt @y if @y?) or "NaN>"
 
     #_________________________________________________________ destructive
     
