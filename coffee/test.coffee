@@ -67,9 +67,9 @@ class Test
             source   : k3.connector 'note'
             target   : t.connector 'noteIn'
 
-        new Connection
-            source   : t.connector 'noteOut'
-            target   : a.connector 'note'
+        # new Connection
+        #     source   : t.connector 'noteOut'
+        #     target   : a.connector 'note'
 
         new Connection
             source   : a.connector 'audio:out'
