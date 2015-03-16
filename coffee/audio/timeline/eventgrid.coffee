@@ -79,9 +79,7 @@ class EventGrid extends Widget
         numNotes = Keyboard.numNotes()
         for c in @selectedCells()
             p = c.relPos()
-            x = _.clamp(0, @getWidth()-c.getWidth(), p.x+dx) 
-            y = _.clamp(0, @rowHeight*numNotes, p.y+dy)
-            c.moveTo x, y
+            c.moveBy dx, dy
             if dy != 0
                 noteIndex = Keyboard.noteIndex c.config.noteName
                 noteNames = Keyboard.allNoteNames()
@@ -92,13 +90,23 @@ class EventGrid extends Widget
         
     scrollToSelectedCells: =>
         [minpos, maxpos] = @selectedCellMaxima()
-        oldTop = _.clone(@elem.parentElement.scrollTop)
-        oldLeft = _.clone(@elem.parentElement.scrollLeft)
-        @elem.parentElement.scrollTop = Math.min(minpos.y, @elem.parentElement.scrollTop)
-        @elem.parentElement.scrollTop = Math.max(maxpos.y-@elem.parentElement.widget.getHeight()+@rowHeight, @elem.parentElement.scrollTop)
-        @elem.parentElement.scrollLeft = Math.min(minpos.x, @elem.parentElement.scrollLeft)
-        @elem.parentElement.scrollLeft = Math.max(maxpos.x-@elem.parentElement.widget.getWidth(), @elem.parentElement.scrollLeft)
+        oldTop = @elem.parentElement.scrollTop
+        oldLeft = @elem.parentElement.scrollLeft
+        @scrollToPos maxpos
+        @scrollToPos minpos
         pos oldLeft-@elem.parentElement.scrollLeft, oldTop-@elem.parentElement.scrollTop
+        
+    scrollToPos: (p) =>
+        viewWidth = @elem.parentElement.widget.getWidth()
+        left = Math.min p.x, @elem.parentElement.scrollLeft
+        left = Math.max p.x - viewWidth, left
+        left = Math.min @getWidth() - viewWidth, left
+        @elem.parentElement.scrollLeft = left
+        viewHeight = @elem.parentElement.widget.getHeight()
+        top  = Math.min p.y, @elem.parentElement.scrollTop
+        top  = Math.max p.y-viewHeight+@rowHeight, top
+        top  = Math.min @getHeight() - viewHeight, top
+        @elem.parentElement.scrollTop = top
         
     adjustRange: (noteIndex) =>    
         oldMaxIndex   = @maxNoteIndex

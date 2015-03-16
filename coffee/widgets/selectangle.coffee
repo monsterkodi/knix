@@ -57,10 +57,13 @@ class Selectangle extends Widget
         @setPos tl
         @resize br.x - tl.x, br.y - tl.y
         
+        @wid?.scrollToPos? ep
+        
         widgets = @wid? and @wid.allChildren() or knix.allWindows()
         window.document.documentElement.style.cursor = 'crosshair'        
         
         rect = @absRect()
+        # log rect
         for wid in widgets
             if rect.contains wid.absCenter()
                 if not wid.config.noSelect
