@@ -44,7 +44,7 @@ class EventCell extends Widget
                 return
             @elem.addClassName 'selected'
 
-    trigger: => log @config.noteName
-    release: => log @config.noteName
+    trigger: => log @config.note
+    release: => log @config.note
 
     del: => @close()

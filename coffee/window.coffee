@@ -93,16 +93,22 @@ class Window extends Widget
     initButtons: =>
 
         align = 'left'
+        lastRightButton = undefined
         for b in @config.buttons
             button = @insertChild b, 
                 noMove : true
                 type   : 'button'
                 align  : align
             align = button.config.align
+            if align == 'right'
+                if lastRightButton?
+                    lastRightButton.elem.insert before : button.elem
+                lastRightButton = button
             button.elem.addClassName 'tool-button'
             button.elem.addClassName 'window-button-'+button.config.align
             
             if b.configKey?
+                @config[b.configKey] = b.state
                 @connect b.class+':onState', @onButtonState
 
     onButtonState: (event) =>
@@ -110,7 +116,7 @@ class Window extends Widget
         key = button.config.configKey
         state = event.detail.state
         log key, state
-        @config[configKey] = state
+        @config[key] = state
 
     ###
     000   000  00000000   0000000   0000000    00000000  00000000 

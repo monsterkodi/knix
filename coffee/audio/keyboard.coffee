@@ -51,7 +51,7 @@ class Keyboard extends Window
         @_allNotes
     
     @noteIndex: (noteName) => @allNoteNames().indexOf noteName  
-    @numNotes: => @noteNames.length * 9  
+    @numNotes: => @noteNames.length * 9
     @allNoteNames: =>
         if not @_allNoteNames?
             @_allNoteNames = []

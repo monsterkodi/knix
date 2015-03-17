@@ -28,7 +28,6 @@ class EventGrid extends Widget
         @timeline     = undefined
         @timeposx     = 0
         @activeCells  = []
-        @connect 'mousedown', @startSelect
         document.addEventListener 'keypress', @onKey
         @
             
@@ -141,33 +140,42 @@ class EventGrid extends Widget
             c.setWidth @timeposx - c.relPos().x
         
     addNote: (note) =>
-        if note.type == 'trigger'
-            @noteTrigger note.note
+        if note.event == 'trigger'
+            @noteTrigger note
         else
-            @noteRelease note.note
+            @noteRelease note
         
-    noteTrigger: (noteName) =>
+    noteTrigger: (note) =>
         
-        c = new EventCell
+        c = new EventCell note,
             parent   : @
             height   : @rowHeight-2
-            noteName : noteName 
             
-        noteIndex    = Keyboard.noteIndex noteName
+        noteIndex = Keyboard.noteIndex c.config.noteName
         @adjustRange noteIndex
         relIndex = noteIndex - @minNoteIndex
         y = (@noteRange-relIndex-1) * @rowHeight
-        c.moveTo @timeposx, y
+        x = if not c.config.x? then @timeposx else c.config.x
+        c.moveTo x, y
         @activeCells.push c
         # log (c.config.noteName for c in @activeCells)
 
-    noteRelease: (noteName) =>
+    noteRelease: (note) =>
         for c in @activeCells
-            if c.config.noteName == noteName
+            if c.config.noteName == note.noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)
                 # log c.config.noteName, (c.config.noteName for c in @activeCells)
                 return
+        
+    noteNameAtPos: (pos) =>
+        if @maxNoteIndex > 0
+            noteIndex = (@maxNoteIndex - pos.y/@rowHeight).toFixed()
+        else
+            noteIndex = 48
+        noteName = Keyboard.allNoteNames()[noteIndex]
+        log pos, noteIndex, noteName
+        noteName
                 
     removeAllCells: =>
         @minNoteIndex = 9*12
@@ -202,15 +210,4 @@ class EventGrid extends Widget
         cell.clear()
         cell.insertChild valueWidget.config
         
-    ###
-     0000000  00000000  000      00000000   0000000  000000000
-    000       000       000      000       000          000   
-    0000000   0000000   000      0000000   000          000   
-         000  000       000      000       000          000   
-    0000000   00000000  0000000  00000000   0000000     000   
-    ###
-    
-    startSelect: (event) =>
-        Selectangle.start @
-        event.stop()
         

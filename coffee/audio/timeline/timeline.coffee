@@ -27,56 +27,63 @@ class Timeline extends Window
             minHeight : 200
             buttons   : \
             [
-                type     : 'toggle'
-                class    : 'playpause'
-                keys     : ['p']
-                states   : ['pause', 'play']
-                icons    : ['fa-play', 'fa-pause']
+                type      : 'toggle'
+                class     : 'playpause'
+                keys      : ['p']
+                states    : ['pause', 'play']
+                icons     : ['fa-play', 'fa-pause']
             ,
-                class    : 'stop'
-                icon     : 'fa-stop'
+                class     : 'stop'
+                icon      : 'fa-stop'
             ,
-                type     : 'toggle'
-                class    : 'record'
-                keys     : ['r']
-                states   : ['off', 'on']
-                icons    : ['fa-circle-o', 'fa-circle']
+                type      : 'toggle'
+                class     : 'record'
+                keys      : ['r']
+                states    : ['off', 'on']
+                icons     : ['fa-circle-o', 'fa-circle']                
             ,
-                class   : 'trash'
-                align   : 'right'
-                icon    : 'fa-trash-o'                
+                type      : 'toggle'
+                class     : 'follow'
+                states    : ['off', 'on']
+                icons     : ['fa-unlink', 'fa-link']
             ,
-                type     : 'toggle'
-                class    : 'follow'
-                states   : ['off', 'on']
-                icons    : ['fa-unlink', 'fa-link']
+                type      : 'toggle'
+                class     : 'edit-mode'
+                configKey : 'editMode'
+                state     : 'single'
+                states    : ['multi', 'single']
+                icons     : ['fa-th', 'fa-pencil']
+            , # ------------------------------------
+                align     : 'right'
+                type      : 'toggle'
+                class     : 'quantize'
+                configKey : 'quantize'
+                states    : ['off', 'on']
+                icons     : ['fa-square-o', 'fa-check-square']
             ,
-                type     : 'toggle'
-                class    : 'quantize-mode'
-                configKey: 'quantize-mode'
-                state    : 'start'
-                states   : ['length', 'start', 'start length']
-                icons    : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
+                type      : 'toggle'
+                class     : 'quantize-steps'
+                configKey : 'quantizeSteps'
+                states    : [1, 2, 4, 8]
+                icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
             ,
-                type     : 'toggle'
-                class    : 'quantize-steps'
-                configKey: 'quantize-steps'
-                states   : [1, 2, 4, 8]
-                icons    : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
+                type      : 'toggle'
+                class     : 'quantize-mode'
+                configKey : 'quantizeMode'
+                state     : 'start'
+                states    : ['length', 'start', 'start length']
+                icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
             ,
-                type     : 'toggle'
-                class    : 'quantize-when'
-                configKey: 'quantize-when'
-                state    : 'record edit'
-                states   : ['record', 'edit', 'record edit']
-                icons    : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
+                type      : 'toggle'
+                class     : 'quantize-when'
+                configKey : 'quantizeWhen'
+                state     : 'record edit'
+                states    : ['record', 'edit', 'record edit']
+                icons     : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
             ,
-                type     : 'toggle'
-                class    : 'quantize'
-                configKey: 'quantize'
-                states   : ['off', 'on']
-                icons    : ['fa-square-o', 'fa-check-square']
-            ]            
+                class     : 'trash'
+                icon      : 'fa-trash-o' 
+            ] 
             children : \
             [
                 type: 'hbox'
@@ -126,7 +133,8 @@ class Timeline extends Window
         @ruler = @getChild('TimeRuler')
         @line = @getChild('EventLine')
         @box = @getChild('EventGridBox')
-        @box.connect 'mousedown', @grid.startSelect
+        @box.connect 'mousedown', @onGridMouseDown
+        @grid.connect 'mousedown', @onGridMouseDown
                 
         @box.config.noMove = true    
         @connect 'playpause:trigger',   @playPause
@@ -145,10 +153,23 @@ class Timeline extends Window
         @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)            
         @
             
-    onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
-    onFollowState: (event) => @follow = (event.detail.state == 'on')
-    onGridSize:    (event) => @line.setHeight @grid.getHeight()
-    
+    onScroll:        (event) => @ruler.moveTo -event.target.scrollLeft
+    onFollowState:   (event) => @follow = (event.detail.state == 'on')
+    onGridSize:      (event) => @line.setHeight @grid.getHeight()
+    onGridMouseDown: (event) => 
+        log @config.editMode 
+        if @config.editMode == 'multi'
+            Selectangle.start @grid
+        else
+            relPos = Stage.absPos(event).minus(@box.absPos())
+            c = @grid.addNote
+                event    : 'trigger'
+                noteName : @grid.noteNameAtPos relPos
+                width    : @config.stepWidth
+                x        : relPos.x
+            @grid.activeCells.splice @grid.activeCells.indexOf(c), 1
+        event.stop()
+            
     trash: => 
         @stopCells()
         @grid.removeAllCells()

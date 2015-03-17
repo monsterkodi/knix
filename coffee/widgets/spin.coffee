@@ -133,7 +133,6 @@ class Spin extends Value
         @config.knobIndex = _.clamp @config.knobIndex, 0, @format(@config.maxValue).length-1
         i = @config.knobIndex
         i = 3 if i == 2
-        log 'move to', i, @getChild('spin-content').getWidth()
         @getChild('spin-knob').moveTo @getChild('spin-content').getWidth() - ( 8 + i * 7.5 )
 
     incr: (d=1) =>
