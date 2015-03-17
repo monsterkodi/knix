@@ -53,23 +53,27 @@ class Timeline extends Window
             ,
                 type     : 'toggle'
                 class    : 'quantize-mode'
+                configKey: 'quantize-mode'
                 state    : 'start'
                 states   : ['length', 'start', 'start length']
                 icons    : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
             ,
                 type     : 'toggle'
                 class    : 'quantize-steps'
+                configKey: 'quantize-steps'
                 states   : [1, 2, 4, 8]
                 icons    : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
             ,
                 type     : 'toggle'
                 class    : 'quantize-when'
+                configKey: 'quantize-when'
                 state    : 'record edit'
                 states   : ['record', 'edit', 'record edit']
                 icons    : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
             ,
                 type     : 'toggle'
                 class    : 'quantize'
+                configKey: 'quantize'
                 states   : ['off', 'on']
                 icons    : ['fa-square-o', 'fa-check-square']
             ]            
@@ -142,7 +146,7 @@ class Timeline extends Window
         @
             
     onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
-    onFollowState: (event) => @follow = (event.detail.state == 'on') #; log @follow, event.detail.state
+    onFollowState: (event) => @follow = (event.detail.state == 'on')
     onGridSize:    (event) => @line.setHeight @grid.getHeight()
     
     trash: => 

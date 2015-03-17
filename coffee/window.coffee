@@ -67,16 +67,7 @@ class Window extends Widget
 
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
-        if @config.buttons?
-            align = 'left'
-            for b in @config.buttons
-                button = @insertChild b, 
-                    noMove : true
-                    type   : 'button'
-                    align  : align
-                align = button.config.align
-                button.elem.addClassName 'tool-button'
-                button.elem.addClassName 'window-button-'+button.config.align
+        @initButtons()     if @config.buttons?
                 
         @addTitleBar() if @config.hasTitle or @config.title
 
@@ -98,6 +89,28 @@ class Window extends Widget
 
         @elem.on 'size', @sizeWindow
         @
+
+    initButtons: =>
+
+        align = 'left'
+        for b in @config.buttons
+            button = @insertChild b, 
+                noMove : true
+                type   : 'button'
+                align  : align
+            align = button.config.align
+            button.elem.addClassName 'tool-button'
+            button.elem.addClassName 'window-button-'+button.config.align
+            
+            if b.configKey?
+                @connect b.class+':onState', @onButtonState
+
+    onButtonState: (event) =>
+        button = event.target.widget
+        key = button.config.configKey
+        state = event.detail.state
+        log key, state
+        @config[configKey] = state
 
     ###
     000   000  00000000   0000000   0000000    00000000  00000000 
