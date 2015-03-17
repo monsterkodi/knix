@@ -34,7 +34,6 @@ class knix
     
         if config.loadLast then Files.loadLast()
             
-        # log 'knix initialised'
         @
     
     ###
@@ -235,9 +234,19 @@ class knix
         @delSelection()
     @pasteSelection   : =>
         @deselectAll()
-        for win in @restore JSON.parse @copyBuffer
-            win.elem.addClassName 'selected'
-            win.moveBy(10,10) if win.isWindow()
+        if Selectangle.selectangle?.wid?
+            widgets = JSON.parse(@copyBuffer).windows
+            restoreConfig = (cfg) ->
+                cfg.parent = cfg.parentID
+                restoreConfig cfg.child if cfg.child?
+                cfg.children?.each (c) -> restoreConfig c
+            restoreConfig c for c in widgets
+            for wid in @restoreWindows widgets
+                wid.elem.addClassName 'selected'
+        else
+            for win in @restore JSON.parse @copyBuffer
+                win.elem.addClassName 'selected'
+                win.moveBy(10,10) if win.isWindow()
 
     @shadeWindows     : => @selectedOrAllWindows().each (w) -> w.shade()
     @closeWindows     : => @selectedWindows().each (w) -> w.close()

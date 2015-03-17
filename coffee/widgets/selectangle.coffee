@@ -10,10 +10,7 @@
 
 class Selectangle extends Widget
 
-    @start  : (wid) => 
-        @selectangle = new Selectangle
-                                parent : wid
-        @selectangle.wid = wid
+    @start  : (wid) => @selectangle = new Selectangle parent : wid
     @stop   : => @selectangle?.close()
     @toggle : => if @selectangle? then @stop() else @start()
 
@@ -23,6 +20,8 @@ class Selectangle extends Widget
         window.document.documentElement.style.cursor = 'crosshair'
                 
         pos = if cfg.parent?.absPos? then cfg.parent.absPos().to(Stage.mousePos) else Stage.mousePos
+
+        @wid = cfg.parent         
         
         super cfg,
             type   : 'selectangle'
@@ -38,7 +37,7 @@ class Selectangle extends Widget
         @
     
     close: (event) =>
-        delete Selectangle.selectangle
+        # delete Selectangle.selectangle
         if @sizePos().square() == 0 and not event.shiftKey
             for wid in (@wid? and @wid.allChildren() or knix.allWindows())
                 wid.elem.removeClassName 'selected'
