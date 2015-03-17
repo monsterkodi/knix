@@ -50,7 +50,6 @@ class Oscillator extends AudioWindow
 
         @setFrequency @config.frequency
         @setShape     @config.shape
-        @sizeWindow()
         @
 
     setFrequency: (v) => @config.frequency  = _.value v; @audio.frequency.value = @config.frequency

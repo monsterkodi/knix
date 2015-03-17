@@ -68,7 +68,6 @@ class Envelope extends Window
         @connect 'envelope_in:onValue', @setRel
 
         @pad = @getChild 'envelope_pad'
-        @sizeWindow()
         @
             
     paramValuesAtConnector: (paramValues, connector) =>

@@ -53,6 +53,8 @@ class Window extends Widget
             @config.center = undefined
         @
 
+    postInit: => @sizeWindow()
+    
     ###
     000  000   000  000  000000000  000   000  000  000   000  0000000     0000000   000   000
     000  0000  000  000     000     000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -66,11 +68,13 @@ class Window extends Widget
         @addCloseButton()  if @config.hasClose
         @addShadeButton()  if @config.hasShade
         if @config.buttons?
+            align = 'left'
             for b in @config.buttons
                 button = @insertChild b, 
                     noMove : true
                     type   : 'button'
-                    align  : 'left'
+                    align  : align
+                align = button.config.align
                 button.elem.addClassName 'tool-button'
                 button.elem.addClassName 'window-button-'+button.config.align
                 

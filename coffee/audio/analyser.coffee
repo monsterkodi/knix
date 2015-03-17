@@ -59,7 +59,6 @@ class Analyser extends AudioWindow
             onMove  : @onCanvasTrigger
 
         knix.animate @
-        @sizeWindow()
         @
 
     close: =>

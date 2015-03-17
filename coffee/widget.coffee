@@ -10,7 +10,9 @@
 
 class Widget
 
-    constructor: (cfg, defs) -> @init cfg, defs
+    constructor: (cfg, defs) -> @init cfg, defs; @postInit()
+
+    postInit: => @
 
     init: (cfg, defs) =>
 

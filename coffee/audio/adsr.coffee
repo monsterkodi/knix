@@ -140,7 +140,6 @@ class ADSR extends AudioWindow
         @setGain       @config.gain
         
         @pad = @getChild 'pad'
-        @sizeWindow()
         @
             
     setGain:       (v) => @config.gain       = _.value v; @gain.gain.value = @config.gain
@@ -170,6 +169,7 @@ class ADSR extends AudioWindow
         
     note: (event) =>
         note = event.detail
+        # log note
         f = @config.frequency
         @config.frequency = Keyboard.allNotes()[note.note]
         if note.type == 'trigger'

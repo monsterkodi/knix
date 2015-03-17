@@ -44,13 +44,34 @@ class Timeline extends Window
             ,
                 class   : 'trash'
                 align   : 'right'
-                icon    : 'octicon-trashcan'                
+                icon    : 'fa-trash-o'                
             ,
                 type     : 'toggle'
-                align    : 'right'
                 class    : 'follow'
                 states   : ['off', 'on']
                 icons    : ['fa-unlink', 'fa-link']
+            ,
+                type     : 'toggle'
+                class    : 'quantize-mode'
+                state    : 'start'
+                states   : ['length', 'start', 'start length']
+                icons    : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
+            ,
+                type     : 'toggle'
+                class    : 'quantize-steps'
+                states   : [1, 2, 4, 8]
+                icons    : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
+            ,
+                type     : 'toggle'
+                class    : 'quantize-when'
+                state    : 'record edit'
+                states   : ['record', 'edit', 'record edit']
+                icons    : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
+            ,
+                type     : 'toggle'
+                class    : 'quantize'
+                states   : ['off', 'on']
+                icons    : ['fa-square-o', 'fa-check-square']
             ]            
             children : \
             [
@@ -117,9 +138,7 @@ class Timeline extends Window
             index : -1
             secs  :  0  
             
-        @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)
-            
-        @sizeWindow()          
+        @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)            
         @
             
     onScroll:      (event) => @ruler.moveTo -event.target.scrollLeft
@@ -162,7 +181,6 @@ class Timeline extends Window
 
     setTime: (time) =>
         @relTime = time
-        @ruler.setTime @relTime
         @grid.setTime @relTime
         @line.moveTo @timeToX @relTime
         

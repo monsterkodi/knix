@@ -47,7 +47,7 @@ class Files
             buttons  : \
             [
                 action : @trashFiles
-                icon   : 'octicon-trashcan'
+                icon   : 'fa-trash-o'
             ]
 
     @trashFiles: =>

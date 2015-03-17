@@ -44,7 +44,7 @@ class Console extends Window
                 align   : 'right'
                 action  : @clear
                 keys    : ['⌥˚', '˚']
-                icon    : 'octicon-trashcan'
+                icon    : 'fa-trash-o'
             ]
             child:
                 class  : 'console'
@@ -109,7 +109,7 @@ class Console extends Window
             ,
                 action  : @trashSettings
                 align   : 'right'
-                icon    : 'octicon-trashcan'
+                icon    : 'fa-trash-o'
             ,
                 action  : @toggleMethods
                 align   : 'right'

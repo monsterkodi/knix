@@ -39,14 +39,14 @@ class Test
         a = new ADSR
             x            : 400
             y            : 50
-            duration     : 0.2
-            sustainIndex : 2
-            vals         : [pos(0,0), pos(.1,1), pos(0.2,1), pos(1,0)] 
+            duration     : 0.08
+            sustainIndex : 8
+            vals         : [pos(0,0), pos(.1,1), pos(.2,0), pos(.3,.8), pos(.4,0), pos(.5,.6), pos(.6,.0), pos(.7,.4) , pos(1,0)] 
             # shape : 'square'
 
         m = new Gain
             master : true
-            gain   : 0.04
+            gain   : 1
             x      : 800
             y      : 50
 
@@ -55,21 +55,21 @@ class Test
             y      : 430
             height : 500
         
-        new Connection
-            source   : k1.connector 'note'
-            target   : t.connector 'noteIn'
+        # new Connection
+        #     source   : k1.connector 'note'
+        #     target   : t.connector 'noteIn'
 
         new Connection
             source   : k2.connector 'note'
             target   : t.connector 'noteIn'
 
-        new Connection
-            source   : k3.connector 'note'
-            target   : t.connector 'noteIn'
-
         # new Connection
-        #     source   : t.connector 'noteOut'
-        #     target   : a.connector 'note'
+        #     source   : k3.connector 'note'
+        #     target   : t.connector 'noteIn'
+
+        new Connection
+            source   : t.connector 'noteOut'
+            target   : a.connector 'note'
 
         new Connection
             source   : a.connector 'audio:out'
