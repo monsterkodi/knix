@@ -17,6 +17,7 @@ class ADSR extends AudioWindow
         cfg = _.def cfg,
             type         : 'ADSR'
             shape        : Oscillator.shapes[0]
+            noteName     : 'C4'
             height       : 330 
             duration     : 0.2
             minDuration  : 0.0
@@ -65,7 +66,7 @@ class ADSR extends AudioWindow
                         class    : 'note'
                         recKey   : 'note' 
                         tooltip  : 'note'
-                        value    : 'C0'
+                        value    : cfg.noteName
                         recKey   : 'note'
                         values   : Keyboard.allNoteNames()
                         style: 
@@ -171,17 +172,18 @@ class ADSR extends AudioWindow
         note = event.detail
         # log note
         f = @config.frequency
-        @config.frequency = Keyboard.allNotes()[note.note]
-        if note.type == 'trigger'
-            @trigger { detail: note.note }
+        @config.frequency = Keyboard.allNotes()[note.noteName]
+        if note.event == 'trigger'
+            @trigger event
         else
-            @release { detail: note.note }
+            @release event
         @emit 'onNote'
         @config.frequency = f
 
     trigger: (event) =>
-        # log event.detail
-        i = @voiceIndex event.detail
+        note = event.detail
+        # log note
+        i = @voiceIndex note.noteName
         @volume[i].gain.cancelScheduledValues Audio.context.currentTime
         @oscillator[i].frequency.cancelScheduledValues Audio.context.currentTime
         t = Audio.context.currentTime + 0.01
@@ -195,8 +197,9 @@ class ADSR extends AudioWindow
                 @voice[i].done = t + time
                         
     release: (event) =>
-        # log event.detail
-        i = @voiceIndex event.detail
+        note = event.detail
+        # log note
+        i = @voiceIndex note.noteName
         t = Audio.context.currentTime + 0.01
         for vi in [@pad.config.sustainIndex...@pad.config.vals.length]
             v = @pad.config.vals[vi]

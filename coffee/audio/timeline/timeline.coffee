@@ -157,7 +157,7 @@ class Timeline extends Window
     onFollowState:   (event) => @follow = (event.detail.state == 'on')
     onGridSize:      (event) => @line.setHeight @grid.getHeight()
     onGridMouseDown: (event) => 
-        log @config.editMode
+        # log @config.editMode
         if @config.editMode == 'multi'
             Selectangle.start @grid
         else
@@ -224,7 +224,7 @@ class Timeline extends Window
     noteIn: (event) => 
         # log event.detail
         if @config.recording == 'on'
-            @grid.addNote event.detail
+            @grid.scrollToCells [@grid.addNote event.detail]
         @emit 'noteOut', event.detail
         
     record: (event) => 
@@ -258,8 +258,8 @@ class Timeline extends Window
         if @playing
             @execStep @step.index
         
-    triggerCell: (c) => @emit 'noteOut', { note: c.config.noteName, type: 'trigger' }    
-    releaseCell: (c) => @emit 'noteOut', { note: c.config.noteName, type: 'release' }    
+    triggerCell: (c) => @emit 'noteOut', { noteName: c.config.noteName, event: 'trigger' }    
+    releaseCell: (c) => @emit 'noteOut', { noteName: c.config.noteName, event: 'release' }    
     
     execStep: (index) =>
         for c in @grid.children()

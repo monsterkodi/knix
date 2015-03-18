@@ -37,6 +37,7 @@ class Test
             octave: 6
         
         a = new ADSR
+            noteName     : 'C6'
             x            : 400
             y            : 50
             duration     : 0.08

@@ -15,25 +15,20 @@ class EventGrid extends Widget
         cfg = _.def cfg, defs
         
         super cfg,
-            class: 'EventGrid'
-            noMove: true
-            style:
+            class     : 'EventGrid'
+            noMove    : true
+            rowHeight : 14
+            style     :
                 position: 'relative'
-
-        @rowHeight    = 14
-        @setHeight @rowHeight
-        @minNoteIndex = 108
-        @maxNoteIndex = 0
-        @noteRange    = 1
+        
+        @setHeight @config.rowHeight*Keyboard.numNotes()
         @timeline     = undefined
         @timeposx     = 0
         @activeCells  = []
         document.addEventListener 'keypress', @onKey
         @
             
-    onWindowSize: =>
-        @setWidth @config.steps * @config.stepWidth
-        @setHeight @rowHeight * @noteRange
+    onWindowSize: => @setWidth @config.steps * @config.stepWidth
         
     ###
     00     00   0000000   000   000  00000000
@@ -45,33 +40,19 @@ class EventGrid extends Widget
     
     onKey: (event, e) =>
         if event.key in ['Up', 'Down']
-            dy = event.key == 'Up' and -@rowHeight or @rowHeight
+            dy = event.key == 'Up' and -@config.rowHeight or @config.rowHeight
             @moveSelectedCellsBy 0, dy
         if event.key in ['Left', 'Right']
             dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
             @moveSelectedCellsBy dx, 0
-
-    selectedCellMaxima: =>
-        minpos = pos Number.MAX_VALUE, Number.MAX_VALUE
-        maxpos = pos 0,0
-        for c in @selectedCells()
-            p = c.relPos()
-            minpos = minpos.min(p)
-            maxpos = maxpos.max(p.plus(pos c.getWidth(), @rowHeight))
-        [minpos, maxpos]
             
     moveSelectedCellsBy: (dx, dy) =>
         
-        [minpos, maxpos] = @selectedCellMaxima()
+        [minpos, maxpos] = @cellMaxima @selectedCells()
         dx = Math.max(dx, -minpos.x)
-
-        if @maxNoteIndex == Keyboard.maxNoteIndex()
-            dy = Math.max(dy, -minpos.y)
-            
+        dy = Math.max(dy, -minpos.y)
         dx = Math.min(dx, @getWidth()-maxpos.x)
-        
-        if @minNoteIndex == 0
-            dy = Math.min(dy, Math.max(0, @getHeight()-maxpos.y))
+        dy = Math.min(dy, Math.max(0, @getHeight()-maxpos.y))
             
         dy = @roundToNoteY dy
 
@@ -82,20 +63,19 @@ class EventGrid extends Widget
             if dy != 0
                 noteIndex = Keyboard.noteIndex c.config.noteName
                 noteNames = Keyboard.allNoteNames()
-                newNoteIndex = _.clamp(0, noteNames.length-1, noteIndex - dy/@rowHeight)
+                newNoteIndex = _.clamp(0, noteNames.length-1, noteIndex - dy/@config.rowHeight)
                 # log noteIndex, newNoteIndex
                 c.config.noteName = noteNames[newNoteIndex]
-                @adjustRange newNoteIndex
         @scrollToSelectedCells().plus pos dx, dy
-        
-    scrollToSelectedCells: =>
-        [minpos, maxpos] = @selectedCellMaxima()
-        oldTop = @elem.parentElement.scrollTop
-        oldLeft = @elem.parentElement.scrollLeft
-        @scrollToPos maxpos
-        @scrollToPos minpos
-        pos oldLeft-@elem.parentElement.scrollLeft, oldTop-@elem.parentElement.scrollTop
-        
+
+    ###
+     0000000   0000000  00000000    0000000   000      000    
+    000       000       000   000  000   000  000      000    
+    0000000   000       0000000    000   000  000      000    
+         000  000       000   000  000   000  000      000    
+    0000000    0000000  000   000   0000000   0000000  0000000
+    ###
+
     scrollToPos: (p) =>
         viewWidth = @elem.parentElement.widget.getWidth()
         left = Math.min p.x, @elem.parentElement.scrollLeft
@@ -104,28 +84,30 @@ class EventGrid extends Widget
         @elem.parentElement.scrollLeft = left
         viewHeight = @elem.parentElement.widget.getHeight()
         top  = Math.min p.y, @elem.parentElement.scrollTop
-        top  = Math.max p.y-viewHeight+@rowHeight, top
+        top  = Math.max p.y-viewHeight+@config.rowHeight, top
         top  = Math.min @getHeight() - viewHeight, top
         @elem.parentElement.scrollTop = top
         
-    adjustRange: (noteIndex) =>    
-        oldMaxIndex   = @maxNoteIndex
-        oldMinIndex   = @minNoteIndex
-        oldRange      = @noteRange
-        @minNoteIndex = Math.min(@minNoteIndex, noteIndex)
-        @maxNoteIndex = Math.max(@maxNoteIndex, noteIndex)
-        @noteRange    = @maxNoteIndex-@minNoteIndex+1
-
-        if oldMaxIndex and @maxNoteIndex > oldMaxIndex
-            for c in @children()
-                c.moveBy 0, (@maxNoteIndex-oldMaxIndex)*@rowHeight
-                
-        if oldRange != @noteRange
-            @setHeight @noteRange*@rowHeight
-            
-        @noteRange
-                        
+    scrollToCells: (cells) =>
+        [minpos, maxpos] = @cellMaxima cells
+        oldTop = @elem.parentElement.scrollTop
+        oldLeft = @elem.parentElement.scrollLeft
+        @scrollToPos maxpos
+        @scrollToPos minpos
+        pos oldLeft-@elem.parentElement.scrollLeft, oldTop-@elem.parentElement.scrollTop        
+        
+    scrollToSelectedCells: => @scrollToCells @selectedCells()
+                                        
     selectedCells: => (s.widget for s in @elem.select('.selected'))
+
+    cellMaxima: (cells) =>
+        minpos = pos Number.MAX_VALUE, Number.MAX_VALUE
+        maxpos = pos 0,0
+        for c in cells
+            p = c.relPos()
+            minpos = minpos.min(p)
+            maxpos = maxpos.max(p.plus(pos c.getWidth(), @config.rowHeight))
+        [minpos, maxpos]
                 
     ###
     000000000  00000000   000   0000000    0000000   00000000  00000000 
@@ -147,40 +129,33 @@ class EventGrid extends Widget
             @noteRelease note
         
     noteTrigger: (note) =>
-        
+        # log note
         c = new EventCell note,
             parent   : @
-            height   : @rowHeight-2
+            height   : @config.rowHeight-2
             
         noteIndex = Keyboard.noteIndex c.config.noteName
-        @adjustRange noteIndex
-        relIndex = @maxNoteIndex - noteIndex
         x = if not c.config.x? then @timeposx else c.config.x
-        y = if not c.config.y? then relIndex * @rowHeight else @roundToNoteY c.config.y
+        y = if not c.config.y? then @getHeight()-(noteIndex+1)*@config.rowHeight else @roundToNoteY c.config.y
         c.moveTo x, y
         @activeCells.push c
+        c
 
     noteRelease: (note) =>
+        # log note
         for c in @activeCells
             if c.config.noteName == note.noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)
-                return
+                return c
         
     noteNameAtPos: (pos) =>
-        if @maxNoteIndex > 0
-            relIndex  = _.clamp(0, Keyboard.maxNoteIndex(), @roundToNoteY(pos.y)/@rowHeight)
-            noteIndex = Math.max(0, @maxNoteIndex - relIndex)
-        else
-            noteIndex = 48
+        noteIndex = _.clamp(0, Keyboard.maxNoteIndex(), @roundToNoteY(@getHeight()-pos.y)/@config.rowHeight)
         Keyboard.allNoteNames()[noteIndex]
             
-    roundToNoteY: (y) => Math.min(@maxNoteIndex, Math.floor(y/@rowHeight))*@rowHeight
+    roundToNoteY: (y) => Math.floor(y/@config.rowHeight)*@config.rowHeight
                 
     removeAllCells: =>
-        @minNoteIndex = 9*12
-        @maxNoteIndex = 0
-        @noteRange = 1
         @activeCells = []
         for c in @children()
             c.close()
