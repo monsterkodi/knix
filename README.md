@@ -1,19 +1,8 @@
 
-```
-.
+# knix
+a small coffeescript gui framework in its infancy
 
-    KKK  KKK  NNN   NNN  III  XXX   XXX
-    KKK KKK   NNNN  NNN  III    XXXXX
-    KKKKK     NNN N NNN  III     XXX
-    KKK KKK   NNN  NNNN  III    XXXXX
-    KKK  KKK  NNN   NNN  III  XXX   XXX
-
-    a  small coffeescript gui framework
-
-              in its infancy
-                                          .
-
-```
+![knix](http://http://monsterkodi.github.io/knix/images/knix08.png)
 
 ## Install
 
