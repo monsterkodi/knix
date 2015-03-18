@@ -233,8 +233,7 @@ class Console extends Window
     @toHtml: =>
 
         html = (str(arg) for arg in arguments).join(" ")
-        html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>')
-            .replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>')
+        html.replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>')
             .replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>')
 
 tag = Console.setScopeTags

@@ -34,7 +34,7 @@ class EventCell extends Widget
 
     onMoveStart: (drag) => @elem.addClassName 'selected'
     onDragMove:  (drag) => 
-        delta = @getParent().moveSelectedCellsBy drag.deltaSum.x, drag.deltaSum.y
+        delta = @getParent().moveCellsBy @getParent().selectedCells(), drag.deltaSum.x, drag.deltaSum.y
         drag.startPos.add delta
 
     onDown: (event) =>

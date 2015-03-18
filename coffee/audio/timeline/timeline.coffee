@@ -48,7 +48,7 @@ class Timeline extends Window
                 icons     : ['fa-unlink', 'fa-link']
             ,
                 type      : 'toggle'
-                class     : 'edit-mode'
+                class     : 'editMode'
                 configKey : 'editMode'
                 state     : 'single'
                 states    : ['multi', 'single']
@@ -62,24 +62,32 @@ class Timeline extends Window
                 icons     : ['fa-square-o', 'fa-check-square']
             ,
                 type      : 'toggle'
-                class     : 'quantise-steps'
+                class     : 'quantiseSteps'
                 configKey : 'quantiseSteps'
+                state     : 1
                 states    : [1, 2, 4, 8]
                 icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
             ,
                 type      : 'toggle'
-                class     : 'quantise-mode'
+                class     : 'quantiseMode'
                 configKey : 'quantiseMode'
                 state     : 'start'
                 states    : ['length', 'start', 'start length']
                 icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
             ,
                 type      : 'toggle'
-                class     : 'quantise-when'
-                configKey : 'quantiseWhen'
-                state     : 'record edit'
-                states    : ['record', 'edit', 'record edit']
-                icons     : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
+                class     : 'quantiseWhenMoved'
+                configKey : 'quantiseWhenMoved'
+                state     : 'on'
+                states    : ['off', 'on']
+                icons     : ['fa-square-o', 'fa-share-square-o']
+            ,
+                type      : 'toggle'
+                class     : 'quantiseWhenAdded'
+                configKey : 'quantiseWhenAdded'
+                state     : 'on'
+                states    : ['off', 'on']
+                icons     : ['fa-square-o', 'fa-pencil-square-o']
             ,
                 class     : 'trash'
                 icon      : 'fa-trash-o' 
@@ -128,15 +136,16 @@ class Timeline extends Window
                 ]
             ]
         
-        @grid = @getChild('EventGrid')
-        @grid.timeline = @
+        @grid  = @getChild('EventGrid')
         @ruler = @getChild('TimeRuler')
-        @line = @getChild('EventLine')
-        @box = @getChild('EventGridBox')
-        @box.connect 'mousedown', @onGridMouseDown
+        @line  = @getChild('EventLine')
+        @box   = @getChild('EventGridBox')
+        
+        @grid.timeline = @
         @grid.connect 'mousedown', @onGridMouseDown
-                
+        @box.connect  'mousedown', @onGridMouseDown        
         @box.config.noMove = true    
+        
         @connect 'playpause:trigger',   @playPause
         @connect 'follow:onState',      @onFollowState
         @connect 'stop:trigger',        @stop
@@ -164,7 +173,7 @@ class Timeline extends Window
             for wid in @grid.allChildren()
                 wid.elem.removeClassName 'selected'
             relPos = Stage.absPos(event).minus(@box.absPos())
-            log relPos, @grid.noteNameAtPos relPos
+            # log relPos, @grid.noteNameAtPos relPos
             c = @grid.addNote
                 event    : 'trigger'
                 noteName : @grid.noteNameAtPos relPos
@@ -173,6 +182,23 @@ class Timeline extends Window
                 y        : relPos.y
             @grid.activeCells.splice @grid.activeCells.indexOf(c), 1
         event.stop()
+            
+    onQuantise: (event) => 
+        if event.detail.state == 'on'
+            @quantiser = new Quantiser 
+                                grid      : @grid
+                                steps     : @config.quantiseSteps
+                                mode      : @config.quantiseMode
+                                whenAdded : @config.quantiseWhenAdded
+                                whenMoved : @config.quantiseWhenMoved
+        else
+            @quantiser?.close()
+            delete @quantiser
+
+    onQuantiseSteps:     (event) => @quantiser?.config.steps = event.detail.state
+    onQuantiseMode:      (event) => @quantiser?.config.mode  = event.detail.state
+    onQuantiseWhenMoved: (event) => @quantiser?.config.whenMoved = event.detail.state
+    onQuantiseWhenAdded: (event) => @quantiser?.config.whenAdded = event.detail.state
             
     trash: => 
         @stopCells()

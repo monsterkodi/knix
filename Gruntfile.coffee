@@ -9,6 +9,9 @@ module.exports = (grunt) ->
                 verbose:        false
                 quiet:          true
                 pepper:         ['log', 'warn', 'error']
+                paprika:        ['dbg']
+                paprikaPrefix:  '<span class=\'console-type\'>'
+                paprikaPostfix: ':</span>'
             knix:
                 files:
                     'tools':    ['./coffee/tools/*.coffee']

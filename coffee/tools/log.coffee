@@ -9,6 +9,7 @@
 ###
 
 log = -> Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
+dbg = -> Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
 
 error = ->
     tag 'error'
