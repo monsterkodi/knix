@@ -57,7 +57,7 @@ class EventGrid extends Widget
         for c in @selectedCells()
             p = c.relPos()
             minpos = minpos.min(p)
-            maxpos = maxpos.max(p.plus(c.sizePos()))
+            maxpos = maxpos.max(p.plus(pos c.getWidth(), @rowHeight))
         [minpos, maxpos]
             
     moveSelectedCellsBy: (dx, dy) =>
@@ -65,15 +65,15 @@ class EventGrid extends Widget
         [minpos, maxpos] = @selectedCellMaxima()
         dx = Math.max(dx, -minpos.x)
 
-        if @maxNoteIndex == Keyboard.numNotes()-1
+        if @maxNoteIndex == Keyboard.maxNoteIndex()
             dy = Math.max(dy, -minpos.y)
             
         dx = Math.min(dx, @getWidth()-maxpos.x)
         
         if @minNoteIndex == 0
-            dy = Math.min(dy, @getHeight()-maxpos.y)
+            dy = Math.min(dy, Math.max(0, @getHeight()-maxpos.y))
             
-        dy = Math.round(dy/@rowHeight)*@rowHeight
+        dy = @roundToNoteY dy
 
         numNotes = Keyboard.numNotes()
         for c in @selectedCells()
@@ -83,6 +83,7 @@ class EventGrid extends Widget
                 noteIndex = Keyboard.noteIndex c.config.noteName
                 noteNames = Keyboard.allNoteNames()
                 newNoteIndex = _.clamp(0, noteNames.length-1, noteIndex - dy/@rowHeight)
+                # log noteIndex, newNoteIndex
                 c.config.noteName = noteNames[newNoteIndex]
                 @adjustRange newNoteIndex
         @scrollToSelectedCells().plus pos dx, dy
@@ -153,29 +154,28 @@ class EventGrid extends Widget
             
         noteIndex = Keyboard.noteIndex c.config.noteName
         @adjustRange noteIndex
-        relIndex = noteIndex - @minNoteIndex
-        y = (@noteRange-relIndex-1) * @rowHeight
+        relIndex = @maxNoteIndex - noteIndex
         x = if not c.config.x? then @timeposx else c.config.x
+        y = if not c.config.y? then relIndex * @rowHeight else @roundToNoteY c.config.y
         c.moveTo x, y
         @activeCells.push c
-        # log (c.config.noteName for c in @activeCells)
 
     noteRelease: (note) =>
         for c in @activeCells
             if c.config.noteName == note.noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)
-                # log c.config.noteName, (c.config.noteName for c in @activeCells)
                 return
         
     noteNameAtPos: (pos) =>
         if @maxNoteIndex > 0
-            noteIndex = (@maxNoteIndex - pos.y/@rowHeight).toFixed()
+            relIndex  = _.clamp(0, Keyboard.maxNoteIndex(), @roundToNoteY(pos.y)/@rowHeight)
+            noteIndex = Math.max(0, @maxNoteIndex - relIndex)
         else
             noteIndex = 48
-        noteName = Keyboard.allNoteNames()[noteIndex]
-        log pos, noteIndex, noteName
-        noteName
+        Keyboard.allNoteNames()[noteIndex]
+            
+    roundToNoteY: (y) => Math.min(@maxNoteIndex, Math.floor(y/@rowHeight))*@rowHeight
                 
     removeAllCells: =>
         @minNoteIndex = 9*12

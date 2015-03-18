@@ -52,6 +52,7 @@ class Keyboard extends Window
     
     @noteIndex: (noteName) => @allNoteNames().indexOf noteName  
     @numNotes: => @noteNames.length * 9
+    @maxNoteIndex: => @numNotes()-1
     @allNoteNames: =>
         if not @_allNoteNames?
             @_allNoteNames = []
@@ -128,13 +129,13 @@ class Keyboard extends Window
         key = event.target.widget
         note = "%s%d".fmt key.config.text, @config.octave
         # log 'emit trigger', note
-        @emit 'note', { note: note, type: 'trigger' }
+        @emit 'note', { noteName: note, event: 'trigger' }
 
     onKeyRelease: (event) =>    
         key = event.target.widget
         note = "%s%d".fmt key.config.text, @config.octave
         # log 'emit release', note
-        @emit 'note', { note: note, type: 'release' }
+        @emit 'note', { noteName: note, event: 'release' }
         
     @menu: =>
 

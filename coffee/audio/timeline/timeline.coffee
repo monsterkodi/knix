@@ -56,27 +56,27 @@ class Timeline extends Window
             , # ------------------------------------
                 align     : 'right'
                 type      : 'toggle'
-                class     : 'quantize'
-                configKey : 'quantize'
+                class     : 'quantise'
+                configKey : 'quantise'
                 states    : ['off', 'on']
                 icons     : ['fa-square-o', 'fa-check-square']
             ,
                 type      : 'toggle'
-                class     : 'quantize-steps'
-                configKey : 'quantizeSteps'
+                class     : 'quantise-steps'
+                configKey : 'quantiseSteps'
                 states    : [1, 2, 4, 8]
                 icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
             ,
                 type      : 'toggle'
-                class     : 'quantize-mode'
-                configKey : 'quantizeMode'
+                class     : 'quantise-mode'
+                configKey : 'quantiseMode'
                 state     : 'start'
                 states    : ['length', 'start', 'start length']
                 icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
             ,
                 type      : 'toggle'
-                class     : 'quantize-when'
-                configKey : 'quantizeWhen'
+                class     : 'quantise-when'
+                configKey : 'quantiseWhen'
                 state     : 'record edit'
                 states    : ['record', 'edit', 'record edit']
                 icons     : ['fa-caret-square-o-right', 'fa-pencil-square-o', 'fa-pencil-square']
@@ -157,16 +157,20 @@ class Timeline extends Window
     onFollowState:   (event) => @follow = (event.detail.state == 'on')
     onGridSize:      (event) => @line.setHeight @grid.getHeight()
     onGridMouseDown: (event) => 
-        log @config.editMode 
+        log @config.editMode
         if @config.editMode == 'multi'
             Selectangle.start @grid
         else
+            for wid in @grid.allChildren()
+                wid.elem.removeClassName 'selected'
             relPos = Stage.absPos(event).minus(@box.absPos())
+            log relPos, @grid.noteNameAtPos relPos
             c = @grid.addNote
                 event    : 'trigger'
                 noteName : @grid.noteNameAtPos relPos
-                width    : @config.stepWidth
+                width    : @config.stepWidth*2
                 x        : relPos.x
+                y        : relPos.y
             @grid.activeCells.splice @grid.activeCells.indexOf(c), 1
         event.stop()
             
@@ -289,6 +293,7 @@ class Timeline extends Window
         
     stop: =>
         @stopCells()
+        @getChild('record').setState 'off'
         @getChild('playpause').setState 'pause'
         @playing = false
         knix.deanimate @

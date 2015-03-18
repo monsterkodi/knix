@@ -37,7 +37,6 @@ class Selectangle extends Widget
         @
     
     close: (event) =>
-        # delete Selectangle.selectangle
         if @sizePos().square() == 0 and not event.shiftKey
             for wid in (@wid? and @wid.allChildren() or knix.allWindows())
                 wid.elem.removeClassName 'selected'
