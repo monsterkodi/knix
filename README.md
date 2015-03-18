@@ -2,7 +2,7 @@
 # knix
 a small coffeescript gui framework in its infancy
 
-![knix](http://http://monsterkodi.github.io/knix/images/knix07.png)
+![screenshot](http://monsterkodi.github.io/knix/images/knix07.png)
 
 ## Install
 
