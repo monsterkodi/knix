@@ -25,75 +25,7 @@ class Timeline extends Window
             width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 38
             height    : 300
             minHeight : 200
-            buttons   : \
-            [
-                type      : 'toggle'
-                class     : 'playpause'
-                keys      : ['p']
-                states    : ['pause', 'play']
-                icons     : ['fa-play', 'fa-pause']
-            ,
-                class     : 'stop'
-                icon      : 'fa-stop'
-            ,
-                type      : 'toggle'
-                class     : 'record'
-                keys      : ['r']
-                states    : ['off', 'on']
-                icons     : ['fa-circle-o', 'fa-circle']                
-            ,
-                type      : 'toggle'
-                class     : 'follow'
-                states    : ['off', 'on']
-                icons     : ['fa-unlink', 'fa-link']
-            ,
-                type      : 'toggle'
-                class     : 'editMode'
-                configKey : 'editMode'
-                keys      : ['e']
-                state     : 'single'
-                states    : ['multi', 'single']
-                icons     : ['fa-th', 'fa-pencil']
-            , # ------------------------------------
-                align     : 'right'
-                type      : 'toggle'
-                class     : 'quantise'
-                configKey : 'quantise'
-                keys      : ['q']
-                states    : ['off', 'on']
-                icons     : ['fa-square-o', 'fa-check-square']
-            ,
-                type      : 'toggle'
-                class     : 'quantiseSteps'
-                configKey : 'quantiseSteps'
-                state     : 1
-                states    : [1, 2, 4, 8]
-                icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
-            ,
-                type      : 'toggle'
-                class     : 'quantiseMode'
-                configKey : 'quantiseMode'
-                state     : 'start'
-                states    : ['length', 'start', 'start length']
-                icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
-            ,
-                type      : 'toggle'
-                class     : 'quantiseWhenMoved'
-                configKey : 'quantiseWhenMoved'
-                state     : 'on'
-                states    : ['off', 'on']
-                icons     : ['fa-square-o', 'fa-share-square-o']
-            ,
-                type      : 'toggle'
-                class     : 'quantiseWhenAdded'
-                configKey : 'quantiseWhenAdded'
-                state     : 'on'
-                states    : ['off', 'on']
-                icons     : ['fa-square-o', 'fa-pencil-square-o']
-            ,
-                class     : 'trash'
-                icon      : 'fa-trash-o' 
-            ] 
+            Buttons   : Timeline.toolButtons
             children : \
             [
                 type: 'hbox'
@@ -105,6 +37,12 @@ class Timeline extends Window
                     type      : 'sliderspin'
                     class     : 'speed'
                     hasOutput : false
+                    value     : cfg.stepSecs
+                    sliderStep : 0.001
+                    spinStep   : 0.001
+                    spinFormat: "%1.3f"
+                    minValue  : 0.01
+                    maxValue  : 1.0
                     style     :
                         width : '100%'
                 ,
@@ -115,7 +53,6 @@ class Timeline extends Window
                 type      : 'TimeRuler' 
                 steps     : cfg.steps
                 stepWidth : cfg.stepWidth
-                stepSecs  : cfg.stepSecs
             ,
                 type    : 'EventGridBox'
                 style   : 
@@ -156,6 +93,8 @@ class Timeline extends Window
         @connect 'EventGridBox:scroll', @onScroll
         @connect 'trash:trigger',       @trash
         @connect 'EventGrid:size',      @onGridSize
+        @connect 'speed:onValue',       @setSpeed
+        @connect 'speed:onValue',       'grid:setSpeed'
                     
         @numSteps = @config.steps
         @step = 
@@ -164,6 +103,94 @@ class Timeline extends Window
             
         @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)            
         @
+    
+    ###
+    0000000    000   000  000000000  000000000   0000000   000   000   0000000
+    000   000  000   000     000        000     000   000  0000  000  000     
+    0000000    000   000     000        000     000   000  000 0 000  0000000 
+    000   000  000   000     000        000     000   000  000  0000       000
+    0000000     0000000      000        000      0000000   000   000  0000000 
+    ###
+    
+    @toolButtons = \
+        [
+            type      : 'toggle'
+            class     : 'playpause'
+            keys      : ['p']
+            states    : ['pause', 'play']
+            icons     : ['fa-play', 'fa-pause']
+        ,
+            class     : 'stop'
+            icon      : 'fa-stop'
+        ,
+            type      : 'toggle'
+            class     : 'record'
+            keys      : ['r']
+            states    : ['off', 'on']
+            icons     : ['fa-circle-o', 'fa-circle']                
+        ,
+            type      : 'toggle'
+            class     : 'follow'
+            states    : ['off', 'on']
+            icons     : ['fa-unlink', 'fa-link']
+        ,
+            type      : 'toggle'
+            class     : 'editMode'
+            configKey : 'editMode'
+            keys      : ['e']
+            state     : 'single'
+            states    : ['multi', 'single']
+            icons     : ['fa-th', 'fa-pencil']
+        , # ------------------------------------
+            align     : 'right'
+            type      : 'toggle'
+            class     : 'quantise'
+            configKey : 'quantise'
+            keys      : ['q']
+            states    : ['off', 'on']
+            icons     : ['fa-square-o', 'fa-check-square']
+        ,
+            type      : 'toggle'
+            class     : 'quantiseSteps'
+            configKey : 'quantiseSteps'
+            state     : 1
+            states    : [1, 2, 4, 8]
+            icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
+        ,
+            type      : 'toggle'
+            class     : 'quantiseMode'
+            configKey : 'quantiseMode'
+            state     : 'start'
+            states    : ['length', 'start', 'start length']
+            icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
+        ,
+            type      : 'toggle'
+            class     : 'quantiseWhenMoved'
+            configKey : 'quantiseWhenMoved'
+            state     : 'on'
+            states    : ['off', 'on']
+            icons     : ['fa-square-o', 'fa-share-square-o']
+        ,
+            type      : 'toggle'
+            class     : 'quantiseWhenAdded'
+            configKey : 'quantiseWhenAdded'
+            state     : 'on'
+            states    : ['off', 'on']
+            icons     : ['fa-square-o', 'fa-pencil-square-o']
+        ,
+            class     : 'trash'
+            icon      : 'fa-trash-o' 
+        ] 
+        
+    ###
+    00000000  000   000  00000000  000   000  000000000   0000000
+    000       000   000  000       0000  000     000     000     
+    0000000    000 000   0000000   000 0 000     000     0000000 
+    000          000     000       000  0000     000          000
+    00000000      0      00000000  000   000     000     0000000 
+    ###
+        
+    setSpeed:        (v) => @config.stepSecs = _.value v
             
     onScroll:        (event) => @ruler.moveTo -event.target.scrollLeft
     onFollowState:   (event) => @follow = (event.detail.state == 'on')

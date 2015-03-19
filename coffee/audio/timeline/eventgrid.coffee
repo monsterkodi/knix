@@ -48,6 +48,7 @@ class EventGrid extends Widget
             sw = 2
             if @quantiser?
                 sw = quantiser.config.step * @config.stepWidth
+                log sw
             dx = event.key == 'Left' and -sw or sw
             @moveCellsBy @selectedCells(), dx, 0
             
@@ -129,6 +130,10 @@ class EventGrid extends Widget
         @timeposx = time * @config.stepWidth / @config.stepSecs
         for c in @activeCells
             c.setWidth @timeposx - c.relPos().x
+        
+    setSpeed: (speed) => 
+        @config.stepSecs = _.value speed
+        log @config.stepSecs 
         
     addNote: (note) =>
         if note.event == 'trigger'

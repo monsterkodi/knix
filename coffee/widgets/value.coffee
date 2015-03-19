@@ -23,10 +23,10 @@ class Value extends Widget
     initEvents: =>
         if @config.onValue?
             if _.isString @config.onValue
-                console.log 'onValue', @config.onValue
-                log 'onValue anc', @elem.ancestors()
+                # console.log 'onValue', @config.onValue
+                # log 'onValue anc', @elem.ancestors()
                 win = @getWindow()
-                console.log 'onValue win', win
+                # console.log 'onValue win', win
                 @elem.on "onValue", win[@config.onValue]
             else
                 @elem.on "onValue", @config.onValue  
