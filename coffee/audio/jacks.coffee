@@ -19,7 +19,7 @@ class Jacks extends Hbox
 
         children = []
 
-        if not (cfg.hasInput == false)
+        if cfg.hasInput != false
             children.push
                 type : 'connector'
                 in   : 'audio'
@@ -32,7 +32,7 @@ class Jacks extends Hbox
             children   : cfg.content if _.isArray cfg.content
             child      : cfg.content if _.isObject cfg.content
 
-        if not (cfg.hasOutput == false)
+        if cfg.hasOutput != false
             children.push
                 type : 'connector'
                 out  : 'audio'

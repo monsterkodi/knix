@@ -13,36 +13,41 @@ class Sliderspin extends Hbox
     init: (cfg, defs) =>
 
         cfg = _.def cfg, defs
+        
+        children = []
+        if cfg.hasInput != false
+            children.push
+                type : 'connector'
+                slot : cfg.class+':setValue'
 
-        super cfg,
-            children : \
-            [
-                type      : 'connector'
-                slot      : cfg.class+':setValue'
-            ,
-                type      : 'slider'
-                value     : cfg.value
-                minValue  : cfg.minValue
-                maxValue  : cfg.maxValue
-                valueStep : cfg.sliderStep
-                hasKnob   : cfg.sliderKnob
-                style     :
-                    width : '90%'
-            ,
-                type      : 'spin'
-                value     : cfg.value
-                recKey    : cfg.recKey
-                minValue  : cfg.minValue
-                maxValue  : cfg.maxValue
-                valueStep : cfg.spinStep
-                minWidth  : 100
-                format    : cfg.spinFormat or "%3.2f"
-                style     :
-                    width : '10%'
-            ,
-                type      : 'connector'
-                signal    : cfg.class+':onValue'
-            ]
+        children.push
+            type      : 'slider'
+            value     : cfg.value
+            minValue  : cfg.minValue
+            maxValue  : cfg.maxValue
+            valueStep : cfg.sliderStep
+            hasKnob   : cfg.sliderKnob
+            style     :
+                width : '90%'
+                
+        children.push
+            type      : 'spin'
+            value     : cfg.value
+            recKey    : cfg.recKey
+            minValue  : cfg.minValue
+            maxValue  : cfg.maxValue
+            valueStep : cfg.spinStep
+            minWidth  : 100
+            format    : cfg.spinFormat or "%3.2f"
+            style     :
+                width : '10%'
+
+        if cfg.hasOutput != false
+            children.push
+                type   : 'connector'
+                signal : cfg.class+':onValue'
+
+        super cfg, children : children
 
         @connect 'slider:onValue', 'spin:setValue'
         @connect 'spin:onValue', 'slider:setValue'

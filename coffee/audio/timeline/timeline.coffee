@@ -99,16 +99,17 @@ class Timeline extends Window
                 type: 'hbox'
                 children : \
                 [
-                    type      : 'connector'
-                    slot      : 'noteIn'
+                    type  : 'connector'
+                    slot  : 'noteIn'
                 ,
-                    type      : 'box'
+                    type      : 'sliderspin'
+                    class     : 'speed'
+                    hasOutput : false
                     style     :
                         width : '100%'
-                        height: '20px'
                 ,
-                    type      : 'connector'
-                    signal    : 'noteOut'
+                    type   : 'connector'
+                    signal : 'noteOut'
                 ]
             ,
                 type      : 'TimeRuler' 
