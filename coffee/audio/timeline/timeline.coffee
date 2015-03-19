@@ -59,6 +59,7 @@ class Timeline extends Window
                 type      : 'toggle'
                 class     : 'quantise'
                 configKey : 'quantise'
+                keys      : ['q']
                 states    : ['off', 'on']
                 icons     : ['fa-square-o', 'fa-check-square']
             ,

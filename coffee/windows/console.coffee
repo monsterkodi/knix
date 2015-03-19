@@ -21,8 +21,8 @@ class Console extends Window
         cfg = _.def cfg,
             x:       Stage.size().width/2
             y:       30
-            width:   Stage.size().width/2-4
-            height:  Stage.size().height-30
+            width:   Stage.size().width/2-24
+            height:  Stage.size().height-55
 
         super cfg,
             title       : 'console'

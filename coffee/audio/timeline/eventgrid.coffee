@@ -46,6 +46,8 @@ class EventGrid extends Widget
         if event.key in ['Left', 'Right']
             # dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
             sw = 2
+            if @quantiser?
+                sw = quantiser.config.step * @config.stepWidth
             dx = event.key == 'Left' and -sw or sw
             @moveCellsBy @selectedCells(), dx, 0
             
@@ -63,7 +65,7 @@ class EventGrid extends Widget
         for c in cells
             p = c.relPos()
             c.moveBy dx, dy
-            @emit 'cellMovedBy', { cell: c, dx: dx, dy: dy }
+            @emit 'cellMoved', { cell: c, dx: dx, dy: dy }
             if dy != 0
                 noteIndex = Keyboard.noteIndex c.config.noteName
                 noteNames = Keyboard.allNoteNames()

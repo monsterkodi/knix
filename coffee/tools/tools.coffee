@@ -35,6 +35,8 @@ _.clamp = (r1, r2, v) ->
     v = Math.min(v, r2) if r2?
     v
 
+_.round = (value, stepSize=1) -> Math.round(value/stepSize)*stepSize
+
 _.arg = (arg, argname='') ->
     arg = _.arg.caller.arguments[0] if not arg?
     if typeof arg == 'object'
