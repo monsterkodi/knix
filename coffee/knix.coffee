@@ -18,7 +18,7 @@ class knix
             c = new Console()
             c.shade() if config.console == 'shade'
 
-        s = 'welcome to'; log s, 'knix', 'version:', @version
+        log 'welcome to knix', @version
 
         Keys.init()
         StyleSwitch.init()

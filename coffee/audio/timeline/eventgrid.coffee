@@ -44,7 +44,9 @@ class EventGrid extends Widget
             dy = event.key == 'Up' and -@config.rowHeight or @config.rowHeight
             @moveCellsBy @selectedCells(), 0, dy
         if event.key in ['Left', 'Right']
-            dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
+            # dx = event.key == 'Left' and -@config.stepWidth or @config.stepWidth
+            sw = 2
+            dx = event.key == 'Left' and -sw or sw
             @moveCellsBy @selectedCells(), dx, 0
             
     moveCellsBy: (cells, dx, dy) =>

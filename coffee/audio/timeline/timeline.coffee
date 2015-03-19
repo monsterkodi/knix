@@ -50,6 +50,7 @@ class Timeline extends Window
                 type      : 'toggle'
                 class     : 'editMode'
                 configKey : 'editMode'
+                keys      : ['e']
                 state     : 'single'
                 states    : ['multi', 'single']
                 icons     : ['fa-th', 'fa-pencil']

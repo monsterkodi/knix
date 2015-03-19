@@ -8,8 +8,8 @@ module.exports = (grunt) ->
             options:
                 verbose:        false
                 quiet:          true
-                pepper:         ['log', 'warn', 'error']
-                paprika:        ['dbg']
+                pepper:         ['warn', 'error']
+                paprika:        ['log', 'dbg']
                 paprikaPrefix:  '<span class=\'console-type\'>'
                 paprikaPostfix: ':</span>'
             knix:
