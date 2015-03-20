@@ -372,9 +372,12 @@ class Window extends Widget
     isWindow: => true
 
     raise: (event) =>
-        scrolltop = @content.elem.scrollTop
+        e = @scrollElem? and @scrollElem or @content.elem
+        scrollx = e.scrollLeft
+        scrolly = e.scrollTop
         @elem.parentElement.appendChild @elem
-        @content.elem.scrollTop = scrolltop
+        e.scrollLeft = scrollx
+        e.scrollTop = scrolly
         event?.stopPropagation()
 
     popup: (event) =>

@@ -80,6 +80,7 @@ class Timeline extends Window
         @ruler = @getChild('TimeRuler')
         @line  = @getChild('EventLine')
         @box   = @getChild('EventGridBox')
+        @scrollElem = @box.elem
         
         @grid.timeline = @
         @grid.connect 'mousedown', @onGridMouseDown
