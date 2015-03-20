@@ -26,8 +26,6 @@ class EventGrid extends Widget
             grid      : @
             steps     : 1
             mode      : 'start'
-            whenAdded : 'on'
-            whenMoved : 'on'
 
         @setHeight @config.rowHeight*Keyboard.numNotes()
         @timeline    = undefined

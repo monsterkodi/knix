@@ -165,20 +165,6 @@ class Timeline extends Window
             states    : ['length', 'start', 'start length']
             icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
         ,
-            type      : 'toggle'
-            class     : 'quantiseWhenMoved'
-            configKey : 'grid.quantiser.quantiseWhenMoved'
-            state     : 'on'
-            states    : ['off', 'on']
-            icons     : ['fa-square-o', 'fa-share-square-o']
-        ,
-            type      : 'toggle'
-            class     : 'quantiseWhenAdded'
-            configKey : 'grid.quantiser.quantiseWhenAdded'
-            state     : 'on'
-            states    : ['off', 'on']
-            icons     : ['fa-square-o', 'fa-pencil-square-o']
-        ,
             class     : 'trash'
             icon      : 'fa-trash-o' 
         ] 
@@ -215,7 +201,7 @@ class Timeline extends Window
                 c = @grid.addNote
                     event    : 'trigger'
                     noteName : @grid.noteNameAtPos relPos
-                    width    : @config.stepWidth*2
+                    width    : @config.stepWidth
                     x        : relPos.x
                     y        : relPos.y
                 @grid.activeCells.splice @grid.activeCells.indexOf(c), 1

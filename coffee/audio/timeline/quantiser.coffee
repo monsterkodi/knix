@@ -14,7 +14,7 @@ class Quantiser
 
     init: (cfg, defs) =>
         
-        @config = _.def cfg, defs 
+        @config = _.def cfg, defs
         
         @grid = @config.grid 
         delete @config.grid
@@ -27,7 +27,7 @@ class Quantiser
         oldPos = pos(c.x, c.y)
         d = p.minus oldPos
         p.add(c.delta) if c.delta?
-        p.x = _.floor p.x, @config.state == 'on' and @grid.config.stepWidth * @config.steps or 2
+        p.x = _.floor p.x, @config.state == 'on' and @config.mode.indexOf('start')>=0 and @grid.config.stepWidth * @config.steps or 2
         p.y = @grid.roundToNoteY p.y
         if p.x == c.x or p.y == c.y
             if not c.delta?           
@@ -39,6 +39,9 @@ class Quantiser
                 if p.y == c.y then c.delta.y += d.y else c.delta.y = (oldPos.y+d.y+c.delta.y-p.y)
         
         cell.moveTo p.x, p.y
+        if @config.state == 'on' and @config.mode.indexOf('length')>=0
+            cw = @grid.config.stepWidth * @config.steps
+            cell.setWidth Math.max(cw, _.round(cell.getWidth(), cw))
             
         noteIndex = Keyboard.noteIndex cell.config.noteName
         newNoteIndex = @grid.noteIndexAtPos p
@@ -64,8 +67,6 @@ class Quantiser
             @moveCellsBy cells, direction == 'Left' and -incr or incr, 0
         
     cellAddedAt:   (cell, pos) => @moveCellTo cell, pos
-    quantiseMode:      (state) => @config.mode      = state
-    quantiseWhenMoved: (state) => @config.whenMoved = state
-    quantiseWhenAdded: (state) => @config.whenAdded = state
+    quantiseMode:      (state) => @config.mode  = state
     quantiseSteps:     (state) => @config.steps = state
     state:             (state) => @config.state = state
