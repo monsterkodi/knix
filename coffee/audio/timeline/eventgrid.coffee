@@ -37,7 +37,7 @@ class EventGrid extends Widget
         @
             
     onWindowSize:                => @setWidth @config.steps * @config.stepWidth
-    onKey:       (event, e)      => @quantiser.moveCellsInDirection @selectedCells(), event.key
+    onKey:       (event, e)      => @quantiser.moveCellsInDirection @selectedCells(), event.key; @clearDeltas()
     moveCellsBy: (cells, dx, dy) => @quantiser.moveCellsBy cells, dx, dy
     clearDeltas: => 
         for c in @selectedCells()
@@ -104,6 +104,7 @@ class EventGrid extends Widget
         log @config.stepSecs 
         
     addNote: (note) =>
+        # log 'addNote', note
         if note.event == 'trigger'
             @noteTrigger note
         else
@@ -124,18 +125,19 @@ class EventGrid extends Widget
         c
 
     noteRelease: (note) =>
-        # log note
+        log note
         for c in @activeCells
+            log c.config.noteName
             if c.config.noteName == note.noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)
                 return c
         
-    noteIndexAtPos: (pos) => _.clamp(0, Keyboard.maxNoteIndex(), @roundToNoteY(@getHeight()-pos.y)/@config.rowHeight)
+    roundToNoteY:   (y)   => @getHeight() - @config.rowHeight * (1 + @noteIndexAtY(y))
+    noteIndexAtY:   (y)   => _.clamp(0, Keyboard.maxNoteIndex(), Math.floor((@getHeight()-y-1)/@config.rowHeight))
+    noteIndexAtPos: (pos) => @noteIndexAtY pos.y
     noteNameAtPos:  (pos) => Keyboard.allNoteNames()[@noteIndexAtPos pos]
             
-    roundToNoteY: (y) => Math.floor(y/@config.rowHeight)*@config.rowHeight
-                
     removeAllCells: =>
         @activeCells = []
         for c in @children()

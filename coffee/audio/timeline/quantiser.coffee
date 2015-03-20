@@ -41,7 +41,7 @@ class Quantiser
         cell.moveTo p.x, p.y
             
         noteIndex = Keyboard.noteIndex cell.config.noteName
-        newNoteIndex = @grid.noteIndexAtPos cell.relPos()
+        newNoteIndex = @grid.noteIndexAtPos p
         cell.config.noteName = Keyboard.allNoteNames()[newNoteIndex]
                 
         @grid.scrollToCell cell
