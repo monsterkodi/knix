@@ -197,10 +197,8 @@ class Timeline extends Window
     onGridSize:      (event) => @line.setHeight @grid.getHeight()
     editMode:        (state) => 
         @config.editMode = state
-        cursor = ((state == 'multi') and 'crosshair' or 'pointer')
-        log cursor, state
         @grid.elem.setStyle
-            cursor : cursor
+            cursor : ((state == 'multi') and 'crosshair' or 'pointer')
     onGridMouseDown: (event) => 
         # log @config.editMode
         if @config.editMode == 'multi'

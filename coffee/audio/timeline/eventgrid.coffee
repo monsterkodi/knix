@@ -18,7 +18,6 @@ class EventGrid extends Widget
             class     : 'EventGrid'
             noMove    : true
             rowHeight : 14
-            moveIncrX : 1
             style     :
                 position : 'relative'
                 cursor   : 'pointer'
@@ -40,6 +39,9 @@ class EventGrid extends Widget
     onWindowSize:                => @setWidth @config.steps * @config.stepWidth
     onKey:       (event, e)      => @quantiser.moveCellsInDirection @selectedCells(), event.key
     moveCellsBy: (cells, dx, dy) => @quantiser.moveCellsBy cells, dx, dy
+    clearDeltas: => 
+        for c in @selectedCells()
+            delete c.config.delta
 
     ###
      0000000   0000000  00000000    0000000   000      000    
