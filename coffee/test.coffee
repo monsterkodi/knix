@@ -21,24 +21,25 @@ class Test
     ###
 
     @timeline: -> 
-        k1 = new Keyboard
-            x : 20
-            y : 50
-            octave: 4
+        # k1 = new Keyboard
+        #     x : 20
+        #     y : 50
+        #     octave: 4
 
         k2 = new Keyboard
             x : 20
-            y : 350
+            y : 430
             octave: 5
 
-        k3 = new Keyboard
-            x : 20
-            y : 650
-            octave: 6
+        # k3 = new Keyboard
+        #     x : 20
+        #     y : 650
+        #     octave: 6
         
         a = new ADSR
             noteName     : 'C6'
-            x            : 400
+            # x            : 400
+            x            : 20
             y            : 50
             duration     : 0.08
             sustainIndex : 8
@@ -48,11 +49,13 @@ class Test
         m = new Gain
             master : true
             gain   : 1
-            x      : 800
+            # x      : 800
+            x      : 400
             y      : 50
 
         t = new Timeline
-            x      : 400
+            # x      : 400
+            x      : 20
             y      : 430
             height : 500
         

@@ -110,15 +110,24 @@ class Window extends Widget
             if b.configKey?
                 @config[b.configKey] = b.state
                 @connect b.class+':onState', @onButtonState
-                if @['on'+_.capitalize(b.class)]?
-                    @connect b.class+':onState', @['on'+_.capitalize(b.class)]
+                # if @['on'+_.capitalize(b.class)]?
+                #     @connect b.class+':onState', @['on'+_.capitalize(b.class)]
 
     onButtonState: (event) =>
         button = event.target.widget
-        key = button.config.configKey
-        state = event.detail.state
-        log key, state
-        @config[key] = state
+        key    = button.config.configKey
+        state  = event.detail.state
+        if key.indexOf('.') > 0
+            path  = key.split '.'
+            child = @
+            while path.length > 1
+                child = child[path.splice(0,1)]
+            child[path[0]]? event.detail.state
+            child['on'+_.capitalize(path[0])]? event
+        else
+            @[key]? event.detail.state
+            @['on'+_.capitalize(key)]? event
+            @config[key] = state
 
     ###
     000   000  00000000   0000000   0000000    00000000  00000000 

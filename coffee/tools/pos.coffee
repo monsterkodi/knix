@@ -63,8 +63,8 @@ class Pos
         newPos
 
     _str: => 
-        s  = ("<x:%2.2f ".fmt @x if @x?) or "<NaN "
-        s += ("y:%2.2f>".fmt @y if @y?) or "NaN>"
+        s  = ("&lt;x:%2.2f ".fmt @x if @x?) or "&lt;NaN "
+        s += ("y:%2.2f&gt;".fmt @y if @y?) or "NaN&gt;"
 
     #_________________________________________________________ destructive
     

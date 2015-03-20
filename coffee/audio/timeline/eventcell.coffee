@@ -23,19 +23,22 @@ class EventCell extends Widget
 
         new DragSize
             moveStart : @onMoveStart
+            moveStop  : @onMoveStop
             onMove    : @onDragMove
             doMove    : false
             elem      : @elem
         
-        @elem.addEventListener 'mousedown', @onDown        
+        @connect 'mousedown', @onDown
         @
 
     minWidth: => return 1    
 
-    onMoveStart: (drag) => @elem.addClassName 'selected'
+    onMoveStart: (drag) => @elem.addClassName 'selected'; @config.deltaX = @config.deltaY = 0
+    onMoveStop:  (drag) => @config.deltaX = @config.deltaY = 0; log 'stop'
     onDragMove:  (drag) => 
-        delta = @getParent().moveCellsBy @getParent().selectedCells(), drag.deltaSum.x, drag.deltaSum.y
-        drag.startPos.add delta
+        @getParent().moveCellsBy @getParent().selectedCells(), drag.delta.x, drag.delta.y
+        # delta = @getParent().moveCellsBy @getParent().selectedCells(), drag.deltaSum.x, drag.deltaSum.y
+        # drag.startPos.add delta
 
     onDown: (event) =>
         if event.shiftKey

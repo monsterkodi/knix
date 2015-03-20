@@ -15,36 +15,81 @@ class Quantiser
     init: (cfg, defs) =>
         
         @config = _.def cfg, defs 
+        @config = _.def @config,
+            moveIncrX = 2
         
         @grid = @config.grid 
         delete @config.grid
         log @config
-        @grid.connect 'cellMoved', @onCellMoved
-        @grid.connect 'cellAdded', @onCellAdded
         @ 
         
-    quantiseCell: (cell, dx=0, dy=0) =>
+    moveCellTo: (cell, pos) =>
+        if not cell? or not cell.config?
+            warn 'no cell?'
+            return
+            
         c = cell.config
+        # log pos, c.noteName, c.x, c.y
+                
+        dx = pos.x - c.x
+        dy = pos.y - c.y
+                
+        pos.y = @grid.roundToNoteY pos.y
+        
+        # log dx, dy, pos.y
+        
+        if @config.state == 'on'
+            sw = @grid.config.stepWidth * @config.steps
+        else
+            sw = 2
+            
+        rh = @grid.config.rowHeight
         ox = c.deltaX or 0
         oy = c.deltaY or 0
-        # dbg ox, oy
-        nx = _.round c.x+ox+dx, @grid.config.stepWidth * @config.steps
-        ny = _.round c.y+oy+dy, @grid.config.rowHeight
-        if nx == c.x then c.deltaX += dx else c.deltaX = c.x+ox+dx-nx
-        if ny == c.y then c.deltaY += dy else c.deltaY = c.y+oy+dy-ny
-        # dbg c.x, c.y, dx, dy, ox, oy, nx, ny
+        px = c.x+ox+dx
+        py = c.y+oy+dy
+        nx = _.floor px, sw
+        ny = _.floor py, rh            
+        if nx == c.x then c.deltaX += dx else c.deltaX = 0
+        if ny == c.y then c.deltaY += dy else c.deltaY = 0
+        log c.deltaX, c.deltaY, nx, ny
+        
         cell.moveTo nx, ny
-        # dbg c.x, c.y, c.deltaX, c.deltaY
+        # log cell.config
+            
+        p = cell.relPos()
+        noteIndex = Keyboard.noteIndex cell.config.noteName
+        newNoteIndex = @grid.noteIndexAtPos p
+        # log noteIndex, newNoteIndex
+        cell.config.noteName = Keyboard.allNoteNames()[newNoteIndex]
+                
+        @grid.scrollToCell cell
         
-    onCellAdded: (event) => 
-        if @config.whenAdded == 'on'
-            @quantiseCell event.detail.cell
-
-    onCellMoved: (event) => 
-        if @config.whenMoved == 'on'
-            @quantiseCell event.detail.cell, event.detail.dx, event.detail.dy
+    moveCellsBy: (cells, dx, dy) =>
         
-    close: => 
-        @grid.disconnect 'cellMoved', @onCellMoved
-        @grid.disconnect 'cellAdded', @onCellAdded
-        log 'close'
+        [minpos, maxpos] = @grid.cellMaxima cells
+        # log dx, dy, minpos, maxpos
+        dx = Math.max(dx, -minpos.x)
+        dy = Math.max(dy, -minpos.y)
+        dx = Math.min(dx, @grid.getWidth()-maxpos.x)
+        dy = Math.min(dy, @grid.getHeight()-maxpos.y)
+        # log dx, dy
+        for c in cells
+            @moveCellTo c, c.relPos().plus(pos(dx, dy))
+        
+    moveCellsInDirection: (cells, direction) =>
+        if direction in ['Up', 'Down']
+            @moveCellsBy cells, 0, direction == 'Up' and -@grid.config.rowHeight or @grid.config.rowHeight
+        if direction in ['Left', 'Right']
+            log @config, @grid.stepWidth
+            incr = @config.state == 'off' and 2 or @config.steps * @grid.config.stepWidth
+            log incr
+            @moveCellsBy cells, direction == 'Left' and -incr or incr, 0
+        
+    cellAddedAt: (cell, pos) => @moveCellTo cell, pos
+        
+    quantiseMode:      (state) => @config.mode      = state
+    quantiseWhenMoved: (state) => @config.whenMoved = state
+    quantiseWhenAdded: (state) => @config.whenAdded = state
+    quantiseSteps:     (state) => @config.steps = state
+    state:             (state) => @config.state = state

@@ -36,6 +36,7 @@ _.clamp = (r1, r2, v) ->
     v
 
 _.round = (value, stepSize=1) -> Math.round(value/stepSize)*stepSize
+_.floor = (value, stepSize=1) -> Math.floor(value/stepSize)*stepSize
 
 _.arg = (arg, argname='') ->
     arg = _.arg.caller.arguments[0] if not arg?

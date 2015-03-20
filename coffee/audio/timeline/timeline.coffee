@@ -25,7 +25,7 @@ class Timeline extends Window
             width     : Math.min(cfg.steps, 32) * cfg.stepWidth + 38
             height    : 300
             minHeight : 200
-            Buttons   : Timeline.toolButtons
+            buttons   : Timeline.toolButtons
             children : \
             [
                 type: 'hbox'
@@ -42,7 +42,7 @@ class Timeline extends Window
                     spinStep   : 0.001
                     spinFormat: "%1.3f"
                     minValue  : 0.01
-                    maxValue  : 1.0
+                    maxValue  : 0.5
                     style     :
                         width : '100%'
                 ,
@@ -145,35 +145,35 @@ class Timeline extends Window
             align     : 'right'
             type      : 'toggle'
             class     : 'quantise'
-            configKey : 'quantise'
+            configKey : 'grid.quantiser.state'
             keys      : ['q']
             states    : ['off', 'on']
             icons     : ['fa-square-o', 'fa-check-square']
         ,
             type      : 'toggle'
             class     : 'quantiseSteps'
-            configKey : 'quantiseSteps'
+            configKey : 'grid.quantiser.quantiseSteps'
             state     : 1
             states    : [1, 2, 4, 8]
             icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
         ,
             type      : 'toggle'
             class     : 'quantiseMode'
-            configKey : 'quantiseMode'
+            configKey : 'grid.quantiser.quantiseMode'
             state     : 'start'
             states    : ['length', 'start', 'start length']
             icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
         ,
             type      : 'toggle'
             class     : 'quantiseWhenMoved'
-            configKey : 'quantiseWhenMoved'
+            configKey : 'grid.quantiser.quantiseWhenMoved'
             state     : 'on'
             states    : ['off', 'on']
             icons     : ['fa-square-o', 'fa-share-square-o']
         ,
             type      : 'toggle'
             class     : 'quantiseWhenAdded'
-            configKey : 'quantiseWhenAdded'
+            configKey : 'grid.quantiser.quantiseWhenAdded'
             state     : 'on'
             states    : ['off', 'on']
             icons     : ['fa-square-o', 'fa-pencil-square-o']
@@ -195,41 +195,33 @@ class Timeline extends Window
     onScroll:        (event) => @ruler.moveTo -event.target.scrollLeft
     onFollowState:   (event) => @follow = (event.detail.state == 'on')
     onGridSize:      (event) => @line.setHeight @grid.getHeight()
+    editMode:        (state) => 
+        @config.editMode = state
+        cursor = ((state == 'multi') and 'crosshair' or 'pointer')
+        log cursor, state
+        @grid.elem.setStyle
+            cursor : cursor
     onGridMouseDown: (event) => 
         # log @config.editMode
         if @config.editMode == 'multi'
             Selectangle.start @grid
         else
+            selected = false
             for wid in @grid.allChildren()
-                wid.elem.removeClassName 'selected'
-            relPos = Stage.absPos(event).minus(@box.absPos())
-            # log relPos, @grid.noteNameAtPos relPos
-            c = @grid.addNote
-                event    : 'trigger'
-                noteName : @grid.noteNameAtPos relPos
-                width    : @config.stepWidth*2
-                x        : relPos.x
-                y        : relPos.y
-            @grid.activeCells.splice @grid.activeCells.indexOf(c), 1
+                if wid.elem.hasClassName 'selected'
+                    wid.elem.removeClassName 'selected'
+                    selected = true
+            if not selected
+                relPos = Stage.absPos(event).minus(@box.absPos())
+                c = @grid.addNote
+                    event    : 'trigger'
+                    noteName : @grid.noteNameAtPos relPos
+                    width    : @config.stepWidth*2
+                    x        : relPos.x
+                    y        : relPos.y
+                @grid.activeCells.splice @grid.activeCells.indexOf(c), 1
         event.stop()
-            
-    onQuantise: (event) => 
-        if event.detail.state == 'on'
-            @quantiser = new Quantiser 
-                                grid      : @grid
-                                steps     : @config.quantiseSteps
-                                mode      : @config.quantiseMode
-                                whenAdded : @config.quantiseWhenAdded
-                                whenMoved : @config.quantiseWhenMoved
-        else
-            @quantiser?.close()
-            delete @quantiser
-
-    onQuantiseSteps:     (event) => @quantiser?.config.steps = event.detail.state
-    onQuantiseMode:      (event) => @quantiser?.config.mode  = event.detail.state
-    onQuantiseWhenMoved: (event) => @quantiser?.config.whenMoved = event.detail.state
-    onQuantiseWhenAdded: (event) => @quantiser?.config.whenAdded = event.detail.state
-            
+                        
     trash: => 
         @stopCells()
         @grid.removeAllCells()
