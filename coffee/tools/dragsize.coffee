@@ -84,35 +84,54 @@ class DragSize
                 cursor  : 'grab'
         return
 
+    onLeave: (event) =>
+        
+        if @sizeMoveDrag? and not @sizeMoveDrag.dragging
+            @sizeMoveDrag.deactivate() if @sizeMoveDrag
+            delete @sizeMoveDrag
+
+    ###
+    00     00   0000000   000   000  00000000
+    000   000  000   000  000   000  000     
+    000000000  000   000   000 000   0000000 
+    000 0 000  000   000     000     000     
+    000   000   0000000       0      00000000
+    ###
+
     moveStart: (drag, event) =>
+        
         @config.moveStart(drag, event) if @config.moveStart?
         if drag.target.widget.isWindow()
             StyleSwitch.togglePathFilter()
         event.stop()
 
     dragMove: (drag, event) =>
+        
         @config.onMove(drag, event) if @config.onMove?
         event.stop()
-
-    onLeave: (event) =>
-        if @sizeMoveDrag? and not @sizeMoveDrag.dragging
-            @sizeMoveDrag.deactivate() if @sizeMoveDrag
-            delete @sizeMoveDrag
         
     moveStop: (drag, event) =>
+        
         @config.moveStop(drag, event) if @config.moveStop?
         if drag.target.widget.isWindow()
             StyleSwitch.togglePathFilter()
         event.stop()
 
+    ###
+     0000000  000  0000000  00000000
+    000       000     000   000     
+    0000000   000    000    0000000 
+         000  000   000     000     
+    0000000   000  0000000  00000000
+    ###
+        
     sizeStart: (drag, event) =>
+        
         @config.sizeStart(drag, event) if @config.sizeStart?
         event.stop()
 
     sizeMove: (drag, event) =>
         
-        # @config.onSize(drag, event) if @config.onSize?
-
         w    = drag.target.widget
         wpos = w.absPos()
         spos = Stage.absPos(event)
@@ -149,7 +168,6 @@ class DragSize
         hgt = null if drag.border == 'left' or drag.border == 'right'
         wdt = null if drag.border == 'top' or drag.border == 'bottom'
 
-        # log wdt, hgt
         w.resize wdt, hgt
 
         if drag.border in ['left', 'topleft', 'top']

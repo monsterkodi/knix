@@ -47,6 +47,7 @@ class Drag
     relPos: (event) => Stage.relPos event
 
     dragStart: (event) =>
+        
         return if @dragging or not @listening
         # log 'start', @target.id
         @dragging = true
@@ -96,7 +97,7 @@ class Drag
     dragUp: (event) => @dragStop event
 
     dragStop: (event) =>
-        # log 'stop', @target.id
+
         return if not @dragging
         document.removeEventListener 'mousemove', @dragMove
         document.removeEventListener 'mouseup',   @dragUp
@@ -107,13 +108,14 @@ class Drag
         return
 
     activate: =>
+        
         return if @listening
         @listening = true
         @handle.addEventListener 'mousedown', @dragStart
         return
 
     deactivate: =>
-        # log 'deactivate', @target.id
+
         return if not @listening
         @handle.removeEventListener 'mousedown', @dragStart
         @listening = false

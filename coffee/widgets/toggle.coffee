@@ -21,8 +21,6 @@ class Toggle extends Button
         cfg.state = cfg.states[0] unless cfg.state?
         cfg.icon  = cfg.icons[cfg.states.indexOf cfg.state] unless cfg.icon?
 
-        # log cfg
-
         super cfg,
             class : 'button'
 

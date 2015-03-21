@@ -95,12 +95,10 @@ class Range extends Window
             
     setHigh: (v) => 
         @config.high = Math.max(@config.low, _.value v)
-        # @getChild('range_low').setValue Math.min(@config.low, @config.high)
         @getChild('range_high').setValue Math.max(@config.low, @config.high)
         
     setLow: (v) => 
         @config.low = _.value v
-        # @getChild('range_high').setValue Math.max(@config.low, @config.high)
         @getChild('range_low').setValue Math.min(@config.low, @config.high)
         
     range: => @config.high - @config.low

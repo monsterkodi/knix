@@ -23,10 +23,7 @@ class Value extends Widget
     initEvents: =>
         if @config.onValue?
             if _.isString @config.onValue
-                # console.log 'onValue', @config.onValue
-                # log 'onValue anc', @elem.ancestors()
                 win = @getWindow()
-                # console.log 'onValue win', win
                 @elem.on "onValue", win[@config.onValue]
             else
                 @elem.on "onValue", @config.onValue  
@@ -48,7 +45,13 @@ class Value extends Widget
 
     decr: => @incr -1
 
-    # ____________________________________________________________________________ tools
+    ###
+    000000000   0000000    0000000   000       0000000
+       000     000   000  000   000  000      000     
+       000     000   000  000   000  000      0000000 
+       000     000   000  000   000  000           000
+       000      0000000    0000000   0000000  0000000 
+    ###
 
     percentage: (v) => # returns the percentage of value v in the [minValue,maxValue] range
         pct = 100 * (v - @config.minValue) / @range()

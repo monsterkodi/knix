@@ -36,7 +36,6 @@ class Button extends Widget
 
     trigger: (event) =>
         id = _.isString(event) and event or event?.target?.id or @config.recKey
-        # log event, id
         @config.action? event
         @emit 'trigger', id
         event?.stop?()
@@ -44,6 +43,5 @@ class Button extends Widget
         
     release: (event) =>
         id = _.isString(event) and event or event?.target?.id or @config.recKey
-        # log event, id
         @emit 'release', id
         @

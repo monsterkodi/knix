@@ -28,9 +28,10 @@ module.exports = (grunt) ->
 
         salt:
             options:
-                dryrun  : false
-                verbose : false
-                refresh : false
+                textMarker : '#!'
+                dryrun     : false
+                verbose    : false
+                refresh    : false
             coffee:
                 files:
                     'asciiHeader' : ['./coffee/**/*.coffee']
@@ -38,7 +39,7 @@ module.exports = (grunt) ->
             style: 
                 options:
                     verbose     : false
-                    textMarker  : '//!!'
+                    textMarker  : '//!'
                     textPrefix  : '/*'
                     textFill    : '*  '
                     textPostfix : '*/'

@@ -59,6 +59,14 @@ class Pad extends Widget
         @updateHandles()
         @
     
+    ###
+    00000000    0000000   000000000  000   000
+    000   000  000   000     000     000   000
+    00000000   000000000     000     000000000
+    000        000   000     000     000   000
+    000        000   000     000     000   000
+    ###
+    
     createPathAtIndex: (i) =>
         p = new Path
             svg         : @svg.svg
@@ -74,15 +82,6 @@ class Pad extends Widget
             onMove : @pathDragMove
         @paths.splice i, 0, p 
     
-    createHandle: =>
-        h = new Handle
-            svg   : @svg.svg
-            class : 'pad-handle'
-            onPos : @onHandlePos
-            onUp  : @onHandleUp
-        h.elem.addEventListener 'dblclick', @handleDoubleClick
-        h
-
     splitPathAtIndex: (i) =>
         if i < @config.sustainIndex then @config.sustainIndex += 1
         @config.vals.splice i+1, 0, @config.vals[i].mid(@config.vals[i+1])
@@ -94,6 +93,36 @@ class Pad extends Widget
         @updateHandles()
         @constrainHandles()
     
+    pathDoubleClick: (event) =>
+        sh = event.target.getWidget().config.startHandle
+        eh = event.target.getWidget().config.endHandle
+        i = @handles.indexOf sh
+        @splitPathAtIndex i
+
+    pathDragMove: (drag) =>
+        sh = drag.target.getWidget().config.startHandle
+        sh.move drag.delta
+        eh = drag.target.getWidget().config.endHandle
+        eh.move drag.delta
+        @constrainHandles()
+            
+    ###
+    000   000   0000000   000   000  0000000    000      00000000
+    000   000  000   000  0000  000  000   000  000      000     
+    000000000  000000000  000 0 000  000   000  000      0000000 
+    000   000  000   000  000  0000  000   000  000      000     
+    000   000  000   000  000   000  0000000    0000000  00000000
+    ###
+        
+    createHandle: =>
+        h = new Handle
+            svg   : @svg.svg
+            class : 'pad-handle'
+            onPos : @onHandlePos
+            onUp  : @onHandleUp
+        h.elem.addEventListener 'dblclick', @handleDoubleClick
+        h
+    
     removeHandleAtIndex: (i) =>
         if i < @config.sustainIndex then @config.sustainIndex -= 1
         @paths[i].swapStartHandle @handles[i-1]
@@ -104,77 +133,12 @@ class Pad extends Widget
         @updateHandles()
         @constrainHandles()
     
-    pathDoubleClick: (event) =>
-        sh = event.target.getWidget().config.startHandle
-        eh = event.target.getWidget().config.endHandle
-        i = @handles.indexOf sh
-        @splitPathAtIndex i
-
     handleDoubleClick: (event) =>
         h = event.target.getWidget()
         i = @handles.indexOf h
         if i > 0 and i < @handles.length-1 and i != @config.sustainIndex
             @removeHandleAtIndex i
-        
-    pathDragMove: (drag) =>
-        sh = drag.target.getWidget().config.startHandle
-        sh.move drag.delta
-        eh = drag.target.getWidget().config.endHandle
-        eh.move drag.delta
-        @constrainHandles()
-            
-    valAtRel: (rel) =>
-        if @config.numHandles < 2 or rel <= 0 then return @config.vals[0].y
-        if rel >= 1 then return @config.vals[@config.vals.length-1].y
-        si = 0
-        ei = 1
-        for i in [0...@config.vals.length]
-            if @config.vals[i].x <= rel
-                si = i
-            else
-                ei = i
-                break
-        
-        [sp,ep] = [@config.vals[si],@config.vals[ei]]
-        dp = sp.to ep
-        dl = dp.length()
-        if dl == 0 or dp.x == 0
-            log 'null', rel, si, ei, dl, dp.x
-            sp.y
-        else
-            p = sp.plus dp.times (rel - @config.vals[si].x) / dp.x
-            p.y
-    
-    showRuler: (x, y) =>
-        [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
-        if x?
-            if not @rulerx?
-                @rulerx = new Path
-                    svg   : @svg.svg
-                    class : 'pad-ruler'
-                @rulerx.path.back()
-            @rulerx.setStart pos x*w+@o, 0
-            @rulerx.setEnd   pos x*w+@o, h+2*@o
-        if y?
-            if not @rulery?
-                @rulery = new Path
-                    svg   : @svg.svg
-                    class : 'pad-ruler'
-                @rulery.path.back()
-            @rulery.setStart pos      0, h-y*h+@o
-            @rulery.setEnd   pos w+2*@o, h-y*h+@o
-        
-    hideRuler: =>
-        if @rulerx
-            @rulerx.close()
-            delete @rulerx
-        if @rulery
-            @rulery.close()
-            delete @rulery
-                                        
-    getWidth:  => @svg.elem.width    
-    getHeight: => @svg.elem.height
-    
+
     onHandlePos: (event) =>
         if not @config.vals? then return
         [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
@@ -205,6 +169,88 @@ class Pad extends Widget
                 maxX = @handles[i+1].relPos().x
                 
             @handles[i].constrain minX, minY, maxX, @o+h
+
+    updateHandles: =>
+        [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
+        for i in [0...@config.vals.length]
+            hp = pos @o + @config.vals[i].x * w, h - @config.vals[i].y * h + @o
+            @handles[i].setPos hp
+        
+    ###
+    000   000   0000000   000    
+    000   000  000   000  000    
+     000 000   000000000  000    
+       000     000   000  000    
+        0      000   000  0000000
+    ###
+        
+    valAtRel: (rel) =>
+        if @config.numHandles < 2 or rel <= 0 then return @config.vals[0].y
+        if rel >= 1 then return @config.vals[@config.vals.length-1].y
+        si = 0
+        ei = 1
+        for i in [0...@config.vals.length]
+            if @config.vals[i].x <= rel
+                si = i
+            else
+                ei = i
+                break
+        
+        [sp,ep] = [@config.vals[si],@config.vals[ei]]
+        dp = sp.to ep
+        dl = dp.length()
+        if dl == 0 or dp.x == 0
+            log 'null', rel, si, ei, dl, dp.x
+            sp.y
+        else
+            p = sp.plus dp.times (rel - @config.vals[si].x) / dp.x
+            p.y
+    
+    ###
+    00000000   000   000  000      00000000  00000000 
+    000   000  000   000  000      000       000   000
+    0000000    000   000  000      0000000   0000000  
+    000   000  000   000  000      000       000   000
+    000   000   0000000   0000000  00000000  000   000
+    ###
+    
+    showRuler: (x, y) =>
+        [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
+        if x?
+            if not @rulerx?
+                @rulerx = new Path
+                    svg   : @svg.svg
+                    class : 'pad-ruler'
+                @rulerx.path.back()
+            @rulerx.setStart pos x*w+@o, 0
+            @rulerx.setEnd   pos x*w+@o, h+2*@o
+        if y?
+            if not @rulery?
+                @rulery = new Path
+                    svg   : @svg.svg
+                    class : 'pad-ruler'
+                @rulery.path.back()
+            @rulery.setStart pos      0, h-y*h+@o
+            @rulery.setEnd   pos w+2*@o, h-y*h+@o
+        
+    hideRuler: =>
+        if @rulerx
+            @rulerx.close()
+            delete @rulerx
+        if @rulery
+            @rulery.close()
+            delete @rulery
+        
+    ###
+     0000000  000  0000000  00000000
+    000       000     000   000     
+    0000000   000    000    0000000 
+         000  000   000     000     
+    0000000   000  0000000  00000000
+    ###
+    
+    getWidth:  => @svg.elem.width    
+    getHeight: => @svg.elem.height
                 
     setSVGSize: (width, height) =>
         @svg.setWidth width
@@ -212,11 +258,6 @@ class Pad extends Widget
         @svg.elem.width = width
         @svg.elem.height = height  
         
-    updateHandles: =>
-        [w,h] = [@getWidth()-2*@o, @getHeight()-2*@o]
-        for i in [0...@config.vals.length]
-            hp = pos @o + @config.vals[i].x * w, h - @config.vals[i].y * h + @o
-            @handles[i].setPos hp
                 
     setSize: (width, height) =>
         @setSVGSize width, height

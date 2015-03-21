@@ -13,11 +13,19 @@ class Keys
     @pressed     = []
     @register    = {}
     @shortcuts   = {}
-    @interactive = false
+    @interactive = false 
     
     @init: =>
         document.onkeypress = @onKey
         document.onkeyup    = @onKeyUp
+        
+    ###
+     0000000   000   000  000   000  00000000  000   000
+    000   000  0000  000  000  000   000        000 000 
+    000   000  000 0 000  0000000    0000000     00000  
+    000   000  000  0000  000  000   000          000   
+     0000000   000   000  000   000  00000000     000   
+    ###
         
     @onKey: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
@@ -27,7 +35,6 @@ class Keys
             if key == 'Esc'
                 @stopInteractive()
             else if key == 'Backspace'
-                # log 'bs', @register
                 if @register.widget?
                     info 'unregister keys', @register.widget.config?.keys, 'for', @register.elem.id
                     @unregisterWidget @register.widget
@@ -35,8 +42,6 @@ class Keys
                     @stopInteractive()
             else if not _.isEmpty @register
                 info 'register key', key, 'for', @register.elem.id
-                warning  'register key', key, 'for', @register.elem.id
-                error 'register key', key, 'for', @register.elem.id
                 if @register.elem?
                     @registerKeyForWidget key, @register.widget
                     @register.elem.removeClassName 'register-key'
@@ -59,9 +64,9 @@ class Keys
                     @pressed.push key
 
     @onKeyUp: (e) =>
+        
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
-        # log key
         i = @pressed.indexOf key
         @pressed.splice(i, 1) if i >= 0
         if not @interactive and i >= 0 
@@ -79,40 +84,26 @@ class Keys
                                             view       : window
                         wid.elem.dispatchEvent e
 
+    ###
+    000  000   000  000000000  00000000  00000000    0000000    0000000  000000000
+    000  0000  000     000     000       000   000  000   000  000          000   
+    000  000 0 000     000     0000000   0000000    000000000  000          000   
+    000  000  0000     000     000       000   000  000   000  000          000   
+    000  000   000     000     00000000  000   000  000   000   0000000     000   
+    ###
+    
     @startInteractive: =>
+        
         @interactive = true
         document.addEventListener 'mousemove', @onMove
         @updateAtPos Stage.mousePos
         
     @stopInteractive: =>
+        
         @interactive = false
         document.removeEventListener 'mousemove', @onMove
         @register.elem?.removeClassName 'register-key'
         @register = {}
-
-    @registerKeyForWidget: (key, wid) =>
-        wid.config.keys.push key if key not in wid.config.keys
-        @add key, wid
-
-    @add: (key,funcOrWidget) => 
-        @shortcuts[key] = [] unless @shortcuts[key]? 
-        @shortcuts[key].push funcOrWidget if funcOrWidget not in @shortcuts[key]
-        
-    @del: (key,funcOrWidget) => @shortcuts[key]?.splice @shortcuts[key].indexOf funcOrWidget, 1
-
-    @registerWidget: (w) =>
-        if w.config?.keys?
-            for key in w.config.keys
-                @add key, w
-
-    @unregisterWidget: (w) => 
-        if w.config?.keys?
-            for key in w.config.keys
-                @del key, w
-        if w.config?.children?
-            for c in w.config.children
-                cw = $(c.id)?.getWidget()
-                @unregisterWidget cw if cw?
 
     @onMove: (event) => @updateAtPos Stage.absPos event
         
@@ -130,3 +121,36 @@ class Keys
         if @register.elem?
             @register.elem.removeClassName 'register-key'
             delete @register.elem
+
+    @add: (key,funcOrWidget) => 
+        @shortcuts[key] = [] unless @shortcuts[key]? 
+        @shortcuts[key].push funcOrWidget if funcOrWidget not in @shortcuts[key]
+        
+    @del: (key,funcOrWidget) => @shortcuts[key]?.splice @shortcuts[key].indexOf funcOrWidget, 1
+
+    ###
+    00000000   00000000   0000000   000   0000000  000000000  00000000  00000000 
+    000   000  000       000        000  000          000     000       000   000
+    0000000    0000000   000  0000  000  0000000      000     0000000   0000000  
+    000   000  000       000   000  000       000     000     000       000   000
+    000   000  00000000   0000000   000  0000000      000     00000000  000   000
+    ###
+
+    @registerKeyForWidget: (key, wid) =>
+        
+        wid.config.keys.push key if key not in wid.config.keys
+        @add key, wid
+
+    @registerWidget: (w) =>
+        if w.config?.keys?
+            for key in w.config.keys
+                @add key, w
+
+    @unregisterWidget: (w) => 
+        if w.config?.keys?
+            for key in w.config.keys
+                @del key, w
+        if w.config?.children?
+            for c in w.config.children
+                cw = $(c.id)?.getWidget()
+                @unregisterWidget cw if cw?
