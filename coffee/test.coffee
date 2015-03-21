@@ -11,65 +11,102 @@
 class Test
 
     ###
-
-     0000000   000   000  0000000    000   0000000 
-    000   000  000   000  000   000  000  000   000
-    000000000  000   000  000   000  000  000   000
-    000   000  000   000  000   000  000  000   000
-    000   000   0000000   0000000    000   0000000 
-
+    000000000   0000000   000   000
+       000     000   000   000 000 
+       000     000   000    00000  
+       000     000   000     000   
+       000      0000000      000   
     ###
 
+    @toy: -> 
+        k = new Keyboard
+            x : 20
+            y : 50
+            octave: 4
+
+        t = new Toy
+            noteName     : 'C6'
+            x            : 400
+            y            : 50
+            duration     : 0.08
+
+        m = new Gain
+            master : true
+            gain   : 1
+            x      : 800
+            y      : 50
+
+        l = new Timeline
+            x      : 400
+            y      : 430
+            height : 500
+        
+        new Connection
+            source   : k.connector 'note'
+            target   : l.connector 'noteIn'
+
+        new Connection
+            source   : l.connector 'noteOut'
+            target   : t.connector 'note'
+
+        new Connection
+            source   : t.connector 'audio:out'
+            target   : m.connector 'audio:in'
+
+    ###
+    000000000  000  00     00  00000000  000      000  000   000  00000000
+       000     000  000   000  000       000      000  0000  000  000     
+       000     000  000000000  0000000   000      000  000 0 000  0000000 
+       000     000  000 0 000  000       000      000  000  0000  000     
+       000     000  000   000  00000000  0000000  000  000   000  00000000
+    ###
+    
     @timeline: -> 
-        # k1 = new Keyboard
-        #     x : 20
-        #     y : 50
-        #     octave: 4
+        k1 = new Keyboard
+            x : 20
+            y : 50
+            octave: 4
 
         k2 = new Keyboard
             x : 20
             y : 430
             octave: 5
 
-        # k3 = new Keyboard
-        #     x : 20
-        #     y : 650
-        #     octave: 6
+        k3 = new Keyboard
+            x : 20
+            y : 650
+            octave: 6
         
         a = new ADSR
             noteName     : 'C6'
-            # x            : 400
-            x            : 20
+            x            : 400
             y            : 50
             duration     : 0.08
             sustainIndex : 8
             vals         : [pos(0,0), pos(.1,1), pos(.2,0), pos(.3,.8), pos(.4,0), pos(.5,.6), pos(.6,.0), pos(.7,.4) , pos(1,0)] 
-            # shape : 'square'
 
         m = new Gain
             master : true
             gain   : 1
-            # x      : 800
-            x      : 400
+            x      : 800
             y      : 50
 
         t = new Timeline
-            # x      : 400
-            x      : 20
+            x      : 400
             y      : 430
             height : 500
         
-        # new Connection
-        #     source   : k1.connector 'note'
-        #     target   : t.connector 'noteIn'
+        new Connection
+            source   : k1.connector 'note'
+            target   : t.connector 'noteIn'
 
         new Connection
             source   : k2.connector 'note'
             target   : t.connector 'noteIn'
 
-        # new Connection
-        #     source   : k3.connector 'note'
-        #     target   : t.connector 'noteIn'
+        new Connection
+            source   : k3.connector 'note'
+            target   : t.connector 'noteIn'
 
         new Connection
             source   : t.connector 'noteOut'
@@ -79,6 +116,13 @@ class Test
             source   : a.connector 'audio:out'
             target   : m.connector 'audio:in'
 
+    ###
+    00000000  000   000  000   000  00000000  000       0000000   00000000   00000000
+    000       0000  000  000   000  000       000      000   000  000   000  000     
+    0000000   000 0 000   000 000   0000000   000      000   000  00000000   0000000 
+    000       000  0000     000     000       000      000   000  000        000     
+    00000000  000   000      0      00000000  0000000   0000000   000        00000000
+    ###
 
     @envelope: -> 
         
@@ -128,6 +172,14 @@ class Test
             source   : o.connector 'audio:out'
             target   : m.connector 'audio:in'
 
+    ###
+    0000000    00000000  000       0000000   000   000
+    000   000  000       000      000   000   000 000 
+    000   000  0000000   000      000000000    00000  
+    000   000  000       000      000   000     000   
+    0000000    00000000  0000000  000   000     000   
+    ###
+    
     @delay: ->
         
         o1 = new Oscillator
@@ -192,6 +244,14 @@ class Test
             target : gm.connector 'audio:in'
 
         return
+    
+    ###
+     0000000    0000000   0000000  000  000      000       0000000   000000000   0000000   00000000 
+    000   000  000       000       000  000      000      000   000     000     000   000  000   000
+    000   000  0000000   000       000  000      000      000000000     000     000   000  0000000  
+    000   000       000  000       000  000      000      000   000     000     000   000  000   000
+     0000000   0000000    0000000  000  0000000  0000000  000   000     000      0000000   000   000
+    ###
         
     @oscillator: ->
         
@@ -281,6 +341,14 @@ class Test
 
         return
         
+    ###
+     0000000   000   000  0000000    000   0000000 
+    000   000  000   000  000   000  000  000   000
+    000000000  000   000  000   000  000  000   000
+    000   000  000   000  000   000  000  000   000
+    000   000   0000000   0000000    000   0000000 
+    ###
+        
     @audio: ->
 
         a = knix.get
@@ -307,7 +375,13 @@ class Test
             parent  : 'menu'
             action  : -> Test.timeline()
 
-        Test.timeline()
+        e = knix.get
+            type    : 'button'
+            text    : 'toy'
+            parent  : 'menu'
+            action  : -> Test.toy()
+
+        Test.toy()
 
     ###
 

@@ -81,7 +81,7 @@ class Toy extends AudioWindow
                 class    : 'trigger'                
             ]
 
-        @buffers = new Buffers()
+        @buffers = new ToyBuffers()
 
         @connect 'trigger:trigger',    @onTrigger
         @connect 'gain:onValue',       @setGain
@@ -110,6 +110,14 @@ class Toy extends AudioWindow
         
     playNote: (note) =>
         log note
+    
+        audioBuffer = @buffers.createAudioBufferForNoteIndex Keyboard.noteIndex note.noteName
+
+        node = Audio.context.createBufferSource()
+        node.buffer = audioBuffer
+        node.connect @gain
+        node.state = node.noteOn
+        node.start 0
                                                                     
     # sizeWindow: =>
     #     super

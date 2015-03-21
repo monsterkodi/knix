@@ -1,40 +1,32 @@
 ###
 
-0000000    000   000  00000000  00000000  00000000  00000000    0000000
-000   000  000   000  000       000       000       000   000  000     
-0000000    000   000  000000    000000    0000000   0000000    0000000 
-000   000  000   000  000       000       000       000   000       000
-0000000     0000000   000       000       00000000  000   000  0000000 
+000000000   0000000   000   000  0000000    000   000  00000000  00000000  00000000  00000000    0000000
+   000     000   000   000 000   000   000  000   000  000       000       000       000   000  000     
+   000     000   000    00000    0000000    000   000  000000    000000    0000000   0000000    0000000 
+   000     000   000     000     000   000  000   000  000       000       000       000   000       000
+   000      0000000      000     0000000     0000000   000       000       00000000  000   000  0000000 
 
 ###
 
-class Buffers
+class ToyBuffers extends Buffers
 
     constructor: (cfg, defs) -> @init cfg, defs
 
     init: (cfg, defs) =>
         
-        @config = _.def cfg, defs
-        
-        @config = _.def @config,
-            sampleRate : 44100
-            duration   : 1
-            numNotes   : Keyboard.numNotes()
-            
-        @samples      = new Array @config.numNotes
-        @sampleLength = @config.duration*@config.sampleRate
-        @isr          = 1.0/@config.sampleRate
-            
-        for i in [0...@config.numNotes]
-            @samples[i] = new Float32Array @sampleLength
+        super cfg, defs
         @
-        
+
     setPreset: (preset='piano1') =>
         func = @[preset]
-        for n in [0...@config.numNotes]
-            w = 2.0 * Math.PI * Keyboard.allNotes()[n]
+        # log @samples.length
+        for s in [0...@samples.length]
+            n = Keyboard.allNoteNames()[s]
+            f = Keyboard.allNotes()[n]
+            w = 2.0 * Math.PI * f
+            # log preset, s, n, w, f
             for i in [0...@sampleLength]
-                @samples[n][i] = func i*@isr, w
+                @samples[s][i] = func i*@isr, w
 
     piano1: (t, w) => 
         
@@ -47,24 +39,24 @@ class Buffers
 
     piano2: (t, w) =>
 
-        t    = t + .00015*noise(12*t)
+        t    = t + .00015*@noise(12*t)
         rt   = t
         r    = t*w*.2
-        r    = fmod(r,1)
+        r    = @fmod(r,1)
         a    = 0.15 + 0.6*(rt)
         b    = 0.65 - 0.5*(rt)
         y    = 50*r*(r-1)*(r-.2)*(r-a)*(r-b)
         r    = t*w*.401
-        r    = fmod(r,1)
+        r    = @fmod(r,1)
         a    = 0.12 + 0.65*(rt)
         b    = 0.67 - 0.55*(rt)
         y2   = 50*r*(r-1)*(r-.4)*(r-a)*(r-b)
         r    = t*w*.399
-        r    = fmod(r,1)
+        r    = @fmod(r,1)
         a    = 0.14 + 0.55*(rt)
         b    = 0.66 - 0.65*(rt)
         y3   = 50*r*(r-1)*(r-.8)*(r-a)*(r-b)
-        y   += .02*noise(1000*t)
+        y   += .02*@noise(1000*t)
         y   /= (t*w*.0015+.1)
         y2  /= (t*w*.0020+.1)
         y3  /= (t*w*.0025+.1)
@@ -75,7 +67,7 @@ class Buffers
         tt = 1-t
         a  = Math.sin(t*w*.5)*Math.log(t+0.3)*tt
         b  = Math.sin(t*w)*t*.4
-        c  = fmod(tt,.075)*Math.cos(Math.pow(tt,3)*w)*t*2
+        c  = @fmod(tt,.075)*Math.cos(Math.pow(tt,3)*w)*t*2
         y  = (a+b+c)*tt
 
     bell: (t, w) =>
@@ -114,8 +106,8 @@ class Buffers
 
     drum2: (t, w) => 
 
-        y  = 0.5*noise(32000*t)*Math.exp(-32*t)
-        y += 2.0*noise(3200*t)*Math.exp(-32*t)
+        y  = 0.5*@noise(32000*t)*Math.exp(-32*t)
+        y += 2.0*@noise(3200*t)*Math.exp(-32*t)
         y += 3.0*Math.cos(400*(1-t)*t)*Math.exp(-4*t)
 
     drum3: (t, w) =>
@@ -137,9 +129,9 @@ class Buffers
 
     organ2: (t, w) =>
 
-        f = fmod(t,6.2831/w)*w/6.2831
+        f = @fmod(t,6.2831/w)*w/6.2831
         a = .7+.3*Math.cos(6.2831*t)
-        y = -1.0+2*saw(f,a)
+        y = -1.0+2*@saw(f,a)
         y = y*y*y
         y = 15*y*t*Math.exp(-5*t)
 
@@ -148,19 +140,19 @@ class Buffers
         a1 = .5+.5*Math.cos(0+t*12)
         a2 = .5+.5*Math.cos(1+t*8)
         a3 = .5+.5*Math.cos(2+t*4)
-        y  = saw(.2500*w*t,a1)*Math.exp(-2*t)
-        y += saw(.1250*w*t,a2)*Math.exp(-3*t)
-        y += saw(.0625*w*t,a3)*Math.exp(-4*t)
+        y  = @saw(.2500*w*t,a1)*Math.exp(-2*t)
+        y += @saw(.1250*w*t,a2)*Math.exp(-3*t)
+        y += @saw(.0625*w*t,a3)*Math.exp(-4*t)
 
         y *= .8+.2*Math.cos(64*t)
 
     organ4: (t, w) =>
 
         f  = 0.001*(Math.cos(5*t))
-        y  = 1.0*(saw((1.00+f)*0.1*w*t,1)-0.5)
-        y += 0.7*(saw((2.01+f)*0.1*w*t,1)-0.5)
-        y += 0.5*(saw((4.02+f)*0.1*w*t,1)-0.5)
-        y += 0.2*(saw((8.02+f)*0.1*w*t,1)-0.5)
+        y  = 1.0*(@saw((1.00+f)*0.1*w*t,1)-0.5)
+        y += 0.7*(@saw((2.01+f)*0.1*w*t,1)-0.5)
+        y += 0.5*(@saw((4.02+f)*0.1*w*t,1)-0.5)
+        y += 0.2*(@saw((8.02+f)*0.1*w*t,1)-0.5)
         y *= 20*t*Math.exp(-4*t)
         y *= 0.9+0.1*Math.cos(40*t)
         
