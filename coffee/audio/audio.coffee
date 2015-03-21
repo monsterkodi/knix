@@ -16,8 +16,8 @@ class Audio
 
         Timeline.menu()
         Keyboard.menu()
+        Toy.menu()
         ADSR.menu()
-        # Tracker.menu()
         Ramp.menu()
         Envelope.menu() 
         Range.menu()

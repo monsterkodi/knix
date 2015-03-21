@@ -23,6 +23,7 @@ module.exports = (grunt) ->
                     'audio':    ['./coffee/audio/audio.coffee', './coffee/audio/audiowindow.coffee', './coffee/audio/*.coffee']
                     'tracker':  ['./coffee/audio/tracker/tracker.coffee', './coffee/audio/tracker/trackcell.coffee', './coffee/audio/tracker/*.coffee']
                     'timeline': ['./coffee/audio/timeline/timeline.coffee', './coffee/audio/timeline/*.coffee']
+                    'toy':      ['./coffee/audio/toy/toy.coffee', './coffee/audio/toy/*.coffee']
                     'main':     ['./coffee/test.coffee', './coffee/main.coffee']
 
         salt:
