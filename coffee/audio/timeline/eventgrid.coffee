@@ -123,9 +123,7 @@ class EventGrid extends Widget
         c
 
     noteRelease: (note) =>
-        log note
         for c in @activeCells
-            log c.config.noteName
             if c.config.noteName == note.noteName
                 c.setWidth Math.max(@timeposx - c.relPos().x, 1)
                 @activeCells.splice(@activeCells.indexOf(c), 1)

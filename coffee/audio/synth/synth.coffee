@@ -10,8 +10,6 @@
 
 class Synth extends AudioWindow
     
-    @instrumentNames = ["piano1", "piano2", "spacepiano", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
-
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
@@ -73,8 +71,8 @@ class Synth extends AudioWindow
                 type     : 'spinner'
                 class    : 'instrument'
                 tooltip  : 'instrument'
-                value    : Synth.instrumentNames[0]
-                values   : Synth.instrumentNames
+                value    : Instruments.names[0]
+                values   : Instruments.names
             ,
                 type     : 'button'
                 text     : 'trigger'
@@ -87,20 +85,15 @@ class Synth extends AudioWindow
         @connect 'gain:onValue',       @setGain
         @connect 'duration:onValue',   @setDuration
         @connect 'note:onValue',       @onNoteValue
-        @connect 'instrument:onValue', @onInstrument
+        @connect 'instrument:onValue', @instruments.setInstrument
         
         @setDuration   @config.duration
         @setGain       @config.gain
-        
         @
             
     setGain:      (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
     setDuration:  (v) => @config.duration = _.value v
     onNoteValue:  (v) => log _.value v
-    onInstrument: (v) =>
-        log _.value v
-        @instruments.setInstrument _.value v
-        log 'done'
 
     note: (event) =>
         if event.detail.event == 'trigger'
@@ -109,8 +102,6 @@ class Synth extends AudioWindow
     onTrigger: (event) => @playNote { event: 'trigger', noteName: @getChild('note').config.value }
         
     playNote: (note) =>
-        log note
-    
         audioBuffer = @instruments.createAudioBufferForNoteIndex Keyboard.noteIndex note.noteName
 
         node = Audio.context.createBufferSource()
@@ -131,7 +122,7 @@ class Synth extends AudioWindow
     @menu: =>
 
         @menuButton
-            text   : 'Toy'
+            text   : 'Synth'
             icon   : 'fa-database'
-            action : -> new Toy
+            action : -> new Synth
                             center: true

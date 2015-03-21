@@ -20,8 +20,7 @@ class Buffers
             sampleRate : 44100
             duration   : 1
             
-        numNotes = Keyboard.numNotes()
-        log numNotes
+        numNotes      = Keyboard.numNotes()
         @samples      = new Array(numNotes)
         @sampleLength = @config.duration*@config.sampleRate
         @isr          = 1.0/@config.sampleRate
@@ -31,14 +30,11 @@ class Buffers
         @
 
     createAudioBufferForNoteIndex: (noteIndex) =>
-        log noteIndex
         audioBuffer = Audio.context.createBuffer 1, @sampleLength, @config.sampleRate
         buffer = audioBuffer.getChannelData 0
         sample = @samples[noteIndex]
-        log 'copy'
         for i in [0...@sampleLength]
             buffer[i] = sample[i]
-        log 'done'
         audioBuffer
         
     fmod:  (x,y)   => x%y

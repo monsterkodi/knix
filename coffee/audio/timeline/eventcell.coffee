@@ -37,8 +37,8 @@ class EventCell extends Widget
     onDragSize:  (drag) => @
         # log 'onDragSize', drag.border
     onMoveStart: (drag, event) => 
-        @getParent().clearDeltas()            
-        if not event.shiftKey
+        @getParent().clearDeltas()  
+        if not event.shiftKey and @getWindow().config.editMode == 'single'
             knix.deselectAll()
         @elem.addClassName 'selected'            
 

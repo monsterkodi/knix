@@ -10,6 +10,8 @@
 
 class Instruments extends Buffers
 
+    @names = ["piano1", "piano2", "spacepiano", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
+
     constructor: (cfg, defs) -> @init cfg, defs
 
     init: (cfg, defs) =>
@@ -17,16 +19,24 @@ class Instruments extends Buffers
         super cfg, defs
         @
 
-    setInstrument: (instrumentName='piano1') =>
-        func = @[instrumentName]
+    setInstrument: (v) =>
+        func = @[_.value(v)]
         # log @samples.length
         for s in [0...@samples.length]
             n = Keyboard.allNoteNames()[s]
             f = Keyboard.allNotes()[n]
             w = 2.0 * Math.PI * f
-            # log instrumentName, s, n, w, f
+            # log _.value(v), s, n, w, f
             for i in [0...@sampleLength]
                 @samples[s][i] = func i*@isr, w
+
+    ###
+    00000000   000   0000000   000   000   0000000 
+    000   000  000  000   000  0000  000  000   000
+    00000000   000  000000000  000 0 000  000   000
+    000        000  000   000  000  0000  000   000
+    000        000  000   000  000   000   0000000 
+    ###
 
     piano1: (t, w) => 
         
@@ -62,7 +72,7 @@ class Instruments extends Buffers
         y3  /= (t*w*.0025+.1)
         y    = (y+y2+y3)/3
 
-    spacepiano: (t, w) =>
+    piano3: (t, w) =>
         
         tt = 1-t
         a  = Math.sin(t*w*.5)*Math.log(t+0.3)*tt
@@ -70,54 +80,14 @@ class Instruments extends Buffers
         c  = @fmod(tt,.075)*Math.cos(Math.pow(tt,3)*w)*t*2
         y  = (a+b+c)*tt
 
-    bell: (t, w) =>
-
-        y  = 0.100*Math.exp( -t/1.000 )*Math.sin( 0.56*w*t )
-        y += 0.067*Math.exp( -t/0.900 )*Math.sin( 0.56*w*t )
-        y += 0.100*Math.exp( -t/0.650 )*Math.sin( 0.92*w*t )
-        y += 0.180*Math.exp( -t/0.550 )*Math.sin( 0.92*w*t )
-        y += 0.267*Math.exp( -t/0.325 )*Math.sin( 1.19*w*t )
-        y += 0.167*Math.exp( -t/0.350 )*Math.sin( 1.70*w*t )
-        y += 0.146*Math.exp( -t/0.250 )*Math.sin( 2.00*w*t )
-        y += 0.133*Math.exp( -t/0.200 )*Math.sin( 2.74*w*t )
-        y += 0.133*Math.exp( -t/0.150 )*Math.sin( 3.00*w*t )
-        y += 0.100*Math.exp( -t/0.100 )*Math.sin( 3.76*w*t )
-        y += 0.133*Math.exp( -t/0.075 )*Math.sin( 4.07*w*t )
-        y
-
-    guitar: (t, w) =>
-
-        f  =     Math.cos(0.251*w*t)
-        y  = 0.5*Math.cos(1.0*w*t+3.14*f)*Math.exp(-0.0007*w*t)
-        y += 0.2*Math.cos(2.0*w*t+3.14*f)*Math.exp(-0.0009*w*t)
-        y += 0.2*Math.cos(4.0*w*t+3.14*f)*Math.exp(-0.0016*w*t)
-        y += 0.1*Math.cos(8.0*w*t+3.14*f)*Math.exp(-0.0020*w*t)
-        y *= 0.9 + 0.1*Math.cos(70.0*t)
-        y  = 2.0*y*Math.exp(-22.0*t) + y
-
-    flute: (t, w) =>
-
-        y  = 6.0*t*Math.exp( -2*t )*Math.sin( w*t )
-        y *= .8+.2*Math.cos(16*t)
-
-    drum1: (t, w) =>
-
-        y = Math.max(-1.0,Math.min(1.0,8.0*Math.sin(3000*t*Math.exp(-6*t))))
-
-    drum2: (t, w) => 
-
-        y  = 0.5*@noise(32000*t)*Math.exp(-32*t)
-        y += 2.0*@noise(3200*t)*Math.exp(-32*t)
-        y += 3.0*Math.cos(400*(1-t)*t)*Math.exp(-4*t)
-
-    drum3: (t, w) =>
-
-        f = 1000-2500*t
-        y = Math.sin(f*t)
-        y += .2*Math.random()
-        y *= Math.exp(-12*t)
-        y *= 8
-
+    ###
+     0000000   00000000    0000000    0000000   000   000
+    000   000  000   000  000        000   000  0000  000
+    000   000  0000000    000  0000  000000000  000 0 000
+    000   000  000   000  000   000  000   000  000  0000
+     0000000   000   000   0000000   000   000  000   000
+    ###
+    
     organ1: (t, w) =>
 
         y  = .6 * Math.cos(w*t)   * Math.exp(-4*t)
@@ -156,6 +126,94 @@ class Instruments extends Buffers
         y *= 20*t*Math.exp(-4*t)
         y *= 0.9+0.1*Math.cos(40*t)
         
+    ###
+    0000000    00000000  000      000    
+    000   000  000       000      000    
+    0000000    0000000   000      000    
+    000   000  000       000      000    
+    0000000    00000000  0000000  0000000
+    ###
+        
+    bell: (t, w) =>
+
+        y  = 0.100*Math.exp( -t/1.000 )*Math.sin( 0.56*w*t )
+        y += 0.067*Math.exp( -t/0.900 )*Math.sin( 0.56*w*t )
+        y += 0.100*Math.exp( -t/0.650 )*Math.sin( 0.92*w*t )
+        y += 0.180*Math.exp( -t/0.550 )*Math.sin( 0.92*w*t )
+        y += 0.267*Math.exp( -t/0.325 )*Math.sin( 1.19*w*t )
+        y += 0.167*Math.exp( -t/0.350 )*Math.sin( 1.70*w*t )
+        y += 0.146*Math.exp( -t/0.250 )*Math.sin( 2.00*w*t )
+        y += 0.133*Math.exp( -t/0.200 )*Math.sin( 2.74*w*t )
+        y += 0.133*Math.exp( -t/0.150 )*Math.sin( 3.00*w*t )
+        y += 0.100*Math.exp( -t/0.100 )*Math.sin( 3.76*w*t )
+        y += 0.133*Math.exp( -t/0.075 )*Math.sin( 4.07*w*t )
+        y
+
+    ###
+     0000000  000000000  00000000   000  000   000   0000000 
+    000          000     000   000  000  0000  000  000      
+    0000000      000     0000000    000  000 0 000  000  0000
+         000     000     000   000  000  000  0000  000   000
+    0000000      000     000   000  000  000   000   0000000 
+    ###
+
+    guitar: (t, w) =>
+
+        f  =     Math.cos(0.251*w*t)
+        y  = 0.5*Math.cos(1.0*w*t+3.14*f)*Math.exp(-0.0007*w*t)
+        y += 0.2*Math.cos(2.0*w*t+3.14*f)*Math.exp(-0.0009*w*t)
+        y += 0.2*Math.cos(4.0*w*t+3.14*f)*Math.exp(-0.0016*w*t)
+        y += 0.1*Math.cos(8.0*w*t+3.14*f)*Math.exp(-0.0020*w*t)
+        y *= 0.9 + 0.1*Math.cos(70.0*t)
+        y  = 2.0*y*Math.exp(-22.0*t) + y
+
+    ###
+    00000000  000      000   000  000000000  00000000
+    000       000      000   000     000     000     
+    000000    000      000   000     000     0000000 
+    000       000      000   000     000     000     
+    000       0000000   0000000      000     00000000
+    ###
+
+    flute: (t, w) =>
+
+        y  = 6.0*t*Math.exp( -2*t )*Math.sin( w*t )
+        y *= .8+.2*Math.cos(16*t)
+
+    ###
+    0000000    00000000   000   000  00     00
+    000   000  000   000  000   000  000   000
+    000   000  0000000    000   000  000000000
+    000   000  000   000  000   000  000 0 000
+    0000000    000   000   0000000   000   000
+    ###
+    
+    drum1: (t, w) =>
+
+        y = Math.max(-1.0,Math.min(1.0,8.0*Math.sin(3000*t*Math.exp(-6*t))))
+
+    drum2: (t, w) => 
+
+        y  = 0.5*@noise(32000*t)*Math.exp(-32*t)
+        y += 2.0*@noise(3200*t)*Math.exp(-32*t)
+        y += 3.0*Math.cos(400*(1-t)*t)*Math.exp(-4*t)
+
+    drum3: (t, w) =>
+
+        f = 1000-2500*t
+        y = Math.sin(f*t)
+        y += .2*Math.random()
+        y *= Math.exp(-12*t)
+        y *= 8
+
+    ###
+    00000000  00     00
+    000       000   000
+    000000    000000000
+    000       000 0 000
+    000       000   000
+    ###
+
     fm1: (t, w) =>
 
         k0 = 0.5
@@ -198,7 +256,7 @@ class Instruments extends Buffers
 
         a0 = -0.93 * t
         b1 = 1.0 - a0
-        y = b1 * y0 + a0 * y
+        y = b1 * y0
 
         exp2y = Math.exp(2.0 * y)
         y = (exp2y - 1.0) / (exp2y + 1.0)
