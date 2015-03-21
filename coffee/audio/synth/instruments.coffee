@@ -10,25 +10,24 @@
 
 class Instruments extends Buffers
 
-    @names = ["piano1", "piano2", "spacepiano", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
+    @names = ["piano1", "piano2", "piano3", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
 
     constructor: (cfg, defs) -> @init cfg, defs
 
     init: (cfg, defs) =>
-        
         super cfg, defs
         @
 
     setInstrument: (v) =>
-        func = @[_.value(v)]
-        # log @samples.length
-        for s in [0...@samples.length]
-            n = Keyboard.allNoteNames()[s]
-            f = Keyboard.allNotes()[n]
-            w = 2.0 * Math.PI * f
-            # log _.value(v), s, n, w, f
-            for i in [0...@sampleLength]
-                @samples[s][i] = func i*@isr, w
+        if @instrument != _.value(v)
+            @instrument = _.value(v)
+            func = @[@instrument]
+            for s in [0...@samples.length]
+                n = Keyboard.allNoteNames()[s]
+                f = Keyboard.allNotes()[n]
+                w = 2.0 * Math.PI * f
+                for i in [0...@sampleLength]
+                    @samples[s][i] = func i*@isr, w
 
     ###
     00000000   000   0000000   000   000   0000000 

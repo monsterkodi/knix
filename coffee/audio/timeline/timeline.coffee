@@ -36,7 +36,6 @@ class Timeline extends Window
                 ,
                     type      : 'sliderspin'
                     class     : 'speed'
-                    hasOutput : false
                     value     : cfg.stepSecs
                     sliderStep : 0.001
                     spinStep   : 0.001
@@ -103,6 +102,9 @@ class Timeline extends Window
             secs  :  0  
             
         @elem.style.maxWidth = '%dpx'.fmt(@config.steps * @config.stepWidth + 38)            
+        
+        @getChild('quantise').setState 'on'    
+        
         @
     
     ###
@@ -147,7 +149,6 @@ class Timeline extends Window
             type      : 'toggle'
             class     : 'quantise'
             configKey : 'grid.quantiser.state'
-            state     : 'on'
             keys      : ['q']
             states    : ['off', 'on']
             icons     : ['fa-square-o', 'fa-check-square']

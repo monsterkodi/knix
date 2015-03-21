@@ -16,6 +16,7 @@ class Synth extends AudioWindow
         
         cfg = _.def cfg,
             type         : 'Synth'
+            instrument   : Instruments.names[0]
             noteName     : 'C4'
             height       : 330 
             duration     : 0.2
@@ -52,6 +53,13 @@ class Synth extends AudioWindow
                             width: '100%'
                     ]
             ,
+                type       : 'canvas'
+                class      : 'synth_canvas'
+                style      :
+                    width  : '100%'
+                    height : '100%'
+                    marginBottom: '6px'
+            ,
                 type     : 'sliderspin'
                 class    : 'duration'
                 tooltip  : 'duration'
@@ -71,7 +79,7 @@ class Synth extends AudioWindow
                 type     : 'spinner'
                 class    : 'instrument'
                 tooltip  : 'instrument'
-                value    : Instruments.names[0]
+                value    : cfg.instrument
                 values   : Instruments.names
             ,
                 type     : 'button'
@@ -80,12 +88,12 @@ class Synth extends AudioWindow
             ]
 
         @instruments = new Instruments()
+        @canvas = @getChild 'canvas'
 
         @connect 'trigger:trigger',    @onTrigger
         @connect 'gain:onValue',       @setGain
         @connect 'duration:onValue',   @setDuration
-        @connect 'note:onValue',       @onNoteValue
-        @connect 'instrument:onValue', @instruments.setInstrument
+        @connect 'instrument:onValue', @setInstrument
         
         @setDuration   @config.duration
         @setGain       @config.gain
@@ -93,7 +101,45 @@ class Synth extends AudioWindow
             
     setGain:      (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
     setDuration:  (v) => @config.duration = _.value v
-    onNoteValue:  (v) => log _.value v
+    setInstrument: (v) => 
+
+        @instruments.setInstrument v
+        
+        cvs = @canvas.elem
+        ctx = cvs.getContext("2d")
+        cvw = cvs.getWidth()
+        cvh = cvs.getHeight()
+
+        ctx.lineWidth = 1
+
+        ctx.fillStyle   = StyleSwitch.colors.analyser
+        ctx.fillRect    0, 0, cvw, cvh
+        ctx.strokeStyle = 'rgb(0,0,0)'
+        ctx.strokeRect  0, 0, cvw, cvh
+
+        ctx.strokeStyle = StyleSwitch.colors.analyser_trace
+        ctx.beginPath()
+
+        xd = @getWidth() / @instruments.sampleLength
+
+        x = 0
+
+        sampleIndex = Keyboard.noteIndex 'C4'
+
+        # for i in [0..10]
+        #     log @instruments.samples[sampleIndex][i*10]
+            
+        for i in [0...@instruments.sampleLength]
+            v = @instruments.samples[sampleIndex][i]*0.1
+            y = (0.5 + v) * cvh
+            if i == 0
+                ctx.moveTo(x, y)
+            else
+                ctx.lineTo(x, y)
+
+            x += xd
+
+        ctx.stroke()
 
     note: (event) =>
         if event.detail.event == 'trigger'
@@ -110,14 +156,13 @@ class Synth extends AudioWindow
         node.state = node.noteOn
         node.start 0
                                                                     
-    # sizeWindow: =>
-    #     super
-    #     if @pad?
-    #         content = @getChild 'content'
-    #         content.setHeight @contentHeight()
-    #         height = content.innerHeight() - 214
-    #         width  = content.innerWidth() - 20
-    #         @pad.setSize width, height            
+    sizeWindow: =>
+        super
+        content    = @getChild 'content'
+        content.setHeight @contentHeight()
+        height     = content.innerHeight() - 180
+        width      = content.innerWidth() - 20
+        @canvas?.resize width, height
                         
     @menu: =>
 

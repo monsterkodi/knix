@@ -19,38 +19,70 @@ class Test
     ###
 
     @synth: -> 
-        k = new Keyboard
+        k1 = new Keyboard
             x : 20
             y : 50
             octave: 4
 
-        t = new Synth
-            noteName     : 'C6'
-            x            : 400
+        k2 = new Keyboard
+            x : 20
+            y : 430
+            octave: 4
+
+        l1 = new Timeline
+            x      : 360
+            y      : 50
+            steps  : 16 
+            height : 350
+
+        l2 = new Timeline
+            x      : 360
+            y      : 430
+            steps  : 16 
+            height : 350
+
+        s1 = new Synth
+            noteName     : 'C4'
+            x            : 800
             y            : 50
+            instrument   : 'guitar'
+            duration     : 1.0
+
+        s2 = new Synth
+            noteName     : 'C6'
+            x            : 800
+            y            : 430
+            instrument   : 'bell'
             duration     : 0.08
 
         m = new Gain
             master : true
             gain   : 1
-            x      : 800
+            x      : 1200
             y      : 50
-
-        l = new Timeline
-            x      : 400
-            y      : 430
-            height : 500
         
         new Connection
-            source   : k.connector 'note'
-            target   : l.connector 'noteIn'
+            source   : k1.connector 'note'
+            target   : l1.connector 'noteIn'
 
         new Connection
-            source   : l.connector 'noteOut'
-            target   : t.connector 'note'
+            source   : l1.connector 'noteOut'
+            target   : s1.connector 'note'
 
         new Connection
-            source   : t.connector 'audio:out'
+            source   : s1.connector 'audio:out'
+            target   : m.connector 'audio:in'
+
+        new Connection
+            source   : k2.connector 'note'
+            target   : l2.connector 'noteIn'
+
+        new Connection
+            source   : l2.connector 'noteOut'
+            target   : s2.connector 'note'
+
+        new Connection
+            source   : s2.connector 'audio:out'
             target   : m.connector 'audio:in'
 
     ###
@@ -381,7 +413,7 @@ class Test
             parent  : 'menu'
             action  : -> Test.synth()
 
-        Test.synth()
+        # Test.synth()
 
     ###
 
