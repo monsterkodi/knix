@@ -159,7 +159,7 @@ class ADSR extends AudioWindow
             if @voice[i] == undefined
                 @voice[i] = { id : id }
                 return i
-        warn 'no free voice'
+        warning 'no free voice'
         @voice[0] = { id : id }
         0
 

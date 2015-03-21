@@ -28,7 +28,7 @@ class DragSize
         w = e?.getWidget?()
         
         if not w?
-            warn 'no widget?'
+            warning 'no widget?'
             return    
                     
         eventPos = Stage.absPos event

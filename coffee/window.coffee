@@ -387,7 +387,7 @@ class Window extends Widget
             @setPos Stage.absPos event
             @elem.raise()
         else
-            warn 'no elem!'
+            warning 'no elem!'
 
     scrollToBottom : => @content.elem.scrollTop = @content.elem.scrollHeight
     scrollToTop    : => @content.elem.scrollTop = 0

@@ -21,7 +21,7 @@ class Widget
         # log cfg
 
         if not cfg.type?
-            console.warn "NO TYPE?"
+            warning "NO TYPE?"
             cfg.type = 'unknown'
 
         if not cfg.elem?
@@ -168,7 +168,7 @@ class Widget
                     # log 'found connector element', t, e.widget.config[t]
                     if e.widget.config[t] == name or e.widget.config[t]+':'+t == name
                         return e.widget
-            # warn 'no elem with class', name
+            # warning 'no elem with class', name
         error 'connector not found!', name
         undefined
 

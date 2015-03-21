@@ -57,7 +57,7 @@ class Test
 
         m = new Gain
             master : true
-            gain   : 1
+            gain   : 0.5
             x      : 1200
             y      : 50
         
@@ -113,13 +113,13 @@ class Test
             noteName     : 'C6'
             x            : 400
             y            : 50
-            duration     : 0.08
+            duration     : 0.5
             sustainIndex : 8
             vals         : [pos(0,0), pos(.1,1), pos(.2,0), pos(.3,.8), pos(.4,0), pos(.5,.6), pos(.6,.0), pos(.7,.4) , pos(1,0)] 
 
         m = new Gain
             master : true
-            gain   : 1
+            gain   : 0.5
             x      : 800
             y      : 50
 
@@ -290,6 +290,8 @@ class Test
         o1= new Oscillator
             title        : 'high'
             minFrequency : 2000
+            maxFrequency : 12000
+            frequency    : 3000
             x            : 10
             y            : 40
 
@@ -297,7 +299,7 @@ class Test
             title        : 'mid'
             minFrequency : 400
             maxFrequency : 2000
-            freq         : 400
+            frequency    : 400
             x            : 10
             y            : 240
 
@@ -305,42 +307,42 @@ class Test
             title        : 'low'
             minFrequency : 0
             maxFrequency : 400
-            freq         : 333
+            frequency    : 333
             shape        : 'square'
             x            : 10
             y            : 440
 
         g1= new Gain
-            gain    : 0.0
-            x       : 250
+            gain    : 0.1
+            x       : 400
             y       : 40
 
         g2= new Gain
-            gain    : 0.0
-            x       : 250
+            gain    : 0.2
+            x       : 400
             y       : 240
 
         g3= new Gain
             gain    : 0.3
-            x       : 250
+            x       : 400
             y       : 440
 
         an= new Analyser
-            x       : 500
+            x       : 800
             y       : 42
 
         f4= new Filter
-            x       : 1050
+            x       : 1200
             y       : 42
 
         a4= new Analyser
-            x       : 500
+            x       : 800
             y       : 400
 
         gm= new Gain
             master  : true
             gain    : 0.0
-            x       : 1050
+            x       : 1200
             y       : 400
 
         new Connection

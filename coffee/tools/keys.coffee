@@ -35,7 +35,7 @@ class Keys
                     @stopInteractive()
             else if not _.isEmpty @register
                 info 'register key', key, 'for', @register.elem.id
-                warn  'register key', key, 'for', @register.elem.id
+                warning  'register key', key, 'for', @register.elem.id
                 error 'register key', key, 'for', @register.elem.id
                 if @register.elem?
                     @registerKeyForWidget key, @register.widget
