@@ -22,14 +22,21 @@ class Keys
     @onKey: (e) =>
         mods = _.filter([ e.shiftKey and '⇧', e.ctrlKey and '^', e.altKey and '⌥', e.metaKey and '⌘' ]).join('')
         key = mods+e.key
-        # log key
+        log key, @interactive
         if @interactive
             if key == 'Esc'
                 @stopInteractive()
             else if key == 'Backspace'
-                wid.config.keys = []
+                # log 'bs', @register
+                if @register.widget?
+                    info 'unregister keys', @register.widget.config?.keys, 'for', @register.elem.id
+                    @unregisterWidget @register.widget
+                    @register.widget.config?.keys = []
+                    @stopInteractive()
             else if not _.isEmpty @register
-                log 'register key [%s] for element %s'.fmt key, @register.elem.id
+                info 'register key', key, 'for', @register.elem.id
+                warn  'register key', key, 'for', @register.elem.id
+                error 'register key', key, 'for', @register.elem.id
                 if @register.elem?
                     @registerKeyForWidget key, @register.widget
                     @register.elem.removeClassName 'register-key'
@@ -110,7 +117,6 @@ class Keys
     @onMove: (event) => @updateAtPos Stage.absPos event
         
     @updateAtPos: (p) =>
-        # e = document.elementFromPoint event.clientX, event.clientY
         e = Stage.elementAtPos p
         if e?
             wid = e.getWidget().upWidgetWithConfigValue 'keys'
@@ -119,9 +125,8 @@ class Keys
                 if e != @register.elem
                     @register.elem.removeClassName 'register-key' if @register.elem?
                     e.addClassName 'register-key'
-                    @register.elem = e
-                    @register.widget = wid
+                    @register = { elem: e, widget: wid }
                 return
         if @register.elem?
             @register.elem.removeClassName 'register-key'
-            @register.elem = undefined
+            delete @register.elem

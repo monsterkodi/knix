@@ -16,12 +16,12 @@ class Synth extends AudioWindow
         
         cfg = _.def cfg,
             type         : 'Synth'
-            instrument   : Instruments.names[0]
+            instrument   : 'guitar'
             noteName     : 'C4'
             height       : 330 
-            duration     : 0.2
-            minDuration  : 0.0
-            maxDuration  : 10.0
+            duration     : 0.4
+            minDuration  : 0.001
+            maxDuration  : 2.0
             gain         : 0.5
 
         [@gain, cfg] = Audio.gain cfg
@@ -39,17 +39,17 @@ class Synth extends AudioWindow
                     type: 'hbox'
                     children: \
                     [
-                        type      : 'connector'
-                        slot      : 'note'
+                        type    : 'connector'
+                        slot    : 'note'
                     ,
-                        type     : 'spinner'
-                        class    : 'note'
-                        recKey   : 'note' 
-                        tooltip  : 'note'
-                        value    : cfg.noteName
-                        recKey   : 'note'
-                        values   : Keyboard.allNoteNames()
-                        style: 
+                        type    : 'spinner'
+                        class   : 'note'
+                        recKey  : 'note' 
+                        tooltip : 'note'
+                        value   : cfg.noteName
+                        recKey  : 'note'
+                        values  : Keyboard.allNoteNames()
+                        style   : 
                             width: '100%'
                     ]
             ,
@@ -87,11 +87,14 @@ class Synth extends AudioWindow
                 class    : 'trigger'                
             ]
 
-        @instruments = new Instruments()
+        @instruments = new Instruments
+                            duration : cfg.duration
+                            
         @canvas = @getChild 'canvas'
 
         @connect 'trigger:trigger',    @onTrigger
         @connect 'gain:onValue',       @setGain
+        @connect 'note:onValue',       @setNote
         @connect 'duration:onValue',   @setDuration
         @connect 'instrument:onValue', @setInstrument
         
@@ -99,8 +102,13 @@ class Synth extends AudioWindow
         @setGain       @config.gain
         @
             
-    setGain:       (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
-    setDuration:   (v) => @config.duration = _.value v
+    setNote:       (v) => @config.noteName = _.value v; @drawCurve()
+    setGain:       (v) => @config.gain = _.value v; @gain.gain.value = @config.gain
+    setDuration:   (v) => 
+        @config.duration = _.value v
+        @instruments.setDuration v
+        @drawCurve()
+
     setInstrument: (v) => 
         @instruments.setInstrument v
         @drawCurve()
@@ -150,7 +158,7 @@ class Synth extends AudioWindow
 
         x = 0
 
-        sampleIndex = Keyboard.noteIndex 'C4'
+        sampleIndex = Keyboard.noteIndex @config.noteName
             
         for i in [0...@instruments.sampleLength]
             v = @instruments.samples[sampleIndex][i]*0.1

@@ -21,13 +21,22 @@ class Instruments extends Buffers
     setInstrument: (v) =>
         if @instrument != _.value(v)
             @instrument = _.value(v)
-            func = @[@instrument]
-            for s in [0...@samples.length]
-                n = Keyboard.allNoteNames()[s]
-                f = Keyboard.allNotes()[n]
-                w = 2.0 * Math.PI * f
-                for i in [0...@sampleLength]
-                    @samples[s][i] = func i*@isr, w
+            @initInstrument()
+            
+    initInstrument: =>
+        log @instrument
+        func = @[@instrument]
+        for s in [0...@samples.length]
+            n = Keyboard.allNoteNames()[s]
+            f = Keyboard.allNotes()[n]
+            w = 2.0 * Math.PI * f
+            for i in [0...@sampleLength]
+                @samples[s][i] = func i*@isr, w
+
+    setDuration: (v) =>
+        if @config.duration != _.value(v)
+            super
+            @initInstrument()
 
     ###
     00000000   000   0000000   000   000   0000000 

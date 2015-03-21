@@ -11,10 +11,14 @@
 log = -> Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
 dbg = -> Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
 
-error = ->
-    tag 'error'
+info = ->
+    tag 'info'
     Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
 
-warn = ->
+warning = ->
     tag 'warning'
+    Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)
+
+error = ->
+    tag 'error'
     Console.logInfo.apply Console, Array.prototype.slice.call(arguments, 0)

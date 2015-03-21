@@ -20,11 +20,20 @@ class Buffers
             sampleRate : 44100
             duration   : 1
             
-        numNotes      = Keyboard.numNotes()
-        @samples      = new Array(numNotes)
+        @samples = new Array Keyboard.numNotes()
+        
+        @initBuffers()
+        @
+    
+    initBuffers: =>
+        
         @sampleLength = @config.duration*@config.sampleRate
         @isr          = 1.0/@config.sampleRate
-            
+        
+        log @sampleLength
+        @sampleLength = Math.floor @sampleLength
+        log @sampleLength
+        numNotes = Keyboard.numNotes()
         for i in [0...numNotes]
             @samples[i] = new Float32Array @sampleLength
         @
@@ -36,6 +45,10 @@ class Buffers
         for i in [0...@sampleLength]
             buffer[i] = sample[i]
         audioBuffer
+    
+    setDuration: (v) =>
+        @config.duration = _.value(v)
+        @initBuffers()
         
     fmod:  (x,y)   => x%y
     sign:  (x)     => (x>0.0) and 1.0 or -1.0
