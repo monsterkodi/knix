@@ -1,23 +1,23 @@
 ###
 
-000000000   0000000   000   000
-   000     000   000   000 000 
-   000     000   000    00000  
-   000     000   000     000   
-   000      0000000      000   
+ 0000000  000   000  000   000  000000000  000   000
+000        000 000   0000  000     000     000   000
+0000000     00000    000 0 000     000     000000000
+     000     000     000  0000     000     000   000
+0000000      000     000   000     000     000   000
 
 ###
 
-class Toy extends AudioWindow
+class Synth extends AudioWindow
     
-    @presets = ["piano1", "piano2", "spacepiano", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
+    @instrumentNames = ["piano1", "piano2", "spacepiano", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
 
     init: (cfg, defs) =>
         
         cfg = _.def cfg, defs
         
         cfg = _.def cfg,
-            type         : 'Toy'
+            type         : 'Synth'
             noteName     : 'C4'
             height       : 330 
             duration     : 0.2
@@ -30,8 +30,8 @@ class Toy extends AudioWindow
         @audio = @gain
 
         super cfg,
-            title    : 'toy'
-            recKey   : 'toy'
+            title    : 'synth'
+            recKey   : 'synth'
             children : \
             [
                 type     : 'jacks'
@@ -71,35 +71,35 @@ class Toy extends AudioWindow
                 maxValue : 1.0
             ,
                 type     : 'spinner'
-                class    : 'preset'
-                tooltip  : 'preset'
-                value    : Toy.presets[0]
-                values   : Toy.presets
+                class    : 'instrument'
+                tooltip  : 'instrument'
+                value    : Synth.instrumentNames[0]
+                values   : Synth.instrumentNames
             ,
                 type     : 'button'
                 text     : 'trigger'
                 class    : 'trigger'                
             ]
 
-        @buffers = new ToyBuffers()
+        @instruments = new Instruments()
 
         @connect 'trigger:trigger',    @onTrigger
         @connect 'gain:onValue',       @setGain
         @connect 'duration:onValue',   @setDuration
         @connect 'note:onValue',       @onNoteValue
-        @connect 'preset:onValue',     @onPreset
+        @connect 'instrument:onValue', @onInstrument
         
         @setDuration   @config.duration
         @setGain       @config.gain
         
         @
             
-    setGain:     (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
-    setDuration: (v) => @config.duration = _.value v
-    onNoteValue: (v) => log _.value v
-    onPreset:    (v) =>
+    setGain:      (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
+    setDuration:  (v) => @config.duration = _.value v
+    onNoteValue:  (v) => log _.value v
+    onInstrument: (v) =>
         log _.value v
-        @buffers.setPreset _.value v
+        @instruments.setInstrument _.value v
         log 'done'
 
     note: (event) =>
@@ -111,7 +111,7 @@ class Toy extends AudioWindow
     playNote: (note) =>
         log note
     
-        audioBuffer = @buffers.createAudioBufferForNoteIndex Keyboard.noteIndex note.noteName
+        audioBuffer = @instruments.createAudioBufferForNoteIndex Keyboard.noteIndex note.noteName
 
         node = Audio.context.createBufferSource()
         node.buffer = audioBuffer

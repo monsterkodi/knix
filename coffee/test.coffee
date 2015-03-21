@@ -11,20 +11,20 @@
 class Test
 
     ###
-    000000000   0000000   000   000
-       000     000   000   000 000 
-       000     000   000    00000  
-       000     000   000     000   
-       000      0000000      000   
+     0000000  000   000  000   000  000000000  000   000
+    000        000 000   0000  000     000     000   000
+    0000000     00000    000 0 000     000     000000000
+         000     000     000  0000     000     000   000
+    0000000      000     000   000     000     000   000
     ###
 
-    @toy: -> 
+    @synth: -> 
         k = new Keyboard
             x : 20
             y : 50
             octave: 4
 
-        t = new Toy
+        t = new Synth
             noteName     : 'C6'
             x            : 400
             y            : 50
@@ -377,11 +377,11 @@ class Test
 
         e = knix.get
             type    : 'button'
-            text    : 'toy'
+            text    : 'synth'
             parent  : 'menu'
-            action  : -> Test.toy()
+            action  : -> Test.synth()
 
-        Test.toy()
+        Test.synth()
 
     ###
 

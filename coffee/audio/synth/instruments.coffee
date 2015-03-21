@@ -1,14 +1,14 @@
 ###
 
-000000000   0000000   000   000  0000000    000   000  00000000  00000000  00000000  00000000    0000000
-   000     000   000   000 000   000   000  000   000  000       000       000       000   000  000     
-   000     000   000    00000    0000000    000   000  000000    000000    0000000   0000000    0000000 
-   000     000   000     000     000   000  000   000  000       000       000       000   000       000
-   000      0000000      000     0000000     0000000   000       000       00000000  000   000  0000000 
+000  000   000   0000000  000000000  00000000   000   000  00     00  00000000  000   000  000000000   0000000
+000  0000  000  000          000     000   000  000   000  000   000  000       0000  000     000     000     
+000  000 0 000  0000000      000     0000000    000   000  000000000  0000000   000 0 000     000     0000000 
+000  000  0000       000     000     000   000  000   000  000 0 000  000       000  0000     000          000
+000  000   000  0000000      000     000   000   0000000   000   000  00000000  000   000     000     0000000 
 
 ###
 
-class ToyBuffers extends Buffers
+class Instruments extends Buffers
 
     constructor: (cfg, defs) -> @init cfg, defs
 
@@ -17,14 +17,14 @@ class ToyBuffers extends Buffers
         super cfg, defs
         @
 
-    setPreset: (preset='piano1') =>
-        func = @[preset]
+    setInstrument: (instrumentName='piano1') =>
+        func = @[instrumentName]
         # log @samples.length
         for s in [0...@samples.length]
             n = Keyboard.allNoteNames()[s]
             f = Keyboard.allNotes()[n]
             w = 2.0 * Math.PI * f
-            # log preset, s, n, w, f
+            # log instrumentName, s, n, w, f
             for i in [0...@sampleLength]
                 @samples[s][i] = func i*@isr, w
 
@@ -120,11 +120,11 @@ class ToyBuffers extends Buffers
 
     organ1: (t, w) =>
 
-        y  = .6*Math.cos(w*t)*Math.exp(-4*t)
-        y += .4*Math.cos(2*w*t)*Math.exp(-3*t)
-        y += .01*Math.cos(4*w*t)*Math.exp(-1*t)
+        y  = .6 * Math.cos(w*t)   * Math.exp(-4*t)
+        y += .4 * Math.cos(2*w*t) * Math.exp(-3*t)
+        y += .01* Math.cos(4*w*t) * Math.exp(-1*t)
         y = y*y*y + y*y*y*y*y + y*y
-        a = .5+.5*Math.cos(8*t); y = sin(y*a*3.14)
+        a = .5+.5*Math.cos(8*t); y = Math.sin(y*a*3.14)
         y *= 30*t*Math.exp(-.1*t)
 
     organ2: (t, w) =>
@@ -169,7 +169,7 @@ class ToyBuffers extends Buffers
 
         y0 = Math.sin(a0 * Math.sin(k0 * w * t) + Math.sin(a1 * Math.sin(k1 * w * t)))
         y1 = (y0 * y0 - k2) * Math.sin(k3 * w * t)
-        y2 = 0.5 * Math.random() * log(8.0 * t)
+        y2 = 0.5 * Math.random() * Math.log(8.0 * t)
 
         y = 0.3333 * (y0 + y1 + y2)
         y *= 3.0 * Math.exp(-1.0 * t) * Math.exp(-2.0 * t)
@@ -179,7 +179,7 @@ class ToyBuffers extends Buffers
 
     fm2: (t, w) =>
 
-        a = Math.sin(Math.sin(0.2 * w * t) - tan(0.5 * w * t))
+        a = Math.sin(Math.sin(0.2 * w * t) - Math.tan(0.5 * w * t))
         b = Math.sin(Math.sin(0.2 * w * t) + Math.sin(2.0 * w * t))
         c = Math.sin(Math.sin(0.4 * w * t) - Math.sin(2.0 * w * t))
         d = 1.2 * Math.random()
@@ -193,7 +193,7 @@ class ToyBuffers extends Buffers
 
     fm3: (t, w) =>
 
-        wm = tan(0.025 * w * t) + 2.0 * Math.sin(w * t) + Math.random()
+        wm = Math.tan(0.025 * w * t) + 2.0 * Math.sin(w * t) + Math.random()
         y0 = Math.sin(wm * t)
 
         a0 = -0.93 * t
