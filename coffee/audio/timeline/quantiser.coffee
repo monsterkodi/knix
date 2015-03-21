@@ -22,8 +22,8 @@ class Quantiser
         @ 
         
     moveCellTo: (cell, p) =>
-            
         c = cell.config
+        # log c.x, p
         oldPos = pos(c.x, c.y)
         d = p.minus oldPos
         p.add(c.delta) if c.delta?

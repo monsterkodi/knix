@@ -111,7 +111,7 @@ class DragSize
 
     sizeMove: (drag, event) =>
         
-        @config.onSize(drag, event) if @config.onSize?
+        # @config.onSize(drag, event) if @config.onSize?
 
         w    = drag.target.widget
         wpos = w.absPos()
@@ -129,6 +129,8 @@ class DragSize
                 @sizeWidget drag, sw, dx, dy
         else
             @sizeWidget drag, w, dx, dy
+            
+        @config.onSize(drag, event) if @config.onSize?
         event.stop()
 
     sizeWidget: (drag, w, dx, dy) =>

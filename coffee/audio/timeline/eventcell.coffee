@@ -25,24 +25,22 @@ class EventCell extends Widget
             moveStart : @onMoveStart
             moveStop  : @onMoveStop
             onMove    : @onDragMove
+            onSize    : @onDragSize
             doMove    : false
-            elem      : @elem
-        
-        @connect 'mousedown', @onDown
+            elem      : @elem        
         @
 
     minWidth: => return 1    
 
-    onMoveStart: (drag) => @elem.addClassName 'selected'; @getParent().clearDeltas()
     onMoveStop:  (drag) => @getParent().clearDeltas()
     onDragMove:  (drag) => @getParent().moveCellsBy @getParent().selectedCells(), drag.delta.x, drag.delta.y
-
-    onDown: (event) =>
-        if event.shiftKey
-            if @elem.hasClassName 'selected'
-                @elem.removeClassName 'selected'
-                return
-            @elem.addClassName 'selected'
+    onDragSize:  (drag) => @
+        # log 'onDragSize', drag.border
+    onMoveStart: (drag, event) => 
+        @getParent().clearDeltas()            
+        if not event.shiftKey
+            knix.deselectAll()
+        @elem.addClassName 'selected'            
 
     trigger: => log @config.note
     release: => log @config.note

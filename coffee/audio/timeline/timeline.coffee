@@ -147,6 +147,7 @@ class Timeline extends Window
             type      : 'toggle'
             class     : 'quantise'
             configKey : 'grid.quantiser.state'
+            state     : 'on'
             keys      : ['q']
             states    : ['off', 'on']
             icons     : ['fa-square-o', 'fa-check-square']
@@ -154,14 +155,14 @@ class Timeline extends Window
             type      : 'toggle'
             class     : 'quantiseSteps'
             configKey : 'grid.quantiser.quantiseSteps'
-            state     : 1
+            state     : 2
             states    : [1, 2, 4, 8]
             icons     : ['fa-circle-o', 'fa-dot-circle-o', 'fa-bullseye', 'fa-circle']
         ,
             type      : 'toggle'
             class     : 'quantiseMode'
             configKey : 'grid.quantiser.quantiseMode'
-            state     : 'start'
+            state     : 'start length'
             states    : ['length', 'start', 'start length']
             icons     : ['fa-minus-square', 'fa-plus-square', 'fa-h-square']
         ,
