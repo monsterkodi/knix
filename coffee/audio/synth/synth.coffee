@@ -99,48 +99,12 @@ class Synth extends AudioWindow
         @setGain       @config.gain
         @
             
-    setGain:      (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
-    setDuration:  (v) => @config.duration = _.value v
+    setGain:       (v) => @config.gain     = _.value v; @gain.gain.value = @config.gain
+    setDuration:   (v) => @config.duration = _.value v
     setInstrument: (v) => 
-
         @instruments.setInstrument v
+        @drawCurve()
         
-        cvs = @canvas.elem
-        ctx = cvs.getContext("2d")
-        cvw = cvs.getWidth()
-        cvh = cvs.getHeight()
-
-        ctx.lineWidth = 1
-
-        ctx.fillStyle   = StyleSwitch.colors.analyser
-        ctx.fillRect    0, 0, cvw, cvh
-        ctx.strokeStyle = 'rgb(0,0,0)'
-        ctx.strokeRect  0, 0, cvw, cvh
-
-        ctx.strokeStyle = StyleSwitch.colors.analyser_trace
-        ctx.beginPath()
-
-        xd = @getWidth() / @instruments.sampleLength
-
-        x = 0
-
-        sampleIndex = Keyboard.noteIndex 'C4'
-
-        # for i in [0..10]
-        #     log @instruments.samples[sampleIndex][i*10]
-            
-        for i in [0...@instruments.sampleLength]
-            v = @instruments.samples[sampleIndex][i]*0.1
-            y = (0.5 + v) * cvh
-            if i == 0
-                ctx.moveTo(x, y)
-            else
-                ctx.lineTo(x, y)
-
-            x += xd
-
-        ctx.stroke()
-
     note: (event) =>
         if event.detail.event == 'trigger'
             @playNote event.detail
@@ -163,6 +127,42 @@ class Synth extends AudioWindow
         height     = content.innerHeight() - 180
         width      = content.innerWidth() - 20
         @canvas?.resize width, height
+        @drawCurve()
+        
+    drawCurve: =>
+        
+        cvs = @canvas.elem
+        ctx = cvs.getContext("2d")
+        cvw = cvs.getWidth()
+        cvh = cvs.getHeight()
+
+        ctx.lineWidth = 1
+
+        ctx.fillStyle   = StyleSwitch.colors.synth_canvas
+        ctx.fillRect    0, 0, cvw, cvh
+        ctx.strokeStyle = 'rgb(0,0,0)'
+        ctx.strokeRect  0, 0, cvw, cvh
+
+        ctx.strokeStyle = StyleSwitch.colors.synth_trace
+        ctx.beginPath()
+
+        xd = @getWidth() / @instruments.sampleLength
+
+        x = 0
+
+        sampleIndex = Keyboard.noteIndex 'C4'
+            
+        for i in [0...@instruments.sampleLength]
+            v = @instruments.samples[sampleIndex][i]*0.1
+            y = (0.5 + v) * cvh
+            if i == 0
+                ctx.moveTo(x, y)
+            else
+                ctx.lineTo(x, y)
+
+            x += xd
+
+        ctx.stroke()        
                         
     @menu: =>
 

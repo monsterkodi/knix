@@ -35,7 +35,7 @@ class StyleSwitch
     @initColors: =>
         
         colors = document.createElement "div"
-        for cn in ['analyser', 'analyser_trace', 'analyser_trigger']
+        for cn in ['analyser', 'analyser_trace', 'analyser_trigger', 'synth_canvas', 'synth_trace']
             colors.setAttribute 'class', cn
             @colors[cn] = window.getComputedStyle(colors).color
 
