@@ -18,6 +18,7 @@ Widget = (function() {
     this.addMovement = __bind(this.addMovement, this);
     this.stretchWidth = __bind(this.stretchWidth, this);
     this.absCenter = __bind(this.absCenter, this);
+    this.scrollPos = __bind(this.scrollPos, this);
     this.absPos = __bind(this.absPos, this);
     this.relPos = __bind(this.relPos, this);
     this.maxHeight = __bind(this.maxHeight, this);
@@ -44,9 +45,12 @@ Widget = (function() {
     this.hide = __bind(this.hide, this);
     this.show = __bind(this.show, this);
     this.clear = __bind(this.clear, this);
+    this.isWindow = __bind(this.isWindow, this);
     this.dump = __bind(this.dump, this);
     this.onTooltip = __bind(this.onTooltip, this);
     this.close = __bind(this.close, this);
+    this.getState = __bind(this.getState, this);
+    this.prepareState = __bind(this.prepareState, this);
     this.allChildren = __bind(this.allChildren, this);
     this.children = __bind(this.children, this);
     this.getChild = __bind(this.getChild, this);
@@ -77,8 +81,14 @@ Widget = (function() {
     this.initConnections = __bind(this.initConnections, this);
     this.initEvents = __bind(this.initEvents, this);
     this.init = __bind(this.init, this);
+    this.postInit = __bind(this.postInit, this);
     this.init(cfg, defs);
+    this.postInit();
   }
+
+  Widget.prototype.postInit = function() {
+    return this;
+  };
 
   Widget.prototype.init = function(cfg, defs) {
     var a, clss, k, s, style, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
@@ -240,7 +250,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 137,
+        "line": 139,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -250,7 +260,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 139,
+        "line": 141,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -260,7 +270,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 141,
+        "line": 143,
         "args": ["signal", "slot"],
         "method": "connect",
         "type": "."
@@ -278,7 +288,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 150,
+        "line": 152,
         "args": ["signal", "slot"],
         "method": "disconnect",
         "type": "."
@@ -288,7 +298,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 152,
+        "line": 154,
         "args": ["signal", "slot"],
         "method": "disconnect",
         "type": "."
@@ -298,7 +308,7 @@ Widget = (function() {
       error({
         "file": "./coffee/widget.coffee",
         "class": "Widget",
-        "line": 154,
+        "line": 156,
         "args": ["signal", "slot"],
         "method": "disconnect",
         "type": "."
@@ -326,7 +336,7 @@ Widget = (function() {
     error({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 170,
+      "line": 172,
       "args": ["name"],
       "method": "connector",
       "type": "."
@@ -374,7 +384,7 @@ Widget = (function() {
           error({
             "file": "./coffee/widget.coffee",
             "class": "Widget",
-            "line": 200,
+            "line": 202,
             "args": ["slot"],
             "method": "resolveSlot",
             "type": "."
@@ -385,7 +395,7 @@ Widget = (function() {
     error({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 202,
+      "line": 204,
       "args": ["slot"],
       "method": "resolveSlot",
       "type": "."
@@ -416,8 +426,6 @@ Widget = (function() {
   };
 
   Widget.prototype.emitSize = function() {
-    this.config.width = this.getWidth();
-    this.config.height = this.getHeight();
     return this.emit('size', {
       width: this.config.width,
       height: this.config.height
@@ -682,6 +690,20 @@ Widget = (function() {
     }).call(this)));
   };
 
+  Widget.prototype.prepareState = function() {
+    return this;
+  };
+
+  Widget.prototype.getState = function() {
+    var c, _i, _len, _ref;
+    _ref = this.allChildren();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      c = _ref[_i];
+      c.prepareState();
+    }
+    return _.clone(this.config);
+  };
+
 
   /*
   00     00  000   0000000   0000000
@@ -709,6 +731,10 @@ Widget = (function() {
 
   Widget.prototype.dump = function() {
     return this.config;
+  };
+
+  Widget.prototype.isWindow = function() {
+    return false;
   };
 
   Widget.prototype.clear = function() {
@@ -776,16 +802,26 @@ Widget = (function() {
   };
 
   Widget.prototype.setWidth = function(w) {
-    var diff, ow;
+    var diff, newWidth, ow;
     if (w != null) {
-      ow = this.elem.style.width;
-      this.elem.style.width = "%dpx".fmt(w);
-      diff = this.getWidth() - w;
-      if (diff) {
-        this.elem.style.width = "%dpx".fmt(w - diff);
-      }
-      if (ow !== this.elem.style.width) {
-        this.emitSize();
+      this.config.width = w;
+      if (this.getWidth() !== w) {
+        ow = this.elem.style.width;
+        this.elem.style.width = "%dpx".fmt(w);
+        if (newWidth = this.getWidth() && (diff = newWidth - w)) {
+          this.elem.style.width = "%dpx".fmt(w - diff);
+          log({
+            "file": "./coffee/widget.coffee",
+            "class": "Widget",
+            "line": 427,
+            "args": ["w"],
+            "method": "setWidth",
+            "type": "."
+          }, 'adjusted', "<span class='console-type'>diff:</span>", diff, "<span class='console-type'>@elem.id:</span>", this.elem.id, "<span class='console-type'>@elem.style.width:</span>", this.elem.style.width, "<span class='console-type'>w:</span>", w);
+        }
+        if (ow !== this.elem.style.width) {
+          this.emitSize();
+        }
       }
     }
     return this;
@@ -804,13 +840,23 @@ Widget = (function() {
   };
 
   Widget.prototype.setHeightNoEmit = function(h) {
-    var diff;
+    var diff, newHeight;
     if (h != null) {
-      this.elem.style.height = "%dpx".fmt(h);
-    }
-    diff = this.getHeight() - h;
-    if (diff) {
-      return this.elem.style.height = "%dpx".fmt(h - diff);
+      this.config.height = h;
+      if (this.getHeight() !== h) {
+        this.elem.style.height = "%dpx".fmt(h);
+        if (newHeight = this.getHeight() && (diff = newHeight - h)) {
+          this.elem.style.height = "%dpx".fmt(h - diff);
+          return log({
+            "file": "./coffee/widget.coffee",
+            "class": "Widget",
+            "line": 449,
+            "args": ["h"],
+            "method": "setHeightNoEmit",
+            "type": "."
+          }, 'adjusted', "<span class='console-type'>diff:</span>", diff, "<span class='console-type'>@elem.id:</span>", this.elem.id, "<span class='console-type'>@elem.style.height:</span>", this.elem.style.height, "<span class='console-type'>h:</span>", h);
+        }
+      }
     }
   };
 
@@ -910,6 +956,10 @@ Widget = (function() {
     return pos(o.left - s.left, o.top - s.top);
   };
 
+  Widget.prototype.scrollPos = function() {
+    return pos(this.elem.scrollLeft, this.elem.scrollTop);
+  };
+
   Widget.prototype.absCenter = function() {
     return this.absPos().plus(pos(this.elem.getWidth(), this.elem.getHeight()).scale(0.5));
   };
@@ -945,11 +995,11 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 479,
+      "line": 496,
       "args": ["drag", "event"],
       "method": "onMove",
       "type": "."
-    }, 'move', (_ref = this.elem) != null ? _ref.id : void 0);
+    }, 'move', "<span class='console-type'>@elem?.id:</span>", (_ref = this.elem) != null ? _ref.id : void 0);
     return this.emitMove();
   };
 
@@ -959,11 +1009,11 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 484,
+      "line": 501,
       "args": ["drag", "event"],
       "method": "moveStart",
       "type": "."
-    }, 'start', (_ref = event.target) != null ? _ref.id : void 0);
+    }, 'start', "<span class='console-type'>event.target?.id:</span>", (_ref = event.target) != null ? _ref.id : void 0);
     return StyleSwitch.togglePathFilter();
   };
 
@@ -973,11 +1023,11 @@ Widget = (function() {
     log({
       "file": "./coffee/widget.coffee",
       "class": "Widget",
-      "line": 489,
+      "line": 506,
       "args": ["drag", "event"],
       "method": "moveStop",
       "type": "."
-    }, 'stop', (_ref = event.target) != null ? _ref.id : void 0);
+    }, 'stop', "<span class='console-type'>event.target?.id:</span>", (_ref = event.target) != null ? _ref.id : void 0);
     return StyleSwitch.togglePathFilter();
   };
 

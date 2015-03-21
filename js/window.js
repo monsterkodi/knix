@@ -41,7 +41,10 @@ Window = (function(_super) {
     this.addCloseButton = __bind(this.addCloseButton, this);
     this.onTitleSelect = __bind(this.onTitleSelect, this);
     this.addTitleBar = __bind(this.addTitleBar, this);
+    this.onButtonState = __bind(this.onButtonState, this);
+    this.initButtons = __bind(this.initButtons, this);
     this.initWindow = __bind(this.initWindow, this);
+    this.postInit = __bind(this.postInit, this);
     this.init = __bind(this.init, this);
     Window.__super__.constructor.call(this, cfg, defs);
   }
@@ -86,6 +89,10 @@ Window = (function(_super) {
     return this;
   };
 
+  Window.prototype.postInit = function() {
+    return this.sizeWindow();
+  };
+
 
   /*
   000  000   000  000  000000000  000   000  000  000   000  0000000     0000000   000   000
@@ -96,7 +103,7 @@ Window = (function(_super) {
    */
 
   Window.prototype.initWindow = function() {
-    var b, button, content, _i, _len, _ref;
+    var content;
     if (this.config.hasClose) {
       this.addCloseButton();
     }
@@ -104,17 +111,7 @@ Window = (function(_super) {
       this.addShadeButton();
     }
     if (this.config.buttons != null) {
-      _ref = this.config.buttons;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        b = _ref[_i];
-        button = this.insertChild(b, {
-          noMove: true,
-          type: 'button',
-          align: 'left'
-        });
-        button.elem.addClassName('tool-button');
-        button.elem.addClassName('window-button-' + button.config.align);
-      }
+      this.initButtons();
     }
     if (this.config.hasTitle || this.config.title) {
       this.addTitleBar();
@@ -135,6 +132,66 @@ Window = (function(_super) {
     }
     this.elem.on('size', this.sizeWindow);
     return this;
+  };
+
+  Window.prototype.initButtons = function() {
+    var align, b, button, lastRightButton, _i, _len, _ref, _results;
+    align = 'left';
+    lastRightButton = void 0;
+    _ref = this.config.buttons;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      b = _ref[_i];
+      button = this.insertChild(b, {
+        noMove: true,
+        type: 'button',
+        align: align
+      });
+      align = button.config.align;
+      if (align === 'right') {
+        if (lastRightButton != null) {
+          lastRightButton.elem.insert({
+            before: button.elem
+          });
+        }
+        lastRightButton = button;
+      }
+      button.elem.addClassName('tool-button');
+      button.elem.addClassName('window-button-' + button.config.align);
+      if (b.configKey != null) {
+        this.config[b.configKey] = b.state;
+        _results.push(this.connect(b["class"] + ':onState', this.onButtonState));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  Window.prototype.onButtonState = function(event) {
+    var button, child, key, path, state, _name, _name1, _name2;
+    button = event.target.widget;
+    key = button.config.configKey;
+    state = event.detail.state;
+    if (key.indexOf('.') > 0) {
+      path = key.split('.');
+      child = this;
+      while (path.length > 1) {
+        child = child[path.splice(0, 1)];
+      }
+      if (typeof child[_name = path[0]] === "function") {
+        child[_name](event.detail.state);
+      }
+      return typeof child[_name1 = 'on' + _.capitalize(path[0])] === "function" ? child[_name1](event) : void 0;
+    } else {
+      if (typeof this[key] === "function") {
+        this[key](event.detail.state);
+      }
+      if (typeof this[_name2 = 'on' + _.capitalize(key)] === "function") {
+        this[_name2](event);
+      }
+      return this.config[key] = state;
+    }
   };
 
 
@@ -384,11 +441,11 @@ Window = (function(_super) {
     log({
       "file": "./coffee/window.coffee",
       "class": "Window",
-      "line": 281,
+      "line": 315,
       "args": ["drag", "event"],
       "method": "maximize",
       "type": "."
-    }, this.config.isMaximized);
+    }, "<span class='console-type'>@config.isMaximized:</span>", this.config.isMaximized);
     if (this.config.isMaximized) {
       this.setPos(this.config.pos);
       this.setSize(this.config.size);
@@ -480,10 +537,13 @@ Window = (function(_super) {
   };
 
   Window.prototype.raise = function(event) {
-    var scrolltop;
-    scrolltop = this.content.elem.scrollTop;
+    var e, scrollx, scrolly;
+    e = (this.scrollElem != null) && this.scrollElem || this.content.elem;
+    scrollx = e.scrollLeft;
+    scrolly = e.scrollTop;
     this.elem.parentElement.appendChild(this.elem);
-    this.content.elem.scrollTop = scrolltop;
+    e.scrollLeft = scrollx;
+    e.scrollTop = scrolly;
     return event != null ? event.stopPropagation() : void 0;
   };
 
@@ -491,24 +551,17 @@ Window = (function(_super) {
     log({
       "file": "./coffee/window.coffee",
       "class": "Window",
-      "line": 347,
+      "line": 384,
       "args": ["event"],
       "method": "popup",
       "type": "."
-    }, 'popup', Stage.absPos(event));
+    }, 'popup', "<span class='console-type'>Stage.absPos event:</span>", Stage.absPos(event));
     if (this.elem != null) {
       this.elem.show();
       this.setPos(Stage.absPos(event));
       return this.elem.raise();
     } else {
-      return warn({
-        "file": "./coffee/window.coffee",
-        "class": "Window",
-        "line": 353,
-        "args": ["event"],
-        "method": "popup",
-        "type": "."
-      }, 'no elem!');
+      return warn('no elem!');
     }
   };
 

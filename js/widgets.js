@@ -45,17 +45,7 @@ Value = (function(_super) {
     var win;
     if (this.config.onValue != null) {
       if (_.isString(this.config.onValue)) {
-        console.log('onValue', this.config.onValue);
-        log({
-          "file": "./coffee/widgets/value.coffee",
-          "class": "Value",
-          "line": 27,
-          "args": ["cfg", "def"],
-          "method": "initEvents",
-          "type": "."
-        }, 'onValue anc', this.elem.ancestors());
         win = this.getWindow();
-        console.log('onValue win', win);
         this.elem.on("onValue", win[this.config.onValue]);
       } else {
         this.elem.on("onValue", this.config.onValue);
@@ -1232,7 +1222,7 @@ Pad = (function(_super) {
         "args": ["rel"],
         "method": "valAtRel",
         "type": "."
-      }, 'null', rel, si, ei, dl, dp.x);
+      }, 'null', "<span class='console-type'>rel:</span>", rel, "<span class='console-type'>si:</span>", si, "<span class='console-type'>ei:</span>", ei, "<span class='console-type'>dl:</span>", dl, "<span class='console-type'>dp.x:</span>", dp.x);
       return sp.y;
     } else {
       p = sp.plus(dp.times((rel - this.config.vals[si].x) / dp.x));
@@ -1546,6 +1536,8 @@ Range = (function(_super) {
       maxLow: 10000,
       lowStep: 0.1,
       high: 1.0,
+      width: 300,
+      minWidth: 240,
       minHigh: -10000,
       maxHigh: 10000,
       highStep: 0.1,
@@ -1680,8 +1672,9 @@ Selectangle = (function(_super) {
   }
 
   Selectangle.start = function(wid) {
-    Selectangle.selectangle = new Selectangle;
-    return Selectangle.selectangle.wid = wid;
+    return Selectangle.selectangle = new Selectangle({
+      parent: wid
+    });
   };
 
   Selectangle.stop = function() {
@@ -1698,13 +1691,15 @@ Selectangle = (function(_super) {
   };
 
   Selectangle.prototype.init = function(cfg, defs) {
-    var stage;
+    var pos, stage, _ref;
     cfg = _.def(cfg, defs);
     window.document.documentElement.style.cursor = 'crosshair';
+    pos = ((_ref = cfg.parent) != null ? _ref.absPos : void 0) != null ? cfg.parent.absPos().to(Stage.mousePos) : Stage.mousePos;
+    this.wid = cfg.parent;
     Selectangle.__super__.init.call(this, cfg, {
       type: 'selectangle',
       parent: 'stage_content',
-      pos: Stage.mousePos,
+      pos: pos,
       width: 0,
       height: 0
     });
@@ -1717,7 +1712,6 @@ Selectangle = (function(_super) {
 
   Selectangle.prototype.close = function(event) {
     var stage, wid, _i, _len, _ref;
-    delete Selectangle.selectangle;
     if (this.sizePos().square() === 0 && !event.shiftKey) {
       _ref = (this.wid != null) && this.wid.allChildren() || knix.allWindows();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1734,12 +1728,20 @@ Selectangle = (function(_super) {
   };
 
   Selectangle.prototype.onMove = function(event) {
-    var br, ep, rect, tl, wid, widgets, _i, _len, _results;
+    var br, ep, rect, tl, wid, widgets, _i, _len, _ref, _ref1, _results;
     ep = Stage.absPos(event);
+    if (((_ref = this.wid) != null ? _ref.absPos : void 0) != null) {
+      ep = this.wid.absPos().to(ep);
+    }
     tl = ep.min(this.config.pos);
     br = ep.max(this.config.pos);
     this.setPos(tl);
     this.resize(br.x - tl.x, br.y - tl.y);
+    if ((_ref1 = this.wid) != null) {
+      if (typeof _ref1.scrollToPos === "function") {
+        _ref1.scrollToPos(ep);
+      }
+    }
     widgets = (this.wid != null) && this.wid.allChildren() || knix.allWindows();
     window.document.documentElement.style.cursor = 'crosshair';
     rect = this.absRect();
@@ -1875,39 +1877,47 @@ Sliderspin = (function(_super) {
   }
 
   Sliderspin.prototype.init = function(cfg, defs) {
+    var children;
     cfg = _.def(cfg, defs);
+    children = [];
+    if (cfg.hasInput !== false) {
+      children.push({
+        type: 'connector',
+        slot: cfg["class"] + ':setValue'
+      });
+    }
+    children.push({
+      type: 'slider',
+      value: cfg.value,
+      minValue: cfg.minValue,
+      maxValue: cfg.maxValue,
+      valueStep: cfg.sliderStep,
+      hasKnob: cfg.sliderKnob,
+      style: {
+        width: '90%'
+      }
+    });
+    children.push({
+      type: 'spin',
+      value: cfg.value,
+      recKey: cfg.recKey,
+      minValue: cfg.minValue,
+      maxValue: cfg.maxValue,
+      valueStep: cfg.spinStep,
+      minWidth: 100,
+      format: cfg.spinFormat || "%3.2f",
+      style: {
+        width: '10%'
+      }
+    });
+    if (cfg.hasOutput !== false) {
+      children.push({
+        type: 'connector',
+        signal: cfg["class"] + ':onValue'
+      });
+    }
     Sliderspin.__super__.init.call(this, cfg, {
-      children: [
-        {
-          type: 'connector',
-          slot: cfg["class"] + ':setValue'
-        }, {
-          type: 'slider',
-          value: cfg.value,
-          minValue: cfg.minValue,
-          maxValue: cfg.maxValue,
-          valueStep: cfg.sliderStep,
-          hasKnob: cfg.sliderKnob,
-          style: {
-            width: '90%'
-          }
-        }, {
-          type: 'spin',
-          value: cfg.value,
-          recKey: cfg.recKey,
-          minValue: cfg.minValue,
-          maxValue: cfg.maxValue,
-          valueStep: cfg.spinStep,
-          minWidth: 100,
-          format: cfg.spinFormat || "%3.2f",
-          style: {
-            width: '10%'
-          }
-        }, {
-          type: 'connector',
-          signal: cfg["class"] + ':onValue'
-        }
-      ]
+      children: children
     });
     this.connect('slider:onValue', 'spin:setValue');
     this.connect('spin:onValue', 'slider:setValue');

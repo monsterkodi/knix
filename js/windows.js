@@ -128,8 +128,8 @@ Console = (function(_super) {
     cfg = _.def(cfg, {
       x: Stage.size().width / 2,
       y: 30,
-      width: Stage.size().width / 2 - 4,
-      height: Stage.size().height - 30
+      width: Stage.size().width / 2 - 24,
+      height: Stage.size().height - 55
     });
     Console.__super__.init.call(this, cfg, {
       title: 'console',
@@ -151,7 +151,7 @@ Console = (function(_super) {
           align: 'right',
           action: this.clear,
           keys: ['⌥˚', '˚'],
-          icon: 'octicon-trashcan'
+          icon: 'fa-trash-o'
         }
       ],
       child: {
@@ -245,7 +245,7 @@ Console = (function(_super) {
         }, {
           action: this.trashSettings,
           align: 'right',
-          icon: 'octicon-trashcan'
+          icon: 'fa-trash-o'
         }, {
           action: this.toggleMethods,
           align: 'right',
@@ -452,7 +452,7 @@ Console = (function(_super) {
       }
       return _results;
     }).apply(Console, arguments)).join(" ");
-    return html.replace(/[<]([^>]+)[>]/g, '<span class="console-type">&lt;$1&gt;</span>').replace(/([:,\.\{\}\(\)\[\]])/g, '<span class="console-punct">$1</span>').replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>');
+    return html.replace(/([\'\"])(\w+)([\'\"]:)/g, '<span class="console-quote">$1</span><span class="console-string">$2</span><span class="console-quote">$3</span>').replace(/([:\s\"\.])([-]?[\d]+)(?=[,\.]|px)?/g, '$1<span class="console-number">$2</span>').replace(/([:,\.\{\}\(\)\[\]]+|px)/g, '<span class="console-punct">$1</span>').replace(/->/g, '<span class="octicon octicon-arrow-small-right"></span>');
   };
 
   return Console;
@@ -481,6 +481,13 @@ Files = (function() {
       return;
     }
     json = knix.stateForWidgets(windows);
+    log({
+      "file": "./coffee/windows/files.coffee",
+      "class": "Files",
+      "line": 19,
+      "method": "saveWindows",
+      "type": "@"
+    }, "<span class='console-type'>json:</span>", json);
     files = Files.allFiles();
     files[uuid.v4()] = json;
     return localStorage.setItem('files', JSON.stringify(files));
@@ -502,7 +509,7 @@ Files = (function() {
         "method": "loadMenu",
         "type": "@",
         "args": ["event"]
-      }, 'file', file, data.length);
+      }, 'file', "<span class='console-type'>file:</span>", file, "<span class='console-type'>data.length:</span>", data.length);
       children.push({
         type: 'button',
         text: file,
@@ -521,7 +528,7 @@ Files = (function() {
       buttons: [
         {
           action: Files.trashFiles,
-          icon: 'octicon-trashcan'
+          icon: 'fa-trash-o'
         }
       ]
     });
@@ -557,7 +564,7 @@ Files = (function() {
         "method": "loadFile",
         "type": "@",
         "args": ["filename"]
-      }, filename);
+      }, "<span class='console-type'>filename:</span>", filename);
       data = Files.allFiles()[filename];
       knix.closeAllWindows();
       return knix.restore(JSON.parse(data));

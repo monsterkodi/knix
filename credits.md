@@ -28,6 +28,8 @@ layout: default
 [grunt](http://gruntjs.com/)
 [bower](http://bower.io/)
 
+[soundtoy](http://www.iquilezles.org/apps/soundtoy/)
+
 [github](https://github.com/)
 [octicons](https://octicons.github.com/)
 [fortawesome](https://fortawesome.github.io/Font-Awesome/)

@@ -19,6 +19,7 @@ Audio = (function() {
     Audio.context = new (window.AudioContext || window.webkitAudioContext)();
     Timeline.menu();
     Keyboard.menu();
+    Synth.menu();
     ADSR.menu();
     Ramp.menu();
     Envelope.menu();
@@ -161,8 +162,18 @@ AudioWindow = (function(_super) {
 
   function AudioWindow() {
     this.close = __bind(this.close, this);
+    this.init = __bind(this.init, this);
     return AudioWindow.__super__.constructor.apply(this, arguments);
   }
+
+  AudioWindow.prototype.init = function(cfg, defs) {
+    cfg = _.def(cfg, defs);
+    AudioWindow.__super__.init.call(this, cfg, {
+      minWidth: 240,
+      width: 300
+    });
+    return this;
+  };
 
   AudioWindow.prototype.close = function() {
     this.audio = Audio.destroy(this.audio);
@@ -209,6 +220,8 @@ ADSR = (function(_super) {
     cfg = _.def(cfg, {
       type: 'ADSR',
       shape: Oscillator.shapes[0],
+      noteName: 'C4',
+      height: 330,
       duration: 0.2,
       minDuration: 0.0,
       maxDuration: 10.0,
@@ -254,7 +267,7 @@ ADSR = (function(_super) {
                 "class": 'note',
                 recKey: 'note',
                 tooltip: 'note',
-                value: 'C0',
+                value: cfg.noteName,
                 recKey: 'note',
                 values: Keyboard.allNoteNames(),
                 style: {
@@ -332,7 +345,6 @@ ADSR = (function(_super) {
     this.setShape(this.config.shape);
     this.setGain(this.config.gain);
     this.pad = this.getChild('pad');
-    this.sizeWindow();
     return this;
   };
 
@@ -378,14 +390,7 @@ ADSR = (function(_super) {
         return i;
       }
     }
-    warn({
-      "file": "./coffee/audio/adsr.coffee",
-      "class": "ADSR",
-      "line": 161,
-      "args": ["id"],
-      "method": "voiceIndex",
-      "type": "."
-    }, 'no free voice');
+    warn('no free voice');
     this.voice[0] = {
       id: id
     };
@@ -403,23 +408,20 @@ ADSR = (function(_super) {
     var f, note;
     note = event.detail;
     f = this.config.frequency;
-    this.config.frequency = Keyboard.allNotes()[note.note];
-    if (note.type === 'trigger') {
-      this.trigger({
-        detail: note.note
-      });
+    this.config.frequency = Keyboard.allNotes()[note.noteName];
+    if (note.event === 'trigger') {
+      this.trigger(event);
     } else {
-      this.release({
-        detail: note.note
-      });
+      this.release(event);
     }
     this.emit('onNote');
     return this.config.frequency = f;
   };
 
   ADSR.prototype.trigger = function(event) {
-    var i, t, time, v, value, vi, _i, _ref, _results;
-    i = this.voiceIndex(event.detail);
+    var i, note, t, time, v, value, vi, _i, _ref, _results;
+    note = event.detail;
+    i = this.voiceIndex(note.noteName);
     this.volume[i].gain.cancelScheduledValues(Audio.context.currentTime);
     this.oscillator[i].frequency.cancelScheduledValues(Audio.context.currentTime);
     t = Audio.context.currentTime + 0.01;
@@ -440,8 +442,9 @@ ADSR = (function(_super) {
   };
 
   ADSR.prototype.release = function(event) {
-    var i, msec, t, time, v, value, vi, _i, _ref, _ref1, _results;
-    i = this.voiceIndex(event.detail);
+    var i, msec, note, t, time, v, value, vi, _i, _ref, _ref1, _results;
+    note = event.detail;
+    i = this.voiceIndex(note.noteName);
     t = Audio.context.currentTime + 0.01;
     _results = [];
     for (vi = _i = _ref = this.pad.config.sustainIndex, _ref1 = this.pad.config.vals.length; _ref <= _ref1 ? _i < _ref1 : _i > _ref1; vi = _ref <= _ref1 ? ++_i : --_i) {
@@ -471,7 +474,7 @@ ADSR = (function(_super) {
     if (this.pad != null) {
       content = this.getChild('content');
       content.setHeight(this.contentHeight());
-      height = content.innerHeight() - 200;
+      height = content.innerHeight() - 214;
       width = content.innerWidth() - 20;
       return this.pad.setSize(width, height);
     }
@@ -524,7 +527,8 @@ Analyser = (function(_super) {
     cfg = _.def(cfg, {
       scaleX: 1.0,
       scaleY: 1.0,
-      triggerY: 0.0
+      triggerY: 0.0,
+      height: 240
     });
     _ref = Audio.analyser(cfg), this.audio = _ref[0], cfg = _ref[1];
     this.dataArray = new Uint8Array(cfg.fftSize);
@@ -539,7 +543,8 @@ Analyser = (function(_super) {
           "class": 'analyser_canvas',
           style: {
             width: '100%',
-            height: '100%'
+            height: '100%',
+            marginBottom: '5px'
           }
         }, {
           type: 'sliderspin',
@@ -562,7 +567,6 @@ Analyser = (function(_super) {
       onMove: this.onCanvasTrigger
     });
     knix.animate(this);
-    this.sizeWindow();
     return this;
   };
 
@@ -595,7 +599,7 @@ Analyser = (function(_super) {
     height = this.contentHeight();
     content = this.getChild('content');
     content.setHeight(height);
-    height = content.innerHeight() - 70;
+    height = content.innerHeight() - 90;
     width = content.innerWidth() - 20;
     if ((_ref = this.canvas) != null) {
       _ref.resize(width, height);
@@ -691,7 +695,6 @@ Delay = (function(_super) {
     Delay.__super__.init.call(this, cfg, {
       type: 'delay',
       title: 'delay',
-      minWidth: 240,
       resize: 'horizontal',
       children: [
         {
@@ -759,7 +762,10 @@ Envelope = (function(_super) {
     cfg = _.def(cfg, {
       type: 'envelope',
       valueFormat: "%0.3f",
-      numHandles: 7
+      numHandles: 7,
+      height: 220,
+      width: 300,
+      minWidth: 240
     });
     Envelope.__super__.init.call(this, cfg, {
       title: 'envelope',
@@ -809,7 +815,6 @@ Envelope = (function(_super) {
     });
     this.connect('envelope_in:onValue', this.setRel);
     this.pad = this.getChild('envelope_pad');
-    this.sizeWindow();
     return this;
   };
 
@@ -846,7 +851,7 @@ Envelope = (function(_super) {
     if (pad != null) {
       content = this.getChild('content');
       content.setHeight(this.contentHeight());
-      height = content.innerHeight() - 50;
+      height = content.innerHeight() - 60;
       width = content.innerWidth() - 20;
       return pad.setSize(width, height);
     }
@@ -902,7 +907,6 @@ Filter = (function(_super) {
     Filter.__super__.init.call(this, cfg, {
       type: 'filter',
       title: 'filter',
-      minWidth: 240,
       resize: 'horizontal',
       children: [
         {
@@ -1013,7 +1017,6 @@ Gain = (function(_super) {
     Gain.__super__.init.call(this, cfg, {
       type: 'gain',
       title: cfg.master && 'master' || 'gain',
-      minWidth: 240,
       resize: 'horizontal',
       children: [
         {
@@ -1102,7 +1105,7 @@ Jacks = (function(_super) {
       type: 'jacks'
     });
     children = [];
-    if (!(cfg.hasInput === false)) {
+    if (cfg.hasInput !== false) {
       children.push({
         type: 'connector',
         "in": 'audio'
@@ -1117,7 +1120,7 @@ Jacks = (function(_super) {
       children: _.isArray(cfg.content) ? cfg.content : void 0,
       child: _.isObject(cfg.content) ? cfg.content : void 0
     });
-    if (!(cfg.hasOutput === false)) {
+    if (cfg.hasOutput !== false) {
       children.push({
         type: 'connector',
         out: 'audio'
@@ -1144,7 +1147,7 @@ Jacks = (function(_super) {
       "args": ["event"],
       "method": "onDisconnect",
       "type": "."
-    }, 'onDisconnect', event.detail);
+    }, 'onDisconnect', "<span class='console-type'>event.detail:</span>", event.detail);
     return (_ref = event.detail.source.getWindow().audio) != null ? _ref.disconnect(event.detail.target.getWindow().audio) : void 0;
   };
 
@@ -1225,6 +1228,14 @@ Keyboard = (function(_super) {
 
   Keyboard.noteIndex = function(noteName) {
     return Keyboard.allNoteNames().indexOf(noteName);
+  };
+
+  Keyboard.numNotes = function() {
+    return Keyboard.noteNames.length * 9;
+  };
+
+  Keyboard.maxNoteIndex = function() {
+    return Keyboard.numNotes() - 1;
   };
 
   Keyboard.allNoteNames = function() {
@@ -1332,8 +1343,8 @@ Keyboard = (function(_super) {
     key = event.target.widget;
     note = "%s%d".fmt(key.config.text, this.config.octave);
     return this.emit('note', {
-      note: note,
-      type: 'trigger'
+      noteName: note,
+      event: 'trigger'
     });
   };
 
@@ -1342,8 +1353,8 @@ Keyboard = (function(_super) {
     key = event.target.widget;
     note = "%s%d".fmt(key.config.text, this.config.octave);
     return this.emit('note', {
-      note: note,
-      type: 'release'
+      noteName: note,
+      event: 'release'
     });
   };
 
@@ -1396,7 +1407,6 @@ Oscillator = (function(_super) {
     Oscillator.__super__.init.call(this, cfg, {
       type: 'oscillator',
       title: 'oscillator',
-      minWidth: 220,
       resize: 'horizontal',
       children: [
         {
@@ -1424,7 +1434,6 @@ Oscillator = (function(_super) {
     this.connect('frequency:onValue', this.setFrequency);
     this.setFrequency(this.config.frequency);
     this.setShape(this.config.shape);
-    this.sizeWindow();
     return this;
   };
 
@@ -1607,7 +1616,7 @@ Recorder = (function() {
       "args": ["cfg", "defs"],
       "method": "init",
       "type": "."
-    }, 'recording: %d triggers %d values'.fmt(this.triggers.length, this.values.length));
+    }, 'recording: %d triggers %d values'.fmt(this.triggers.length, "<span class='console-type'>@values.length:</span>", this.values.length));
     return this;
   };
 
@@ -1632,7 +1641,7 @@ Recorder = (function() {
                   "args": ["win"],
                   "method": "registerWindow",
                   "type": "."
-                }, c.config);
+                }, "<span class='console-type'>c.config:</span>", c.config);
                 this.triggers.push(c);
                 c.connect('mousedown', this.onButtonDown);
                 _results.push(c.connect('mouseup', this.onButtonUp));

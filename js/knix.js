@@ -13,17 +13,16 @@ var knix,
 knix = (function() {
   function knix() {}
 
-  knix.version = '0.7.524';
+  knix.version = '0.8.100';
 
   knix.init = function(config) {
-    var c, s;
+    var c;
     if (config.console != null) {
       c = new Console();
       if (config.console === 'shade') {
         c.shade();
       }
     }
-    s = 'welcome to';
     log({
       "file": "./coffee/knix.coffee",
       "class": "knix",
@@ -31,7 +30,7 @@ knix = (function() {
       "args": ["config"],
       "method": "init",
       "type": "@"
-    }, s, 'knix', 'version:', knix.version);
+    }, 'welcome to knix', "<span class='console-type'>@version:</span>", knix.version);
     Keys.init();
     StyleSwitch.init();
     knix.initSVG();
@@ -191,7 +190,9 @@ knix = (function() {
       type: 'window',
       parent: 'stage_content'
     }));
-    Stage.positionWindow(w);
+    if (typeof w.isWindow === "function" ? w.isWindow() : void 0) {
+      Stage.positionWindow(w);
+    }
     return w;
   };
 
@@ -212,7 +213,7 @@ knix = (function() {
         _results = [];
         for (_i = 0, _len = widgets.length; _i < _len; _i++) {
           w = widgets[_i];
-          _results.push(_.clone(w.config));
+          _results.push(w.getState());
         }
         return _results;
       })(),
@@ -234,7 +235,6 @@ knix = (function() {
     idmap = {};
     cleanConfig = function(cfg) {
       var _ref;
-      delete cfg.parentID;
       idmap[cfg.id] = Widget.newID(cfg.type || 'widget');
       cfg.id = idmap[cfg.id];
       if (cfg.child != null) {
@@ -364,41 +364,54 @@ knix = (function() {
   };
 
   knix.copySelection = function() {
-    knix.copyBuffer = knix.stateForWidgets(knix.selectedWidgets());
-    return log({
-      "file": "./coffee/knix.coffee",
-      "class": "knix",
-      "line": 229,
-      "args": ["widgets"],
-      "method": "copySelection",
-      "type": "@"
-    }, knix.copyBuffer);
+    return knix.copyBuffer = knix.stateForWidgets(knix.selectedWidgets());
   };
 
   knix.cutSelection = function() {
-    log({
-      "file": "./coffee/knix.coffee",
-      "class": "knix",
-      "line": 232,
-      "args": ["widgets"],
-      "method": "cutSelection",
-      "type": "@"
-    }, 'cut');
     knix.copySelection();
     return knix.delSelection();
   };
 
   knix.pasteSelection = function() {
-    var win, _i, _len, _ref, _results;
+    var c, restoreConfig, wid, widgets, win, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results, _results1;
     knix.deselectAll();
-    _ref = knix.restore(JSON.parse(knix.copyBuffer));
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      win = _ref[_i];
-      win.moveBy(10, 10);
-      _results.push(win.elem.addClassName('selected'));
+    if (((_ref = Selectangle.selectangle) != null ? _ref.wid : void 0) != null) {
+      widgets = JSON.parse(knix.copyBuffer).windows;
+      restoreConfig = function(cfg) {
+        var _ref1;
+        cfg.parent = cfg.parentID;
+        if (cfg.child != null) {
+          restoreConfig(cfg.child);
+        }
+        return (_ref1 = cfg.children) != null ? _ref1.each(function(c) {
+          return restoreConfig(c);
+        }) : void 0;
+      };
+      for (_i = 0, _len = widgets.length; _i < _len; _i++) {
+        c = widgets[_i];
+        restoreConfig(c);
+      }
+      _ref1 = knix.restoreWindows(widgets);
+      _results = [];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        wid = _ref1[_j];
+        _results.push(wid.elem.addClassName('selected'));
+      }
+      return _results;
+    } else {
+      _ref2 = knix.restore(JSON.parse(knix.copyBuffer));
+      _results1 = [];
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        win = _ref2[_k];
+        win.elem.addClassName('selected');
+        if (win.isWindow()) {
+          _results1.push(win.moveBy(10, 10));
+        } else {
+          _results1.push(void 0);
+        }
+      }
+      return _results1;
     }
-    return _results;
   };
 
   knix.shadeWindows = function() {
@@ -425,11 +438,11 @@ knix = (function() {
     log({
       "file": "./coffee/knix.coffee",
       "class": "knix",
-      "line": 250,
+      "line": 257,
       "args": ["state"],
       "method": "restore",
       "type": "@"
-    }, 'restore', state);
+    }, 'restore', "<span class='console-type'>state:</span>", state);
     windows = knix.restoreWindows(state.windows);
     knix.restoreConnections(state.connections);
     return windows;

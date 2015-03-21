@@ -14,12 +14,90 @@ Test = (function() {
 
 
   /*
-  
-   0000000   000   000  0000000    000   0000000 
-  000   000  000   000  000   000  000  000   000
-  000000000  000   000  000   000  000  000   000
-  000   000  000   000  000   000  000  000   000
-  000   000   0000000   0000000    000   0000000
+   0000000  000   000  000   000  000000000  000   000
+  000        000 000   0000  000     000     000   000
+  0000000     00000    000 0 000     000     000000000
+       000     000     000  0000     000     000   000
+  0000000      000     000   000     000     000   000
+   */
+
+  Test.synth = function() {
+    var k1, k2, l1, l2, m, s1, s2;
+    k1 = new Keyboard({
+      x: 20,
+      y: 50,
+      octave: 4
+    });
+    k2 = new Keyboard({
+      x: 20,
+      y: 430,
+      octave: 4
+    });
+    l1 = new Timeline({
+      x: 360,
+      y: 50,
+      steps: 16,
+      height: 350
+    });
+    l2 = new Timeline({
+      x: 360,
+      y: 430,
+      steps: 16,
+      height: 350
+    });
+    s1 = new Synth({
+      noteName: 'C4',
+      x: 800,
+      y: 50,
+      instrument: 'guitar',
+      duration: 1.0
+    });
+    s2 = new Synth({
+      noteName: 'C6',
+      x: 800,
+      y: 430,
+      instrument: 'bell',
+      duration: 0.08
+    });
+    m = new Gain({
+      master: true,
+      gain: 1,
+      x: 1200,
+      y: 50
+    });
+    new Connection({
+      source: k1.connector('note'),
+      target: l1.connector('noteIn')
+    });
+    new Connection({
+      source: l1.connector('noteOut'),
+      target: s1.connector('note')
+    });
+    new Connection({
+      source: s1.connector('audio:out'),
+      target: m.connector('audio:in')
+    });
+    new Connection({
+      source: k2.connector('note'),
+      target: l2.connector('noteIn')
+    });
+    new Connection({
+      source: l2.connector('noteOut'),
+      target: s2.connector('note')
+    });
+    return new Connection({
+      source: s2.connector('audio:out'),
+      target: m.connector('audio:in')
+    });
+  };
+
+
+  /*
+  000000000  000  00     00  00000000  000      000  000   000  00000000
+     000     000  000   000  000       000      000  0000  000  000     
+     000     000  000000000  0000000   000      000  000 0 000  0000000 
+     000     000  000 0 000  000       000      000  000  0000  000     
+     000     000  000   000  00000000  0000000  000  000   000  00000000
    */
 
   Test.timeline = function() {
@@ -31,7 +109,7 @@ Test = (function() {
     });
     k2 = new Keyboard({
       x: 20,
-      y: 350,
+      y: 430,
       octave: 5
     });
     k3 = new Keyboard({
@@ -40,15 +118,16 @@ Test = (function() {
       octave: 6
     });
     a = new ADSR({
+      noteName: 'C6',
       x: 400,
       y: 50,
-      duration: 0.2,
-      sustainIndex: 2,
-      vals: [pos(0, 0), pos(.1, 1), pos(0.2, 1), pos(1, 0)]
+      duration: 0.08,
+      sustainIndex: 8,
+      vals: [pos(0, 0), pos(.1, 1), pos(.2, 0), pos(.3, .8), pos(.4, 0), pos(.5, .6), pos(.6, .0), pos(.7, .4), pos(1, 0)]
     });
     m = new Gain({
       master: true,
-      gain: 0.1,
+      gain: 1,
       x: 800,
       y: 50
     });
@@ -78,6 +157,15 @@ Test = (function() {
       target: m.connector('audio:in')
     });
   };
+
+
+  /*
+  00000000  000   000  000   000  00000000  000       0000000   00000000   00000000
+  000       0000  000  000   000  000       000      000   000  000   000  000     
+  0000000   000 0 000   000 000   0000000   000      000   000  00000000   0000000 
+  000       000  0000     000     000       000      000   000  000        000     
+  00000000  000   000      0      00000000  0000000   0000000   000        00000000
+   */
 
   Test.envelope = function() {
     var e, m, o, r, t;
@@ -128,6 +216,15 @@ Test = (function() {
       target: m.connector('audio:in')
     });
   };
+
+
+  /*
+  0000000    00000000  000       0000000   000   000
+  000   000  000       000      000   000   000 000 
+  000   000  0000000   000      000000000    00000  
+  000   000  000       000      000   000     000   
+  0000000    00000000  0000000  000   000     000
+   */
 
   Test.delay = function() {
     var a1, a2, d1, g1, g2, gm, o1;
@@ -199,6 +296,15 @@ Test = (function() {
       target: gm.connector('audio:in')
     });
   };
+
+
+  /*
+   0000000    0000000   0000000  000  000      000       0000000   000000000   0000000   00000000 
+  000   000  000       000       000  000      000      000   000     000     000   000  000   000
+  000   000  0000000   000       000  000      000      000000000     000     000   000  0000000  
+  000   000       000  000       000  000      000      000   000     000     000   000  000   000
+   0000000   0000000    0000000  000  0000000  0000000  000   000     000      0000000   000   000
+   */
 
   Test.oscillator = function() {
     var a4, an, f4, g1, g2, g3, gm, o1, o2, o3;
@@ -296,8 +402,17 @@ Test = (function() {
     });
   };
 
+
+  /*
+   0000000   000   000  0000000    000   0000000 
+  000   000  000   000  000   000  000  000   000
+  000000000  000   000  000   000  000  000   000
+  000   000  000   000  000   000  000  000   000
+  000   000   0000000   0000000    000   0000000
+   */
+
   Test.audio = function() {
-    var a, b, c, d;
+    var a, b, c, d, e;
     a = knix.get({
       type: 'button',
       text: 'oscillator',
@@ -322,12 +437,20 @@ Test = (function() {
         return Test.envelope();
       }
     });
-    return d = knix.get({
+    d = knix.get({
       type: 'button',
       text: 'timeline',
       parent: 'menu',
       action: function() {
         return Test.timeline();
+      }
+    });
+    return e = knix.get({
+      type: 'button',
+      text: 'synth',
+      parent: 'menu',
+      action: function() {
+        return Test.synth();
       }
     });
   };
@@ -748,7 +871,7 @@ Test = (function() {
 
 document.observe("dom:loaded", function() {
   knix.init({
-    console: 'shade'
+    console: true
   });
   Test.audio();
   return Settings.set('tooltips', true);

@@ -7,7 +7,7 @@
 000   000  000   000  000   000  000   000
 0000000    000   000  000   000   0000000
  */
-var Drag, Keys, Pos, Rect, Settings, Stage, StyleSwitch, error, log, pos, str, strIndent, warn,
+var Drag, DragSize, Keys, Pos, Rect, Settings, Stage, StyleSwitch, dbg, error, info, log, pos, str, strIndent, warning,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -92,6 +92,7 @@ Drag = (function() {
       return;
     }
     this.dragging = true;
+    this.startPos = this.absPos(event);
     this.pos = this.absPos(event);
     if (this.onStart != null) {
       this.onStart(this, event);
@@ -112,6 +113,7 @@ Drag = (function() {
     }
     this.pos = this.absPos(event);
     this.delta = this.lastPos.to(this.pos);
+    this.deltaSum = this.startPos.to(this.pos);
     if (this.doMove) {
       newPos = this.startPos.add(this.delta).clamp(this.minPos, this.maxPos);
       this.target.getWidget().setPos(newPos);
@@ -179,6 +181,212 @@ Drag = (function() {
 
 /*
 
+0000000    00000000    0000000    0000000    0000000  000  0000000  00000000
+000   000  000   000  000   000  000        000       000     000   000     
+000   000  0000000    000000000  000  0000  0000000   000    000    0000000 
+000   000  000   000  000   000  000   000       000  000   000     000     
+0000000    000   000  000   000   0000000   0000000   000  0000000  00000000
+ */
+
+DragSize = (function() {
+  function DragSize(cfg) {
+    this.sizeWidget = __bind(this.sizeWidget, this);
+    this.sizeMove = __bind(this.sizeMove, this);
+    this.sizeStart = __bind(this.sizeStart, this);
+    this.moveStop = __bind(this.moveStop, this);
+    this.onLeave = __bind(this.onLeave, this);
+    this.dragMove = __bind(this.dragMove, this);
+    this.moveStart = __bind(this.moveStart, this);
+    this.onHover = __bind(this.onHover, this);
+    this.config = _.def(cfg, {
+      elem: null
+    });
+    this.config.elem.on('mousemove', this.onHover);
+    this.config.elem.on('mouseleave', this.onLeave);
+  }
+
+  DragSize.prototype.onHover = function(event, e) {
+    var action, border, cursor, d1, d2, eventPos, md, w;
+    if (this.sizeMoveDrag != null) {
+      if (this.sizeMoveDrag.dragging) {
+        return;
+      }
+      this.sizeMoveDrag.deactivate();
+      delete this.sizeMoveDrag;
+    }
+    w = e != null ? typeof e.getWidget === "function" ? e.getWidget() : void 0 : void 0;
+    if (w == null) {
+      warn('no widget?');
+      return;
+    }
+    eventPos = Stage.absPos(event);
+    d1 = eventPos.minus(w.absPos());
+    d2 = w.absPos().plus(w.sizePos()).minus(eventPos);
+    md = 10;
+    action = 'move';
+    border = '';
+    if ((w.config.resize == null) || !(w.config.resize === false)) {
+      if (!(w.config.resize === 'horizontal')) {
+        if (d2.y < md) {
+          action = 'size';
+          border = 'bottom';
+        } else if (d1.y < md) {
+          action = 'size';
+          border = 'top';
+        }
+      }
+      if (!(w.config.resize === 'vertical')) {
+        if (d2.x < md) {
+          action = 'size';
+          border += 'right';
+        } else if (d1.x < md) {
+          action = 'size';
+          border += 'left';
+        }
+      }
+    }
+    if (action === 'size' && !w.config.isShaded) {
+      if (border === 'left' || border === 'right') {
+        cursor = 'ew-resize';
+      } else if (border === 'top' || border === 'bottom') {
+        cursor = 'ns-resize';
+      } else if (border === 'topleft' || border === 'bottomright') {
+        cursor = 'nwse-resize';
+      } else {
+        cursor = 'nesw-resize';
+      }
+      this.sizeMoveDrag = new Drag({
+        target: this.config.elem,
+        onStart: this.sizeStart,
+        onMove: this.sizeMove,
+        doMove: false,
+        cursor: cursor
+      });
+      this.sizeMoveDrag.border = border;
+    } else {
+      this.sizeMoveDrag = new Drag({
+        target: this.config.elem,
+        minPos: pos(void 0, 0),
+        onMove: this.dragMove,
+        onStart: this.moveStart,
+        onStop: this.moveStop,
+        doMove: this.config.doMove,
+        cursor: 'grab'
+      });
+    }
+  };
+
+  DragSize.prototype.moveStart = function(drag, event) {
+    if (this.config.moveStart != null) {
+      this.config.moveStart(drag, event);
+    }
+    if (drag.target.widget.isWindow()) {
+      StyleSwitch.togglePathFilter();
+    }
+    return event.stop();
+  };
+
+  DragSize.prototype.dragMove = function(drag, event) {
+    if (this.config.onMove != null) {
+      this.config.onMove(drag, event);
+    }
+    return event.stop();
+  };
+
+  DragSize.prototype.onLeave = function(event) {
+    if ((this.sizeMoveDrag != null) && !this.sizeMoveDrag.dragging) {
+      if (this.sizeMoveDrag) {
+        this.sizeMoveDrag.deactivate();
+      }
+      return delete this.sizeMoveDrag;
+    }
+  };
+
+  DragSize.prototype.moveStop = function(drag, event) {
+    if (this.config.moveStop != null) {
+      this.config.moveStop(drag, event);
+    }
+    if (drag.target.widget.isWindow()) {
+      StyleSwitch.togglePathFilter();
+    }
+    return event.stop();
+  };
+
+  DragSize.prototype.sizeStart = function(drag, event) {
+    if (this.config.sizeStart != null) {
+      this.config.sizeStart(drag, event);
+    }
+    return event.stop();
+  };
+
+  DragSize.prototype.sizeMove = function(drag, event) {
+    var dx, dy, spos, sw, w, wpos, _i, _len, _ref, _ref1;
+    w = drag.target.widget;
+    wpos = w.absPos();
+    spos = Stage.absPos(event);
+    if ((_ref = drag.border) === 'left' || _ref === 'topleft' || _ref === 'top') {
+      dx = wpos.x - spos.x;
+      dy = wpos.y - spos.y;
+    } else {
+      dx = spos.x - wpos.x - w.getWidth();
+      dy = spos.y - wpos.y - w.getHeight();
+    }
+    if (this.config.elem.hasClassName('selected')) {
+      _ref1 = knix.selectedWidgets();
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        sw = _ref1[_i];
+        this.sizeWidget(drag, sw, dx, dy);
+      }
+    } else {
+      this.sizeWidget(drag, w, dx, dy);
+    }
+    if (this.config.onSize != null) {
+      this.config.onSize(drag, event);
+    }
+    return event.stop();
+  };
+
+  DragSize.prototype.sizeWidget = function(drag, w, dx, dy) {
+    var br, hgt, wdt, wpos, _ref, _ref1;
+    wpos = w.absPos();
+    wdt = w.getWidth() + dx;
+    hgt = w.getHeight() + dy;
+    if ((_ref = drag.border) === 'left' || _ref === 'topleft' || _ref === 'top') {
+      br = wpos.plus(pos(w.getWidth(), w.getHeight()));
+    }
+    wdt = Math.min(w.maxWidth(), wdt);
+    wdt = Math.max(w.minWidth(), wdt);
+    hgt = Math.min(w.maxHeight(), hgt);
+    hgt = Math.max(w.minHeight(), hgt);
+    if (drag.border === 'left' || drag.border === 'right') {
+      hgt = null;
+    }
+    if (drag.border === 'top' || drag.border === 'bottom') {
+      wdt = null;
+    }
+    w.resize(wdt, hgt);
+    if ((_ref1 = drag.border) === 'left' || _ref1 === 'topleft' || _ref1 === 'top') {
+      if (wdt == null) {
+        dx = 0;
+      } else {
+        dx = br.x - w.getWidth() - wpos.x;
+      }
+      if (hgt == null) {
+        dy = 0;
+      } else {
+        dy = br.y - w.getHeight() - wpos.y;
+      }
+      return w.moveBy(dx, dy);
+    }
+  };
+
+  return DragSize;
+
+})();
+
+
+/*
+
 000   000  00000000  000   000   0000000
 000  000   000        000 000   000     
 0000000    0000000     00000    0000000 
@@ -203,7 +411,7 @@ Keys = (function() {
   };
 
   Keys.onKey = function(e) {
-    var key, mods, pressed, wid, _i, _len, _ref;
+    var key, mods, pressed, wid, _i, _len, _ref, _ref1, _ref2;
     mods = _.filter([e.shiftKey && '⇧', e.ctrlKey && '^', e.altKey && '⌥', e.metaKey && '⌘']).join('');
     key = mods + e.key;
     log({
@@ -213,21 +421,44 @@ Keys = (function() {
       "method": "onKey",
       "type": "@",
       "args": ["e"]
-    }, key);
+    }, "<span class='console-type'>key:</span>", key, "<span class='console-type'>@interactive:</span>", Keys.interactive);
     if (Keys.interactive) {
       if (key === 'Esc') {
         return Keys.stopInteractive();
       } else if (key === 'Backspace') {
-        return wid.config.keys = [];
+        if (Keys.register.widget != null) {
+          info({
+            "file": "./coffee/tools/keys.coffee",
+            "class": "Keys",
+            "line": 32,
+            "method": "onKey",
+            "type": "@",
+            "args": ["e"]
+          }, 'unregister keys', (_ref = Keys.register.widget.config) != null ? _ref.keys : void 0, 'for', Keys.register.elem.id);
+          Keys.unregisterWidget(Keys.register.widget);
+          if ((_ref1 = Keys.register.widget.config) != null) {
+            _ref1.keys = [];
+          }
+          return Keys.stopInteractive();
+        }
       } else if (!_.isEmpty(Keys.register)) {
-        log({
+        info({
           "file": "./coffee/tools/keys.coffee",
           "class": "Keys",
-          "line": 32,
+          "line": 37,
           "method": "onKey",
           "type": "@",
           "args": ["e"]
-        }, 'register key [%s] for element %s'.fmt(key, Keys.register.elem.id));
+        }, 'register key', key, 'for', Keys.register.elem.id);
+        warn('register key', key, 'for', Keys.register.elem.id);
+        error({
+          "file": "./coffee/tools/keys.coffee",
+          "class": "Keys",
+          "line": 39,
+          "method": "onKey",
+          "type": "@",
+          "args": ["e"]
+        }, 'register key', key, 'for', Keys.register.elem.id);
         if (Keys.register.elem != null) {
           Keys.registerKeyForWidget(key, Keys.register.widget);
           Keys.register.elem.removeClassName('register-key');
@@ -237,9 +468,9 @@ Keys = (function() {
     } else {
       if (Keys.shortcuts[key] != null) {
         pressed = false;
-        _ref = Keys.shortcuts[key];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          wid = _ref[_i];
+        _ref2 = Keys.shortcuts[key];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          wid = _ref2[_i];
           if (_.isFunction(wid)) {
             wid(key);
           } else {
@@ -388,15 +619,17 @@ Keys = (function() {
             Keys.register.elem.removeClassName('register-key');
           }
           e.addClassName('register-key');
-          Keys.register.elem = e;
-          Keys.register.widget = wid;
+          Keys.register = {
+            elem: e,
+            widget: wid
+          };
         }
         return;
       }
     }
     if (Keys.register.elem != null) {
       Keys.register.elem.removeClassName('register-key');
-      return Keys.register.elem = void 0;
+      return delete Keys.register.elem;
     }
   };
 
@@ -418,13 +651,22 @@ log = function() {
   return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
-error = function() {
-  tag('error');
+dbg = function() {
   return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
-warn = function() {
+info = function() {
+  tag('info');
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
+};
+
+warning = function() {
   tag('warning');
+  return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
+};
+
+error = function() {
+  tag('error');
   return Console.logInfo.apply(Console, Array.prototype.slice.call(arguments, 0));
 };
 
@@ -581,7 +823,9 @@ Pos = (function() {
   };
 
   Pos.prototype._str = function() {
-    return "<x:%2.2f y:%2.2f>".fmt(this.x, this.y);
+    var s;
+    s = (this.x != null ? "&lt;x:%2.2f ".fmt(this.x) : void 0) || "&lt;NaN ";
+    return s += (this.y != null ? "y:%2.2f&gt;".fmt(this.y) : void 0) || "NaN&gt;";
   };
 
   Pos.prototype.scale = function(val) {
@@ -830,8 +1074,14 @@ str = function(o, indent, visited) {
   if (visited == null) {
     visited = [];
   }
-  if (o === null) {
-    return "<null>";
+  if (o == null) {
+    if (o === null) {
+      return "<null>";
+    }
+    if (o === void 0) {
+      return "<undefined>";
+    }
+    return "<0>";
   }
   t = typeof o;
   if (t === 'string') {
@@ -936,7 +1186,7 @@ StyleSwitch = (function() {
   StyleSwitch.initColors = function() {
     var cn, colors, _i, _len, _ref, _results;
     colors = document.createElement("div");
-    _ref = ['analyser', 'analyser_trace', 'analyser_trigger'];
+    _ref = ['analyser', 'analyser_trace', 'analyser_trigger', 'synth_canvas', 'synth_trace'];
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       cn = _ref[_i];
@@ -1026,6 +1276,20 @@ _.clamp = function(r1, r2, v) {
     v = Math.min(v, r2);
   }
   return v;
+};
+
+_.round = function(value, stepSize) {
+  if (stepSize == null) {
+    stepSize = 1;
+  }
+  return Math.round(value / stepSize) * stepSize;
+};
+
+_.floor = function(value, stepSize) {
+  if (stepSize == null) {
+    stepSize = 1;
+  }
+  return Math.floor(value / stepSize) * stepSize;
 };
 
 _.arg = function(arg, argname) {
