@@ -1,6 +1,0 @@
-*/.atom-build.json
-#node_modules
-bower_components
-.DS_Store
-.git
-js/lib
