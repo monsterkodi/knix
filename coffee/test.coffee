@@ -22,12 +22,12 @@ class Test
         k1 = new Keyboard
             x : 20
             y : 50
-            octave: 4
+            octave: 3
 
         k2 = new Keyboard
             x : 20
             y : 430
-            octave: 4
+            octave: 3
 
         l1 = new Timeline
             x      : 360
@@ -42,24 +42,30 @@ class Test
             height : 350
 
         s1 = new Synth
-            noteName     : 'C4'
+            noteName     : 'C5'
             x            : 800
             y            : 50
-            instrument   : 'guitar'
-            duration     : 1.0
+            # instrument   : 'guitar'
+            # duration     : 1.0
+            instrument   : 'test1'
+            duration     : 1
+            gain : 1
 
         s2 = new Synth
-            noteName     : 'C6'
+            noteName     : 'C5'
             x            : 800
             y            : 430
-            instrument   : 'bell'
-            duration     : 0.08
+            # instrument   : 'bell'
+            # duration     : 1.0
+            instrument   : 'test2'
+            duration     : 1
+            gain : 1
 
         m = new Gain
             master : true
-            gain   : 0.5
             x      : 1200
             y      : 50
+            gain   : 0.2
         
         new Connection
             source   : k1.connector 'note'
@@ -414,8 +420,6 @@ class Test
             text    : 'synth'
             parent  : 'menu'
             action  : -> Test.synth()
-
-        # Test.synth()
 
     ###
 

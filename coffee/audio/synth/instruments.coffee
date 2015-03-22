@@ -10,7 +10,7 @@
 
 class Instruments extends Buffers
 
-    @names = ["piano1", "piano2", "piano3", "bell", "guitar", "flute", "drum1", "drum2", "drum3", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3"]
+    @names = ["test1", "test2", "piano1", "piano2", "piano3", "piano4", "piano5", "string1", "string2", "bell1", "bell2", "flute", "organ1", "organ2", "organ3", "organ4", "fm1", "fm2", "fm3", "drum1", "drum2", "drum3"]
 
     constructor: (cfg, defs) -> @init cfg, defs
 
@@ -26,17 +26,50 @@ class Instruments extends Buffers
     initInstrument: =>
         log @instrument
         func = @[@instrument]
-        for s in [0...@samples.length]
-            n = Keyboard.allNoteNames()[s]
-            f = Keyboard.allNotes()[n]
-            w = 2.0 * Math.PI * f
-            for i in [0...@sampleLength]
-                @samples[s][i] = func i*@isr, w
+        for noteIndex in [0...@samples.length]
+            noteName = Keyboard.allNoteNames()[noteIndex]
+            frequency = Keyboard.allNotes()[noteName]
+            w = 2.0 * Math.PI * frequency
+            for sampleIndex in [0...@sampleLength]
+                x = sampleIndex/(@sampleLength-1)
+                @samples[noteIndex][sampleIndex] = func sampleIndex*@isr, w, x
 
     setDuration: (v) =>
         if @config.duration != _.value(v)
             super
             @initInstrument()
+
+    ###
+    000000000  00000000   0000000  000000000
+       000     000       000          000   
+       000     0000000   0000000      000   
+       000     000            000     000   
+       000     00000000  0000000      000   
+    ###
+    
+    test1: (t, w, x) =>
+
+        wt = w*t
+        y  = 0
+        y += 0.100 * Math.exp(-t/0.4) * Math.sin(0.25*wt)
+        y += 0.200 * Math.exp(-t/0.2) * Math.sin(0.50*wt)
+        y += 0.400 * Math.exp(-t/0.1) * Math.sin(1.00*wt)
+        y += 0.200 * Math.exp(-t/0.2) * Math.sin(2.00*wt)
+        y += 0.100 * Math.exp(-t/0.4) * Math.sin(4.00*wt)
+        y += 2.0*y*Math.exp(-22.0*t) # attack
+        y *= 1-x*x*x*x
+
+    test2: (t, w, x) =>
+
+        wt = w*t
+        y  = 0
+        y += 0.100 * Math.exp(-t/0.25) * Math.sin(0.25*wt)
+        y += 0.200 * Math.exp(-t/0.5)  * Math.sin(0.50*wt)
+        y += 0.400 * Math.exp(-t/1.0)  * Math.sin(1.00*wt)
+        y += 0.200 * Math.exp(-t/0.5)  * Math.sin(2.00*wt)
+        y += 0.100 * Math.exp(-t/0.25) * Math.sin(4.00*wt)
+        y += 2.0*y*Math.exp(-22.0*t) # attack
+        y *= 1-x*x*x*x
 
     ###
     00000000   000   0000000   000   000   0000000 
@@ -46,16 +79,21 @@ class Instruments extends Buffers
     000        000  000   000  000   000   0000000 
     ###
 
-    piano1: (t, w) => 
+    piano1: (t, w, x) => 
         
-        y  = 0.6*Math.sin(1.0*w*t)*Math.exp(-0.0008*w*t)
-        y += 0.3*Math.sin(2.0*w*t)*Math.exp(-0.0010*w*t)
-        y += 0.1*Math.sin(4.0*w*t)*Math.exp(-0.0015*w*t)
+        wt = w*t
+        y  = 0.6 * Math.sin(1.0*wt) * Math.exp(-0.0008*wt)
+        y += 0.3 * Math.sin(2.0*wt) * Math.exp(-0.0010*wt)
+        y += 0.1 * Math.sin(4.0*wt) * Math.exp(-0.0015*wt)
         y += 0.2*y*y*y
         y *= 0.9 + 0.1*Math.cos(70.0*t)
         y  = 2.0*y*Math.exp(-22.0*t) + y
-
-    piano2: (t, w) =>
+        if x > 0.8
+            f = 1-(x-0.8)/0.2
+            y *= f*f
+        y
+        
+    piano2: (t, w, x) =>
 
         t    = t + .00015*@noise(12*t)
         rt   = t
@@ -79,14 +117,38 @@ class Instruments extends Buffers
         y2  /= (t*w*.0020+.1)
         y3  /= (t*w*.0025+.1)
         y    = (y+y2+y3)/3
+        if x > 0.8
+            f = 1-(x-0.8)/0.2
+            y *= f*f
+        y
 
-    piano3: (t, w) =>
+    piano3: (t, w, x) =>
         
         tt = 1-t
         a  = Math.sin(t*w*.5)*Math.log(t+0.3)*tt
         b  = Math.sin(t*w)*t*.4
-        c  = @fmod(tt,.075)*Math.cos(Math.pow(tt,3)*w)*t*2
-        y  = (a+b+c)*tt
+        y  = (a+b)*tt
+        
+        if x > 0.8
+            f = 1-(x-0.8)/0.2
+            y *= f*f
+        y
+        
+    piano4: (t, w, x) =>
+        
+        y  = 2*Math.sin(w*t)
+        y *= 1-x*x*x*x
+
+    piano5: (t, w, x) =>
+        
+        wt = w*t
+        y  = 0.6*Math.sin(1.0*wt)*Math.exp(-0.0008*wt)
+        y += 0.3*Math.sin(2.0*wt)*Math.exp(-0.0010*wt)
+        y += 0.1*Math.sin(4.0*wt)*Math.exp(-0.0015*wt)
+        y += 0.2*y*y*y
+        y *= 0.5 + 0.5*Math.cos(70.0*t) # vibrato
+        y  = 2.0*y*Math.exp(-22.0*t) + y
+        y *= 1-x*x*x*x
 
     ###
      0000000   00000000    0000000    0000000   000   000
@@ -142,20 +204,33 @@ class Instruments extends Buffers
     0000000    00000000  0000000  0000000
     ###
         
-    bell: (t, w) =>
+    bell1: (t, w, x) =>
+        
+        wt = w*t
+        y  = 0.100 * Math.exp(-t/1.000) * Math.sin(0.56*wt)
+        y += 0.067 * Math.exp(-t/0.900) * Math.sin(0.56*wt)
+        y += 0.100 * Math.exp(-t/0.650) * Math.sin(0.92*wt)
+        y += 0.180 * Math.exp(-t/0.550) * Math.sin(0.92*wt)
+        y += 0.267 * Math.exp(-t/0.325) * Math.sin(1.19*wt)
+        y += 0.167 * Math.exp(-t/0.350) * Math.sin(1.70*wt)
+        y += 0.146 * Math.exp(-t/0.250) * Math.sin(2.00*wt)
+        y += 0.133 * Math.exp(-t/0.200) * Math.sin(2.74*wt)
+        y += 0.133 * Math.exp(-t/0.150) * Math.sin(3.00*wt)
+        y += 0.100 * Math.exp(-t/0.100) * Math.sin(3.76*wt)
+        y += 0.133 * Math.exp(-t/0.075) * Math.sin(4.07*wt)
+        y *= 1-x*x*x*x
 
-        y  = 0.100*Math.exp( -t/1.000 )*Math.sin( 0.56*w*t )
-        y += 0.067*Math.exp( -t/0.900 )*Math.sin( 0.56*w*t )
-        y += 0.100*Math.exp( -t/0.650 )*Math.sin( 0.92*w*t )
-        y += 0.180*Math.exp( -t/0.550 )*Math.sin( 0.92*w*t )
-        y += 0.267*Math.exp( -t/0.325 )*Math.sin( 1.19*w*t )
-        y += 0.167*Math.exp( -t/0.350 )*Math.sin( 1.70*w*t )
-        y += 0.146*Math.exp( -t/0.250 )*Math.sin( 2.00*w*t )
-        y += 0.133*Math.exp( -t/0.200 )*Math.sin( 2.74*w*t )
-        y += 0.133*Math.exp( -t/0.150 )*Math.sin( 3.00*w*t )
-        y += 0.100*Math.exp( -t/0.100 )*Math.sin( 3.76*w*t )
-        y += 0.133*Math.exp( -t/0.075 )*Math.sin( 4.07*w*t )
-        y
+    bell2: (t, w, x) =>
+
+        wt = w*t
+        y  = 0.100 * Math.exp(-t/1.000) * Math.sin(0.56*wt)
+        y += 0.067 * Math.exp(-t/0.900) * Math.sin(0.56*wt)
+        y += 0.100 * Math.exp(-t/0.650) * Math.sin(0.92*wt)
+        y += 0.180 * Math.exp(-t/0.550) * Math.sin(0.92*wt)
+        y += 0.267 * Math.exp(-t/0.325) * Math.sin(1.19*wt)
+        y += 0.167 * Math.exp(-t/0.350) * Math.sin(1.70*wt)
+        y += 2.0*y*Math.exp(-22.0*t) # attack
+        y *= 1-x*x*x*x
 
     ###
      0000000  000000000  00000000   000  000   000   0000000 
@@ -165,15 +240,33 @@ class Instruments extends Buffers
     0000000      000     000   000  000  000   000   0000000 
     ###
 
-    guitar: (t, w) =>
+    string1: (t, w, x) =>
 
-        f  =     Math.cos(0.251*w*t)
-        y  = 0.5*Math.cos(1.0*w*t+3.14*f)*Math.exp(-0.0007*w*t)
-        y += 0.2*Math.cos(2.0*w*t+3.14*f)*Math.exp(-0.0009*w*t)
-        y += 0.2*Math.cos(4.0*w*t+3.14*f)*Math.exp(-0.0016*w*t)
-        y += 0.1*Math.cos(8.0*w*t+3.14*f)*Math.exp(-0.0020*w*t)
-        y *= 0.9 + 0.1*Math.cos(70.0*t)
-        y  = 2.0*y*Math.exp(-22.0*t) + y
+        wt = w*t
+        f  =     Math.cos(0.251*wt)*Math.PI
+        y  = 0.5*Math.sin(1*wt+f)*Math.exp(-0.0007*wt)
+        y += 0.2*Math.sin(2*wt+f)*Math.exp(-0.0009*wt)
+        y += 0.2*Math.sin(4*wt+f)*Math.exp(-0.0016*wt)
+        y += 0.1*Math.sin(8*wt+f)*Math.exp(-0.0020*wt)
+        y *= 0.9 + 0.1*Math.cos(70.0*t) # vibrato
+        y  = 2.0*y*Math.exp(-22.0*t) + y # attack
+
+        if x > 0.8 # fade out
+            f = 1-(x-0.8)/0.2
+            y *= f*f
+        y
+
+    string2: (t, w, x) =>
+        
+        wt = w*t
+        f  =     Math.sin(0.251*wt)*Math.PI
+        y  = 0.5*Math.sin(1*wt+f)*Math.exp(-1.0*x)
+        y += 0.4*Math.sin(2*wt+f)*Math.exp(-2.0*x)
+        y += 0.3*Math.sin(4*wt+f)*Math.exp(-3.0*x)
+        y += 0.2*Math.sin(8*wt+f)*Math.exp(-4.0*x)
+        y += 1.0*y*Math.exp(-10.0*t) # attack
+        y *= 1 - x*x*x*x # fade out
+        y
 
     ###
     00000000  000      000   000  000000000  00000000

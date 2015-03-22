@@ -78,16 +78,13 @@ class Spin extends Value
         @setValue @config.value
         @
 
-    onInputChange: => 
-        oldValue = @config.value
-        @setValue @input.value
-        if @config.value != oldValue
-            @emit 'valueInput', value: @config.value
-
-    onInputDown: (event) => 
-        @config.knobIndex = -(@input.selectionStart-@input.value.length+1)
-        @updateKnob()
-        event.stopPropagation()
+    ###
+    000   000  00000000  000   000
+    000  000   000        000 000 
+    0000000    0000000     00000  
+    000  000   000          000   
+    000   000  00000000     000   
+    ###
 
     onKey: (event, e) =>
         if event.key in ['Esc']
@@ -116,9 +113,22 @@ class Spin extends Value
                 return
         if event.key in '-.'
             if @input.value.indexOf(event.key) > -1
-                Keys.onKey event
-                event.stop()
-                return
+                s = @input.value.slice @input.selectionStart, @input.selectionEnd
+                if s.indexOf(event.key) < 0
+                    Keys.onKey event
+                    event.stop()
+                    return
+
+    onInputChange: => 
+        oldValue = @config.value
+        @setValue @input.value
+        if @config.value != oldValue
+            @emit 'valueInput', value: @config.value
+
+    onInputDown: (event) => 
+        @config.knobIndex = -(@input.selectionStart-@input.value.length+1)
+        @updateKnob()
+        event.stopPropagation()
 
     setValue: (a) =>
         super _.value a

@@ -29,3 +29,21 @@ document.observe "dom:loaded", ->
     # $('show_about').click()
     
     Settings.set 'tooltips', true
+    
+    Test.synth()
+    
+    # s1 = new Synth
+    #     noteName     : 'C7'
+    #     x            : 10
+    #     y            : 50
+    #     width        : 1500
+    #     instrument   : 'test1'
+    #     duration     : 0.01
+    # 
+    # s2 = new Synth
+    #     noteName     : 'C7'
+    #     x            : 10
+    #     y            : 430
+    #     width        : 1500
+    #     instrument   : 'test2'
+    #     duration     : 0.01

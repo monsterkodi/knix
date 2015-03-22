@@ -20,7 +20,7 @@ class Synth extends AudioWindow
             noteName     : 'C4'
             height       : 330 
             duration     : 0.4
-            minDuration  : 0.001
+            minDuration  : 0.01
             maxDuration  : 2.0
             gain         : 0.5
 
@@ -151,10 +151,17 @@ class Synth extends AudioWindow
         ctx.strokeStyle = 'rgb(0,0,0)'
         ctx.strokeRect  0, 0, cvw, cvh
 
+        ctx.beginPath()
+        ctx.strokeStyle = StyleSwitch.colors.analyser_trigger
+        hh = cvh * 0.5
+        ctx.moveTo  0,   hh
+        ctx.lineTo  cvw, hh
+        ctx.stroke()
+
         ctx.strokeStyle = StyleSwitch.colors.synth_trace
         ctx.beginPath()
 
-        xd = @getWidth() / @instruments.sampleLength
+        xd = cvw / @instruments.sampleLength
 
         x = 0
 
@@ -167,7 +174,6 @@ class Synth extends AudioWindow
                 ctx.moveTo(x, y)
             else
                 ctx.lineTo(x, y)
-
             x += xd
 
         ctx.stroke()        
