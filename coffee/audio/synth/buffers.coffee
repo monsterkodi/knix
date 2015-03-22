@@ -30,25 +30,30 @@ class Buffers
         @sampleLength = @config.duration*@config.sampleRate
         @isr          = 1.0/@config.sampleRate
         
-        log @sampleLength
         @sampleLength = Math.floor @sampleLength
         log @sampleLength
+        @createBuffers()
+        
+    createBuffers: =>
         numNotes = Keyboard.numNotes()
         for i in [0...numNotes]
             @samples[i] = new Float32Array @sampleLength
         @
+        
+    sampleForNoteIndex: (noteIndex) => @samples[noteIndex]
 
     createAudioBufferForNoteIndex: (noteIndex) =>
         audioBuffer = Audio.context.createBuffer 1, @sampleLength, @config.sampleRate
         buffer = audioBuffer.getChannelData 0
-        sample = @samples[noteIndex]
+        sample = @sampleForNoteIndex noteIndex
         for i in [0...@sampleLength]
             buffer[i] = sample[i]
         audioBuffer
     
     setDuration: (v) =>
-        @config.duration = _.value(v)
-        @initBuffers()
+        if @config.duration != _.value(v)
+            @config.duration = _.value(v)
+            @initBuffers()
         
     fmod:  (x,y)   => x%y
     sign:  (x)     => (x>0.0) and 1.0 or -1.0

@@ -88,7 +88,8 @@ class Synth extends AudioWindow
             ]
 
         @instruments = new Instruments
-                            duration : cfg.duration
+                            duration :  @config.duration
+                            instrument: @config.instrument
                             
         @canvas = @getChild 'canvas'
 
@@ -165,10 +166,10 @@ class Synth extends AudioWindow
 
         x = 0
 
-        sampleIndex = Keyboard.noteIndex @config.noteName
+        sample = @instruments.sampleForNoteIndex Keyboard.noteIndex @config.noteName
             
         for i in [0...@instruments.sampleLength]
-            v = @instruments.samples[sampleIndex][i]*0.1
+            v = sample[i]*0.1
             y = (0.5 + v) * cvh
             if i == 0
                 ctx.moveTo(x, y)
