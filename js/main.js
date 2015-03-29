@@ -26,12 +26,12 @@ Test = (function() {
     k1 = new Keyboard({
       x: 20,
       y: 50,
-      octave: 4
+      octave: 3
     });
     k2 = new Keyboard({
       x: 20,
       y: 430,
-      octave: 4
+      octave: 0
     });
     l1 = new Timeline({
       x: 360,
@@ -46,24 +46,24 @@ Test = (function() {
       height: 350
     });
     s1 = new Synth({
-      noteName: 'C4',
+      noteName: 'C5',
       x: 800,
       y: 50,
-      instrument: 'guitar',
-      duration: 1.0
+      instrument: 'string1',
+      duration: 1.0,
+      gain: 0.2
     });
-    s2 = new Synth({
-      noteName: 'C6',
+    s2 = new Drums({
+      noteName: 'B0',
       x: 800,
       y: 430,
-      instrument: 'bell',
-      duration: 0.08
+      gain: 0.2
     });
     m = new Gain({
       master: true,
-      gain: 1,
       x: 1200,
-      y: 50
+      y: 50,
+      gain: 0.2
     });
     new Connection({
       source: k1.connector('note'),
@@ -121,13 +121,13 @@ Test = (function() {
       noteName: 'C6',
       x: 400,
       y: 50,
-      duration: 0.08,
+      duration: 0.5,
       sustainIndex: 8,
       vals: [pos(0, 0), pos(.1, 1), pos(.2, 0), pos(.3, .8), pos(.4, 0), pos(.5, .6), pos(.6, .0), pos(.7, .4), pos(1, 0)]
     });
     m = new Gain({
       master: true,
-      gain: 1,
+      gain: 0.5,
       x: 800,
       y: 50
     });
@@ -311,6 +311,8 @@ Test = (function() {
     o1 = new Oscillator({
       title: 'high',
       minFrequency: 2000,
+      maxFrequency: 12000,
+      frequency: 3000,
       x: 10,
       y: 40
     });
@@ -318,7 +320,7 @@ Test = (function() {
       title: 'mid',
       minFrequency: 400,
       maxFrequency: 2000,
-      freq: 400,
+      frequency: 400,
       x: 10,
       y: 240
     });
@@ -326,42 +328,42 @@ Test = (function() {
       title: 'low',
       minFrequency: 0,
       maxFrequency: 400,
-      freq: 333,
+      frequency: 333,
       shape: 'square',
       x: 10,
       y: 440
     });
     g1 = new Gain({
-      gain: 0.0,
-      x: 250,
+      gain: 0.1,
+      x: 400,
       y: 40
     });
     g2 = new Gain({
-      gain: 0.0,
-      x: 250,
+      gain: 0.2,
+      x: 400,
       y: 240
     });
     g3 = new Gain({
       gain: 0.3,
-      x: 250,
+      x: 400,
       y: 440
     });
     an = new Analyser({
-      x: 500,
+      x: 800,
       y: 42
     });
     f4 = new Filter({
-      x: 1050,
+      x: 1200,
       y: 42
     });
     a4 = new Analyser({
-      x: 500,
+      x: 800,
       y: 400
     });
     gm = new Gain({
       master: true,
       gain: 0.0,
-      x: 1050,
+      x: 1200,
       y: 400
     });
     new Connection({
@@ -871,10 +873,11 @@ Test = (function() {
 
 document.observe("dom:loaded", function() {
   knix.init({
-    console: true
+    loadLast: false
   });
   Test.audio();
-  return Settings.set('tooltips', true);
+  Settings.set('tooltips', true);
+  return Test.synth();
 });
 
 //# sourceMappingURL=main.js.map

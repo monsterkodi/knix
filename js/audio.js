@@ -20,6 +20,7 @@ Audio = (function() {
     Timeline.menu();
     Keyboard.menu();
     Synth.menu();
+    Drums.menu();
     ADSR.menu();
     Ramp.menu();
     Envelope.menu();
@@ -390,7 +391,14 @@ ADSR = (function(_super) {
         return i;
       }
     }
-    warn('no free voice');
+    warning({
+      "file": "./coffee/audio/adsr.coffee",
+      "class": "ADSR",
+      "line": 162,
+      "args": ["id"],
+      "method": "voiceIndex",
+      "type": "."
+    }, 'no free voice');
     this.voice[0] = {
       id: id
     };
@@ -607,18 +615,6 @@ Analyser = (function(_super) {
     return this.dataArray = new Uint8Array(2 * width);
   };
 
-  Analyser.menu = function() {
-    return Analyser.menuButton({
-      text: 'analyser',
-      icon: 'fa-area-chart',
-      action: function() {
-        return new Analyser({
-          center: true
-        });
-      }
-    });
-  };
-
   Analyser.prototype.anim = function() {
     var ctx, cvh, cvs, cvw, i, samples, t, th, v, x, xd, y, _i;
     this.audio.getByteTimeDomainData(this.dataArray);
@@ -663,6 +659,18 @@ Analyser = (function(_super) {
       x += xd;
     }
     return ctx.stroke();
+  };
+
+  Analyser.menu = function() {
+    return Analyser.menuButton({
+      text: 'analyser',
+      icon: 'fa-line-chart',
+      action: function() {
+        return new Analyser({
+          center: true
+        });
+      }
+    });
   };
 
   return Analyser;

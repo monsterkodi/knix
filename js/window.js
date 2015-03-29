@@ -561,7 +561,14 @@ Window = (function(_super) {
       this.setPos(Stage.absPos(event));
       return this.elem.raise();
     } else {
-      return warn('no elem!');
+      return warning({
+        "file": "./coffee/window.coffee",
+        "class": "Window",
+        "line": 390,
+        "args": ["event"],
+        "method": "popup",
+        "type": "."
+      }, 'no elem!');
     }
   };
 

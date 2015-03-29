@@ -83,6 +83,15 @@ Value = (function(_super) {
     return this.incr(-1);
   };
 
+
+  /*
+  000000000   0000000    0000000   000       0000000
+     000     000   000  000   000  000      000     
+     000     000   000  000   000  000      0000000 
+     000     000   000  000   000  000           000
+     000      0000000    0000000   0000000  0000000
+   */
+
   Value.prototype.percentage = function(v) {
     var pct;
     pct = 100 * (v - this.config.minValue) / this.range();
@@ -1026,22 +1035,22 @@ Pad = (function(_super) {
 
   function Pad() {
     this.setSize = __bind(this.setSize, this);
-    this.updateHandles = __bind(this.updateHandles, this);
     this.setSVGSize = __bind(this.setSVGSize, this);
-    this.constrainHandles = __bind(this.constrainHandles, this);
-    this.onHandleUp = __bind(this.onHandleUp, this);
-    this.onHandlePos = __bind(this.onHandlePos, this);
     this.getHeight = __bind(this.getHeight, this);
     this.getWidth = __bind(this.getWidth, this);
     this.hideRuler = __bind(this.hideRuler, this);
     this.showRuler = __bind(this.showRuler, this);
     this.valAtRel = __bind(this.valAtRel, this);
-    this.pathDragMove = __bind(this.pathDragMove, this);
+    this.updateHandles = __bind(this.updateHandles, this);
+    this.constrainHandles = __bind(this.constrainHandles, this);
+    this.onHandleUp = __bind(this.onHandleUp, this);
+    this.onHandlePos = __bind(this.onHandlePos, this);
     this.handleDoubleClick = __bind(this.handleDoubleClick, this);
-    this.pathDoubleClick = __bind(this.pathDoubleClick, this);
     this.removeHandleAtIndex = __bind(this.removeHandleAtIndex, this);
-    this.splitPathAtIndex = __bind(this.splitPathAtIndex, this);
     this.createHandle = __bind(this.createHandle, this);
+    this.pathDragMove = __bind(this.pathDragMove, this);
+    this.pathDoubleClick = __bind(this.pathDoubleClick, this);
+    this.splitPathAtIndex = __bind(this.splitPathAtIndex, this);
     this.createPathAtIndex = __bind(this.createPathAtIndex, this);
     this.init = __bind(this.init, this);
     return Pad.__super__.constructor.apply(this, arguments);
@@ -1108,6 +1117,15 @@ Pad = (function(_super) {
     return this;
   };
 
+
+  /*
+  00000000    0000000   000000000  000   000
+  000   000  000   000     000     000   000
+  00000000   000000000     000     000000000
+  000        000   000     000     000   000
+  000        000   000     000     000   000
+   */
+
   Pad.prototype.createPathAtIndex = function(i) {
     var p;
     p = new Path({
@@ -1127,18 +1145,6 @@ Pad = (function(_super) {
     return this.paths.splice(i, 0, p);
   };
 
-  Pad.prototype.createHandle = function() {
-    var h;
-    h = new Handle({
-      svg: this.svg.svg,
-      "class": 'pad-handle',
-      onPos: this.onHandlePos,
-      onUp: this.onHandleUp
-    });
-    h.elem.addEventListener('dblclick', this.handleDoubleClick);
-    return h;
-  };
-
   Pad.prototype.splitPathAtIndex = function(i) {
     var h;
     if (i < this.config.sustainIndex) {
@@ -1154,6 +1160,44 @@ Pad = (function(_super) {
     return this.constrainHandles();
   };
 
+  Pad.prototype.pathDoubleClick = function(event) {
+    var eh, i, sh;
+    sh = event.target.getWidget().config.startHandle;
+    eh = event.target.getWidget().config.endHandle;
+    i = this.handles.indexOf(sh);
+    return this.splitPathAtIndex(i);
+  };
+
+  Pad.prototype.pathDragMove = function(drag) {
+    var eh, sh;
+    sh = drag.target.getWidget().config.startHandle;
+    sh.move(drag.delta);
+    eh = drag.target.getWidget().config.endHandle;
+    eh.move(drag.delta);
+    return this.constrainHandles();
+  };
+
+
+  /*
+  000   000   0000000   000   000  0000000    000      00000000
+  000   000  000   000  0000  000  000   000  000      000     
+  000000000  000000000  000 0 000  000   000  000      0000000 
+  000   000  000   000  000  0000  000   000  000      000     
+  000   000  000   000  000   000  0000000    0000000  00000000
+   */
+
+  Pad.prototype.createHandle = function() {
+    var h;
+    h = new Handle({
+      svg: this.svg.svg,
+      "class": 'pad-handle',
+      onPos: this.onHandlePos,
+      onUp: this.onHandleUp
+    });
+    h.elem.addEventListener('dblclick', this.handleDoubleClick);
+    return h;
+  };
+
   Pad.prototype.removeHandleAtIndex = function(i) {
     if (i < this.config.sustainIndex) {
       this.config.sustainIndex -= 1;
@@ -1167,14 +1211,6 @@ Pad = (function(_super) {
     return this.constrainHandles();
   };
 
-  Pad.prototype.pathDoubleClick = function(event) {
-    var eh, i, sh;
-    sh = event.target.getWidget().config.startHandle;
-    eh = event.target.getWidget().config.endHandle;
-    i = this.handles.indexOf(sh);
-    return this.splitPathAtIndex(i);
-  };
-
   Pad.prototype.handleDoubleClick = function(event) {
     var h, i;
     h = event.target.getWidget();
@@ -1182,98 +1218,6 @@ Pad = (function(_super) {
     if (i > 0 && i < this.handles.length - 1 && i !== this.config.sustainIndex) {
       return this.removeHandleAtIndex(i);
     }
-  };
-
-  Pad.prototype.pathDragMove = function(drag) {
-    var eh, sh;
-    sh = drag.target.getWidget().config.startHandle;
-    sh.move(drag.delta);
-    eh = drag.target.getWidget().config.endHandle;
-    eh.move(drag.delta);
-    return this.constrainHandles();
-  };
-
-  Pad.prototype.valAtRel = function(rel) {
-    var dl, dp, ei, ep, i, p, si, sp, _i, _ref, _ref1;
-    if (this.config.numHandles < 2 || rel <= 0) {
-      return this.config.vals[0].y;
-    }
-    if (rel >= 1) {
-      return this.config.vals[this.config.vals.length - 1].y;
-    }
-    si = 0;
-    ei = 1;
-    for (i = _i = 0, _ref = this.config.vals.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (this.config.vals[i].x <= rel) {
-        si = i;
-      } else {
-        ei = i;
-        break;
-      }
-    }
-    _ref1 = [this.config.vals[si], this.config.vals[ei]], sp = _ref1[0], ep = _ref1[1];
-    dp = sp.to(ep);
-    dl = dp.length();
-    if (dl === 0 || dp.x === 0) {
-      log({
-        "file": "./coffee/widgets/pad.coffee",
-        "class": "Pad",
-        "line": 142,
-        "args": ["rel"],
-        "method": "valAtRel",
-        "type": "."
-      }, 'null', "<span class='console-type'>rel:</span>", rel, "<span class='console-type'>si:</span>", si, "<span class='console-type'>ei:</span>", ei, "<span class='console-type'>dl:</span>", dl, "<span class='console-type'>dp.x:</span>", dp.x);
-      return sp.y;
-    } else {
-      p = sp.plus(dp.times((rel - this.config.vals[si].x) / dp.x));
-      return p.y;
-    }
-  };
-
-  Pad.prototype.showRuler = function(x, y) {
-    var h, w, _ref;
-    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
-    if (x != null) {
-      if (this.rulerx == null) {
-        this.rulerx = new Path({
-          svg: this.svg.svg,
-          "class": 'pad-ruler'
-        });
-        this.rulerx.path.back();
-      }
-      this.rulerx.setStart(pos(x * w + this.o, 0));
-      this.rulerx.setEnd(pos(x * w + this.o, h + 2 * this.o));
-    }
-    if (y != null) {
-      if (this.rulery == null) {
-        this.rulery = new Path({
-          svg: this.svg.svg,
-          "class": 'pad-ruler'
-        });
-        this.rulery.path.back();
-      }
-      this.rulery.setStart(pos(0, h - y * h + this.o));
-      return this.rulery.setEnd(pos(w + 2 * this.o, h - y * h + this.o));
-    }
-  };
-
-  Pad.prototype.hideRuler = function() {
-    if (this.rulerx) {
-      this.rulerx.close();
-      delete this.rulerx;
-    }
-    if (this.rulery) {
-      this.rulery.close();
-      return delete this.rulery;
-    }
-  };
-
-  Pad.prototype.getWidth = function() {
-    return this.svg.elem.width;
-  };
-
-  Pad.prototype.getHeight = function() {
-    return this.svg.elem.height;
   };
 
   Pad.prototype.onHandlePos = function(event) {
@@ -1318,13 +1262,6 @@ Pad = (function(_super) {
     return _results;
   };
 
-  Pad.prototype.setSVGSize = function(width, height) {
-    this.svg.setWidth(width);
-    this.svg.setHeight(height);
-    this.svg.elem.width = width;
-    return this.svg.elem.height = height;
-  };
-
   Pad.prototype.updateHandles = function() {
     var h, hp, i, w, _i, _ref, _ref1, _results;
     _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
@@ -1334,6 +1271,123 @@ Pad = (function(_super) {
       _results.push(this.handles[i].setPos(hp));
     }
     return _results;
+  };
+
+
+  /*
+  000   000   0000000   000    
+  000   000  000   000  000    
+   000 000   000000000  000    
+     000     000   000  000    
+      0      000   000  0000000
+   */
+
+  Pad.prototype.valAtRel = function(rel) {
+    var dl, dp, ei, ep, i, p, si, sp, _i, _ref, _ref1;
+    if (this.config.numHandles < 2 || rel <= 0) {
+      return this.config.vals[0].y;
+    }
+    if (rel >= 1) {
+      return this.config.vals[this.config.vals.length - 1].y;
+    }
+    si = 0;
+    ei = 1;
+    for (i = _i = 0, _ref = this.config.vals.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      if (this.config.vals[i].x <= rel) {
+        si = i;
+      } else {
+        ei = i;
+        break;
+      }
+    }
+    _ref1 = [this.config.vals[si], this.config.vals[ei]], sp = _ref1[0], ep = _ref1[1];
+    dp = sp.to(ep);
+    dl = dp.length();
+    if (dl === 0 || dp.x === 0) {
+      log({
+        "file": "./coffee/widgets/pad.coffee",
+        "class": "Pad",
+        "line": 203,
+        "args": ["rel"],
+        "method": "valAtRel",
+        "type": "."
+      }, 'null', "<span class='console-type'>rel:</span>", rel, "<span class='console-type'>si:</span>", si, "<span class='console-type'>ei:</span>", ei, "<span class='console-type'>dl:</span>", dl, "<span class='console-type'>dp.x:</span>", dp.x);
+      return sp.y;
+    } else {
+      p = sp.plus(dp.times((rel - this.config.vals[si].x) / dp.x));
+      return p.y;
+    }
+  };
+
+
+  /*
+  00000000   000   000  000      00000000  00000000 
+  000   000  000   000  000      000       000   000
+  0000000    000   000  000      0000000   0000000  
+  000   000  000   000  000      000       000   000
+  000   000   0000000   0000000  00000000  000   000
+   */
+
+  Pad.prototype.showRuler = function(x, y) {
+    var h, w, _ref;
+    _ref = [this.getWidth() - 2 * this.o, this.getHeight() - 2 * this.o], w = _ref[0], h = _ref[1];
+    if (x != null) {
+      if (this.rulerx == null) {
+        this.rulerx = new Path({
+          svg: this.svg.svg,
+          "class": 'pad-ruler'
+        });
+        this.rulerx.path.back();
+      }
+      this.rulerx.setStart(pos(x * w + this.o, 0));
+      this.rulerx.setEnd(pos(x * w + this.o, h + 2 * this.o));
+    }
+    if (y != null) {
+      if (this.rulery == null) {
+        this.rulery = new Path({
+          svg: this.svg.svg,
+          "class": 'pad-ruler'
+        });
+        this.rulery.path.back();
+      }
+      this.rulery.setStart(pos(0, h - y * h + this.o));
+      return this.rulery.setEnd(pos(w + 2 * this.o, h - y * h + this.o));
+    }
+  };
+
+  Pad.prototype.hideRuler = function() {
+    if (this.rulerx) {
+      this.rulerx.close();
+      delete this.rulerx;
+    }
+    if (this.rulery) {
+      this.rulery.close();
+      return delete this.rulery;
+    }
+  };
+
+
+  /*
+   0000000  000  0000000  00000000
+  000       000     000   000     
+  0000000   000    000    0000000 
+       000  000   000     000     
+  0000000   000  0000000  00000000
+   */
+
+  Pad.prototype.getWidth = function() {
+    return this.svg.elem.width;
+  };
+
+  Pad.prototype.getHeight = function() {
+    return this.svg.elem.height;
+  };
+
+  Pad.prototype.setSVGSize = function(width, height) {
+    this.svg.setWidth(width);
+    this.svg.setHeight(height);
+    this.svg.elem.width = width;
+    return this.svg.elem.height = height;
   };
 
   Pad.prototype.setSize = function(width, height) {
@@ -1961,9 +2015,9 @@ Spin = (function(_super) {
     this.incr = __bind(this.incr, this);
     this.updateKnob = __bind(this.updateKnob, this);
     this.setValue = __bind(this.setValue, this);
-    this.onKey = __bind(this.onKey, this);
     this.onInputDown = __bind(this.onInputDown, this);
     this.onInputChange = __bind(this.onInputChange, this);
+    this.onKey = __bind(this.onKey, this);
     this.init = __bind(this.init, this);
     return Spin.__super__.constructor.apply(this, arguments);
   }
@@ -2037,25 +2091,17 @@ Spin = (function(_super) {
     return this;
   };
 
-  Spin.prototype.onInputChange = function() {
-    var oldValue;
-    oldValue = this.config.value;
-    this.setValue(this.input.value);
-    if (this.config.value !== oldValue) {
-      return this.emit('valueInput', {
-        value: this.config.value
-      });
-    }
-  };
 
-  Spin.prototype.onInputDown = function(event) {
-    this.config.knobIndex = -(this.input.selectionStart - this.input.value.length + 1);
-    this.updateKnob();
-    return event.stopPropagation();
-  };
+  /*
+  000   000  00000000  000   000
+  000  000   000        000 000 
+  0000000    0000000     00000  
+  000  000   000          000   
+  000   000  00000000     000
+   */
 
   Spin.prototype.onKey = function(event, e) {
-    var _ref, _ref1, _ref2, _ref3, _ref4;
+    var s, _ref, _ref1, _ref2, _ref3, _ref4;
     if ((_ref = event.key) === 'Esc') {
       this.setValue(this.config.value);
       return;
@@ -2088,10 +2134,30 @@ Spin = (function(_super) {
     }
     if (_ref4 = event.key, __indexOf.call('-.', _ref4) >= 0) {
       if (this.input.value.indexOf(event.key) > -1) {
-        Keys.onKey(event);
-        event.stop();
+        s = this.input.value.slice(this.input.selectionStart, this.input.selectionEnd);
+        if (s.indexOf(event.key) < 0) {
+          Keys.onKey(event);
+          event.stop();
+        }
       }
     }
+  };
+
+  Spin.prototype.onInputChange = function() {
+    var oldValue;
+    oldValue = this.config.value;
+    this.setValue(this.input.value);
+    if (this.config.value !== oldValue) {
+      return this.emit('valueInput', {
+        value: this.config.value
+      });
+    }
+  };
+
+  Spin.prototype.onInputDown = function(event) {
+    this.config.knobIndex = -(this.input.selectionStart - this.input.value.length + 1);
+    this.updateKnob();
+    return event.stopPropagation();
   };
 
   Spin.prototype.setValue = function(a) {

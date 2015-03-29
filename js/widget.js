@@ -94,7 +94,14 @@ Widget = (function() {
     var a, clss, k, s, style, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     cfg = _.def(cfg, defs);
     if (cfg.type == null) {
-      console.warn("NO TYPE?");
+      warning({
+        "file": "./coffee/widget.coffee",
+        "class": "Widget",
+        "line": 24,
+        "args": ["cfg", "defs"],
+        "method": "init",
+        "type": "."
+      }, "NO TYPE?");
       cfg.type = 'unknown';
     }
     if (cfg.elem == null) {
