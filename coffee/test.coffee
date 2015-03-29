@@ -27,7 +27,7 @@ class Test
         k2 = new Keyboard
             x : 20
             y : 430
-            octave: 3
+            octave: 0
 
         l1 = new Timeline
             x      : 360
@@ -45,21 +45,15 @@ class Test
             noteName     : 'C5'
             x            : 800
             y            : 50
-            # instrument   : 'guitar'
-            # duration     : 1.0
-            instrument   : 'test1'
-            duration     : 1
-            gain : 1
+            instrument   : 'string1'
+            duration     : 1.0
+            gain : 0
 
-        s2 = new Synth
-            noteName     : 'C5'
+        s2 = new Drums
+            noteName     : 'B0'
             x            : 800
             y            : 430
-            # instrument   : 'bell'
-            # duration     : 1.0
-            instrument   : 'test2'
-            duration     : 1
-            gain : 1
+            gain : 0.2
 
         m = new Gain
             master : true
@@ -77,7 +71,7 @@ class Test
 
         new Connection
             source   : s1.connector 'audio:out'
-            target   : m.connector 'audio:in'
+            target   : m.connector  'audio:in'
 
         new Connection
             source   : k2.connector 'note'
@@ -89,7 +83,7 @@ class Test
 
         new Connection
             source   : s2.connector 'audio:out'
-            target   : m.connector 'audio:in'
+            target   : m.connector  'audio:in'
 
     ###
     000000000  000  00     00  00000000  000      000  000   000  00000000

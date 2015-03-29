@@ -20,22 +20,20 @@ class Buffers
             sampleRate : 44100
             duration   : 1
             
-        @samples = new Array Keyboard.numNotes()
-        
+        @isr = 1.0/@config.sampleRate
         @initBuffers()
         @
     
     initBuffers: =>
         
-        @sampleLength = @config.duration*@config.sampleRate
-        @isr          = 1.0/@config.sampleRate
-        
+        @sampleLength = @config.duration*@config.sampleRate        
         @sampleLength = Math.floor @sampleLength
         log @sampleLength
         @createBuffers()
         
     createBuffers: =>
         numNotes = Keyboard.numNotes()
+        @samples = new Array numNotes
         for i in [0...numNotes]
             @samples[i] = new Float32Array @sampleLength
         @
@@ -43,10 +41,10 @@ class Buffers
     sampleForNoteIndex: (noteIndex) => @samples[noteIndex]
 
     createAudioBufferForNoteIndex: (noteIndex) =>
-        audioBuffer = Audio.context.createBuffer 1, @sampleLength, @config.sampleRate
-        buffer = audioBuffer.getChannelData 0
         sample = @sampleForNoteIndex noteIndex
-        for i in [0...@sampleLength]
+        audioBuffer = Audio.context.createBuffer 1, sample.length, @config.sampleRate
+        buffer = audioBuffer.getChannelData 0
+        for i in [0...sample.length]
             buffer[i] = sample[i]
         audioBuffer
     
@@ -61,7 +59,6 @@ class Buffers
     sqr:   (a,x)   => if Math.sin(x)>a then 1.0 else -1.0    
     step:  (a,x)   => (x>=a) and 1.0 or 0.0
     over:  (x,y)   => 1.0 - (1.0-x)*(1.0-y)
-    clamp: (x,a,b) => if x<a then return a; if x>b then return b; x
     mix:   (a,b,x) => a + (b-a) * Math.min(Math.max(x,0.0),1.0)
 
     smoothstep: (a,b,x) =>

@@ -17,6 +17,7 @@ class Audio
         Timeline.menu()
         Keyboard.menu()
         Synth.menu()
+        Drums.menu()
         ADSR.menu()
         Ramp.menu()
         Envelope.menu() 

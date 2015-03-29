@@ -8,22 +8,16 @@
 
 ###
 
-class Instruments extends Buffers
+class Instruments extends Buffers 
 
-    @names = ["test1", "test2", 
-    "piano1", "piano2", "piano3", "piano4", "piano5", 
-    "string1", "string2", 
-    "bell1", "bell2", "bell3", "bell4", 
-    "flute", 
-    "organ1", "organ2", "organ3", "organ4", 
-    "fm1", "fm2", "fm3", "drum1", 
-    "drum2", "drum3"]
-
-    constructor: (cfg, defs) -> @init cfg, defs
-
-    init: (cfg, defs) =>
-        super cfg, defs
-        @
+    @names = \
+        [   #"test1", "test2",
+            "piano1", "piano2", "piano3", "piano4", "piano5", 
+            "string1", "string2", "flute", 
+            "bell1", "bell2", "bell3", "bell4", 
+            "organ1", "organ2", "organ3", "organ4", 
+            "fm1", "fm2", "fm3"
+        ]
 
     setInstrument: (v) =>
         if @config.instrument != _.value(v)
@@ -31,7 +25,7 @@ class Instruments extends Buffers
             @initInstrument()
             
     initInstrument: =>
-        log @config.instrument
+        # log @config.instrument
         @createBuffers()
             
     initNoteAtIndex: (noteIndex) =>
@@ -61,12 +55,15 @@ class Instruments extends Buffers
     ###
     
     test1: (t, w, x) => 
-        # fm3
+        wt = w*t
+        a = Math.tan(0.01*wt/Math.pow(Math.sin(wt),-x))
+        b = @frac Math.log(x*wt)
+        y = a*b
+        _.clamp(-3, 3, y)
         
     test2: (t, w, x) => 
-        
         wt = w*t
-        wm = Math.tan(0.025 * wt) + 2.0 * Math.sin(wt) + 0.3*Math.random()
+        wm = Math.tan(0.25 * wt) + 2.0 * Math.sin(wt)
         y0 = Math.sin(wm * t)
 
         a0 = -0.93 * t
@@ -75,8 +72,8 @@ class Instruments extends Buffers
 
         exp2y = Math.exp(2.0 * y)
         y = (exp2y - 1.0) / (exp2y + 1.0)
-        d = 0.95; if x > d then y *= Math.pow(1-(x-d)/(1-d), 2) # decay
-        y
+        _.clamp(-2, 2, y)
+        y *= 1-x*x*x*x*x*x
         
     ###
     00000000   000   0000000   000   000   0000000 
@@ -311,32 +308,6 @@ class Instruments extends Buffers
         y
 
     ###
-    0000000    00000000   000   000  00     00
-    000   000  000   000  000   000  000   000
-    000   000  0000000    000   000  000000000
-    000   000  000   000  000   000  000 0 000
-    0000000    000   000   0000000   000   000
-    ###
-    
-    drum1: (t, w) =>
-
-        y = Math.max(-1.0,Math.min(1.0,8.0*Math.sin(3000*t*Math.exp(-6*t))))
-
-    drum2: (t, w) => 
-
-        y  = 0.5*@noise(32000*t)*Math.exp(-32*t)
-        y += 2.0*@noise(3200*t)*Math.exp(-32*t)
-        y += 3.0*Math.cos(400*(1-t)*t)*Math.exp(-4*t)
-
-    drum3: (t, w) =>
-
-        f = 1000-2500*t
-        y = Math.sin(f*t)
-        y += .2*Math.random()
-        y *= Math.exp(-12*t)
-        y *= 8
-
-    ###
     00000000  00     00
     000       000   000
     000000    000000000
@@ -378,7 +349,7 @@ class Instruments extends Buffers
     fm3: (t, w, x) =>
 
         wt = w*t
-        wm = Math.tan(0.025 * wt) + 2.0 * Math.sin(wt) + 0.25*Math.random()
+        wm = Math.tan(0.25 * wt) + 2.0 * Math.sin(wt) + 0.25*Math.random()
         y0 = Math.sin(wm * t)
 
         a0 = -0.93 * t

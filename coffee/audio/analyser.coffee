@@ -83,14 +83,6 @@ class Analyser extends AudioWindow
         width      = content.innerWidth() - 20
         @canvas?.resize width, height
         @dataArray = new Uint8Array 2*width
-
-    @menu: =>
-
-        @menuButton
-            text   : 'analyser'
-            icon   : 'fa-area-chart'
-            action : -> new Analyser
-                            center: true
                             
     anim: =>
 
@@ -139,3 +131,11 @@ class Analyser extends AudioWindow
             x += xd
 
         ctx.stroke()
+
+    @menu: =>
+
+        @menuButton
+            text   : 'analyser'
+            icon   : 'fa-line-chart'
+            action : -> new Analyser
+                            center: true
