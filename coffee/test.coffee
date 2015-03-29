@@ -47,7 +47,7 @@ class Test
             y            : 50
             instrument   : 'string1'
             duration     : 1.0
-            gain : 0
+            gain : 0.2
 
         s2 = new Drums
             noteName     : 'B0'

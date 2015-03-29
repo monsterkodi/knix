@@ -13,8 +13,9 @@ document.observe "dom:loaded", ->
     # _________________________________________________________________________ init
 
     knix.init
-        console:  true
-        # loadLast: true
+        loadLast: false
+        # console:  false
+        # console:  true
         # console: 'shade'
 
     # _________________________________________________________________________ widget test
@@ -32,18 +33,3 @@ document.observe "dom:loaded", ->
     
     Test.synth()
     
-    # s1 = new Synth
-    #     noteName     : 'C7'
-    #     x            : 10
-    #     y            : 50
-    #     width        : 1500
-    #     instrument   : 'test1'
-    #     duration     : 0.01
-    # 
-    # s2 = new Synth
-    #     noteName     : 'C7'
-    #     x            : 10
-    #     y            : 430
-    #     width        : 1500
-    #     instrument   : 'test2'
-    #     duration     : 0.01
