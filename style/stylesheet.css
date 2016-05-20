@@ -188,8 +188,9 @@ hr {
 }
 
 .icon {
-  width: 64px;
-  height: 64px;
+  width: 32px;
+  height: 32px;
+  position: relative;
 }
 
 .btn:hover {
